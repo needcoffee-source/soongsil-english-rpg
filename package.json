@@ -1,0 +1,14 @@
+{
+  "name": "soongsil-english-rpg",
+  "version": "1.0.0",
+  "description": "Soongsil Middle School English Open World RPG - Season 1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "pdf-parse": "^1.1.1",
+    "socket.io": "^4.8.4"
+  }
+}

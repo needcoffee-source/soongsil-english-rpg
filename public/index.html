@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>숭실중학교 영어 오픈월드 RPG (Soongsil World)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Main Tablet Split Screen Container (Galaxy Tab S7 FE 16:10 Optimized) -->
+  <div id="game-container">
+    
+    <!-- LEFT: Game Screen Viewport (~65% Width, 4:3 Classic Pokemon Area) -->
+    <div id="game-viewport-col">
+      <!-- Mini Location Bar -->
+      <div id="canvas-header-bar">
+        <span class="school-tag">🏫 숭실중학교</span>
+        <span id="hud-location" class="location-tag">1학년 복도</span>
+        <span id="current-floor-tag" class="floor-pill">1학년</span>
+      </div>
+
+      <!-- Canvas Box with GBC Retro Frame -->
+      <div id="canvas-wrapper">
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Interaction Prompt (A Button hint) -->
+        <div id="interaction-prompt" class="hidden">
+          <span class="key-badge">A</span> <span id="prompt-text">대화하기</span>
+        </div>
+
+        <!-- Teacher Announcement Banner -->
+        <div id="announcement-banner" class="hidden">
+          <span class="announcement-icon">📢</span>
+          <span id="announcement-text">선생님 공지사항</span>
+        </div>
+      </div>
+
+      <!-- Left Hand Virtual D-Pad Overlay for Tablet -->
+      <div id="left-controls-bar">
+        <div id="dpad-container">
+          <div class="dpad-btn dpad-up" data-dir="up">▲</div>
+          <div class="dpad-btn dpad-left" data-dir="left">◀</div>
+          <div class="dpad-btn dpad-center">●</div>
+          <div class="dpad-btn dpad-right" data-dir="right">▶</div>
+          <div class="dpad-btn dpad-down" data-dir="down">▼</div>
+        </div>
+        <div class="touch-hint">
+          <span>🎮 왼손: 이동 패드</span><br>
+          <small>방향키 / WASD 지원</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Tablet Interface & Status Panel (~35% Width, Right Thumb Access) -->
+    <aside id="game-sidebar-col">
+      <!-- 1. Player Status Card (상태창) -->
+      <section class="side-card status-card">
+        <div class="status-header">
+          <div class="trainer-avatar">👨‍🎓</div>
+          <div class="status-info">
+            <div class="name-row">
+              <b id="hud-name">김숭실</b>
+              <span id="hud-level" class="badge-lv">Lv.1</span>
+            </div>
+            <div class="student-id-row">학번: <span id="side-student-id">10101</span> · 🪙 <b id="hud-gold" style="color:#fcd34d;">10</b> <span style="color:#fcd34d;">G</span></div>
+            <div class="combat-stat-row">
+              <span class="stat-pill atk-pill">⚔️ 공격력 <b id="hud-atk">10</b></span>
+              <span class="stat-pill def-pill">🛡️ 방어력 <b id="hud-def">2</b></span>
+            </div>
+          </div>
+        </div>
+        <!-- HP Bar -->
+        <div class="exp-bar-wrap">
+          <div class="exp-label"><span style="color:#f87171;">❤️ HP (체력)</span> <span id="side-hp-text">100 / 100</span></div>
+          <div class="exp-track">
+            <div id="side-hp-fill" class="hp-fill" style="width: 100%;"></div>
+          </div>
+        </div>
+        <!-- EXP Bar -->
+        <div class="exp-bar-wrap">
+          <div class="exp-label"><span>🌟 EXP (경험치)</span> <span id="side-exp-text">0 / 100</span></div>
+          <div class="exp-track">
+            <div id="side-exp-fill" class="exp-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Action Buttons Panel (A / B 대형 터치 버튼) -->
+      <section class="side-card action-card">
+        <div class="action-buttons-grid">
+          <button id="btn-action-a" class="act-btn btn-a">
+            <span class="btn-letter">A</span>
+            <span class="btn-sub">조사 / 대화 / 진입</span>
+          </button>
+          <button id="btn-action-b" class="act-btn btn-b">
+            <span class="btn-letter">B</span>
+            <span class="btn-sub">달리기 (Dash)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. Navigation Menu Tabs -->
+      <section class="side-card menu-card">
+        <div class="menu-btn-grid" id="student-menu-grid">
+          <button class="menu-btn" id="btn-inventory">🎒 가방</button>
+          <button class="menu-btn" id="btn-equipment">🛡️ 장비창</button>
+        </div>
+      </section>
+
+      <!-- GM Teacher Control Card (Shown ONLY when connecting as Teacher Admin) -->
+      <section class="side-card gm-card hidden" id="gm-panel">
+        <div class="gm-title">👑 선생님 전용 마스터 기능</div>
+        <div class="gm-btn-grid">
+          <button class="gm-btn" id="btn-gm-noclip">⚡ 공간돌파(벽통과): OFF</button>
+          <select class="gm-select" id="select-gm-warp">
+            <option value="">🚀 공간 즉시 이동 (순간이동)</option>
+            <option value="7_hallway">1학년 복도</option>
+            <option value="7_room_701">1학년 1반 교실</option>
+            <option value="7_room_702">1학년 2반 교실</option>
+          </select>
+          <button class="gm-btn teacher-admin-btn" id="btn-gm-boss-event" style="background:linear-gradient(135deg,#991b1b,#dc2626); border-color:#fca5a5;">👾 보스레이드 이벤트 시작/설정</button>
+          <button class="gm-btn teacher-admin-btn" id="btn-teacher">👩‍🏫 교사 실시간 관제탑</button>
+        </div>
+      </section>
+
+      <!-- 4. Real-time Chat & Quick English Phrases -->
+      <section class="side-card chat-card">
+        <div class="chat-header">
+          <span>💬 학교 실시간 소통</span>
+        </div>
+        <div id="chat-messages" class="side-chat-logs"></div>
+        
+        <!-- Quick English Buttons -->
+        <div id="quick-phrases" class="side-quick-phrases">
+          <button class="quick-btn" data-text="Hello!">"Hello!" 👋</button>
+          <button class="quick-btn" data-text="Help me!">"Help me!" 🆘</button>
+          <button class="quick-btn" data-text="Good job!">"Good job!" 👍</button>
+          <button class="quick-btn" data-text="Follow me!">"Follow me!" 🏃</button>
+        </div>
+
+        <div id="chat-input-row" class="side-chat-input-row">
+          <input type="text" id="chat-input" placeholder="메시지 입력 (비속어 필터)..." maxlength="60">
+          <button id="btn-send-chat">전송</button>
+        </div>
+      </section>
+    </aside>
+
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Login / Server Selection Modal -->
+  <div id="modal-login" class="modal-overlay">
+    <div class="modal-card login-card">
+      <div class="modal-header">
+        <h2>🏫 숭실중학교 영어 오픈월드 RPG</h2>
+        <p class="subtitle">교훈: 참과 사랑에 사는 사명인 · Soongsil English World</p>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="input-student-id">학번</label>
+          <input type="text" id="input-student-id" placeholder="예: 10315" value="10101">
+        </div>
+        <div class="input-group">
+          <label for="input-nickname">이름 (닉네임)</label>
+          <input type="text" id="input-nickname" placeholder="이름을 입력하세요" value="김숭실">
+        </div>
+        <div class="input-group">
+          <label>접속 서버</label>
+          <div class="server-options">
+            <label class="server-radio active" style="width:100%; cursor:default;">
+              <input type="radio" name="server-grade" value="1" checked style="display:none;">
+              <div class="server-box" style="width:100%; border-color:#22c55e; background:rgba(34, 197, 94, 0.1);">
+                <span class="server-title" style="color:#4ade80;">🌱 1학년 통합 서버 (정상 가동 중 · 1~4단원)</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        <input type="hidden" id="selected-avatar" value="student_m1">
+
+        <!-- Teacher Login Toggle (Discreet) -->
+        <div class="teacher-toggle-box">
+          <label class="teacher-toggle-label">
+            <input type="checkbox" id="check-is-teacher">
+            <span>🔒 교사(관리자) 계정으로 접속</span>
+          </label>
+          <div id="teacher-pwd-field" class="teacher-pwd-field hidden">
+            <input type="password" id="input-teacher-pwd" placeholder="교사 인증 암호 입력">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-start-game" class="btn-primary">숭실 오픈월드 입장하기 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Word Quiz Modal (Resource Gathering) -->
+  <div id="modal-quiz" class="modal-overlay hidden">
+    <div class="modal-card quiz-card">
+      <div class="modal-header quiz-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="quiz-unit-badge" id="quiz-unit">1단원</span>
+          <h3 id="quiz-title">영단어 퀴즈</h3>
+        </div>
+        <button class="btn-modal-close" id="btn-close-quiz-x">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="quiz-question-text" id="quiz-question">문제가 여기에 표시됩니다.</p>
+        <div class="quiz-options-grid" id="quiz-options"></div>
+        <div id="quiz-feedback" class="quiz-feedback hidden">
+          <div id="feedback-icon">🎉</div>
+          <p id="feedback-text">정답입니다!</p>
+          <p id="feedback-explanation">해설이 들어갑니다.</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; gap:10px;">
+        <button id="btn-close-quiz" class="btn-secondary">나가기</button>
+        <button id="btn-next-quiz" class="btn-primary">다음 문제 ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Crafting Modal (Sentence Unscramble) -->
+  <div id="modal-crafting" class="modal-overlay hidden">
+    <div class="modal-card crafting-card">
+      <div class="modal-header">
+        <h3>🔨 숭실 제작대 (Sentence Crafting)</h3>
+        <button class="btn-modal-close" id="btn-close-craft-x">✕</button>
+      </div>
+      <div class="modal-body crafting-body">
+        <div class="recipe-list-col" id="recipe-list"></div>
+        <div class="crafting-detail-col" id="craft-workspace">
+          <div class="recipe-detail-header">
+            <span class="recipe-detail-icon" id="craft-icon">📖</span>
+            <div>
+              <h4 id="craft-name">영단어 마스터 노트</h4>
+              <p id="craft-desc">설명</p>
+            </div>
+          </div>
+          <div class="craft-materials" id="craft-materials"></div>
+          <div class="unscramble-puzzle-box">
+            <p class="unscramble-instruction">💡 <b>생산 미션</b>: 우리말 뜻에 맞게 영어 단어 블록을 올바른 순서로 터치하세요!</p>
+            <p class="korean-target-sentence" id="target-korean-sentence">"나는 매일 영어를 공부한다."</p>
+            <div class="slots-container" id="unscramble-slots"></div>
+            <div class="word-bank" id="unscramble-word-bank"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-check-craft" class="btn-primary">제작 완성하기! ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Inventory Modal (가방) -->
+  <div id="modal-inventory" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🎒 가방</h3>
+        <button class="btn-modal-close" id="btn-close-inv-x">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="inv-stats">
+          <span>🪙 골드: <b id="inv-gold-display">10 G</b></span>
+          <span>⚔️ 공격력: <b id="inv-atk-display">10</b> / 🛡️ 방어력: <b id="inv-def-display">2</b></span>
+        </div>
+        <div class="inv-grid" id="inv-items-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-B. Equipment Modal (장비창) -->
+  <div id="modal-equipment" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🛡️ 장비창</h3>
+        <button class="btn-modal-close" id="btn-close-equip-x">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="equip-summary-bar">
+          <span>❤️ 최대 체력: <b id="equip-total-hp">100</b></span>
+          <span>⚔️ 총 공격력: <b id="equip-total-atk">10</b></span>
+          <span>🛡️ 총 방어력: <b id="equip-total-def">2</b></span>
+        </div>
+        <div class="equip-slots-grid" id="equip-slots-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-C. Season 1 Boss Raid Modal (1학년 2반 보스 레이드 전투창) -->
+  <div id="modal-boss-raid" class="modal-overlay hidden">
+    <div class="modal-card quiz-card boss-raid-card">
+      <div class="modal-header boss-raid-header">
+        <div>
+          <span class="quiz-unit-badge" style="background:#dc2626; color:#fff;">⚔️ 1학년 2반 시즌1 보스 레이드</span>
+          <h3 id="boss-raid-title">👾 망각의 고목 골렘 (Lv.10)</h3>
+        </div>
+        <button class="btn-modal-close" id="btn-close-boss-x">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Boss HP Bar -->
+        <div class="boss-status-box">
+          <div class="boss-hp-header">
+            <span id="boss-name-label">👾 망각의 고목 골렘</span>
+            <span id="boss-hp-text">HP 300 / 300</span>
+          </div>
+          <div class="boss-hp-track">
+            <div id="boss-hp-fill" class="boss-hp-fill" style="width:100%;"></div>
+          </div>
+        </div>
+
+        <!-- Player Combat Stats & Potion Button -->
+        <div class="player-raid-bar">
+          <div class="player-raid-stats">
+            <span>❤️ 내 체력: <b id="raid-player-hp">100 / 100</b></span>
+            <span>⚔️ 공격력: <b id="raid-player-atk">10</b></span>
+            <span>🛡️ 방어력: <b id="raid-player-def">2</b></span>
+          </div>
+          <div class="raid-potion-group" style="display:flex; gap:6px;">
+            <button id="btn-raid-use-red-potion" class="btn-potion-use" style="flex:1;">🍷 빨간 물약 (+10) 0개</button>
+            <button id="btn-raid-use-orange-potion" class="btn-potion-use" style="flex:1; background:#c2410c; border-color:#fb923c;">🧪 주황 물약 (+25) 0개</button>
+            <button id="btn-raid-use-revive-scroll" class="btn-potion-use" style="flex:1; background:#4338ca; border-color:#818cf8;">📜 부활 주문서 0개</button>
+          </div>
+        </div>
+
+        <!-- Battle Log / Question Box -->
+        <div id="raid-battle-log" class="raid-battle-log">
+          ⚔️ 영어 문제를 맞히면 내 <b>공격력(ATK)</b>만큼 보스에게 데미지를 입힙니다!
+        </div>
+
+        <p class="quiz-question-text" id="raid-quiz-question">문제가 여기에 표시됩니다.</p>
+        <div class="quiz-options-grid" id="raid-quiz-options"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-raid-next-turn" class="btn-primary hidden">다음 공격 턴 진행 ⚔️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 1:1 Trade Modal -->
+  <div id="modal-trade" class="modal-overlay hidden">
+    <div class="modal-card trade-card">
+      <div class="modal-header">
+        <h3>🤝 1:1 아이템 & 골드 교환</h3>
+        <button class="btn-modal-close" id="btn-close-trade-x">✕</button>
+      </div>
+      <div class="modal-body trade-grid">
+        <div class="trade-side">
+          <h4>내 제안 (<span id="trade-my-name">나</span>)</h4>
+          <div class="trade-box" id="trade-my-box">
+            <p>교환할 아이템을 등록하세요</p>
+          </div>
+          <div class="trade-gold-input">
+            <label>제안 골드: <input type="number" id="trade-my-gold" value="0" min="0"></label>
+          </div>
+        </div>
+        <div class="trade-side">
+          <h4>친구 제안 (<span id="trade-partner-name">친구</span>)</h4>
+          <div class="trade-box" id="trade-partner-box">
+            <p>상대방의 제안을 기다리는 중...</p>
+          </div>
+          <div class="trade-gold-display">
+            <span>제안 골드: <b id="trade-partner-gold">0 G</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-confirm-trade" class="btn-primary">교환 완료 동의</button>
+        <button id="btn-cancel-trade" class="btn-secondary">교환 취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Teacher Moderation Modal -->
+  <div id="modal-teacher" class="modal-overlay hidden">
+    <div class="modal-card teacher-card">
+      <div class="modal-header">
+        <h3>👩‍🏫 숭실 교사 실시간 관제탑 (Teacher Control Tower)</h3>
+        <button class="btn-modal-close" id="btn-close-teacher-x">✕</button>
+      </div>
+      <div class="modal-body teacher-body">
+        <div class="teacher-tab-row">
+          <button class="tab-btn active" data-tab="tab-boss-raid">👾 보스레이드 이벤트</button>
+          <button class="tab-btn" data-tab="tab-students">👥 학생 관리 & 아이템 지급</button>
+          <button class="tab-btn" data-tab="tab-chat">실시간 채팅</button>
+          <button class="tab-btn" data-tab="tab-broadcast">전체 공지</button>
+          <button class="tab-btn" data-tab="tab-quiz-manage">문제 관리</button>
+          <button class="tab-btn" data-tab="tab-economy">🎲 경제/드랍율</button>
+        </div>
+
+        <div class="tab-pane active" id="tab-boss-raid">
+          <div class="quiz-manage-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="margin:0;">👾 시즌1 보스레이드 이벤트 컨트롤러</h4>
+              <span id="admin-boss-status-badge" style="font-size:12px; font-weight:800; padding:4px 10px; border-radius:999px; background:#334155; color:#cbd5e1;">⏳ 대기중 (비활성)</span>
+            </div>
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#fca5a5;">보스 프리셋 선택
+                <select id="admin-boss-preset">
+                  <option value="golem">👾 고목 골렘 (10인 권장 · HP 1500 / ATK 17 / DEF 8)</option>
+                  <option value="dragon">🐉 숭실 골드 드래곤 (20인 권장 · HP 4000 / ATK 28 / DEF 10)</option>
+                  <option value="demon">👹 중간고사 대마왕 (처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
+                  <option value="custom">⚙️ 직접 입력</option>
+                </select>
+              </label>
+              <label style="flex:1; font-size:12px; color:#fca5a5;">보스 이름
+                <input type="text" id="admin-boss-name" value="👾 고목 골렘">
+              </label>
+            </div>
+            <p style="font-size:11.5px; color:#fde047; margin:2px 0 8px;">💡 인원수는 권장사항이며, 실제 접속 학생 수(1명~전교생)와 무관하게 교사가 [시작]을 누르면 즉시 레이드가 열립니다.</p>
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#fde047;">레이드 진행 방식
+                <select id="admin-boss-mode">
+                  <option value="coop">🤝 전교생 협동 레이드 (보스 HP 실시간 공유)</option>
+                  <option value="solo">⚔️ 개인별 단독 레이드 (각자 보스 처치)</option>
+                </select>
+              </label>
+              <label style="flex:1; font-size:12px; color:#60a5fa;">출제 단원 범위
+                <select id="admin-boss-unit">
+                  <option value="ALL">📚 전체 단원 (1~4단원 통합)</option>
+                  <option value="L1">🪵 1단원만 (L1. Finding Me)</option>
+                  <option value="L2">🌿 2단원만 (L2. I Love My School)</option>
+                  <option value="L3">🌼 3단원만 (L3. Let's Go Green!)</option>
+                  <option value="L4">🍂 4단원만 (L4. Words of Wisdom)</option>
+                </select>
+              </label>
+            </div>
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#f87171;">보스 최대 체력 (HP)
+                <input type="number" id="admin-boss-hp" value="1500" min="50" max="999999" step="100">
+              </label>
+              <label style="flex:1; font-size:12px; color:#fb923c;">보스 공격력 (ATK)
+                <input type="number" id="admin-boss-atk" value="17" min="1" max="9999">
+              </label>
+              <label style="flex:1; font-size:12px; color:#93c5fd;">보스 방어력 (DEF)
+                <input type="number" id="admin-boss-def" value="8" min="0" max="9999">
+              </label>
+            </div>
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#fde047;">처치 보상 골드 (G)
+                <input type="number" id="admin-boss-gold" value="100" min="0" max="100000">
+              </label>
+              <label style="flex:1; font-size:12px; color:#34d399;">처치 보상 경험치 (EXP)
+                <input type="number" id="admin-boss-exp" value="200" min="0" max="100000">
+              </label>
+            </div>
+            <div style="display:flex; gap:16px; margin:6px 0 10px; font-size:12px; color:#e2e8f0;">
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="admin-boss-announce" checked>
+                <span>📢 전교생 레이드 오픈 공지 배너 띄우기</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" id="admin-boss-summon">
+                <span>🚀 접속 중인 학생 전원 1학년 2반으로 즉시 소환</span>
+              </label>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button id="btn-start-boss-event" class="btn-primary" style="flex:2; background:linear-gradient(135deg,#dc2626,#991b1b);">🔥 보스레이드 이벤트 시작!</button>
+              <button id="btn-stop-boss-event" class="btn-secondary" style="flex:1;">⏹️ 레이드 종료</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-students">
+          <div class="quiz-manage-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="margin:0;">👥 접속 중인 학생 실시간 관리</h4>
+              <span id="admin-student-count-badge" style="font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px; background:#1e3a8a; color:#93c5fd;">접속자 0명</span>
+            </div>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">수업을 방해하는 학생의 채팅을 금지하거나 서버에서 즉시 강제 퇴장(강퇴)시킬 수 있습니다.</p>
+            <div id="admin-student-list" style="max-height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+              <p style="color:#64748b; font-size:12px; text-align:center; padding:15px;">접속 중인 학생이 없습니다.</p>
+            </div>
+          </div>
+
+          <!-- Teacher Special Item Grant Panel -->
+          <div class="quiz-manage-box" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="margin:0; color:#fde047;">🎁 학생 아이템 & 골드 특별 지급소</h4>
+              <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:2px 8px; border-radius:4px;">👑 교사 전용</span>
+            </div>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">학생 1:1 교환 대신 교사가 학생(또는 전교생)에게 원하는 아이템과 수량을 직접 세심하게 지급합니다.</p>
+
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#60a5fa;">지급 대상 학생
+                <select id="admin-grant-target">
+                  <option value="ALL">📢 [전체 학생] 접속 중인 모든 학생에게 일괄 지급</option>
+                </select>
+              </label>
+              <label style="flex:1; font-size:12px; color:#fde047;">지급 항목
+                <select id="admin-grant-item">
+                  <optgroup label="🪙 재화">
+                    <option value="gold">🪙 골드 (Gold)</option>
+                  </optgroup>
+                  <optgroup label="🪵 기본 채집 재료">
+                    <option value="item_wood">🪵 단단한 목재 (1단원)</option>
+                    <option value="item_herb">🌿 향긋한 허브 (2단원)</option>
+                    <option value="item_forsythia">🌼 노란 개나리 꽃잎 (3단원)</option>
+                    <option value="item_ginkgo">🍂 황금 은행잎 (4단원)</option>
+                  </optgroup>
+                  <optgroup label="🟢 보스 전리품 (상위 제작 재료)">
+                    <option value="item_golem_core">🟢 고목의 핵 (골렘 전리품)</option>
+                    <option value="item_dragon_heart">❤️‍🔥 용의 심장 (드래곤 전리품)</option>
+                  </optgroup>
+                  <optgroup label="🧪 회복 물약 & 부활 주문서">
+                    <option value="item_red_potion">🍷 빨간 물약 (HP +10 회복)</option>
+                    <option value="item_orange_potion">🧪 주황 물약 (HP +25 회복)</option>
+                    <option value="item_revive_scroll">📜 부활 주문서 (동료 50% 부활)</option>
+                  </optgroup>
+                  <optgroup label="🛡️ 1학년 기본 나무 장비">
+                    <option value="equip_wood_sword">🗡️ 나무검 (ATK +15)</option>
+                    <option value="equip_wood_helmet">🪖 나무투구 (DEF +8, HP +20)</option>
+                    <option value="equip_wood_armor">🛡️ 나무갑옷 (DEF +15, HP +50)</option>
+                    <option value="equip_forsythia_ring">🌼 성실의 개나리 반지 (ATK/DEF +10, HP +20)</option>
+                    <option value="equip_ginkgo_talisman">🍂 합심의 황금 은행잎 부적 (ATK +20, DEF +12, HP +40)</option>
+                  </optgroup>
+                  <optgroup label="⚔️ 상위 청동 장비 (보스 드랍제)">
+                    <option value="equip_bronze_sword">⚔️ 청동검 (ATK +25)</option>
+                    <option value="equip_bronze_helmet">🪖 청동투구 (DEF +14, HP +35)</option>
+                    <option value="equip_bronze_armor">🛡️ 청동갑옷 (DEF +22, HP +70)</option>
+                  </optgroup>
+                </select>
+              </label>
+            </div>
+
+            <!-- 세심한 수량 조절 버튼 그룹 -->
+            <div style="margin-bottom:8px;">
+              <label style="font-size:12px; color:#34d399; display:block; margin-bottom:4px;">지급 수량 설정 (직접 입력 또는 프리셋 버튼 클릭)</label>
+              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                <input type="number" id="admin-grant-count" value="1" min="1" max="9999" style="width:90px; padding:6px; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:4px; font-weight:bold; text-align:center;">
+                <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="window.MainApp.setGrantCount(1)">1개</button>
+                <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="window.MainApp.addGrantCount(5)">+5</button>
+                <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="window.MainApp.addGrantCount(10)">+10</button>
+                <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="window.MainApp.addGrantCount(50)">+50</button>
+                <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="window.MainApp.setGrantCount(100)">100개</button>
+                <button type="button" class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="window.MainApp.setGrantCount(999)">999개</button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#cbd5e1;">지급 사유 / 칭찬 메시지 (선택)
+                <input type="text" id="admin-grant-reason" placeholder="예: 1단원 퀴즈 성실 참여 보상!">
+              </label>
+            </div>
+
+            <button id="btn-admin-grant-item" class="btn-primary" style="width:100%; margin-top:6px; background:linear-gradient(135deg,#059669,#10b981);">🎁 선택한 학생에게 즉시 아이템/골드 지급</button>
+          </div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-chat">
+          <div class="admin-chat-list" id="admin-chat-logs"></div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-broadcast">
+          <div class="broadcast-box">
+            <label for="input-broadcast">전교생 화면에 띄울 공지사항 입력</label>
+            <input type="text" id="input-broadcast" placeholder="예: 지금 모두 2층 도서관으로 모이세요!">
+            <button id="btn-send-broadcast" class="btn-primary">긴급 공지 전송 📢</button>
+          </div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-quiz-manage">
+          <div class="quiz-manage-box">
+            <h4>새 퀴즈 등록</h4>
+            <div class="input-row">
+              <select id="admin-q-grade">
+                <option value="1">1학년 풀</option>
+                <option value="2">2학년 풀</option>
+                <option value="3">3학년 풀</option>
+              </select>
+              <input type="text" id="admin-q-unit" placeholder="단원 (예: 천재 L3)">
+            </div>
+            <textarea id="admin-q-question" placeholder="영어 문제 내용 입력..."></textarea>
+            <div class="input-row">
+              <input type="text" id="admin-q-opt1" placeholder="보기 1">
+              <input type="text" id="admin-q-opt2" placeholder="보기 2">
+            </div>
+            <div class="input-row">
+              <input type="text" id="admin-q-opt3" placeholder="보기 3">
+              <input type="text" id="admin-q-opt4" placeholder="보기 4">
+            </div>
+            <input type="text" id="admin-q-answer" placeholder="정답 텍스트">
+            <input type="text" id="admin-q-exp" placeholder="해설">
+            <button id="btn-save-new-quiz" class="btn-primary">퀴즈 데이터베이스 저장 💾</button>
+          </div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-economy">
+          <div class="quiz-manage-box">
+            <h4>🎲 1년 장기 운영용 경제 & 확률형 드랍 밸런스 조정</h4>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">퀴즈 정답 시 지급되는 최소 골드와 아이템 드랍 확률(%)을 즉시 조정할 수 있습니다.</p>
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#fde047;">최소 골드 (G)
+                <input type="number" id="admin-eco-min-gold" value="1" min="0" max="100">
+              </label>
+              <label style="flex:1; font-size:12px; color:#fde047;">최대 골드 (G)
+                <input type="number" id="admin-eco-max-gold" value="3" min="1" max="500">
+              </label>
+            </div>
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#60a5fa;">기본 아이템 드랍 확률 (%)
+                <input type="number" id="admin-eco-drop-rate" value="15" min="1" max="100" step="1">
+              </label>
+              <label style="flex:1; font-size:12px; color:#34d399;">기본 경험치 (EXP)
+                <input type="number" id="admin-eco-exp" value="5" min="1" max="200">
+              </label>
+            </div>
+            <button id="btn-save-economy" class="btn-primary">경제/드랍율 설정 즉시 적용 ✅</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/world.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/crafting.js"></script>
+  <script src="js/network.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

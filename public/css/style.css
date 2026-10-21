@@ -1,0 +1,1232 @@
+/* ========================================================
+   숭실중학교 영어 오픈월드 RPG (Soongsil World)
+   Galaxy Tab S7 FE (16:10) Split-Screen Optimized Layout
+   - Left (66%): 4:3 Retro GBC Pokemon Viewport & Left D-Pad
+   - Right (34%): Status Card, EXP, Large A/B Buttons, Menu, Chat
+   ======================================================== */
+
+:root {
+  --primary-navy: #1a365d;
+  --primary-accent: #2b6cb0;
+  --gold-accent: #d69e2e;
+  --ginkgo-yellow: #f6e05e;
+  --bg-dark: #121316;
+  --card-bg: #1e2024;
+  --card-border: #2d3036;
+  --text-light: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --btn-a: #16a34a;
+  --btn-a-active: #15803d;
+  --btn-b: #dc2626;
+  --btn-b-active: #b91c1c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+  font-family: 'Noto Sans KR', 'Jua', sans-serif;
+  color: var(--text-light);
+}
+
+/* ========================================================
+   MAIN CONTAINER (SPLIT 2-COLUMN LAYOUT)
+   ======================================================== */
+#game-container {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ----------------- LEFT: GAME VIEWPORT (71% - Slightly Larger) ----------------- */
+#game-viewport-col {
+  flex: 71;
+  height: 100vh;
+  background: #0f1012;
+  border-right: 3px solid #2d3036;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Header bar above canvas */
+#canvas-header-bar {
+  height: 44px;
+  background: #18191d;
+  border-bottom: 2px solid #2d3036;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 5;
+}
+
+.school-tag {
+  background: var(--primary-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.location-tag {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ginkgo-yellow);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(214, 158, 46, 0.4);
+}
+
+.floor-pill {
+  background: #d97706;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 3px 12px;
+  border-radius: 12px;
+}
+
+/* Canvas Viewport (4:3 Pokemon Retro Screen) */
+#canvas-wrapper {
+  flex: 1;
+  position: relative;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Interaction Prompt (A button hint) */
+#interaction-prompt {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid var(--ginkgo-yellow);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: pulsePrompt 1.4s infinite;
+  z-index: 20;
+}
+
+.key-badge {
+  background: var(--btn-a);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  border: 2px solid #fff;
+}
+
+/* Announcement Banner */
+#announcement-banner {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #b91c1c, #dc2626);
+  color: #fff;
+  border: 2px solid #fecaca;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 30;
+}
+
+/* Left Bottom D-Pad Area */
+#left-controls-bar {
+  height: 122px;
+  background: #15161a;
+  border-top: 2px solid #2d3036;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+#dpad-container {
+  width: 108px;
+  height: 108px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.dpad-btn {
+  position: absolute;
+  background: #2d3036;
+  color: #f4f4f5;
+  border: 2px solid #40444c;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.1s;
+}
+
+.dpad-btn:active {
+  background: #18191d;
+  border-color: #3b82f6;
+}
+
+.dpad-up { top: 0; left: 36px; width: 36px; height: 36px; }
+.dpad-down { bottom: 0; left: 36px; width: 36px; height: 36px; }
+.dpad-left { top: 36px; left: 0; width: 36px; height: 36px; }
+.dpad-right { top: 36px; right: 0; width: 36px; height: 36px; }
+.dpad-center { top: 36px; left: 36px; width: 36px; height: 36px; background: #1c1e22; border-radius: 50%; font-size: 12px; color: #71717a; }
+
+.touch-hint {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+/* ----------------- RIGHT: SIDEBAR DASHBOARD (29%) ----------------- */
+#game-sidebar-col {
+  flex: 29;
+  height: 100vh;
+  background: #18191d;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.side-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* 1. Status Card */
+.status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trainer-avatar {
+  width: 50px;
+  height: 50px;
+  background: #2563eb;
+  border: 2px solid #93c5fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.status-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge-lv {
+  background: var(--gold-accent);
+  color: #000;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.student-id-row {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.gold-row {
+  font-size: 14px;
+  color: #fcd34d;
+}
+
+.exp-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exp-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.exp-track {
+  height: 8px;
+  background: #2d3036;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.exp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  transition: width 0.3s;
+}
+
+/* 2. Large A / B Action Buttons (Galaxy Tab S7 FE Right Thumb Zone) */
+.action-card {
+  padding: 10px;
+}
+
+.action-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.act-btn {
+  height: 72px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  touch-action: manipulation;
+  transition: transform 0.1s, background 0.1s;
+}
+
+.act-btn:active {
+  transform: scale(0.96);
+}
+
+.btn-letter {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.btn-sub {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.btn-a {
+  background: var(--btn-a);
+}
+.btn-a:active {
+  background: var(--btn-a-active);
+}
+
+.btn-b {
+  background: var(--btn-b);
+}
+.btn-b:active {
+  background: var(--btn-b-active);
+}
+
+/* 3. Menu Buttons */
+.menu-card {
+  padding: 8px;
+}
+
+#student-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.menu-btn {
+  background: #272a30;
+  color: #e4e4e7;
+  border: 1.5px solid #3f434c;
+  border-radius: 8px;
+  padding: 9px 4px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.menu-btn:active {
+  background: #18191d;
+}
+
+/* GM Teacher Admin Panel */
+.gm-card {
+  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+  border: 2px solid #f59e0b;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+.gm-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gm-btn-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gm-btn {
+  background: #312e81;
+  color: #e0e7ff;
+  border: 1.5px solid #6366f1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.gm-btn:active {
+  transform: scale(0.97);
+}
+
+.gm-btn.active-noclip {
+  background: #059669;
+  border-color: #34d399;
+  color: #fff;
+}
+
+.gm-select {
+  background: #1e1b4b;
+  border: 1.5px solid #818cf8;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.teacher-admin-btn {
+  background: #991b1b;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+/* Teacher Login Toggle Box */
+.teacher-toggle-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed #4b5563;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.teacher-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.teacher-pwd-field input {
+  width: 100%;
+  background: #1e2024;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 13px;
+}
+
+/* 4. Side Chat & Quick Phrases */
+.chat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+}
+
+.chat-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 6px;
+}
+
+.side-chat-logs {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #2d3036;
+  border-radius: 8px;
+  padding: 6px 8px;
+  overflow-y: auto;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 150px;
+}
+
+.chat-bubble-row {
+  line-height: 1.35;
+}
+.chat-sender {
+  color: #60a5fa;
+  font-weight: 700;
+}
+.chat-text {
+  color: #f4f4f5;
+}
+
+.side-quick-phrases {
+  display: flex;
+  gap: 5px;
+  margin: 6px 0;
+  overflow-x: auto;
+}
+
+.quick-btn {
+  background: #272a30;
+  color: #cbd5e1;
+  border: 1px solid #3f434c;
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.quick-btn:active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.side-chat-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+#chat-input {
+  flex: 1;
+  background: #272a30;
+  border: 1px solid #3f434c;
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #fff;
+  font-size: 12px;
+}
+#chat-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+#btn-send-chat {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ========================================================
+   MODALS STYLING (UNCHANGED CORE LOGIC)
+   ======================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-card {
+  background: #18181b;
+  border: 2px solid #3f3f46;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  animation: popIn 0.2s ease-out;
+}
+
+.modal-header {
+  background: #27272a;
+  padding: 12px 18px;
+  border-bottom: 2px solid #3f3f46;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h2, .modal-header h3 {
+  font-size: 17px;
+  color: #f4f4f5;
+}
+
+.btn-modal-close {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-footer {
+  padding: 12px 18px;
+  background: #27272a;
+  border-top: 2px solid #3f3f46;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-primary:active {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #4b5563;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Login Modal */
+.login-card {
+  max-width: 480px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.input-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a1a1aa;
+}
+.input-group input {
+  background: #27272a;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 15px;
+}
+
+.server-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.server-radio {
+  cursor: pointer;
+}
+.server-radio input {
+  display: none;
+}
+.server-box {
+  background: #27272a;
+  border: 2px solid #3f3f46;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+.server-radio input:checked + .server-box {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.2);
+}
+.server-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Quiz Modal */
+.quiz-card {
+  max-width: 550px;
+}
+.quiz-unit-badge {
+  background: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+.quiz-question-text {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  font-weight: 700;
+  background: #27272a;
+  padding: 14px;
+  border-radius: 10px;
+  border-left: 4px solid #3b82f6;
+}
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+.quiz-opt-btn {
+  background: #3f3f46;
+  border: 2px solid #52525b;
+  border-radius: 10px;
+  padding: 14px 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.quiz-opt-btn:active {
+  transform: scale(0.97);
+}
+.quiz-opt-btn.correct {
+  background: #16a34a !important;
+  border-color: #22c55e !important;
+}
+.quiz-opt-btn.wrong {
+  background: #dc2626 !important;
+  border-color: #ef4444 !important;
+}
+
+.quiz-feedback {
+  background: #27272a;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  border: 2px solid #16a34a;
+}
+
+/* Crafting Modal */
+.crafting-card {
+  max-width: 780px;
+}
+.crafting-body {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  height: 400px;
+}
+.recipe-list-col {
+  width: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-right: 1px solid #3f3f46;
+  padding-right: 12px;
+}
+.recipe-item {
+  background: #27272a;
+  border: 2px solid #3f3f46;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.recipe-item.active {
+  border-color: var(--gold-accent);
+  background: rgba(214, 158, 46, 0.15);
+}
+.crafting-detail-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+.recipe-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.recipe-detail-icon {
+  font-size: 32px;
+}
+.craft-materials {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mat-badge {
+  background: #27272a;
+  border: 1px solid #52525b;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.unscramble-puzzle-box {
+  background: #27272a;
+  border: 2px solid #3b82f6;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.unscramble-instruction {
+  font-size: 13px;
+  color: #93c5fd;
+}
+.korean-target-sentence {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fef08a;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+.slots-container {
+  min-height: 48px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px dashed #52525b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+}
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 0;
+}
+.word-block {
+  background: #3f3f46;
+  border: 2px solid #60a5fa;
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.word-block:active {
+  transform: scale(0.95);
+}
+
+/* Teacher Moderation */
+.teacher-card {
+  max-width: 750px;
+}
+.teacher-tab-row {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #3f3f46;
+  padding-bottom: 8px;
+}
+.tab-btn {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  color: #a1a1aa;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #9b2c2c;
+  color: #fff;
+  border-color: #ef4444;
+}
+.admin-chat-list {
+  height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-chat-item {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.admin-action-btns {
+  display: flex;
+  gap: 6px;
+}
+.btn-mute {
+  background: #b91c1c;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.btn-del {
+  background: #4b5563;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes pulsePrompt {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ================= SEASON 1: COMBAT STATS, EQUIPMENT & BOSS RAID UI ================= */
+.combat-stat-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.stat-pill {
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.atk-pill {
+  background: rgba(220, 38, 38, 0.25);
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+.def-pill {
+  background: rgba(37, 99, 235, 0.25);
+  color: #93c5fd;
+  border-color: #3b82f6;
+}
+
+.hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #dc2626, #f87171);
+  transition: width 0.3s;
+}
+
+.btn-mini-equip {
+  background: #1d4ed8;
+  color: #ffffff;
+  border: 1.5px solid #60a5fa;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.equip-summary-bar {
+  display: flex;
+  justify-content: space-around;
+  background: #0f172a;
+  border: 1.5px solid #334155;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.equip-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.equip-slot-card {
+  background: #27272a;
+  border: 2px solid #3f3f46;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.equip-slot-card.equipped {
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #27272a 100%);
+}
+
+.equip-slot-header {
+  font-size: 12px;
+  font-weight: 800;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+}
+
+.equip-slot-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+
+.equip-slot-icon {
+  font-size: 30px;
+}
+
+.equip-slot-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.equip-slot-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.equip-slot-effect {
+  font-size: 12px;
+  color: #fde047;
+  font-weight: 700;
+}
+
+.btn-item-action {
+  margin-top: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-equip-on {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-equip-off {
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.btn-use-potion {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+/* Boss Raid Modal Styles */
+.boss-raid-card {
+  border-color: #ef4444;
+  max-width: 680px;
+}
+
+.boss-raid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.boss-status-box {
+  background: #1f1215;
+  border: 2px solid #dc2626;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.boss-hp-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 900;
+  color: #fca5a5;
+}
+
+.boss-hp-track {
+  height: 16px;
+  background: #3f1d24;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #7f1d1d;
+}
+
+.boss-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #991b1b, #ef4444, #f87171);
+  transition: width 0.3s ease;
+}
+
+.player-raid-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  border: 1.5px solid #334155;
+  border-radius: 10px;
+  padding: 10px 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.player-raid-stats {
+  display: flex;
+  gap: 14px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #e2e8f0;
+}
+
+.btn-potion-use {
+  background: #15803d;
+  color: #ffffff;
+  border: 1.5px solid #4ade80;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-potion-use:disabled {
+  background: #3f3f46;
+  border-color: #52525b;
+  color: #a1a1aa;
+  cursor: not-allowed;
+}
+
+.raid-battle-log {
+  background: #27272a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: #fef08a;
+  line-height: 1.45;
+}

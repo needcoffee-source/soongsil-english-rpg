@@ -1,0 +1,140 @@
+{
+  "floors": {
+    "7": {
+      "level": 7,
+      "name": "7층 (1학년 구역)",
+      "subtitle": "1학년 1반 ~ 6반 교실",
+      "description": "파릇파릇한 1학년 학생들이 활기차게 영어를 배우는 교실 층입니다.",
+      "rooms": [
+        { "id": "room_701", "name": "1학년 1반", "x": 100, "y": 140, "w": 180, "h": 140, "color": "#4a90e2", "grade": 1 },
+        { "id": "room_702", "name": "1학년 2반", "x": 320, "y": 140, "w": 180, "h": 140, "color": "#4a90e2", "grade": 1 },
+        { "id": "room_703", "name": "1학년 3반", "x": 540, "y": 140, "w": 180, "h": 140, "color": "#4a90e2", "grade": 1 },
+        { "id": "room_704", "name": "1학년 4반", "x": 100, "y": 380, "w": 180, "h": 140, "color": "#4a90e2", "grade": 1 },
+        { "id": "room_705", "name": "1학년 5반", "x": 320, "y": 380, "w": 180, "h": 140, "color": "#4a90e2", "grade": 1 },
+        { "id": "room_706", "name": "1학년 6반", "x": 540, "y": 380, "w": 180, "h": 140, "color": "#4a90e2", "grade": 1 }
+      ],
+      "npcs": [
+        { "id": "npc_mentor_1", "name": "1학년 멘토 선배", "x": 400, "y": 320, "dialogue": "안녕! 7층은 우리 1학년들의 교실이야. 교실 책상과 사물함에서 영어 단어 퀴즈를 맞추면 기초 자원을 모을 수 있어!", "questId": "q_g1_start" }
+      ],
+      "interactive": [
+        { "id": "desk_701", "type": "resource", "x": 180, "y": 200, "name": "1반 영단어 연구 책상", "poolGrade": 1 },
+        { "id": "board_703", "type": "resource", "x": 620, "y": 170, "name": "3반 칠판 퀴즈", "poolGrade": 1 },
+        { "id": "craft_table_7", "type": "crafting", "x": 750, "y": 320, "name": "1학년 제작대 (Crafting Table)" }
+      ]
+    },
+    "6": {
+      "level": 6,
+      "name": "6층 (교무실 & 2학년 4~6반)",
+      "subtitle": "선생님들의 교무실과 2학년 4, 5, 6반",
+      "description": "열정적인 선생님들이 계시는 교무실과 의젓해진 2학년 4,5,6반 교실이 있습니다.",
+      "rooms": [
+        { "id": "room_600", "name": "본교무실 (Teachers' Office)", "x": 100, "y": 140, "w": 280, "h": 160, "color": "#e67e22", "type": "office" },
+        { "id": "room_604", "name": "2학년 4반", "x": 420, "y": 140, "w": 160, "h": 140, "color": "#27ae60", "grade": 2 },
+        { "id": "room_605", "name": "2학년 5반", "x": 600, "y": 140, "w": 160, "h": 140, "color": "#27ae60", "grade": 2 },
+        { "id": "room_606", "name": "2학년 6반", "x": 600, "y": 380, "w": 160, "h": 140, "color": "#27ae60", "grade": 2 }
+      ],
+      "npcs": [
+        { "id": "npc_eng_teacher", "name": "영어 선생님 (English Teacher)", "x": 230, "y": 210, "dialogue": "Welcome to Soongsil! 퀴즈를 풀고 얻은 재료들로 제작대에서 더 좋은 학용품을 만들어보렴. 친구들과 교환도 가능하단다!", "questId": "q_teacher_daily" }
+      ],
+      "interactive": [
+        { "id": "desk_teacher", "type": "resource", "x": 230, "y": 170, "name": "선생님 영어 연구 교재", "poolGrade": 2 },
+        { "id": "craft_table_6", "type": "crafting", "x": 440, "y": 320, "name": "2학년 중급 제작대" }
+      ]
+    },
+    "5": {
+      "level": 5,
+      "name": "5층 (진로실 & 2학년 1~3반 & 3학년 5~6반)",
+      "subtitle": "미래를 설계하는 진로실과 학년 연합 구역",
+      "description": "진로실에서 미래의 꿈을 영어로 설계하고, 2학년과 3학년이 함께 생활하는 층입니다.",
+      "rooms": [
+        { "id": "room_500", "name": "진로상담실 (Career Center)", "x": 100, "y": 140, "w": 220, "h": 150, "color": "#9b59b6", "type": "special" },
+        { "id": "room_501", "name": "2학년 1반", "x": 360, "y": 140, "w": 160, "h": 140, "color": "#27ae60", "grade": 2 },
+        { "id": "room_502", "name": "2학년 2반", "x": 540, "y": 140, "w": 160, "h": 140, "color": "#27ae60", "grade": 2 },
+        { "id": "room_503", "name": "2학년 3반", "x": 100, "y": 380, "w": 180, "h": 140, "color": "#27ae60", "grade": 2 },
+        { "id": "room_505", "name": "3학년 5반", "x": 320, "y": 380, "w": 180, "h": 140, "color": "#c0392b", "grade": 3 },
+        { "id": "room_506", "name": "3학년 6반", "x": 540, "y": 380, "w": 180, "h": 140, "color": "#c0392b", "grade": 3 }
+      ],
+      "npcs": [
+        { "id": "npc_career_counselor", "name": "진로 선생님", "x": 200, "y": 200, "dialogue": "미래에 어떤 꿈을 갖고 있니? 영어로 너의 비전(Vision)을 표현해볼까?", "questId": "q_career_dream" }
+      ],
+      "interactive": [
+        { "id": "career_board", "type": "resource", "x": 150, "y": 170, "name": "미래 직업 영단어 사전", "poolGrade": 2 },
+        { "id": "craft_table_5", "type": "crafting", "x": 730, "y": 320, "name": "진로 연합 제작대" }
+      ]
+    },
+    "4": {
+      "level": 4,
+      "name": "4층 (생활안전부 · 행정실 · 교장실 & 3학년 1~4반)",
+      "subtitle": "학교 행정 중심부와 최고 학년 3학년 구역",
+      "description": "교장실과 행정실, 그리고 고입과 졸업을 준비하는 3학년 1반~4반이 자리 잡고 있습니다.",
+      "rooms": [
+        { "id": "room_401_admin", "name": "행정실 & 생활안전부", "x": 100, "y": 140, "w": 200, "h": 140, "color": "#34495e", "type": "admin" },
+        { "id": "room_400_princ", "name": "교장실 (Principal's Office)", "x": 320, "y": 140, "w": 160, "h": 140, "color": "#f39c12", "type": "principal" },
+        { "id": "room_401", "name": "3학년 1반", "x": 500, "y": 140, "w": 150, "h": 140, "color": "#c0392b", "grade": 3 },
+        { "id": "room_402", "name": "3학년 2반", "x": 670, "y": 140, "w": 150, "h": 140, "color": "#c0392b", "grade": 3 },
+        { "id": "room_403", "name": "3학년 3반", "x": 200, "y": 380, "w": 180, "h": 140, "color": "#c0392b", "grade": 3 },
+        { "id": "room_404", "name": "3학년 4반", "x": 420, "y": 380, "w": 180, "h": 140, "color": "#c0392b", "grade": 3 }
+      ],
+      "npcs": [
+        { "id": "npc_principal", "name": "교장 선생님", "x": 400, "y": 200, "dialogue": "성실(Faith)과 봉사(Service)! 배움에 정진하여 세계로 뻗어나가는 숭실인이 됩시다.", "questId": "q_principal_blessing" }
+      ],
+      "interactive": [
+        { "id": "admin_safe_board", "type": "resource", "x": 180, "y": 170, "name": "생활 규정 영문 게시판", "poolGrade": 3 },
+        { "id": "craft_table_4", "type": "crafting", "x": 700, "y": 380, "name": "3학년 최고급 제작대" }
+      ]
+    },
+    "3": {
+      "level": 3,
+      "name": "3층 (보건실 & Wee클래스)",
+      "subtitle": "몸과 마음을 회복하는 힐링 구역",
+      "description": "아플 땐 보건실, 마음의 고민이 있을 땐 Wee클래스에서 따뜻한 안식을 찾습니다.",
+      "rooms": [
+        { "id": "room_301_health", "name": "보건실 (Health Care)", "x": 120, "y": 150, "w": 280, "h": 180, "color": "#1abc9c", "type": "clinic" },
+        { "id": "room_302_wee", "name": "Wee클래스 (Counseling)", "x": 460, "y": 150, "w": 280, "h": 180, "color": "#16a085", "type": "wee" }
+      ],
+      "npcs": [
+        { "id": "npc_nurse", "name": "보건 선생님", "x": 250, "y": 240, "dialogue": "어디 아픈 곳은 없니? 따뜻한 차 한 잔 마시고 쉬어가렴. (퀴즈 성공 시 건강 회복 포션 증정!)", "questId": "q_health_boost" },
+        { "id": "npc_counselor_wee", "name": "상담 선생님", "x": 600, "y": 240, "dialogue": "걱정거리가 있다면 언제든 편하게 털어놓으렴.", "questId": "q_wee_peace" }
+      ],
+      "interactive": [
+        { "id": "herb_cabinet", "type": "resource", "x": 340, "y": 180, "name": "약초 및 의약 영단어함", "poolGrade": 1 }
+      ]
+    },
+    "2": {
+      "level": 2,
+      "name": "2층 (도서관)",
+      "subtitle": "지혜의 보고, 숭실 도서관",
+      "description": "수많은 영어 원서와 지식의 보고가 가득한 조용하고 아름다운 도서관입니다.",
+      "rooms": [
+        { "id": "room_201_lib", "name": "숭실 도서관 (Soongsil Library)", "x": 100, "y": 120, "w": 650, "h": 400, "color": "#8e44ad", "type": "library" }
+      ],
+      "npcs": [
+        { "id": "npc_librarian", "name": "사서 선생님", "x": 200, "y": 200, "dialogue": "책 속에는 더 넓은 세상이 있단다. 영어 원서를 읽고 독해 퀴즈를 풀어보겠니?", "questId": "q_library_reading" }
+      ],
+      "interactive": [
+        { "id": "bookshelf_classics", "type": "resource", "x": 350, "y": 180, "name": "영어 고전 명작 서가", "poolGrade": 2 },
+        { "id": "bookshelf_science", "type": "resource", "x": 550, "y": 180, "name": "과학 & 인문학 영어 서가", "poolGrade": 3 },
+        { "id": "bookshelf_story", "type": "resource", "x": 350, "y": 380, "name": "재미있는 영단어 스토리북", "poolGrade": 1 },
+        { "id": "craft_table_2", "type": "crafting", "x": 650, "y": 380, "name": "도서관 지식 연성대" }
+      ]
+    },
+    "1": {
+      "level": 1,
+      "name": "1층 (급식실 & 중앙 현관)",
+      "subtitle": "활기찬 급식실과 학교 정문 로비",
+      "description": "맛있는 냄새가 솔솔 풍기는 급식실과 숭실중학교 학생들의 출입구입니다.",
+      "rooms": [
+        { "id": "room_101_cafeteria", "name": "학생 급식실 (Cafeteria)", "x": 100, "y": 120, "w": 400, "h": 380, "color": "#d35400", "type": "cafeteria" },
+        { "id": "room_102_lobby", "name": "중앙 로비 & 정문 현관", "x": 530, "y": 120, "w": 250, "h": 380, "color": "#7f8c8d", "type": "lobby" }
+      ],
+      "npcs": [
+        { "id": "npc_chef", "name": "영양사 선생님", "x": 280, "y": 200, "dialogue": "오늘 급식 메뉴는 무엇일까요? 음식 영단어 퀴즈를 맞추면 맛있는 간식 아이템을 줄게요!", "questId": "q_lunch_quiz" },
+        { "id": "npc_greeter", "name": "학생회 환영 도우미", "x": 650, "y": 260, "dialogue": "숭실중학교 오픈월드에 온 것을 환영합니다! 엘리베이터나 계단을 타고 1층부터 7층까지 자유롭게 이동해 보세요.", "questId": "q_welcome" }
+      ],
+      "interactive": [
+        { "id": "lunch_counter", "type": "resource", "x": 220, "y": 280, "name": "오늘의 맛있는 급식 배식대", "poolGrade": 1 },
+        { "id": "snack_machine", "type": "resource", "x": 420, "y": 280, "name": "영단어 자판기", "poolGrade": 1 }
+      ]
+    }
+  }
+}

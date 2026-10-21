@@ -1,0 +1,7 @@
+node_modules/
+tunnel_url.txt
+cloudflared.exe
+*.log
+.DS_Store
+1학년 자료/
+*자료/
