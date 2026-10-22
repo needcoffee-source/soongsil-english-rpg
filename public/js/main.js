@@ -216,7 +216,7 @@ class MainApp {
       const npc = target.data;
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
     } else if (target.type === 'mascot') {
-      alert(`🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중학교의 마스코트 숭실이야!\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿/모바일: 화면 왼쪽 아래의 조이스틱 버튼\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n\n📝 [퀴즈 풀기 & 재료 모으기]\n• 1학년 1반 교실 안으로 들어가서 책상 앞 [A] 버튼을 누르면 단원별 영어 퀴즈를 풀고 단단한 목재, 향긋한 허브, 개나리 꽃잎 등을 모을 수 있어!\n\n🔨 [장비 & 포션 제작]\n• 복도에 있는 '장비 제작대'와 '포션 제작대'에서 모은 재료와 골드로 무기와 방어구, 물약을 직접 제작할 수 있어!\n\n👾 [보스 레이드]\n• 1학년 2반으로 가면 친구들과 함께 도전하는 거대한 '고목 골렘' 보스가 기다리고 있어! 준비를 단단히 하고 도전해 봐!"`);
+      alert(`🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중 마스코트 숭실이야! 🐾\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿: 화면 왼쪽 아래의 반투명 조이스틱 패드\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n• 문, 책상, 게시판, 친구, 선생님 앞에서 A버튼을 눌러봐!"`);
     } else if (
       target.type === 'board' ||
       target.type === 'gather_wood' ||
@@ -592,10 +592,20 @@ class MainApp {
       return false;
     }
 
-    const healAmount = pot.heal || 50;
+    if (this.playerData.hp >= this.playerData.maxHp) {
+      alert(`이미 체력이 최대치입니다! (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})\n보스전에서 체력이 깎였을 때 아껴두었다가 마셔보세요!`);
+      return false;
+    }
+
+    const healAmount = pot.heal || 10;
     this.removeItem(itemId, 1);
+    const beforeHp = this.playerData.hp;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + healAmount);
+    const actualHealed = this.playerData.hp - beforeHp;
     this.updateHpBar();
+    this.saveProgress();
+
+    alert(`🧪 [${pot.name}]을(를) 꿀꺽 마셨습니다!\n체력이 +${actualHealed} 회복되었습니다. (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})`);
 
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();
@@ -659,19 +669,24 @@ class MainApp {
         card.addEventListener('click', () => this.equipItem(item.item));
         card.appendChild(btn);
       } else if (isPotion) {
+        const isScroll = item.item === 'item_revive_scroll';
         const btn = document.createElement('button');
         btn.className = 'btn-item-action btn-use-potion';
-        btn.innerText = '사용';
+        btn.innerText = isScroll ? '사용' : '마시기';
+        btn.style.background = isScroll ? '#7c3aed' : '#059669';
+        btn.style.borderColor = isScroll ? '#8b5cf6' : '#10b981';
+        btn.style.color = '#ffffff';
+        btn.title = isScroll ? '쓰러진 친구 부활' : '체력 즉시 회복';
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (item.item === 'item_revive_scroll') {
+          if (isScroll) {
             this.attemptUseReviveScroll();
           } else {
             this.usePotion(item.item);
           }
         });
         card.addEventListener('click', () => {
-          if (item.item === 'item_revive_scroll') {
+          if (isScroll) {
             this.attemptUseReviveScroll();
           } else {
             this.usePotion(item.item);
