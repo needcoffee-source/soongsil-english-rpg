@@ -503,12 +503,12 @@
       </div>
       <div class="modal-body teacher-body">
         <div class="teacher-tab-row">
-          <button class="tab-btn active" data-tab="tab-boss-raid">👾 보스레이드 이벤트</button>
-          <button class="tab-btn" data-tab="tab-pop-quiz">📢 돌발 퀴즈 & 특별 보상</button>
-          <button class="tab-btn" data-tab="tab-students">👥 학생 관리 & 아이템 지급</button>
-          <button class="tab-btn" data-tab="tab-chat">실시간 채팅</button>
-          <button class="tab-btn" data-tab="tab-broadcast">전체 공지</button>
-          <button class="tab-btn" data-tab="tab-quiz-manage">문제 관리</button>
+          <button class="tab-btn active" data-tab="tab-boss-raid">👾 보스레이드</button>
+          <button class="tab-btn" data-tab="tab-pop-quiz">📢 돌발 퀴즈 & 보상</button>
+          <button class="tab-btn" data-tab="tab-students">👥 학생 관리 & 지급</button>
+          <button class="tab-btn" data-tab="tab-chat">💬 실시간 채팅</button>
+          <button class="tab-btn" data-tab="tab-broadcast">📢 전체 공지</button>
+          <button class="tab-btn" data-tab="tab-quiz-manage">📝 문제 관리</button>
           <button class="tab-btn" data-tab="tab-economy">🎲 경제/드랍율</button>
         </div>
 
@@ -786,35 +786,69 @@
 
         <div class="tab-pane hidden" id="tab-broadcast">
           <div class="broadcast-box">
-            <label for="input-broadcast">전교생 화면에 띄울 공지사항 입력</label>
-            <input type="text" id="input-broadcast" placeholder="예: 지금 모두 2층 도서관으로 모이세요!">
-            <button id="btn-send-broadcast" class="btn-primary">긴급 공지 전송 📢</button>
+            <div class="broadcast-header-row">
+              <label for="input-broadcast" style="font-size:15px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                📢 전교생 실시간 긴급 공지사항
+              </label>
+              <span style="font-size:12px; color:#94a3b8;">전체 접속 중인 학생 화면 중앙에 즉시 팝업 배너로 전송됩니다</span>
+            </div>
+            
+            <textarea id="input-broadcast" rows="3" class="broadcast-textarea" placeholder="학생들에게 전달할 공지사항을 입력하세요... (예: 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!)"></textarea>
+
+            <div class="broadcast-footer-row">
+              <div class="preset-pill-group">
+                <span style="font-size:12px; color:#94a3b8; font-weight:700;">빠른 문구:</span>
+                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='📢 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!'">2반 집결</button>
+                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='⏰ 수업 종료 5분 전입니다. 활동을 마무리하고 1층 로비로 모이세요.'">수업 종료 5분전</button>
+                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='🎉 오늘 영어 RPG 수업 퀘스트 모두 수고 많았습니다!'">수고 인사</button>
+              </div>
+
+              <button id="btn-send-broadcast" class="btn-primary" style="padding:10px 24px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #2563eb, #3b82f6); box-shadow:0 4px 12px rgba(37,99,235,0.4); cursor:pointer;">
+                🚀 긴급 공지 전송
+              </button>
+            </div>
           </div>
         </div>
 
         <div class="tab-pane hidden" id="tab-quiz-manage">
           <div class="quiz-manage-box">
-            <h4>새 퀴즈 등록</h4>
+            <h4 style="margin:0 0 10px 0; color:#38bdf8;">📝 새 영어 퀴즈 데이터베이스 등록</h4>
             <div class="input-row">
-              <select id="admin-q-grade">
-                <option value="1">1학년 풀</option>
-                <option value="2">2학년 풀</option>
-                <option value="3">3학년 풀</option>
-              </select>
-              <input type="text" id="admin-q-unit" placeholder="단원 (예: 천재 L3)">
+              <label style="flex:1;">출제 대상 학년:
+                <select id="admin-q-grade">
+                  <option value="1">1학년 풀</option>
+                  <option value="2">2학년 풀</option>
+                  <option value="3">3학년 풀</option>
+                </select>
+              </label>
+              <label style="flex:1;">단원 구분:
+                <input type="text" id="admin-q-unit" placeholder="예: 천재 L3">
+              </label>
             </div>
-            <textarea id="admin-q-question" placeholder="영어 문제 내용 입력..."></textarea>
+            <div style="margin-bottom:10px;">
+              <label>문제 내용:
+                <textarea id="admin-q-question" rows="2" style="width:100%; margin-top:4px;" placeholder="영어 문제 내용을 입력하세요..."></textarea>
+              </label>
+            </div>
             <div class="input-row">
-              <input type="text" id="admin-q-opt1" placeholder="보기 1">
-              <input type="text" id="admin-q-opt2" placeholder="보기 2">
+              <label style="flex:1;">보기 1: <input type="text" id="admin-q-opt1" placeholder="보기 1"></label>
+              <label style="flex:1;">보기 2: <input type="text" id="admin-q-opt2" placeholder="보기 2"></label>
             </div>
             <div class="input-row">
-              <input type="text" id="admin-q-opt3" placeholder="보기 3">
-              <input type="text" id="admin-q-opt4" placeholder="보기 4">
+              <label style="flex:1;">보기 3: <input type="text" id="admin-q-opt3" placeholder="보기 3"></label>
+              <label style="flex:1;">보기 4: <input type="text" id="admin-q-opt4" placeholder="보기 4"></label>
             </div>
-            <input type="text" id="admin-q-answer" placeholder="정답 텍스트">
-            <input type="text" id="admin-q-exp" placeholder="해설">
-            <button id="btn-save-new-quiz" class="btn-primary">퀴즈 데이터베이스 저장 💾</button>
+            <div class="input-row">
+              <label style="flex:1; color:#34d399;">정답 (보기와 동일한 텍스트):
+                <input type="text" id="admin-q-answer" placeholder="정답 텍스트를 정확히 입력하세요">
+              </label>
+              <label style="flex:1; color:#94a3b8;">문제 해설 (선택):
+                <input type="text" id="admin-q-exp" placeholder="오답 시 학생에게 보여줄 해설">
+              </label>
+            </div>
+            <button id="btn-save-new-quiz" class="btn-primary" style="width:100%; padding:10px; font-weight:800; background:linear-gradient(135deg,#0284c7,#0369a1); margin-top:6px; cursor:pointer;">
+              💾 퀴즈 데이터베이스 저장
+            </button>
           </div>
         </div>
 

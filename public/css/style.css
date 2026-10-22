@@ -928,29 +928,173 @@ body, html {
   transform: scale(0.95);
 }
 
-/* Teacher Moderation */
+/* ========================================================
+   TEACHER CONTROL TOWER & HIGH-CONTRAST INPUTS
+   ======================================================== */
 .teacher-card {
-  max-width: 750px;
+  max-width: 860px;
+  width: 95vw;
 }
+
+.teacher-body {
+  padding: 16px 20px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
 .teacher-tab-row {
   display: flex;
-  gap: 8px;
-  border-bottom: 2px solid #3f3f46;
-  padding-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 7px;
+  border-bottom: 2px solid #334155;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
 }
+
 .tab-btn {
-  background: #27272a;
-  border: 1px solid #3f3f46;
-  color: #a1a1aa;
-  padding: 8px 14px;
+  background: #1e293b;
+  border: 1.5px solid #334155;
+  color: #cbd5e1;
+  padding: 8px 13px;
   border-radius: 8px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
 }
+
+.tab-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+  border-color: #60a5fa;
+  transform: translateY(-1px);
+}
+
 .tab-btn.active {
-  background: #9b2c2c;
-  color: #fff;
-  border-color: #ef4444;
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  color: #ffffff;
+  border-color: #f87171;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.45);
+}
+
+/* High-Contrast Inputs for Teacher Control Tower */
+.teacher-card input[type="text"],
+.teacher-card input[type="number"],
+.teacher-card select,
+.teacher-card textarea {
+  background: #0f172a !important;
+  border: 1.5px solid #334155 !important;
+  border-radius: 8px !important;
+  color: #f8fafc !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  padding: 9px 12px !important;
+  outline: none !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  box-sizing: border-box !important;
+}
+
+.teacher-card input[type="text"]:focus,
+.teacher-card input[type="number"]:focus,
+.teacher-card select:focus,
+.teacher-card textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+  background: #090d16 !important;
+}
+
+.teacher-card input::placeholder,
+.teacher-card textarea::placeholder {
+  color: #64748b !important;
+  font-weight: normal !important;
+}
+
+.teacher-card label {
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.teacher-card .input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.teacher-card .quiz-manage-box {
+  background: rgba(30, 41, 59, 0.55);
+  border: 1.5px solid #334155;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+/* Broadcast Announcement Tab Styling */
+.broadcast-box {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1.5px solid #334155;
+  border-radius: 12px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.broadcast-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.broadcast-textarea {
+  width: 100% !important;
+  min-height: 84px !important;
+  font-size: 14.5px !important;
+  line-height: 1.55 !important;
+  resize: vertical !important;
+  padding: 12px 14px !important;
+}
+
+.broadcast-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.preset-pill-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-preset-pill {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-preset-pill:hover {
+  background: #334155;
+  color: #f8fafc;
+  border-color: #60a5fa;
+  transform: translateY(-1px);
 }
 .admin-chat-list {
   height: 320px;
