@@ -59,8 +59,8 @@ class MainApp {
     window.NetworkManager = this.networkManager;
 
     this.playerData = {
-      name: '김숭실',
-      studentId: '10101',
+      name: '',
+      studentId: '',
       grade: 1,
       avatar: 'student_m1',
       level: 1,
@@ -145,15 +145,23 @@ class MainApp {
 
     btnB.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (!this.engine.player.hasRunningShoes) {
+        alert('👟 [달리기 잠김]\n\n특별한 신발을 얻어야 달릴 수 있습니다!\n(현재는 기본 속도로 걷습니다. 추후 제작소에서 신발을 제작해 보세요!)');
+        return;
+      }
       this.engine.setDashing(true);
     });
     btnB.addEventListener('pointerup', (e) => {
       e.preventDefault();
-      this.engine.setDashing(false);
+      if (this.engine.player.hasRunningShoes) {
+        this.engine.setDashing(false);
+      }
     });
     btnB.addEventListener('pointercancel', (e) => {
       e.preventDefault();
-      this.engine.setDashing(false);
+      if (this.engine.player.hasRunningShoes) {
+        this.engine.setDashing(false);
+      }
     });
 
     window.addEventListener('keydown', (e) => {
@@ -163,7 +171,11 @@ class MainApp {
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', true);
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', true);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', true);
-      if (e.key === 'Shift') this.engine.setDashing(true);
+      if (e.key === 'Shift') {
+        if (this.engine.player.hasRunningShoes) {
+          this.engine.setDashing(true);
+        }
+      }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         this.engine.interact();
@@ -175,7 +187,11 @@ class MainApp {
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', false);
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', false);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', false);
-      if (e.key === 'Shift') this.engine.setDashing(false);
+      if (e.key === 'Shift') {
+        if (this.engine.player.hasRunningShoes) {
+          this.engine.setDashing(false);
+        }
+      }
     });
 
     this.engine.onMoveCallback = (pos) => {
@@ -199,6 +215,8 @@ class MainApp {
     if (target.type === 'npc') {
       const npc = target.data;
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
+    } else if (target.type === 'mascot') {
+      alert(`🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중학교의 마스코트 숭실이야!\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿/모바일: 화면 왼쪽 아래의 조이스틱 버튼\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n\n📝 [퀴즈 풀기 & 재료 모으기]\n• 1학년 1반 교실 안으로 들어가서 책상 앞 [A] 버튼을 누르면 단원별 영어 퀴즈를 풀고 단단한 목재, 향긋한 허브, 개나리 꽃잎 등을 모을 수 있어!\n\n🔨 [장비 & 포션 제작]\n• 복도에 있는 '장비 제작대'와 '포션 제작대'에서 모은 재료와 골드로 무기와 방어구, 물약을 직접 제작할 수 있어!\n\n👾 [보스 레이드]\n• 1학년 2반으로 가면 친구들과 함께 도전하는 거대한 '고목 골렘' 보스가 기다리고 있어! 준비를 단단히 하고 도전해 봐!"`);
     } else if (
       target.type === 'board' ||
       target.type === 'gather_wood' ||
@@ -247,10 +265,23 @@ class MainApp {
     }
 
     document.getElementById('btn-start-game').addEventListener('click', () => {
-      let name = document.getElementById('input-nickname').value.trim() || '김숭실';
-      const studentId = document.getElementById('input-student-id').value.trim() || '10101';
-      const grade = parseInt(document.querySelector('input[name="server-grade"]:checked').value) || 1;
       const isTeacher = checkIsTeacher && checkIsTeacher.checked;
+      let name = document.getElementById('input-nickname').value.trim();
+      const studentId = document.getElementById('input-student-id').value.trim();
+      const grade = parseInt(document.querySelector('input[name="server-grade"]:checked').value) || 1;
+
+      if (!isTeacher) {
+        if (!studentId) {
+          alert('학번을 입력해 주세요! (예: 10101)');
+          document.getElementById('input-student-id').focus();
+          return;
+        }
+        if (!name) {
+          alert('이름(닉네임)을 입력해 주세요! (예: 홍길동)');
+          document.getElementById('input-nickname').focus();
+          return;
+        }
+      }
 
       if (isTeacher) {
         const pwd = (document.getElementById('input-teacher-pwd').value || '').trim();

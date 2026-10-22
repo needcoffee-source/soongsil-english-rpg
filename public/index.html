@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>숭실중학교 영어 오픈월드 RPG (Soongsil World)</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -27,6 +27,15 @@
       <div id="canvas-wrapper">
         <canvas id="game-canvas"></canvas>
 
+        <!-- Floating Semi-Transparent D-Pad for Tablet & Touch -->
+        <div id="dpad-container">
+          <div class="dpad-btn dpad-up" data-dir="up">▲</div>
+          <div class="dpad-btn dpad-left" data-dir="left">◀</div>
+          <div class="dpad-btn dpad-center">●</div>
+          <div class="dpad-btn dpad-right" data-dir="right">▶</div>
+          <div class="dpad-btn dpad-down" data-dir="down">▼</div>
+        </div>
+
         <!-- Interaction Prompt (A Button hint) -->
         <div id="interaction-prompt" class="hidden">
           <span class="key-badge">A</span> <span id="prompt-text">대화하기</span>
@@ -36,21 +45,6 @@
         <div id="announcement-banner" class="hidden">
           <span class="announcement-icon">📢</span>
           <span id="announcement-text">선생님 공지사항</span>
-        </div>
-      </div>
-
-      <!-- Left Hand Virtual D-Pad Overlay for Tablet -->
-      <div id="left-controls-bar">
-        <div id="dpad-container">
-          <div class="dpad-btn dpad-up" data-dir="up">▲</div>
-          <div class="dpad-btn dpad-left" data-dir="left">◀</div>
-          <div class="dpad-btn dpad-center">●</div>
-          <div class="dpad-btn dpad-right" data-dir="right">▶</div>
-          <div class="dpad-btn dpad-down" data-dir="down">▼</div>
-        </div>
-        <div class="touch-hint">
-          <span>🎮 왼손: 이동 패드</span><br>
-          <small>방향키 / WASD 지원</small>
         </div>
       </div>
     </div>
@@ -96,9 +90,9 @@
             <span class="btn-letter">A</span>
             <span class="btn-sub">조사 / 대화 / 진입</span>
           </button>
-          <button id="btn-action-b" class="act-btn btn-b">
+          <button id="btn-action-b" class="act-btn btn-b btn-b-locked" title="특별한 신발을 얻어야 달릴 수 있습니다">
             <span class="btn-letter">B</span>
-            <span class="btn-sub">달리기 (Dash)</span>
+            <span class="btn-sub">🔒 달리기 (신발 필요)</span>
           </button>
         </div>
       </section>
@@ -162,12 +156,12 @@
       </div>
       <div class="modal-body">
         <div class="input-group">
-          <label for="input-student-id">학번</label>
-          <input type="text" id="input-student-id" placeholder="예: 10315" value="10101">
+          <label for="input-student-id">학번 (5자리)</label>
+          <input type="text" id="input-student-id" placeholder="예: 10101" maxlength="5">
         </div>
         <div class="input-group">
           <label for="input-nickname">이름 (닉네임)</label>
-          <input type="text" id="input-nickname" placeholder="이름을 입력하세요" value="김숭실">
+          <input type="text" id="input-nickname" placeholder="예: 홍길동" maxlength="10">
         </div>
         <div class="input-group">
           <label>접속 서버</label>
@@ -618,11 +612,11 @@
   </div>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=2"></script>
-  <script src="js/engine.js?v=2"></script>
-  <script src="js/quiz.js?v=2"></script>
-  <script src="js/crafting.js?v=2"></script>
-  <script src="js/network.js?v=2"></script>
-  <script src="js/main.js?v=2"></script>
+  <script src="js/world.js?v=3"></script>
+  <script src="js/engine.js?v=3"></script>
+  <script src="js/quiz.js?v=3"></script>
+  <script src="js/crafting.js?v=3"></script>
+  <script src="js/network.js?v=3"></script>
+  <script src="js/main.js?v=3"></script>
 </body>
 </html>

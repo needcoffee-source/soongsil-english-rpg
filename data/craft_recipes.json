@@ -6,6 +6,7 @@
     "description": "[시즌1 무기] 1반에서 채집한 단단한 목재 10개를 깎아 만든 기본 검입니다.",
     "icon": "🗡️",
     "gradeLevel": 1,
+    "requiredGold": 15,
     "requiredItems": [
       { "item": "item_wood", "name": "단단한 목재", "count": 10 }
     ],
@@ -31,6 +32,7 @@
     "description": "[시즌1 투구] 단단한 목재 10개를 다듬어 만든 튼튼한 나무 투구입니다.",
     "icon": "🪖",
     "gradeLevel": 1,
+    "requiredGold": 15,
     "requiredItems": [
       { "item": "item_wood", "name": "단단한 목재", "count": 10 }
     ],
@@ -56,6 +58,7 @@
     "description": "[시즌1 갑옷] 단단한 목재 10개를 엮어 만든 갑옷으로 보스의 강타를 막아줍니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
+    "requiredGold": 20,
     "requiredItems": [
       { "item": "item_wood", "name": "단단한 목재", "count": 10 }
     ],
@@ -79,8 +82,9 @@
     "name": "성실의 개나리 반지",
     "category": "equipment",
     "description": "[교화 개나리 · 꽃말: 성실] 노란 개나리 꽃잎 10개를 모아 빚은 반지입니다.",
-    "icon": "🌼",
+    "icon": "🏵️",
     "gradeLevel": 1,
+    "requiredGold": 30,
     "requiredItems": [
       { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 10 }
     ],
@@ -92,7 +96,7 @@
     "result": {
       "item": "equip_forsythia_ring",
       "name": "성실의 개나리 반지",
-      "icon": "🌼",
+      "icon": "🏵️",
       "type": "equipment",
       "slot": "accessory",
       "stats": { "atk": 10, "def": 10, "hp": 20 },
@@ -101,11 +105,12 @@
   },
   {
     "id": "recipe_ginkgo_talisman",
-    "name": "합심의 황금 은행잎 부적",
+    "name": "역심의 황금 은행잎 부적",
     "category": "equipment",
-    "description": "[교목 은행나무] 7% 확률의 황금 은행잎 10개를 합심하여 모은 최고급 장신구입니다.",
+    "description": "[교목 은행나무 · 7% 확률] 황금 은행잎 10개를 역심하여 모은 최고급 장신구입니다.",
     "icon": "🍂",
     "gradeLevel": 1,
+    "requiredGold": 50,
     "requiredItems": [
       { "item": "item_ginkgo", "name": "황금 은행잎", "count": 10 }
     ],
@@ -116,7 +121,7 @@
     },
     "result": {
       "item": "equip_ginkgo_talisman",
-      "name": "합심의 황금 은행잎 부적",
+      "name": "역심의 황금 은행잎 부적",
       "icon": "🍂",
       "type": "equipment",
       "slot": "accessory",
@@ -129,8 +134,9 @@
     "name": "빨간 물약 (Red Potion)",
     "category": "potion",
     "description": "[시즌1 소모품] 향긋한 허브 3개를 달여 만든 기본 회복 물약입니다. 가방이나 보스전에서 마실 수 있습니다.",
-    "icon": "🍷",
+    "icon": "🧪",
     "gradeLevel": 1,
+    "requiredGold": 5,
     "requiredItems": [
       { "item": "item_herb", "name": "향긋한 허브", "count": 3 }
     ],
@@ -142,7 +148,7 @@
     "result": {
       "item": "item_red_potion",
       "name": "빨간 물약",
-      "icon": "🍷",
+      "icon": "🧪",
       "type": "consumable",
       "slot": "consumable",
       "heal": 10,
@@ -154,8 +160,9 @@
     "name": "주황 물약 (Orange Potion)",
     "category": "potion",
     "description": "[시즌1 소모품] 향긋한 허브 3개와 개나리 꽃잎 1개를 배합해 만든 상위 회복 물약입니다.",
-    "icon": "🧪",
+    "icon": "🍹",
     "gradeLevel": 1,
+    "requiredGold": 10,
     "requiredItems": [
       { "item": "item_herb", "name": "향긋한 허브", "count": 3 },
       { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 1 }
@@ -168,7 +175,7 @@
     "result": {
       "item": "item_orange_potion",
       "name": "주황 물약",
-      "icon": "🧪",
+      "icon": "🍹",
       "type": "consumable",
       "slot": "consumable",
       "heal": 25,
@@ -182,6 +189,7 @@
     "description": "[시즌1 특수 주문서] 향긋한 허브 3개와 황금 은행잎 1개로 제작한 신비한 주문서입니다. 보스전에서 쓰러진 친구를 50% 체력으로 부활시킵니다.",
     "icon": "📜",
     "gradeLevel": 1,
+    "requiredGold": 25,
     "requiredItems": [
       { "item": "item_herb", "name": "향긋한 허브", "count": 3 },
       { "item": "item_ginkgo", "name": "황금 은행잎", "count": 1 }

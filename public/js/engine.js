@@ -39,6 +39,7 @@ class GameEngine {
       h: 28,
       speed: 3.8,
       isDashing: false,
+      hasRunningShoes: false,
       direction: 'down',
       isMoving: false,
       floor: 7,
@@ -133,6 +134,11 @@ class GameEngine {
   }
 
   setDashing(isDashing) {
+    if (!this.player.hasRunningShoes) {
+      this.player.isDashing = false;
+      this.player.speed = 3.8;
+      return;
+    }
     this.player.isDashing = isDashing;
     this.player.speed = isDashing ? 5.8 : 3.8;
   }
@@ -460,6 +466,21 @@ class GameEngine {
           if (eDist < minDist) {
             closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '엘리베이터 타기 (A 버튼)' };
             minDist = eDist;
+          }
+        }
+        // School Mascot Puppy (숭실이 - 조작법 가이드)
+        if (this.mascots) {
+          for (const m of this.mascots) {
+            const dist = Math.hypot(m.x * 32 - this.player.x, m.y * 32 - this.player.y);
+            if (dist < minDist) {
+              closest = {
+                type: 'mascot',
+                data: m,
+                name: m.name,
+                prompt: `조작법 배우기 (${m.name})`
+              };
+              minDist = dist;
+            }
           }
         }
       }

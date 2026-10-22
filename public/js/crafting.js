@@ -107,6 +107,19 @@ class CraftingManager {
       this.materialsEl.appendChild(badge);
     });
 
+    // Check gold requirement
+    const requiredGold = recipe.requiredGold || 0;
+    const playerGold = (window.MainApp && window.MainApp.playerData) ? window.MainApp.playerData.gold : 0;
+    if (requiredGold > 0) {
+      const isGoldEnough = playerGold >= requiredGold;
+      const goldBadge = document.createElement('span');
+      goldBadge.className = 'mat-badge';
+      goldBadge.style.color = isGoldEnough ? '#fcd34d' : '#f87171';
+      goldBadge.style.borderColor = isGoldEnough ? '#d97706' : '#ef4444';
+      goldBadge.innerText = `🪙 제작 비용: ${playerGold}/${requiredGold} G`;
+      this.materialsEl.appendChild(goldBadge);
+    }
+
     // Setup Unscramble Puzzle
     this.koreanTargetEl.innerText = `"${recipe.unscramble.korean}"`;
     this.placedWords = [];
@@ -179,10 +192,26 @@ class CraftingManager {
       }
     }
 
-    // Deduct materials & Grant item
+    // Check gold
+    const requiredGold = this.selectedRecipe.requiredGold || 0;
+    const currentGold = (window.MainApp && window.MainApp.playerData) ? window.MainApp.playerData.gold : 0;
+    if (currentGold < requiredGold) {
+      alert(`골드가 부족합니다!\n제작 비용으로 ${requiredGold} G가 필요합니다. (현재 보유: ${currentGold} G)\n교실에서 영어 퀴즈를 풀거나 몬스터를 잡아 골드를 모아보세요!`);
+      return;
+    }
+
+    // Deduct materials & gold & Grant item
     this.selectedRecipe.requiredItems.forEach(req => {
       window.MainApp.removeItem(req.item, req.count);
     });
+
+    if (requiredGold > 0 && window.MainApp && window.MainApp.playerData) {
+      window.MainApp.playerData.gold -= requiredGold;
+      if (window.MainApp.hudGold) {
+        window.MainApp.hudGold.innerText = window.MainApp.playerData.gold;
+      }
+      window.MainApp.saveProgress();
+    }
 
     const res = this.selectedRecipe.result;
     window.MainApp.addItem(res.item, res.name, 1, res.icon || this.selectedRecipe.icon, {
