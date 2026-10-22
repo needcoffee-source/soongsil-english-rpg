@@ -369,6 +369,7 @@ class MainApp {
       this.networkManager.connect(this.playerData);
       this.modalLogin.classList.add('hidden');
       this.startLoop();
+      this.initAutoHpRegen();
     });
 
     // Sound Toggle Button
@@ -571,6 +572,43 @@ class MainApp {
     const fill = document.getElementById('side-hp-fill');
     if (txt) txt.innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
     if (fill) fill.style.width = `${pct}%`;
+  }
+
+  // =========================================================================
+  // AUTOMATIC HP REGENERATION SYSTEM (평상시 3초당 1 HP 자연 치유)
+  // =========================================================================
+  initAutoHpRegen() {
+    if (this.hpRegenInterval) {
+      clearInterval(this.hpRegenInterval);
+    }
+    this.hpRegenInterval = setInterval(() => {
+      this.tickAutoHpRegen();
+    }, 3000);
+  }
+
+  tickAutoHpRegen() {
+    // 1. 로그인 여부 확인
+    if (!this.playerData || !this.playerData.name) return;
+
+    // 2. 기절(체력 0 또는 쓰러짐) 상태면 자동 회복 불가
+    if (this.playerData.isFallen || this.playerData.hp <= 0) return;
+
+    // 3. 이미 최대 체력인 경우 회복 불필요
+    if (this.playerData.hp >= this.playerData.maxHp) return;
+
+    // 4. 보스전 중에는 시간끌기 꼼수 방지를 위해 회복 정지 (보스 레이드 창이 열려있거나 1학년 2반 보스 교실인 경우)
+    const isBossRaidOpen = this.modalBossRaid && !this.modalBossRaid.classList.contains('hidden');
+    const isInBossRoom = this.engine && this.engine.player && this.engine.player.room === 'room_702';
+    if (isBossRaidOpen || isInBossRoom) return;
+
+    // 5. 체력 +1 자연 회복 및 UI 동기화
+    this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + 1);
+    this.updateHpBar();
+
+    const equipHp = document.getElementById('equip-total-hp');
+    if (equipHp && this.modalEquipment && !this.modalEquipment.classList.contains('hidden')) {
+      equipHp.innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
+    }
   }
 
   isItemEquipped(itemId) {
