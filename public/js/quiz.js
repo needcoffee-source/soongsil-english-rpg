@@ -257,12 +257,30 @@ class QuizManager {
 
       this.feedbackExp.innerText = `${this.currentQuestion.explanation || ''}\n\n${rewardMsg}`;
     } else {
-      if (window.AudioManager) window.AudioManager.playWrong();
+      const penalty = Math.floor(Math.random() * 2) + 1; // 1 or 2 HP penalty
+      let currentHp = 100;
+      let maxHp = 100;
+
+      if (window.MainApp) {
+        window.MainApp.takeQuizDamage(penalty);
+        currentHp = window.MainApp.playerData.hp;
+        maxHp = window.MainApp.playerData.maxHp;
+      }
+
+      if (window.AudioManager) {
+        window.AudioManager.playWrong();
+        setTimeout(() => {
+          if (window.AudioManager) window.AudioManager.playHit();
+        }, 120);
+      }
+
       buttonEl.classList.add('wrong');
-      this.feedbackIcon.innerText = '😢';
-      this.feedbackText.innerText = '오답입니다.';
+      this.feedbackIcon.innerText = '💔';
+      this.feedbackText.innerText = `오답입니다! (체력 -${penalty} HP)`;
       this.feedbackEl.style.borderColor = '#dc2626';
-      this.feedbackExp.innerText = `정답: '${this.currentQuestion.answer}'\n${this.currentQuestion.explanation || ''}`;
+
+      const expText = this.currentQuestion.explanation ? `\n해설: ${this.currentQuestion.explanation}` : '';
+      this.feedbackExp.innerText = `정답: '${this.currentQuestion.answer}'${expText}\n\n⚠️ 오답 패널티: 체력 -${penalty} HP (현재 HP: ${currentHp} / ${maxHp})`;
     }
 
     this.feedbackEl.classList.remove('hidden');

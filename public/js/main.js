@@ -611,6 +611,50 @@ class MainApp {
     }
   }
 
+  takeQuizDamage(amount) {
+    if (!this.playerData || this.playerData.hp <= 0 || this.playerData.isFallen) return 0;
+
+    const penalty = Math.max(1, amount || 1);
+    this.playerData.hp = Math.max(0, this.playerData.hp - penalty);
+    this.updateHpBar();
+
+    const equipHp = document.getElementById('equip-total-hp');
+    if (equipHp && this.modalEquipment && !this.modalEquipment.classList.contains('hidden')) {
+      equipHp.innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
+    }
+
+    // 체력이 0이 되어 탈진한 경우 안전하게 복도로 귀환
+    if (this.playerData.hp <= 0) {
+      this.playerData.hp = 0;
+      this.playerData.isFallen = true;
+      this.engine.player.isFallen = true;
+      this.updateHpBar();
+
+      if (this.quizManager && this.quizManager.modal) {
+        this.quizManager.closeQuiz();
+      }
+
+      if (this.networkManager.socket) {
+        this.networkManager.socket.emit('player_fallen', { name: this.playerData.name });
+      }
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '💀 체력 소진 (탈진)',
+          '오답 누적 패널티로 체력이 모두 소진되어 쓰러졌습니다!\n안전을 위해 복도로 이동하며 체력이 15% 회복됩니다.',
+          '😵',
+          () => {
+            this.respawnAtHallway();
+          }
+        );
+      } else {
+        this.respawnAtHallway();
+      }
+    }
+
+    return penalty;
+  }
+
   isItemEquipped(itemId) {
     return Object.values(this.playerData.equipment).some(eq => eq && eq.item === itemId);
   }
