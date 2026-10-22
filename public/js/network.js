@@ -182,6 +182,20 @@ class NetworkManager {
       }
     });
 
+    // Pop Quiz from Teacher
+    this.socket.on('pop_quiz_started', (data) => {
+      if (window.MainApp && window.MainApp.onPopQuizStarted) {
+        window.MainApp.onPopQuizStarted(data);
+      }
+    });
+
+    // Real-Time Leaderboard TOP 5
+    this.socket.on('leaderboard_data', (data) => {
+      if (window.MainApp && window.MainApp.onLeaderboardData) {
+        window.MainApp.onLeaderboardData(data);
+      }
+    });
+
     // 1:1 Trade (Disabled)
     this.socket.on('trade_requested', ({ requesterId, requesterName }) => {
       alert(`[알림] '${requesterName}' 학생이 교환을 시도했으나 현재 학생 간 교환은 비활성화 상태입니다.`);

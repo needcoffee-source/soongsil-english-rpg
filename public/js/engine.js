@@ -1356,6 +1356,59 @@ class GameEngine {
     });
   }
 
+  // 11-C2. High-Res Hallway Leaderboard Blackboard (실시간 랭킹보드)
+  drawHighResLeaderboard(obj) {
+    const px = obj.x * 32 - 14;
+    const py = obj.y * 32 - 12;
+    const w = 60;
+    const h = 42;
+
+    // Floor shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.fillRect(px + 4, py + h - 4, w - 8, 6);
+
+    // Ornate Golden Oak Frame
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px, py, w, h);
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px + 2, py + 2, w - 4, h - 4);
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(px + 4, py + 4, w - 8, h - 8);
+
+    // Dark Forest Green Chalkboard Slate
+    this.ctx.fillStyle = '#064e3b';
+    this.ctx.fillRect(px + 6, py + 6, w - 12, h - 12);
+
+    // Trophy Icon & Gold Header
+    this.ctx.font = '16px sans-serif';
+    this.ctx.fillText('🏆', px + 9, py + 26);
+
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.font = 'bold 10px "Noto Sans KR", sans-serif';
+    this.ctx.fillText('TOP 5', px + 28, py + 18);
+
+    this.ctx.fillStyle = '#a7f3d0';
+    this.ctx.font = 'bold 8px "Noto Sans KR", sans-serif';
+    this.ctx.fillText('RANKING', px + 26, py + 29);
+
+    // Chalk tray with chalk sticks
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(px + 4, py + h - 4, w - 8, 4);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 12, py + h - 3, 6, 2);
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.fillRect(px + 22, py + h - 3, 5, 2);
+
+    this.drawSharpLabel(px + w / 2, py + h + 16, '🏆 실시간 랭킹보드', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#fbbf24',
+      textColor: '#ffffff',
+      fontSize: 12,
+      paddingX: 10,
+      height: 21
+    });
+  }
+
   // 11-D. High-Res Season 1 Boss: Ancient Tree Golem (1학년 2반 보스 레이드)
   drawHighResBossGolem(boss) {
     const px = boss.x * 32 + 16;
@@ -1737,6 +1790,8 @@ class GameEngine {
             paddingX: 10,
             height: 21
           });
+        } else if (obj.type === 'leaderboard') {
+          this.drawHighResLeaderboard(obj);
         } else if (obj.type === 'craft') {
           this.drawHighResCraftTable(obj);
         } else if (obj.type === 'ginkgo') {

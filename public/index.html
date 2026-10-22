@@ -385,6 +385,81 @@
     </div>
   </div>
 
+  <!-- 4-E. Leaderboard Modal (실시간 랭킹보드 모달) -->
+  <div id="modal-leaderboard" class="modal-overlay hidden" style="z-index: 110;">
+    <div class="modal-card quiz-card" style="max-width: 500px; border: 2.5px solid #f59e0b;">
+      <div class="modal-header" style="border-bottom: 2px solid rgba(245, 158, 11, 0.4); display: flex; justify-content: space-between; align-items: center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:24px;">🏆</span>
+          <div>
+            <h3 style="color:#fbbf24; font-size:18px; margin:0;">숭실 명예의 전당 (실시간 레벨 TOP 5)</h3>
+            <span style="font-size:11.5px; color:#94a3b8;">열심히 영어 퀘스트를 수행한 학생들의 실시간 순위</span>
+          </div>
+        </div>
+        <button class="btn-modal-close" id="btn-close-leaderboard-x">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px 18px;">
+        <div id="leaderboard-list-container" class="leaderboard-list">
+          <!-- Dynamically filled -->
+        </div>
+        <div id="leaderboard-my-rank" style="margin-top:14px; padding:10px 14px; background:rgba(30,58,138,0.45); border:1.5px solid #3b82f6; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:13px;">
+          <span>내 현재 순위: <b id="my-rank-position" style="color:#60a5fa;">-위</b></span>
+          <span>내 레벨: <b id="my-rank-level" style="color:#34d399;">Lv.1</b></span>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 10px 18px; justify-content: flex-end;">
+        <button id="btn-close-leaderboard" class="btn-secondary" style="padding: 8px 18px; font-size: 13px;">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-F. Student Pop Quiz Modal (선생님 돌발 퀴즈 모달) -->
+  <div id="modal-pop-quiz" class="modal-overlay hidden" style="z-index: 125;">
+    <div class="modal-card quiz-card" style="max-width: 520px; border: 2.5px solid #f59e0b; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);">
+      <div class="modal-header" style="border-bottom: 2px solid rgba(245, 158, 11, 0.4); justify-content: space-between; align-items: center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:24px;">📢</span>
+          <div>
+            <h3 style="color:#fbbf24; font-size:17.5px; margin:0;">선생님 돌발 퀴즈 (Golden Bell)!</h3>
+            <span style="font-size:11.5px; color:#cbd5e1;">제한시간 내에 정답을 맞히면 특별 보상을 획득합니다!</span>
+          </div>
+        </div>
+        <div style="font-size:15px; font-weight:900; color:#ef4444; background:rgba(239,68,68,0.15); padding:4px 10px; border-radius:6px; border:1px solid #ef4444;">
+          ⏳ <span id="pop-quiz-timer-text">30</span>초
+        </div>
+      </div>
+      <div class="modal-body" style="padding: 16px 18px;">
+        <!-- Timer Bar -->
+        <div style="height: 6px; background: #27272a; border-radius: 3px; overflow: hidden; margin-bottom: 12px;">
+          <div id="pop-quiz-timer-fill" style="height: 100%; width: 100%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); transition: width 0.25s linear;"></div>
+        </div>
+
+        <!-- Reward Banner -->
+        <div style="background: rgba(245, 158, 11, 0.12); border: 1.5px solid #f59e0b; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 22px;">🎁</span>
+          <div style="font-size: 13px; color: #fef08a; line-height: 1.4;">
+            <b style="color: #fbbf24;">정답자 특별 보상:</b> <span id="pop-quiz-reward-desc">🧪 주황 물약 1개 + 🪙 50G + 🌟 100 EXP</span>
+          </div>
+        </div>
+
+        <p class="quiz-question-text" id="pop-quiz-question" style="font-size:16px; margin-bottom:14px;">선생님이 출제한 문제가 여기에 표시됩니다.</p>
+        <div class="quiz-options-grid" id="pop-quiz-options"></div>
+
+        <!-- Feedback Box -->
+        <div id="pop-quiz-feedback" class="quiz-feedback hidden" style="margin-top:14px;">
+          <div class="feedback-header">
+            <span id="pop-quiz-feedback-icon" class="feedback-icon">🎉</span>
+            <span id="pop-quiz-feedback-text" class="feedback-text">정답입니다!</span>
+          </div>
+          <p id="pop-quiz-feedback-exp" class="feedback-explanation"></p>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 10px 18px; justify-content: flex-end;">
+        <button id="btn-close-pop-quiz" class="btn-secondary hidden" style="padding: 8px 18px; font-size: 13px;">닫기</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 5. 1:1 Trade Modal -->
   <div id="modal-trade" class="modal-overlay hidden">
     <div class="modal-card trade-card">
@@ -429,6 +504,7 @@
       <div class="modal-body teacher-body">
         <div class="teacher-tab-row">
           <button class="tab-btn active" data-tab="tab-boss-raid">👾 보스레이드 이벤트</button>
+          <button class="tab-btn" data-tab="tab-pop-quiz">📢 돌발 퀴즈 & 특별 보상</button>
           <button class="tab-btn" data-tab="tab-students">👥 학생 관리 & 아이템 지급</button>
           <button class="tab-btn" data-tab="tab-chat">실시간 채팅</button>
           <button class="tab-btn" data-tab="tab-broadcast">전체 공지</button>
@@ -505,6 +581,115 @@
             <div style="display:flex; gap:10px;">
               <button id="btn-start-boss-event" class="btn-primary" style="flex:2; background:linear-gradient(135deg,#dc2626,#991b1b);">🔥 보스레이드 이벤트 시작!</button>
               <button id="btn-stop-boss-event" class="btn-secondary" style="flex:1;">⏹️ 레이드 종료</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pop Quiz Tab (선생님 돌발 퀴즈 & 특별 보상 발령) -->
+        <div class="tab-pane hidden" id="tab-pop-quiz">
+          <div class="quiz-manage-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <h4 style="margin:0; color:#fbbf24; font-size:16px;">📢 전교생 돌발 퀴즈 발령 컨트롤러</h4>
+              <button id="btn-admin-load-random-quiz" class="btn-secondary" style="font-size:12px; padding:6px 12px; background:#1e3a8a; border-color:#3b82f6; color:#93c5fd;">
+                🎲 단원 퀴즈 자동 불러오기
+              </button>
+            </div>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:12px; line-height:1.5;">
+              선생님이 발령한 문제는 접속 중인 <b>전교생의 화면에 카운트다운 타이머와 함께 즉시 출제</b>됩니다.<br>
+              문제를 맞힌 학생들에게 지급할 <b>특별 보상 아이템</b>과 골드, 경험치를 아래에서 자유롭게 선택하세요!
+            </p>
+
+            <div class="input-row">
+              <label>📝 문제 내용:
+                <textarea id="admin-pop-question" rows="2" style="width:100%; margin-top:4px; padding:8px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px; font-size:13.5px;" placeholder="예: 다음 중 '환경 보호'를 뜻하는 영어 표현은?"></textarea>
+              </label>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px;">
+              <div>
+                <label style="font-size:12px; color:#94a3b8;">보기 1: <input type="text" id="admin-pop-opt-1" style="width:100%; margin-top:2px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;" placeholder="보기 1"></label>
+              </div>
+              <div>
+                <label style="font-size:12px; color:#94a3b8;">보기 2: <input type="text" id="admin-pop-opt-2" style="width:100%; margin-top:2px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;" placeholder="보기 2"></label>
+              </div>
+              <div>
+                <label style="font-size:12px; color:#94a3b8;">보기 3: <input type="text" id="admin-pop-opt-3" style="width:100%; margin-top:2px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;" placeholder="보기 3"></label>
+              </div>
+              <div>
+                <label style="font-size:12px; color:#94a3b8;">보기 4: <input type="text" id="admin-pop-opt-4" style="width:100%; margin-top:2px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;" placeholder="보기 4"></label>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:16px; margin-top:10px; align-items:center;">
+              <label style="font-size:13px; font-weight:800; color:#34d399;">정답 번호:
+                <select id="admin-pop-answer-index" style="padding:6px 12px; margin-left:6px; background:#0f172a; color:#fff; border:1px solid #10b981; border-radius:6px; font-weight:800;">
+                  <option value="1">1번 보기</option>
+                  <option value="2">2번 보기</option>
+                  <option value="3">3번 보기</option>
+                  <option value="4">4번 보기</option>
+                </select>
+              </label>
+
+              <label style="font-size:13px; font-weight:800; color:#f87171;">제한시간:
+                <select id="admin-pop-duration" style="padding:6px 10px; margin-left:6px; background:#0f172a; color:#fff; border:1px solid #ef4444; border-radius:6px;">
+                  <option value="20">20초</option>
+                  <option value="30" selected>30초 (기본)</option>
+                  <option value="45">45초</option>
+                  <option value="60">60초</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="input-row" style="margin-top:8px;">
+              <label style="font-size:12px; color:#94a3b8;">해설 / 추가 설명 (선택):
+                <input type="text" id="admin-pop-explanation" style="width:100%; margin-top:2px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;" placeholder="예: 'protect the environment'는 환경을 보호하다라는 뜻입니다.">
+              </label>
+            </div>
+
+            <!-- Reward Settings Box -->
+            <div style="margin-top:14px; background:rgba(245, 158, 11, 0.08); border:1.5px dashed #f59e0b; border-radius:8px; padding:12px;">
+              <h5 style="margin:0 0 8px 0; color:#fbbf24; font-size:13.5px;">🎁 정답자 특별 보상 설정</h5>
+              <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:8px; align-items:end;">
+                <div>
+                  <label style="font-size:12px; color:#cbd5e1;">보상 아이템:
+                    <select id="admin-pop-reward-item" style="width:100%; margin-top:4px; padding:6px; background:#0f172a; color:#fff; border:1px solid #f59e0b; border-radius:6px; font-weight:700;">
+                      <option value="item_orange_potion">🧪 주황 물약 (+25 HP)</option>
+                      <option value="item_red_potion">🍷 빨간 물약 (+10 HP)</option>
+                      <option value="item_revive_scroll">📜 부활 주문서 (50% 부활)</option>
+                      <option value="item_golem_core">🟢 고목의 핵 (희귀 재료)</option>
+                      <option value="item_dragon_heart">❤️‍🔥 용의 심장 (최상위 재료)</option>
+                      <option value="item_ginkgo">🍂 황금 은행잎</option>
+                      <option value="equip_bronze_sword">⚔️ 청동검 (공격력 +25)</option>
+                      <option value="equip_running_shoes">👟 쾌속의 운동화 (대시 해금)</option>
+                      <option value="equip_forsythia_ring">🌼 성실의 개나리 반지</option>
+                      <option value="item_wood">🪵 단단한 목재</option>
+                      <option value="item_herb">🌿 향긋한 허브</option>
+                      <option value="none">❌ 아이템 보상 없음 (골드/경험치만)</option>
+                    </select>
+                  </label>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#cbd5e1;">수량:
+                    <input type="number" id="admin-pop-reward-qty" value="1" min="1" max="10" style="width:100%; margin-top:4px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;">
+                  </label>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#cbd5e1;">골드:
+                    <input type="number" id="admin-pop-reward-gold" value="50" min="0" step="10" style="width:100%; margin-top:4px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;">
+                  </label>
+                </div>
+                <div>
+                  <label style="font-size:12px; color:#cbd5e1;">경험치:
+                    <input type="number" id="admin-pop-reward-exp" value="100" min="0" step="20" style="width:100%; margin-top:4px; padding:6px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:6px;">
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px; display:flex; gap:10px;">
+              <button id="btn-admin-broadcast-pop-quiz" class="btn-primary" style="flex:1; background:linear-gradient(135deg, #d97706, #f59e0b); font-weight:800; font-size:15px; padding:12px; border:none; box-shadow:0 4px 12px rgba(245, 158, 11, 0.4); cursor:pointer;">
+                📢 전교생 돌발 퀴즈 발령 (Start Pop Quiz)!
+              </button>
             </div>
           </div>
         </div>

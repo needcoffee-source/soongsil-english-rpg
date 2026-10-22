@@ -161,9 +161,9 @@ io.on('connection', (socket) => {
       x: 14 * 32,
       y: 11 * 32,
       direction: 'down',
-      gold: 10,
-      level: 1,
-      exp: 0,
+      gold: data.gold !== undefined ? data.gold : 10,
+      level: data.level || 1,
+      exp: data.exp || 0,
       inventory: []
     };
 
@@ -402,6 +402,50 @@ io.on('connection', (socket) => {
     io.emit('teacher_action_alert', {
       message: '⏹️ [알림] 교사에 의해 보스레이드 이벤트가 종료되었습니다.'
     });
+  });
+
+  // ========================================================
+  // TEACHER POP QUIZ & REWARD BROADCAST
+  // ========================================================
+  socket.on('teacher_start_pop_quiz', (quizData) => {
+    io.emit('pop_quiz_started', quizData);
+    io.emit('teacher_action_alert', {
+      message: `📢 [돌발 퀴즈] 선생님이 전교생 돌발 퀴즈를 출제했습니다! (제한시간 ${quizData.duration || 30}초)`
+    });
+  });
+
+  socket.on('pop_quiz_solved', ({ studentName, rewardText }) => {
+    io.emit('teacher_action_alert', {
+      message: `🎉 [돌발 퀴즈 정답] '${studentName || '학생'}'이(가) 정답을 맞혀 [${rewardText || '특별 보상'}]을(를) 획득했습니다!`
+    });
+  });
+
+  // ========================================================
+  // REAL-TIME LEADERBOARD & STATS SYNC
+  // ========================================================
+  socket.on('get_leaderboard', () => {
+    const list = Object.values(players)
+      .filter(p => !p.isTeacher && p.name)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        studentId: p.studentId,
+        level: p.level || 1,
+        exp: p.exp || 0,
+        gold: p.gold || 0
+      }))
+      .sort((a, b) => (b.level - a.level) || (b.exp - a.exp) || (b.gold - a.gold))
+      .slice(0, 5);
+    socket.emit('leaderboard_data', list);
+  });
+
+  socket.on('player_stats_sync', (stats) => {
+    const p = players[socket.id];
+    if (p && stats) {
+      if (stats.level !== undefined) p.level = stats.level;
+      if (stats.exp !== undefined) p.exp = stats.exp;
+      if (stats.gold !== undefined) p.gold = stats.gold;
+    }
   });
 
   socket.on('boss_raid_attack', ({ damage }) => {

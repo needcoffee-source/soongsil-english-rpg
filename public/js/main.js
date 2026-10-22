@@ -241,6 +241,8 @@ class MainApp {
       this.craftingManager.open(cat);
     } else if (target.type === 'boss_raid') {
       this.openBossRaid(target.data);
+    } else if (target.type === 'leaderboard') {
+      this.openLeaderboard();
     }
   }
 
@@ -442,6 +444,28 @@ class MainApp {
     const btnDeclineRevive = document.getElementById('btn-decline-revive');
     if (btnDeclineRevive) {
       btnDeclineRevive.addEventListener('click', () => this.declineReviveOffer());
+    }
+
+    // Leaderboard Modal Close
+    const btnCloseLeaderboard = document.getElementById('btn-close-leaderboard');
+    if (btnCloseLeaderboard) {
+      btnCloseLeaderboard.addEventListener('click', () => {
+        document.getElementById('modal-leaderboard').classList.add('hidden');
+      });
+    }
+    const btnCloseLeaderboardX = document.getElementById('btn-close-leaderboard-x');
+    if (btnCloseLeaderboardX) {
+      btnCloseLeaderboardX.addEventListener('click', () => {
+        document.getElementById('modal-leaderboard').classList.add('hidden');
+      });
+    }
+
+    // Pop Quiz Modal Close
+    const btnClosePopQuiz = document.getElementById('btn-close-pop-quiz');
+    if (btnClosePopQuiz) {
+      btnClosePopQuiz.addEventListener('click', () => {
+        document.getElementById('modal-pop-quiz').classList.add('hidden');
+      });
     }
 
     // Teacher GM Panel
@@ -1596,6 +1620,87 @@ class MainApp {
         alert(`🎲 [경제/드랍율 설정 적용 완료]\n• 골드 보상: ${minG}G ~ ${maxG}G\n• 기본 드랍 확률: ${dropRate}%\n• 기본 경험치: +${baseExp} EXP`);
       });
     }
+
+    // ========================================================
+    // TEACHER POP QUIZ CONTROLS (돌발 퀴즈 발령)
+    // ========================================================
+    const btnLoadRandomQuiz = document.getElementById('btn-admin-load-random-quiz');
+    if (btnLoadRandomQuiz) {
+      btnLoadRandomQuiz.addEventListener('click', () => {
+        const q = this.quizManager.getRandomQuestion();
+        if (q) {
+          const qEl = document.getElementById('admin-pop-question');
+          if (qEl) qEl.value = q.question;
+          const opts = q.options || [];
+          const o1 = document.getElementById('admin-pop-opt-1'); if (o1) o1.value = opts[0] || '';
+          const o2 = document.getElementById('admin-pop-opt-2'); if (o2) o2.value = opts[1] || '';
+          const o3 = document.getElementById('admin-pop-opt-3'); if (o3) o3.value = opts[2] || '';
+          const o4 = document.getElementById('admin-pop-opt-4'); if (o4) o4.value = opts[3] || '';
+          const correctIdx = opts.indexOf(q.answer) + 1;
+          const aIdx = document.getElementById('admin-pop-answer-index');
+          if (aIdx) aIdx.value = correctIdx > 0 ? String(correctIdx) : '1';
+          const expEl = document.getElementById('admin-pop-explanation');
+          if (expEl) expEl.value = q.explanation || '';
+          alert('🎲 기존 단원 퀴즈가 자동으로 입력되었습니다!\n보상 설정과 제한시간을 확인한 뒤 [발령]을 누르세요.');
+        } else {
+          alert('불러올 수 있는 퀴즈가 없습니다.');
+        }
+      });
+    }
+
+    const btnBroadcastPopQuiz = document.getElementById('btn-admin-broadcast-pop-quiz');
+    if (btnBroadcastPopQuiz) {
+      btnBroadcastPopQuiz.addEventListener('click', () => {
+        const question = (document.getElementById('admin-pop-question').value || '').trim();
+        const opt1 = (document.getElementById('admin-pop-opt-1').value || '').trim();
+        const opt2 = (document.getElementById('admin-pop-opt-2').value || '').trim();
+        const opt3 = (document.getElementById('admin-pop-opt-3').value || '').trim();
+        const opt4 = (document.getElementById('admin-pop-opt-4').value || '').trim();
+        const answerIdx = parseInt(document.getElementById('admin-pop-answer-index').value) || 1;
+        const duration = parseInt(document.getElementById('admin-pop-duration').value) || 30;
+        const explanation = (document.getElementById('admin-pop-explanation').value || '').trim();
+
+        if (!question || !opt1 || !opt2) {
+          alert('문제 내용과 최소 2개 이상의 보기를 입력해 주세요.');
+          return;
+        }
+
+        const options = [opt1, opt2, opt3, opt4].filter(Boolean);
+        const answer = options[answerIdx - 1] || options[0];
+
+        const rewardItemKey = document.getElementById('admin-pop-reward-item').value;
+        const rewardQty = parseInt(document.getElementById('admin-pop-reward-qty').value) || 1;
+        const rewardGold = parseInt(document.getElementById('admin-pop-reward-gold').value) || 0;
+        const rewardExp = parseInt(document.getElementById('admin-pop-reward-exp').value) || 0;
+
+        let rewardItemName = '';
+        let rewardItemIcon = '🎁';
+        if (rewardItemKey !== 'none' && ITEM_DEFINITIONS[rewardItemKey]) {
+          rewardItemName = ITEM_DEFINITIONS[rewardItemKey].name;
+          rewardItemIcon = ITEM_DEFINITIONS[rewardItemKey].icon || '🎁';
+        }
+
+        const quizData = {
+          question,
+          options,
+          answer,
+          explanation,
+          duration,
+          rewardItemKey,
+          rewardItemName,
+          rewardItemIcon,
+          rewardQty,
+          rewardGold,
+          rewardExp
+        };
+
+        if (this.networkManager.socket) {
+          this.networkManager.socket.emit('teacher_start_pop_quiz', quizData);
+        }
+
+        alert(`📢 전교생 돌발 퀴즈가 성공적으로 발령되었습니다!\n(제한시간: ${duration}초)`);
+      });
+    }
   }
 
   requestStudentList() {
@@ -1710,6 +1815,13 @@ class MainApp {
     this.playerData.gold += amount;
     this.hudGold.innerText = this.playerData.gold;
     this.saveProgress();
+    if (this.networkManager && this.networkManager.socket) {
+      this.networkManager.socket.emit('player_stats_sync', {
+        level: this.playerData.level,
+        exp: this.playerData.exp,
+        gold: this.playerData.gold
+      });
+    }
   }
 
   setGold(amount) {
@@ -1749,6 +1861,14 @@ class MainApp {
 
     this.saveProgress();
     this.updateExpBar();
+
+    if (this.networkManager && this.networkManager.socket) {
+      this.networkManager.socket.emit('player_stats_sync', {
+        level: this.playerData.level,
+        exp: this.playerData.exp,
+        gold: this.playerData.gold
+      });
+    }
   }
 
   updateExpBar() {
@@ -1873,6 +1993,221 @@ class MainApp {
       const cur = parseInt(el.value) || 0;
       el.value = Math.max(1, Math.min(9999, cur + n));
     }
+  }
+
+  // ========================================================
+  // REAL-TIME LEADERBOARD TOP 5 (실시간 랭킹보드)
+  // ========================================================
+  openLeaderboard() {
+    const modal = document.getElementById('modal-leaderboard');
+    if (!modal) return;
+
+    if (window.AudioManager) window.AudioManager.playSelect();
+
+    const listEl = document.getElementById('leaderboard-list-container');
+    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">⏳ 실시간 랭킹 데이터를 불러오는 중...</div>';
+
+    document.getElementById('my-rank-position').innerText = '-위';
+    document.getElementById('my-rank-level').innerText = `Lv.${this.playerData.level || 1}`;
+
+    if (this.networkManager && this.networkManager.socket) {
+      this.networkManager.socket.emit('player_stats_sync', {
+        level: this.playerData.level,
+        exp: this.playerData.exp,
+        gold: this.playerData.gold
+      });
+      this.networkManager.socket.emit('get_leaderboard');
+    } else {
+      this.onLeaderboardData([{
+        name: this.playerData.name,
+        studentId: this.playerData.studentId,
+        level: this.playerData.level,
+        exp: this.playerData.exp,
+        gold: this.playerData.gold
+      }]);
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  onLeaderboardData(list) {
+    const listEl = document.getElementById('leaderboard-list-container');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    if (!Array.isArray(list) || list.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">현재 등록된 랭킹 데이터가 없습니다.</div>';
+      return;
+    }
+
+    const rankIcons = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+
+    let myRank = -1;
+    list.forEach((entry, idx) => {
+      const isMe = (entry.name === this.playerData.name || entry.studentId === this.playerData.studentId);
+      if (isMe) myRank = idx + 1;
+
+      const row = document.createElement('div');
+      row.className = `leaderboard-item rank-${idx + 1}`;
+      if (isMe) {
+        row.style.outline = '2px solid #3b82f6';
+      }
+
+      const icon = rankIcons[idx] || `${idx + 1}위`;
+      row.innerHTML = `
+        <div class="leaderboard-left">
+          <span class="leaderboard-rank-badge">${icon}</span>
+          <div>
+            <span class="leaderboard-student-name">${entry.name || '학생'}</span>
+            <span class="leaderboard-student-id">(${entry.studentId || ''})</span>
+            ${isMe ? '<span style="font-size:10.5px; background:#2563eb; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:800;">나</span>' : ''}
+          </div>
+        </div>
+        <div class="leaderboard-right">
+          <span class="leaderboard-level-pill">Lv.${entry.level || 1}</span>
+          <span class="leaderboard-exp-pill">🪙 ${entry.gold || 0}G</span>
+        </div>
+      `;
+      listEl.appendChild(row);
+    });
+
+    const myRankEl = document.getElementById('my-rank-position');
+    if (myRankEl) {
+      myRankEl.innerText = myRank > 0 ? `${myRank}위` : '순위권 밖';
+    }
+    const myLevelEl = document.getElementById('my-rank-level');
+    if (myLevelEl) {
+      myLevelEl.innerText = `Lv.${this.playerData.level || 1}`;
+    }
+  }
+
+  // ========================================================
+  // TEACHER POP QUIZ CLIENT HANDLER (돌발 퀴즈 모달 & 타이머)
+  // ========================================================
+  onPopQuizStarted(data) {
+    if (!data) return;
+
+    const modal = document.getElementById('modal-pop-quiz');
+    if (!modal) return;
+
+    if (window.AudioManager) {
+      window.AudioManager.playFanfare();
+    }
+
+    // Set reward description
+    const rewardDescEl = document.getElementById('pop-quiz-reward-desc');
+    const rewardParts = [];
+    if (data.rewardItemKey && data.rewardItemKey !== 'none' && data.rewardItemName) {
+      rewardParts.push(`${data.rewardItemIcon || '🎁'} ${data.rewardItemName} x${data.rewardQty || 1}개`);
+    }
+    if (data.rewardGold > 0) rewardParts.push(`🪙 ${data.rewardGold}G`);
+    if (data.rewardExp > 0) rewardParts.push(`🌟 ${data.rewardExp} EXP`);
+    const rewardSummary = rewardParts.length > 0 ? rewardParts.join(' + ') : '명예의 영광';
+    if (rewardDescEl) rewardDescEl.innerText = rewardSummary;
+
+    // Set question
+    document.getElementById('pop-quiz-question').innerText = data.question;
+
+    // Reset feedback & close button
+    const feedbackBox = document.getElementById('pop-quiz-feedback');
+    feedbackBox.classList.add('hidden');
+    const btnClose = document.getElementById('btn-close-pop-quiz');
+    btnClose.classList.add('hidden');
+
+    const optionsGrid = document.getElementById('pop-quiz-options');
+    optionsGrid.innerHTML = '';
+
+    const timerText = document.getElementById('pop-quiz-timer-text');
+    const timerFill = document.getElementById('pop-quiz-timer-fill');
+
+    let timeLeft = data.duration || 30;
+    const totalTime = timeLeft;
+    if (timerText) timerText.innerText = timeLeft;
+    if (timerFill) timerFill.style.width = '100%';
+
+    let answered = false;
+
+    if (this.popQuizTimer) clearInterval(this.popQuizTimer);
+
+    const allButtons = [];
+
+    this.popQuizTimer = setInterval(() => {
+      timeLeft--;
+      if (timerText) timerText.innerText = Math.max(0, timeLeft);
+      if (timerFill) {
+        const pct = Math.max(0, Math.min(100, (timeLeft / totalTime) * 100));
+        timerFill.style.width = `${pct}%`;
+      }
+
+      if (timeLeft <= 0) {
+        clearInterval(this.popQuizTimer);
+        if (!answered) {
+          answered = true;
+          allButtons.forEach(b => b.disabled = true);
+          if (window.AudioManager) window.AudioManager.playWrong();
+          feedbackBox.classList.remove('hidden');
+          document.getElementById('pop-quiz-feedback-icon').innerText = '⏰';
+          document.getElementById('pop-quiz-feedback-text').innerText = '제한시간 초과!';
+          document.getElementById('pop-quiz-feedback-exp').innerText = `정답: '${data.answer}'\n${data.explanation || ''}`;
+          btnClose.classList.remove('hidden');
+        }
+      }
+    }, 1000);
+
+    data.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt-btn';
+      btn.innerText = opt;
+      allButtons.push(btn);
+
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        clearInterval(this.popQuizTimer);
+        allButtons.forEach(b => b.disabled = true);
+
+        const isCorrect = (opt === data.answer);
+        if (isCorrect) {
+          btn.classList.add('correct');
+          if (window.AudioManager) {
+            window.AudioManager.playCorrect();
+            setTimeout(() => { if (window.AudioManager) window.AudioManager.playFanfare(); }, 120);
+          }
+
+          // Grant Rewards!
+          if (data.rewardItemKey && data.rewardItemKey !== 'none' && data.rewardItemName) {
+            this.addItem(data.rewardItemKey, data.rewardItemName, data.rewardQty || 1, data.rewardItemIcon || '🎁');
+          }
+          if (data.rewardGold > 0) this.addGold(data.rewardGold);
+          if (data.rewardExp > 0) this.addExp(data.rewardExp);
+
+          if (this.networkManager.socket) {
+            this.networkManager.socket.emit('pop_quiz_solved', {
+              studentName: this.playerData.name,
+              rewardText: rewardSummary
+            });
+          }
+
+          feedbackBox.classList.remove('hidden');
+          document.getElementById('pop-quiz-feedback-icon').innerText = '🎉';
+          document.getElementById('pop-quiz-feedback-text').innerText = '정답입니다! 특별 보상 획득!';
+          document.getElementById('pop-quiz-feedback-exp').innerText = `${data.explanation || ''}\n\n🎁 획득 보상: ${rewardSummary}`;
+        } else {
+          btn.classList.add('wrong');
+          if (window.AudioManager) window.AudioManager.playWrong();
+          feedbackBox.classList.remove('hidden');
+          document.getElementById('pop-quiz-feedback-icon').innerText = '😢';
+          document.getElementById('pop-quiz-feedback-text').innerText = '오답입니다!';
+          document.getElementById('pop-quiz-feedback-exp').innerText = `정답: '${data.answer}'\n${data.explanation || ''}`;
+        }
+
+        btnClose.classList.remove('hidden');
+      });
+
+      optionsGrid.appendChild(btn);
+    });
+
+    modal.classList.remove('hidden');
   }
 
   selectGrantTarget(socketId) {
