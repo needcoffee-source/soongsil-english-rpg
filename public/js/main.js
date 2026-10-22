@@ -553,7 +553,30 @@ class MainApp {
   // =========================================================================
   // COMBAT STATS (Lv.1 ~ 100: Lv 1당 체력+1, 공격력+1, 방어력+1 / 교사는 9999 고정)
   // =========================================================================
+  // =========================================================================
+  // GEAR VISUAL SYNC (착용 장비를 캐릭터 외형에 반영 + 다른 학생에게 동기화)
+  // =========================================================================
+  syncGearVisual(force = false) {
+    const eq = this.playerData.equipment || {};
+    const gear = {
+      weapon: eq.weapon ? eq.weapon.item : null,
+      helmet: eq.helmet ? eq.helmet.item : null,
+      armor: eq.armor ? eq.armor.item : null,
+      accessory: eq.accessory ? eq.accessory.item : null
+    };
+    this.playerData.gear = gear;
+    if (this.engine && this.engine.player) this.engine.player.gear = gear;
+
+    const sig = JSON.stringify(gear);
+    if (!force && sig === this._lastGearSig) return;
+    this._lastGearSig = sig;
+
+    const sock = this.networkManager && this.networkManager.socket;
+    if (sock && sock.connected) sock.emit('player_gear_update', gear);
+  }
+
   recalcCombatStats() {
+    this.syncGearVisual();
     if (this.playerData.isTeacher) {
       this.playerData.atk = 9999;
       this.playerData.def = 9999;

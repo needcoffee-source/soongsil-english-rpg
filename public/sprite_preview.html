@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body{margin:0;background:#d9cfb8;font:12px sans-serif}
+canvas{display:block}
+</style></head><body>
+<canvas id="game" style="display:none"></canvas>
+<canvas id="sheet"></canvas>
+<script src="js/world.js"></script>
+<script src="js/engine.js"></script>
+<script>
+const eng = new GameEngine(document.getElementById('game'));
+const sheet = document.getElementById('sheet');
+const ctx = sheet.getContext('2d');
+const ZOOM = 3; // extra zoom for review
+const looks = [
+  { label: '학생 기본', teacher: false, gear: {} },
+  { label: '학생 나무장비', teacher: false, gear: { weapon: 'wood', helmet: 'wood', armor: 'wood', accessory: 'forsythia' } },
+  { label: '학생 청동장비', teacher: false, gear: { weapon: 'bronze', helmet: 'bronze', armor: 'bronze', accessory: 'ginkgo' } },
+  { label: '교사', teacher: true, gear: {} },
+];
+const dirs = ['down', 'up', 'left', 'right'];
+const cellW = 24 * ZOOM * 2 + 10, cellH = 32 * ZOOM * 2 + 22;
+sheet.width = cellW * 17 + 20; sheet.height = cellH * looks.length + 20;
+ctx.imageSmoothingEnabled = false;
+ctx.fillStyle = '#d9cfb8'; ctx.fillRect(0,0,sheet.width,sheet.height);
+looks.forEach((lk, row) => {
+  let col = 0;
+  dirs.forEach(dir => {
+    for (let fr = 0; fr < 4; fr++) {
+      const spr = eng.getCharacterSprite({ dir, frame: fr, teacher: lk.teacher, blink: false, ko: false, gear: lk.gear });
+      const x = 10 + col * cellW, y = 10 + row * cellH;
+      ctx.drawImage(spr, x, y + 16, spr.width * ZOOM, spr.height * ZOOM);
+      ctx.fillStyle = '#333'; ctx.fillText(`${lk.label} ${dir} f${fr}`, x, y + 10);
+      col++;
+    }
+  });
+  const ko = eng.getCharacterSprite({ dir: 'down', frame: 0, teacher: lk.teacher, blink: false, ko: true, gear: lk.gear });
+  const x = 10 + col * cellW, y = 10 + row * cellH;
+  ctx.drawImage(ko, x, y + 16, ko.width * ZOOM, ko.height * ZOOM);
+  ctx.fillStyle = '#333'; ctx.fillText('기절(KO)', x, y + 10);
+});
+</script></body></html>

@@ -69,10 +69,19 @@ class NetworkManager {
     this.socket.on('player_moved', (data) => {
       const p = this.engine.otherPlayers[data.id];
       if (p) {
+        if (p.x !== data.x || p.y !== data.y) {
+          p.lastMoveAt = Date.now(); // 다른 학생 걷기 애니메이션용
+        }
         p.x = data.x;
         p.y = data.y;
         p.direction = data.direction;
       }
+    });
+
+    // 다른 학생이 장비를 바꾸면 외형 갱신
+    this.socket.on('player_gear_updated', ({ id, gear }) => {
+      const p = this.engine.otherPlayers[id];
+      if (p) p.gear = gear;
     });
 
     this.socket.on('player_left', (socketId) => {

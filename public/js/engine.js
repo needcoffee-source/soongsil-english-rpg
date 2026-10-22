@@ -1967,17 +1967,339 @@ class GameEngine {
     }
   }
 
-  // Draw Authentic Pokemon Red/Gold Trainer Sprite (Image 3)
+  // ========================================================
+  // CHARACTER SPRITE SYSTEM (포켓몬 금/은 스타일 도트 캐릭터)
+  // - 16x23 도트 그리드 · 4방향 · 4프레임 걷기 · 눈 깜빡임 · 외곽선
+  // - 착용 장비(투구/갑옷/무기/장신구)가 외형에 그대로 표시
+  // - 색상은 팔레트로 분리 → 추후 캐릭터 꾸미기(머리색/옷색) 확장 용이
+  // - 한 번 그린 스프라이트는 캐시하여 다인원 접속 시에도 가볍게 유지
+  // ========================================================
+  getCharacterPalette(isTeacher) {
+    if (isTeacher) {
+      return {
+        cap: '#1e1b4b', capShade: '#0c0a24', capAccent: '#fbbf24',
+        hair: '#2a1f1a', hairHi: '#4b3a2f',
+        jacket: '#1e1b4b', jacketShade: '#110e30', jacketHi: '#312e81',
+        inner: '#f8fafc', tie: '#f59e0b',
+        pants: '#0f172a', pantsShade: '#020617',
+        shoe: '#5b2a0a', sole: '#1c0a00',
+        bag: '#78350f', bagShade: '#451a03'
+      };
+    }
+    return {
+      cap: '#dc2626', capShade: '#991b1b', capAccent: '#f8fafc',
+      hair: '#2a1f1a', hairHi: '#4b3a2f',
+      jacket: '#ef4444', jacketShade: '#b91c1c', jacketHi: '#f87171',
+      inner: '#1f2937', tie: null,
+      pants: '#1e40af', pantsShade: '#172554',
+      shoe: '#dc2626', sole: '#f1f5f9',
+      bag: '#eab308', bagShade: '#a16207'
+    };
+  }
+
+  hashString(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h) % 1000;
+  }
+
+  // Paints one character frame onto an offscreen context in grid units (1 unit = 1 game px)
+  paintCharacter(g, o) {
+    const P = this.getCharacterPalette(o.teacher);
+    const S = { skin: '#fcd5b0', skinShade: '#e8a87c', blush: '#f9a8a8', eye: '#1e1b2e' };
+    const W = {
+      wood: { blade: '#e3b778', hi: '#f5d7a1', shade: '#a0703c', guard: '#6b4423', hilt: '#3f2a14' },
+      bronze: { blade: '#f2c14e', hi: '#fff1b8', shade: '#c27c0e', guard: '#7c2d12', hilt: '#3b1a08' }
+    };
+    const A = {
+      wood: { base: '#b7791f', hi: '#d69e2e', shade: '#7b4f12', dark: '#5c3d0e' },
+      bronze: { base: '#d97706', hi: '#fcd34d', shade: '#92400e', dark: '#78350f' }
+    };
+    const gear = o.gear || {};
+    const f = o.frame || 0;
+    const bob = (f % 2 === 1) ? 1 : 0; // 걸음 프레임에서 상체가 살짝 내려앉음
+
+    // r: 상체(머리·몸통·팔) / rl: 다리·신발 (bob 미적용)
+    const r = (x, y, w, h, c) => { if (!c) return; g.fillStyle = c; g.fillRect(4 + x, 4 + y + bob, w, h); };
+    const rl = (x, y, w, h, c) => { if (!c) return; g.fillStyle = c; g.fillRect(4 + x, 4 + y, w, h); };
+
+    const drawKoEyes = (cx) => {
+      r(cx - 1, 6, 1, 1, S.eye); r(cx + 1, 6, 1, 1, S.eye);
+      r(cx, 7, 1, 1, S.eye);
+      r(cx - 1, 8, 1, 1, S.eye); r(cx + 1, 8, 1, 1, S.eye);
+    };
+
+    const drawHelmet = (side) => {
+      const h = A[gear.helmet];
+      if (side) {
+        r(6, -1, 5, 1, h.base); r(5, 0, 7, 1, h.base); r(4, 1, 8, 2, h.base);
+        r(6, 0, 2, 1, h.hi); r(5, 1, 1, 1, h.hi);
+        if (gear.helmet === 'wood') { r(7, -1, 1, 4, h.shade); r(10, 0, 1, 3, h.shade); }
+        r(3, 3, 10, 1, h.dark);
+        if (gear.helmet === 'bronze') {
+          r(8, -3, 3, 2, '#dc2626'); r(8, -3, 1, 1, '#f87171');
+          r(8, 4, 1, 3, h.base);
+        }
+      } else {
+        r(5, -1, 6, 1, h.base); r(4, 0, 8, 1, h.base); r(3, 1, 10, 2, h.base);
+        r(5, 0, 2, 1, h.hi); r(4, 1, 1, 1, h.hi);
+        if (gear.helmet === 'wood') { r(6, -1, 1, 4, h.shade); r(9, -1, 1, 4, h.shade); }
+        r(2, 3, 12, 1, h.dark);
+        if (gear.helmet === 'bronze') {
+          r(7, -3, 2, 2, '#dc2626'); r(7, -3, 1, 1, '#f87171');
+          if (o.dir === 'down') { r(7, 4, 2, 3, h.base); r(7, 4, 1, 3, h.hi); } // 코 가리개
+        }
+      }
+    };
+
+    // Upright sword held at the side (front/back view)
+    const drawSwordUpright = (bx, dy) => {
+      const w = W[gear.weapon];
+      r(bx, 9 + dy, 2, 7, w.blade); r(bx, 9 + dy, 1, 7, w.hi);
+      r(bx, 8 + dy, 1, 1, w.hi); r(bx + 1, 15 + dy, 1, 1, w.shade);
+      r(bx - 1, 16 + dy, 4, 1, w.guard);
+      r(bx, 17 + dy, 2, 2, w.hilt);
+      r(bx, 19 + dy, 2, 1, w.guard);
+    };
+
+    if (o.dir === 'down' || o.dir === 'up') {
+      const front = o.dir === 'down';
+      const lUp = f === 1 ? 1 : 0;
+      const rUp = f === 3 ? 1 : 0;
+      const lDy = f === 1 ? 1 : (f === 3 ? -1 : 0);
+      const rDy = -lDy;
+
+      // Legs & shoes (들어 올린 발은 1px 위로)
+      rl(4, 18, 4, 3 - lUp, P.pants); rl(8, 18, 4, 3 - rUp, P.pants);
+      rl(7, 18, 1, 3 - lUp, P.pantsShade);
+      rl(4, 21 - lUp, 4, 1, P.shoe); rl(4, 22 - lUp, 4, 1, P.sole);
+      rl(8, 21 - rUp, 4, 1, P.shoe); rl(8, 22 - rUp, 4, 1, P.sole);
+
+      // Arms (팔 흔들기)
+      r(2, 12 + lDy, 2, 5, P.jacket); r(2, 12 + lDy, 1, 5, P.jacketShade); r(2, 17 + lDy, 2, 1, S.skin);
+      r(12, 12 + rDy, 2, 5, P.jacket); r(13, 12 + rDy, 1, 5, P.jacketShade); r(12, 17 + rDy, 2, 1, S.skin);
+
+      // Torso
+      r(4, 11, 8, 7, P.jacket);
+      r(4, 11, 1, 7, P.jacketShade); r(11, 11, 1, 7, P.jacketShade);
+      r(5, 11, 6, 1, P.jacketHi);
+      r(4, 17, 8, 1, P.jacketShade);
+      if (front) {
+        if (o.teacher) { r(6, 11, 4, 1, P.inner); r(7, 12, 2, 4, P.tie); }
+        else { r(6, 11, 4, 1, P.inner); r(7, 12, 2, 2, P.inner); }
+      }
+
+      // Armor plate
+      if (gear.armor) {
+        const a = A[gear.armor];
+        r(5, 12, 6, 5, a.base); r(5, 12, 6, 1, a.hi); r(5, 16, 6, 1, a.shade);
+        if (gear.armor === 'wood') r(5, 14, 6, 1, a.shade);
+        else { r(6, 13, 1, 1, a.hi); r(9, 13, 1, 1, a.hi); r(7, 14, 2, 1, a.hi); }
+      }
+
+      // Backpack / satchel strap (뒷모습)
+      if (!front) {
+        if (!o.teacher) {
+          r(5, 12, 6, 5, P.bag); r(5, 13, 6, 1, P.bagShade); r(5, 16, 6, 1, P.bagShade);
+          r(5, 11, 1, 1, P.bagShade); r(10, 11, 1, 1, P.bagShade);
+        } else {
+          for (let i = 0; i < 7; i++) r(4 + i, 11 + i, 1, 1, P.bag);
+        }
+      }
+
+      // Shoulder pads
+      if (gear.armor) {
+        const a = A[gear.armor];
+        if (gear.armor === 'bronze') {
+          r(1, 11, 4, 2, a.base); r(1, 11, 4, 1, a.hi);
+          r(11, 11, 4, 2, a.base); r(11, 11, 4, 1, a.hi);
+        } else {
+          r(2, 11, 3, 2, a.dark); r(2, 11, 3, 1, a.base);
+          r(11, 11, 3, 2, a.dark); r(11, 11, 3, 1, a.base);
+        }
+      }
+
+      // Head
+      if (front) {
+        r(4, 5, 8, 5, S.skin); r(5, 10, 6, 1, S.skin);
+        r(3, 7, 1, 2, S.skin); r(12, 7, 1, 2, S.skin);
+        r(3, 4, 10, 2, P.hair);
+        r(5, 5, 2, 1, S.skin); r(8, 5, 3, 1, S.skin);
+        r(3, 6, 1, 1, P.hair); r(12, 6, 1, 1, P.hair);
+        if (o.ko) { drawKoEyes(5); drawKoEyes(10); }
+        else if (o.blink) { r(5, 8, 1, 1, S.eye); r(10, 8, 1, 1, S.eye); }
+        else { r(5, 7, 1, 2, S.eye); r(10, 7, 1, 2, S.eye); }
+        r(4, 9, 1, 1, S.blush); r(11, 9, 1, 1, S.blush);
+        r(7, 9, 2, 1, o.ko ? '#7f1d1d' : S.skinShade);
+      } else {
+        r(3, 4, 10, 6, P.hair); r(5, 5, 3, 1, P.hairHi);
+        r(3, 7, 1, 2, S.skin); r(12, 7, 1, 2, S.skin);
+        r(5, 10, 6, 1, S.skinShade);
+      }
+
+      // Headwear (투구 > 교사 학사모 > 학생 모자)
+      if (gear.helmet) {
+        drawHelmet(false);
+      } else if (o.teacher) {
+        r(1, 0, 14, 1, P.cap); r(1, 1, 14, 1, P.capShade);
+        r(3, 2, 10, 2, P.cap);
+        const tx = front ? 13 : 2;
+        r(tx, 1, 1, 3, P.capAccent); r(tx - (front ? 1 : 0), 4, 2, 1, P.capAccent);
+      } else {
+        r(5, 0, 6, 1, P.cap); r(4, 1, 8, 1, P.cap); r(3, 2, 10, 1, P.cap);
+        if (front) { r(6, 1, 4, 2, P.capAccent); r(2, 3, 12, 1, P.capShade); }
+        else { r(3, 3, 10, 1, P.cap); r(6, 3, 4, 1, P.capShade); }
+      }
+
+      // Weapon (캐릭터의 오른손)
+      if (gear.weapon) drawSwordUpright(front ? 0 : 14, front ? lDy : rDy);
+
+      // Accessory
+      if (gear.accessory === 'forsythia') {
+        if (front) r(13, 17 + rDy, 1, 1, '#facc15'); else r(2, 17 + lDy, 1, 1, '#facc15');
+      } else if (gear.accessory === 'ginkgo' && front) {
+        r(6, 12, 1, 1, '#78350f'); r(9, 12, 1, 1, '#78350f');
+        r(7, 13, 2, 2, '#fbbf24'); r(7, 13, 1, 1, '#fef3c7');
+      }
+      return;
+    }
+
+    // ---- Side view (facing left; right is mirrored by the caller) ----
+    const step = f % 2 === 1;
+    const aDx = f === 1 ? -1 : (f === 3 ? 1 : 0);
+
+    // Backpack / satchel (등 뒤)
+    if (!o.teacher) {
+      r(9, 12, 4, 5, P.bag); r(12, 12, 1, 5, P.bagShade); r(9, 16, 4, 1, P.bagShade);
+    } else {
+      r(9, 14, 3, 4, P.bag); r(11, 14, 1, 4, P.bagShade);
+    }
+
+    // Legs & shoes
+    if (step) {
+      const frontC = f === 1 ? P.pants : P.pantsShade;
+      const backC = f === 1 ? P.pantsShade : P.pants;
+      rl(9, 18, 3, 3, backC); rl(9, 21, 3, 1, P.shoe); rl(9, 22, 3, 1, P.sole);
+      rl(4, 18, 3, 3, frontC); rl(3, 21, 4, 1, P.shoe); rl(3, 22, 4, 1, P.sole);
+    } else {
+      rl(6, 18, 4, 3, P.pants); rl(8, 18, 1, 3, P.pantsShade);
+      rl(5, 21, 5, 1, P.shoe); rl(5, 22, 5, 1, P.sole);
+    }
+
+    // Torso
+    r(5, 11, 6, 7, P.jacket); r(10, 11, 1, 7, P.jacketShade);
+    r(5, 11, 5, 1, P.jacketHi); r(5, 17, 6, 1, P.jacketShade);
+    r(5, 11, 1, 2, P.inner);
+    if (o.teacher) r(5, 12, 1, 4, P.tie);
+
+    if (gear.armor) {
+      const a = A[gear.armor];
+      r(5, 12, 4, 5, a.base); r(5, 12, 4, 1, a.hi); r(5, 16, 4, 1, a.shade);
+      if (gear.armor === 'wood') r(5, 14, 4, 1, a.shade);
+    }
+    if (gear.accessory === 'ginkgo') r(5, 13, 1, 2, '#fbbf24');
+
+    // Head
+    r(4, 5, 5, 5, S.skin); r(5, 10, 4, 1, S.skin); r(3, 8, 1, 1, S.skin);
+    r(4, 4, 9, 1, P.hair); r(9, 5, 4, 5, P.hair); r(4, 5, 1, 1, P.hair); r(8, 5, 1, 1, P.hair);
+    r(10, 6, 2, 1, P.hairHi);
+    r(9, 7, 1, 2, S.skin); r(9, 8, 1, 1, S.skinShade);
+    if (o.ko) drawKoEyes(5);
+    else if (o.blink) r(5, 8, 1, 1, S.eye);
+    else r(5, 7, 1, 2, S.eye);
+    r(6, 9, 1, 1, S.blush);
+    r(4, 9, 1, 1, S.skinShade);
+
+    // Headwear
+    if (gear.helmet) {
+      drawHelmet(true);
+    } else if (o.teacher) {
+      r(2, 0, 12, 1, P.cap); r(2, 1, 12, 1, P.capShade);
+      r(4, 2, 8, 2, P.cap);
+      r(12, 1, 1, 3, P.capAccent); r(12, 4, 1, 1, P.capAccent);
+    } else {
+      r(6, 0, 5, 1, P.cap); r(5, 1, 7, 1, P.cap); r(4, 2, 8, 1, P.cap);
+      r(5, 1, 3, 2, P.capAccent);
+      r(1, 3, 8, 1, P.capShade); r(9, 3, 3, 1, P.cap);
+    }
+
+    // Near arm (앞쪽 팔 흔들기)
+    const hx = 7 + aDx;
+    r(hx, 12, 2, 5, P.jacket); r(hx + 1, 12, 1, 5, P.jacketShade);
+    if (gear.armor) {
+      const a = A[gear.armor];
+      if (gear.armor === 'bronze') { r(6, 11, 4, 2, a.base); r(6, 11, 4, 1, a.hi); }
+      else { r(6, 11, 3, 2, a.dark); r(6, 11, 3, 1, a.base); }
+    }
+
+    // Weapon pointing forward (전방 겨누기)
+    if (gear.weapon) {
+      const w = W[gear.weapon];
+      r(hx - 7, 16, 6, 1, w.hi); r(hx - 7, 17, 6, 1, w.blade);
+      r(hx - 8, 17, 1, 1, w.blade); r(hx - 3, 17, 2, 1, w.shade);
+      r(hx - 1, 15, 1, 4, w.guard);
+      r(hx, 16, 2, 1, w.hilt); r(hx + 2, 17, 1, 1, w.guard);
+    }
+    r(hx, 17, 2, 1, S.skin);
+    if (gear.accessory === 'forsythia') r(hx, 17, 1, 1, '#facc15');
+  }
+
+  // Builds (or reuses) an outlined sprite canvas for the given look
+  getCharacterSprite(opts) {
+    const gr = opts.gear || {};
+    const key = [
+      opts.dir, opts.frame, opts.teacher ? 1 : 0, opts.blink ? 1 : 0, opts.ko ? 1 : 0,
+      gr.weapon || '-', gr.helmet || '-', gr.armor || '-', gr.accessory || '-'
+    ].join('|');
+
+    if (!this.spriteCache) this.spriteCache = new Map();
+    const cached = this.spriteCache.get(key);
+    if (cached) return cached;
+
+    const GW = 24, GH = 32, U = this.renderScale || 2;
+    const mk = () => {
+      const c = document.createElement('canvas');
+      c.width = GW * U;
+      c.height = GH * U;
+      return c;
+    };
+
+    const base = mk();
+    const b = base.getContext('2d');
+    b.scale(U, U);
+    let paintDir = opts.dir;
+    if (opts.dir === 'right') {
+      b.translate(GW, 0);
+      b.scale(-1, 1);
+      paintDir = 'left';
+    }
+    this.paintCharacter(b, Object.assign({}, opts, { dir: paintDir }));
+
+    // 1px dark outline (Pokemon-style)
+    const sil = mk();
+    const s = sil.getContext('2d');
+    s.drawImage(base, 0, 0);
+    s.globalCompositeOperation = 'source-in';
+    s.fillStyle = '#14111f';
+    s.fillRect(0, 0, sil.width, sil.height);
+
+    const out = mk();
+    const oc = out.getContext('2d');
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(([dx, dy]) => oc.drawImage(sil, dx, dy));
+    oc.drawImage(base, 0, 0);
+
+    if (this.spriteCache.size > 400) this.spriteCache.clear();
+    this.spriteCache.set(key, out);
+    return out;
+  }
+
+  // Draw Pokemon Gold/Silver style trainer sprite with visible gear
   renderPlayer(p, isLocal = false) {
     const px = p.x;
     const py = p.y;
     const isTeacher = !!p.isTeacher;
     const isFallen = !!p.isFallen;
-
-    this.ctx.save();
-    if (isFallen) {
-      this.ctx.globalAlpha = 0.55;
-    }
+    const now = Date.now();
 
     // Teacher Noclip Glowing Aura (Green pulse when 공간돌파 is active)
     if (isTeacher && p.noclip) {
@@ -1990,67 +2312,72 @@ class GameEngine {
       this.ctx.stroke();
     }
 
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-    this.ctx.beginPath();
-    this.ctx.ellipse(px + 12, py + 27, 11, 5, 0, 0, Math.PI * 2);
-    this.ctx.fill();
+    // Walk frame: 내 캐릭터는 실제 입력 기반, 다른 학생은 최근 이동 시각 기반
+    let frame = 0;
+    if (p === this.player) {
+      frame = p.isMoving ? (p.animFrame % 4) : 0;
+    } else if (now - (p.lastMoveAt || 0) < 180) {
+      frame = Math.floor(now / 120) % 4;
+    }
 
-    const legOffset = (p.isMoving && p.animFrame % 2 === 1) ? 2 : 0;
+    const seed = this.hashString(String(p.id || p.name || 'me'));
+    const blink = !isFallen && ((now + seed * 97) % 3600) < 130;
 
-    // Cap (Student: Red Cap, Teacher: Navy/Gold Academic Cap)
-    this.ctx.fillStyle = isTeacher ? '#312e81' : '#dc2626';
-    this.ctx.beginPath();
-    this.ctx.arc(px + 12, py + 8, 8, Math.PI, 0, false);
-    this.ctx.fill();
+    const gearSrc = p.gear || {};
+    const tier = (id) => {
+      if (!id) return null;
+      if (id.includes('bronze')) return 'bronze';
+      if (id.includes('forsythia')) return 'forsythia';
+      if (id.includes('ginkgo')) return 'ginkgo';
+      return 'wood';
+    };
+    const sprite = this.getCharacterSprite({
+      dir: isFallen ? 'down' : (p.direction || 'down'),
+      frame: isFallen ? 0 : frame,
+      teacher: isTeacher,
+      blink,
+      ko: isFallen,
+      gear: {
+        weapon: tier(gearSrc.weapon),
+        helmet: tier(gearSrc.helmet),
+        armor: tier(gearSrc.armor),
+        accessory: tier(gearSrc.accessory)
+      }
+    });
 
-    // Cap visor
-    this.ctx.fillStyle = isTeacher ? '#fbbf24' : '#ffffff';
-    if (p.direction === 'down') {
-      this.ctx.fillRect(px + 7, py + 7, 10, 3);
-    } else if (p.direction === 'left') {
-      this.ctx.fillRect(px + 4, py + 7, 7, 3);
-    } else if (p.direction === 'right') {
-      this.ctx.fillRect(px + 13, py + 7, 7, 3);
+    this.ctx.save();
+    this.ctx.imageSmoothingEnabled = false;
+    if (isFallen) {
+      // 쓰러진 모습: 바닥에 누워 있고 머리 위로 별이 빙글빙글
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 12, py + 27, 15, 4.5, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.8;
+      this.ctx.translate(px + 12, py + 21);
+      this.ctx.rotate(-Math.PI / 2);
+      this.ctx.drawImage(sprite, -12, -16, 24, 32);
+      this.ctx.restore();
+
+      this.ctx.fillStyle = '#fde047';
+      for (let i = 0; i < 3; i++) {
+        const a = now / 260 + i * (Math.PI * 2 / 3);
+        const sx = px + 4 + Math.cos(a) * 6;
+        const sy = py + 12 + Math.sin(a) * 2;
+        this.ctx.fillRect(sx - 0.5, sy - 1.5, 1, 3);
+        this.ctx.fillRect(sx - 1.5, sy - 0.5, 3, 1);
+      }
     } else {
-      this.ctx.fillStyle = isTeacher ? '#1e1b4b' : '#b91c1c';
-      this.ctx.fillRect(px + 8, py + 6, 8, 3);
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 12, py + 28.5, 9, 3.5, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.drawImage(sprite, px, py + 3, 24, 32);
     }
-
-    // Black Hair
-    this.ctx.fillStyle = '#1c1917';
-    this.ctx.fillRect(px + 7, py + 10, 10, 4);
-
-    // Trainer Jacket (Student: Red, Teacher: Elegant Indigo/Navy suit)
-    this.ctx.fillStyle = isTeacher ? '#1e1b4b' : '#ef4444';
-    this.ctx.fillRect(px + 6, py + 14, 12, 10);
-
-    // Teacher Gold Necktie / Trim
-    if (isTeacher) {
-      this.ctx.fillStyle = '#f59e0b';
-      this.ctx.fillRect(px + 11, py + 14, 2, 8);
-    }
-
-    // Yellow Backpack (Teacher: Leather Satchel)
-    this.ctx.fillStyle = isTeacher ? '#78350f' : '#eab308';
-    if (p.direction === 'left') {
-      this.ctx.fillRect(px + 16, py + 15, 4, 8);
-    } else if (p.direction === 'right') {
-      this.ctx.fillRect(px + 4, py + 15, 4, 8);
-    } else if (p.direction === 'up') {
-      this.ctx.fillRect(px + 8, py + 15, 8, 7);
-    }
-
-    // Blue Pants / Slacks
-    this.ctx.fillStyle = isTeacher ? '#0f172a' : '#1e3a8a';
-    this.ctx.fillRect(px + 7, py + 23, 4, 5 - legOffset);
-    this.ctx.fillRect(px + 13, py + 23, 4, 5 + legOffset);
-
-    // Shoes (Student: Red Sneakers, Teacher: Brown Leather Dress Shoes)
-    this.ctx.fillStyle = isTeacher ? '#451a03' : '#dc2626';
-    this.ctx.fillRect(px + 6, py + 27 - legOffset, 5, 3);
-    this.ctx.fillRect(px + 13, py + 27 + legOffset, 5, 3);
-
-    this.ctx.restore(); // restore alpha if fallen
+    this.ctx.restore();
 
     // Nameplate & Crown
     const name = p.name || '학생';

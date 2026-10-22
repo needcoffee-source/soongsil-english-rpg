@@ -137,6 +137,17 @@ function broadcastStudentList() {
   io.emit('teacher_student_list', studentList);
 }
 
+// Only allow known equipment ids for character visuals (착용 장비 외형 검증)
+function sanitizeGear(g) {
+  const out = { weapon: null, helmet: null, armor: null, accessory: null };
+  if (!g || typeof g !== 'object') return out;
+  Object.keys(out).forEach(slot => {
+    const v = g[slot];
+    if (typeof v === 'string' && /^equip_[a-z_]{1,40}$/.test(v)) out[slot] = v;
+  });
+  return out;
+}
+
 io.on('connection', (socket) => {
   console.log(`[Connect] Socket ID: ${socket.id}`);
 
@@ -164,6 +175,7 @@ io.on('connection', (socket) => {
       gold: data.gold !== undefined ? data.gold : 10,
       level: data.level || 1,
       exp: data.exp || 0,
+      gear: sanitizeGear(data.gear),
       inventory: []
     };
 
@@ -204,6 +216,15 @@ io.on('connection', (socket) => {
       y: data.y,
       direction: data.direction
     });
+  });
+
+  // Equipped gear visual sync (착용 장비 외형 동기화)
+  socket.on('player_gear_update', (gear) => {
+    const player = players[socket.id];
+    if (!player) return;
+    player.gear = sanitizeGear(gear);
+    const currentRoom = `server_${player.grade}_f${player.floor}_${player.room}`;
+    socket.to(currentRoom).emit('player_gear_updated', { id: socket.id, gear: player.gear });
   });
 
   // Room / Floor Change (Pokemon-style warp)
