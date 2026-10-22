@@ -2305,10 +2305,10 @@ class GameEngine {
     if (isTeacher && p.noclip) {
       this.ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
       this.ctx.beginPath();
-      this.ctx.arc(px + 12, py + 16, 22, 0, Math.PI * 2);
+      this.ctx.arc(px + 12, py + 4, 36, 0, Math.PI * 2);
       this.ctx.fill();
       this.ctx.strokeStyle = '#34d399';
-      this.ctx.lineWidth = 1.5;
+      this.ctx.lineWidth = 2;
       this.ctx.stroke();
     }
 
@@ -2345,43 +2345,51 @@ class GameEngine {
       }
     });
 
+    // 2배 크기 렌더링 (24x32 -> 48x64)
+    const SCALE = 2.0;
+    const drawW = Math.round(24 * SCALE);
+    const drawH = Math.round(32 * SCALE);
+    const drawX = Math.round(px + 12 - drawW / 2); // 가로 중앙 정렬
+    const drawY = Math.round(py + 29 - 27 * SCALE); // 발끝 위치(py+29)에 정확히 착지
+
     this.ctx.save();
     this.ctx.imageSmoothingEnabled = false;
     if (isFallen) {
       // 쓰러진 모습: 바닥에 누워 있고 머리 위로 별이 빙글빙글
       this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
       this.ctx.beginPath();
-      this.ctx.ellipse(px + 12, py + 27, 15, 4.5, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(px + 12, py + 28, 22, 6, 0, 0, Math.PI * 2);
       this.ctx.fill();
 
       this.ctx.save();
       this.ctx.globalAlpha = 0.8;
-      this.ctx.translate(px + 12, py + 21);
+      this.ctx.translate(px + 12, py + 18);
       this.ctx.rotate(-Math.PI / 2);
-      this.ctx.drawImage(sprite, -12, -16, 24, 32);
+      this.ctx.drawImage(sprite, -drawW / 2, -drawH / 2, drawW, drawH);
       this.ctx.restore();
 
       this.ctx.fillStyle = '#fde047';
       for (let i = 0; i < 3; i++) {
         const a = now / 260 + i * (Math.PI * 2 / 3);
-        const sx = px + 4 + Math.cos(a) * 6;
-        const sy = py + 12 + Math.sin(a) * 2;
-        this.ctx.fillRect(sx - 0.5, sy - 1.5, 1, 3);
-        this.ctx.fillRect(sx - 1.5, sy - 0.5, 3, 1);
+        const sx = px + Math.cos(a) * 10;
+        const sy = py + 6 + Math.sin(a) * 4;
+        this.ctx.fillRect(sx - 1, sy - 2, 2, 4);
+        this.ctx.fillRect(sx - 2, sy - 1, 4, 2);
       }
     } else {
+      // 2배 크기에 맞춘 안정적인 발밑 타원 그림자
       this.ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
       this.ctx.beginPath();
-      this.ctx.ellipse(px + 12, py + 28.5, 9, 3.5, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(px + 12, py + 29, 15, 5, 0, 0, Math.PI * 2);
       this.ctx.fill();
 
-      this.ctx.drawImage(sprite, px, py + 3, 24, 32);
+      this.ctx.drawImage(sprite, drawX, drawY, drawW, drawH);
     }
     this.ctx.restore();
 
-    // Nameplate & Crown
+    // Nameplate & Crown (2배 캐릭터 높이에 맞춰 머리 위로 배치)
     const name = p.name || '학생';
-    const plateY = py - 12;
+    const plateY = py - 32;
     const displayName = isFallen ? `💀 [기절] ${name}` : name;
 
     this.drawSharpLabel(px + 12, plateY, displayName, {
