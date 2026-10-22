@@ -222,6 +222,7 @@ class QuizManager {
     allBtns.forEach(b => b.disabled = true);
 
     if (isCorrect) {
+      if (window.AudioManager) window.AudioManager.playCorrect();
       buttonEl.classList.add('correct');
 
       const cfg = window.ECONOMY_CONFIG;
@@ -256,6 +257,7 @@ class QuizManager {
 
       this.feedbackExp.innerText = `${this.currentQuestion.explanation || ''}\n\n${rewardMsg}`;
     } else {
+      if (window.AudioManager) window.AudioManager.playWrong();
       buttonEl.classList.add('wrong');
       this.feedbackIcon.innerText = '😢';
       this.feedbackText.innerText = '오답입니다.';

@@ -140,6 +140,11 @@ class MainApp {
 
     btnA.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (window.AudioManager) window.AudioManager.playSelect();
+      if (window.RPGDialog && window.RPGDialog.isOpen) {
+        window.RPGDialog.advance();
+        return;
+      }
       this.engine.interact();
     });
 
@@ -178,6 +183,10 @@ class MainApp {
       }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
+        if (window.RPGDialog && window.RPGDialog.isOpen) {
+          window.RPGDialog.advance();
+          return;
+        }
         this.engine.interact();
       }
     });
@@ -362,14 +371,29 @@ class MainApp {
       this.startLoop();
     });
 
+    // Sound Toggle Button
+    const btnToggleSound = document.getElementById('btn-toggle-sound');
+    if (btnToggleSound && window.AudioManager) {
+      window.AudioManager.updateMuteButtonUI();
+      btnToggleSound.addEventListener('click', () => {
+        window.AudioManager.toggleMute();
+      });
+    }
+
     // Inventory Modal
-    document.getElementById('btn-inventory').addEventListener('click', () => this.openInventory());
+    document.getElementById('btn-inventory').addEventListener('click', () => {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.openInventory();
+    });
     document.getElementById('btn-close-inv-x').addEventListener('click', () => this.modalInventory.classList.add('hidden'));
 
     // Equipment Modal
     const btnEquipment = document.getElementById('btn-equipment');
     if (btnEquipment) {
-      btnEquipment.addEventListener('click', () => this.openEquipmentModal());
+      btnEquipment.addEventListener('click', () => {
+        if (window.AudioManager) window.AudioManager.playSelect();
+        this.openEquipmentModal();
+      });
     }
     const btnCloseEquipX = document.getElementById('btn-close-equip-x');
     if (btnCloseEquipX) {

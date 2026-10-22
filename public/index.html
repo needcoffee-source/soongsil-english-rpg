@@ -21,6 +21,9 @@
         <span class="school-tag">🏫 숭실중학교</span>
         <span id="hud-location" class="location-tag">1학년 복도</span>
         <span id="current-floor-tag" class="floor-pill">1학년</span>
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+          <button id="btn-toggle-sound" class="btn-sound-toggle" title="8비트 소리 켜기/끄기">🔊</button>
+        </div>
       </div>
 
       <!-- Canvas Box with GBC Retro Frame -->
@@ -34,6 +37,28 @@
           <div class="dpad-btn dpad-center">●</div>
           <div class="dpad-btn dpad-right" data-dir="right">▶</div>
           <div class="dpad-btn dpad-down" data-dir="down">▼</div>
+        </div>
+
+        <!-- Retro RPG In-Game Dialogue Box (Pokemon Style) -->
+        <div id="rpg-dialog-overlay" class="rpg-dialog-overlay hidden">
+          <div class="rpg-dialog-box">
+            <div class="rpg-dialog-header">
+              <div class="rpg-avatar-frame">
+                <span id="rpg-dialog-avatar" class="rpg-avatar-icon">💬</span>
+              </div>
+              <div class="rpg-speaker-info">
+                <span id="rpg-dialog-speaker" class="rpg-speaker-pill">안내</span>
+              </div>
+              <button id="btn-close-rpg-dialog" class="rpg-dialog-close-btn" title="닫기 (Space/Enter/A)">✕</button>
+            </div>
+            <div class="rpg-dialog-body">
+              <p id="rpg-dialog-text" class="rpg-dialog-text"></p>
+            </div>
+            <div class="rpg-dialog-footer">
+              <span class="rpg-dialog-hint">스페이스바 / Enter / 우측 [A] 버튼을 눌러 넘기기</span>
+              <span class="rpg-dialog-indicator">▼</span>
+            </div>
+          </div>
         </div>
 
         <!-- Interaction Prompt (A Button hint) -->
@@ -611,12 +636,16 @@
     </div>
   </div>
 
+  <!-- Audio & In-Game Dialogue Engine -->
+  <script src="js/audio.js?v=5"></script>
+  <script src="js/dialog.js?v=5"></script>
+
   <!-- Game Scripts -->
-  <script src="js/world.js?v=4"></script>
-  <script src="js/engine.js?v=4"></script>
-  <script src="js/quiz.js?v=4"></script>
-  <script src="js/crafting.js?v=4"></script>
-  <script src="js/network.js?v=4"></script>
-  <script src="js/main.js?v=4"></script>
+  <script src="js/world.js?v=5"></script>
+  <script src="js/engine.js?v=5"></script>
+  <script src="js/quiz.js?v=5"></script>
+  <script src="js/crafting.js?v=5"></script>
+  <script src="js/network.js?v=5"></script>
+  <script src="js/main.js?v=5"></script>
 </body>
 </html>

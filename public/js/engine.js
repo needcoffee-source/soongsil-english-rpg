@@ -148,6 +148,7 @@ class GameEngine {
   // ========================================================
   triggerFadeWarp(onMidpoint) {
     if (this.fade.active) return;
+    if (window.AudioManager) window.AudioManager.playSelect();
     this.fade.active = true;
     this.fade.alpha = 0;
     this.fade.phase = 'fade_out';

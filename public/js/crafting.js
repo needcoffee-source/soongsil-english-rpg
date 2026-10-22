@@ -144,6 +144,7 @@ class CraftingManager {
         block.innerText = wObj.text;
         block.title = '터치하면 원래 자리로 되돌아갑니다';
         block.addEventListener('click', () => {
+          if (window.AudioManager) window.AudioManager.playSelect();
           // Return to available bank
           this.placedWords.splice(idx, 1);
           this.availableWords.push(wObj);
@@ -160,6 +161,7 @@ class CraftingManager {
       block.className = 'word-block';
       block.innerText = wObj.text;
       block.addEventListener('click', () => {
+        if (window.AudioManager) window.AudioManager.playSelect();
         // Place in slot
         this.availableWords.splice(idx, 1);
         this.placedWords.push(wObj);
@@ -177,6 +179,7 @@ class CraftingManager {
     const correct = this.selectedRecipe.unscramble.correct;
 
     if (assembled !== correct) {
+      if (window.AudioManager) window.AudioManager.playWrong();
       alert(`문장의 어순이 올바르지 않습니다!\n\n현재 완성한 문장: "${assembled}"\n우리말 뜻을 생각하며 다시 순서를 맞춰보세요!`);
       return;
     }
