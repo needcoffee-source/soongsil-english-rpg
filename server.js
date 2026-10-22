@@ -452,17 +452,43 @@ io.on('connection', (socket) => {
   socket.on('use_revive_scroll', ({ targetSocketId, targetName }) => {
     const sender = players[socket.id];
     const target = players[targetSocketId];
-    if (target) {
-      target.isFallen = false;
-    }
     const currentRoom = sender ? `server_${sender.grade}_f${sender.floor}_${sender.room}` : null;
     if (currentRoom) {
-      io.to(currentRoom).emit('player_status_updated', { id: targetSocketId, isFallen: false, name: targetName });
       io.to(currentRoom).emit('teacher_action_alert', {
-        message: `✨ [부활] ${sender ? sender.name : '친구'} 학생이 ${targetName} 친구에게 부활 주문서를 사용해 부활시켰습니다!`
+        message: `📜 [부활 주문서] ${sender ? sender.name : '친구'} 학생이 ${targetName} 친구에게 부활 주문서를 보냈습니다!`
       });
     }
-    io.to(targetSocketId).emit('player_revived_event', { revivedBy: sender ? sender.name : '친구' });
+    const payload = { revivedBy: sender ? sender.name : '친구', senderId: socket.id };
+    io.to(targetSocketId).emit('player_revive_offered', payload);
+    io.to(targetSocketId).emit('player_revived_event', payload);
+  });
+
+  socket.on('player_revive_accepted', ({ name }) => {
+    const p = players[socket.id];
+    if (p) {
+      p.isFallen = false;
+    }
+    const currentRoom = p ? `server_${p.grade}_f${p.floor}_${p.room}` : null;
+    if (currentRoom) {
+      io.to(currentRoom).emit('player_status_updated', { id: socket.id, isFallen: false, name: name || (p ? p.name : '학생') });
+      io.to(currentRoom).emit('teacher_action_alert', {
+        message: `✨ [전투 복귀] ${name || (p ? p.name : '학생')} 학생이 부활을 수락하고 전장으로 복귀했습니다!`
+      });
+    }
+  });
+
+  socket.on('player_respawn_hallway', () => {
+    const p = players[socket.id];
+    if (p) {
+      p.isFallen = false;
+      p.room = 'hallway';
+      p.x = 15 * 32;
+      p.y = 10 * 32;
+    }
+    const currentRoom = p ? `server_${p.grade}_f${p.floor}_${p.room}` : null;
+    if (currentRoom) {
+      io.to(currentRoom).emit('player_status_updated', { id: socket.id, isFallen: false, name: p ? p.name : '학생' });
+    }
   });
 
   // Disconnect

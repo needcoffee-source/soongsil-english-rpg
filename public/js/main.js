@@ -433,6 +433,16 @@ class MainApp {
       });
     }
 
+    // Revival Offer Modal buttons (부활 주문서 수락 / 대기 유지)
+    const btnAcceptRevive = document.getElementById('btn-accept-revive');
+    if (btnAcceptRevive) {
+      btnAcceptRevive.addEventListener('click', () => this.acceptReviveOffer());
+    }
+    const btnDeclineRevive = document.getElementById('btn-decline-revive');
+    if (btnDeclineRevive) {
+      btnDeclineRevive.addEventListener('click', () => this.declineReviveOffer());
+    }
+
     // Teacher GM Panel
     const btnNoclip = document.getElementById('btn-gm-noclip');
     if (btnNoclip) {
@@ -975,19 +985,43 @@ class MainApp {
   updateBossRaidUI() {
     this.recalcCombatStats();
     const bossPct = Math.max(0, Math.min(100, Math.floor((this.bossState.currentHp / this.bossState.maxHp) * 100)));
-    document.getElementById('boss-hp-text').innerText = `HP ${this.bossState.currentHp} / ${this.bossState.maxHp}`;
-    document.getElementById('boss-hp-fill').style.width = `${bossPct}%`;
+    const bossHpText = document.getElementById('boss-hp-text');
+    if (bossHpText) bossHpText.innerText = `HP ${this.bossState.currentHp} / ${this.bossState.maxHp}`;
+    const bossHpFill = document.getElementById('boss-hp-fill');
+    if (bossHpFill) bossHpFill.style.width = `${bossPct}%`;
 
-    document.getElementById('raid-player-hp').innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
-    document.getElementById('raid-player-atk').innerText = this.playerData.atk;
-    document.getElementById('raid-player-def').innerText = this.playerData.def;
+    const playerNameLabel = document.getElementById('raid-player-name-label');
+    if (playerNameLabel) {
+      playerNameLabel.innerText = this.playerData.name ? `${this.playerData.name} (내 체력)` : '내 체력';
+    }
+
+    const playerHpText = document.getElementById('raid-player-hp');
+    if (playerHpText) playerHpText.innerText = `HP ${this.playerData.hp} / ${this.playerData.maxHp}`;
+
+    const playerPct = Math.max(0, Math.min(100, Math.floor((this.playerData.hp / this.playerData.maxHp) * 100)));
+    const playerHpFill = document.getElementById('raid-player-hp-fill');
+    if (playerHpFill) {
+      playerHpFill.style.width = `${playerPct}%`;
+      if (playerPct > 50) {
+        playerHpFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+      } else if (playerPct > 20) {
+        playerHpFill.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+      } else {
+        playerHpFill.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+      }
+    }
+
+    const playerAtkEl = document.getElementById('raid-player-atk');
+    if (playerAtkEl) playerAtkEl.innerText = this.playerData.atk;
+    const playerDefEl = document.getElementById('raid-player-def');
+    if (playerDefEl) playerDefEl.innerText = this.playerData.def;
 
     const redPot = this.playerData.inventory.find(i => i.item === 'item_red_potion');
     const redCount = redPot ? redPot.count : 0;
     const btnRed = document.getElementById('btn-raid-use-red-potion');
     if (btnRed) {
       btnRed.innerText = `🍷 빨간 물약 (+10) ${redCount}개`;
-      btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp);
+      btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
     const orangePot = this.playerData.inventory.find(i => i.item === 'item_orange_potion');
@@ -1044,6 +1078,7 @@ class MainApp {
 
     if (isCorrect) {
       btnEl.classList.add('correct');
+      if (window.AudioManager) window.AudioManager.playCorrect();
       const myDmg = Math.max(5, this.playerData.atk - bossDef);
 
       if (window.BOSS_CONFIG.active && window.BOSS_CONFIG.mode === 'coop' && this.networkManager.socket) {
@@ -1069,6 +1104,7 @@ class MainApp {
       logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
     } else {
       btnEl.classList.add('wrong');
+      if (window.AudioManager) window.AudioManager.playWrong();
       const incomingDmg = this.playerData.isTeacher ? 0 : Math.max(2, Math.floor(bossAtk * 1.2) - this.playerData.def);
       this.playerData.hp = Math.max(0, this.playerData.hp - incomingDmg);
       this.updateBossRaidUI();
@@ -1087,14 +1123,107 @@ class MainApp {
         this.networkManager.socket.emit('player_fallen', { name: this.playerData.name });
       }
 
-      logEl.innerHTML = `<b style="color:#ef4444; font-size:14px;">💀 쓰러졌습니다!</b><br><span style="color:#fde047; font-size:12px;">친구가 [📜 부활 주문서]를 사용해 줄 때까지 대기합니다. (부활 시 체력 50%로 복귀)</span>`;
-      document.getElementById('raid-quiz-question').innerText = '💀 기절 상태입니다. 팀원이 부활 주문서를 사용해 줄 때까지 기다리고 있습니다.';
-      document.getElementById('raid-quiz-options').innerHTML = '<p style="color:#a1a1aa; font-size:12px; text-align:center; padding:12px;">친구가 부활 주문서를 사용하면 즉시 체력 50%로 부활하여 다시 공격할 수 있습니다.</p>';
+      if (window.AudioManager) {
+        window.AudioManager.playHit();
+      }
+
+      logEl.innerHTML = `<b style="color:#ef4444; font-size:14px;">💀 쓰러졌습니다!</b><br><span style="color:#fde047; font-size:12px;">부활 방식을 선택하세요: 복도에서 부활하거나, 교실에서 친구의 부활 주문서를 기다릴 수 있습니다.</span>`;
+      document.getElementById('raid-quiz-question').innerText = '💀 전투 불능 상태입니다. 부활 방식을 선택해 주세요.';
+
+      const optionsEl = document.getElementById('raid-quiz-options');
+      optionsEl.innerHTML = `
+        <div class="respawn-choice-container">
+          <button id="btn-respawn-hallway" class="btn-respawn-choice btn-respawn-hallway">
+            🏛️ 복도(출발지)에서 부활하기
+            <span style="font-size:11.5px; opacity:0.9; font-weight:normal; margin-top:3px;">(체력 100% 회복 · 1학년 복도로 안전 귀환)</span>
+          </button>
+          <button id="btn-wait-revive" class="btn-respawn-choice btn-wait-revive">
+            ⏳ 교실에서 대기하기
+            <span style="font-size:11.5px; opacity:0.9; font-weight:normal; margin-top:3px;">(현재 교실 유지 · 친구가 [부활 주문서] 사용 시 체력 50% 복귀)</span>
+          </button>
+        </div>
+      `;
+
       document.getElementById('btn-raid-next-turn').classList.add('hidden');
+
+      const btnRespawn = document.getElementById('btn-respawn-hallway');
+      if (btnRespawn) {
+        btnRespawn.addEventListener('click', () => this.respawnAtHallway());
+      }
+
+      const btnWait = document.getElementById('btn-wait-revive');
+      if (btnWait) {
+        btnWait.addEventListener('click', () => this.showWaitingReviveState());
+      }
+
       return;
     }
 
     document.getElementById('btn-raid-next-turn').classList.remove('hidden');
+  }
+
+  respawnAtHallway() {
+    this.playerData.isFallen = false;
+    this.engine.player.isFallen = false;
+    this.playerData.hp = this.playerData.maxHp;
+    this.updateHpBar();
+    this.updateBossRaidUI();
+
+    // Close Boss Raid Modal
+    if (this.modalBossRaid) {
+      this.modalBossRaid.classList.add('hidden');
+    }
+
+    // Warp player to hallway center (15*32, 10*32)
+    if (this.engine) {
+      this.engine.triggerFadeWarp(() => {
+        this.engine.warpToRoom('hallway', '1학년 복도', 15 * 32, 10 * 32);
+      });
+    }
+
+    if (this.networkManager.socket) {
+      this.networkManager.socket.emit('player_respawn_hallway');
+    }
+
+    if (window.AudioManager) {
+      window.AudioManager.playRevive();
+    }
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🏛️ 복도 부활', '안전하게 1학년 복도로 귀환하여 체력이 100% 회복되었습니다.\n재정비 후 다시 도전해보세요!', '✨');
+    }
+  }
+
+  showWaitingReviveState() {
+    const logEl = document.getElementById('raid-battle-log');
+    if (logEl) {
+      logEl.innerHTML = `<b style="color:#fbbf24; font-size:14px;">⏳ 친구의 부활 주문서를 기다리는 중...</b><br><span style="color:#cbd5e1; font-size:12px;">파티원이 부활 주문서를 사용하면 [부활 수락] 알림창이 나타납니다.</span>`;
+    }
+    const qEl = document.getElementById('raid-quiz-question');
+    if (qEl) {
+      qEl.innerText = '💀 1학년 2반에서 대기 중입니다.';
+    }
+    const optionsEl = document.getElementById('raid-quiz-options');
+    if (optionsEl) {
+      optionsEl.innerHTML = `
+        <div class="waiting-revive-box">
+          <div style="font-size:32px;">⏳💫</div>
+          <p style="color:#fde047; font-size:14px; font-weight:800; margin:0;">
+            동료의 [📜 부활 주문서] 사용을 기다리고 있습니다
+          </p>
+          <p style="color:#cbd5e1; font-size:12px; margin:0; line-height:1.5;">
+            친구가 주문서를 써주면 <b>[부활 수락]</b> 버튼이 화면에 즉시 나타납니다.
+          </p>
+          <button id="btn-fallback-respawn" class="btn-respawn-choice btn-respawn-hallway" style="padding:10px 16px; font-size:13px; margin-top:8px; width:auto;">
+            🏛️ 기다리지 않고 복도에서 부활하기 (체력 100%)
+          </button>
+        </div>
+      `;
+      const btnFallback = document.getElementById('btn-fallback-respawn');
+      if (btnFallback) {
+        btnFallback.addEventListener('click', () => this.respawnAtHallway());
+      }
+    }
   }
 
   attemptUseReviveScroll() {
@@ -1112,7 +1241,7 @@ class MainApp {
     }
 
     const target = fallenOthers[0];
-    if (confirm(`'${target.name}' 친구에게 부활 주문서를 사용하여 부활시키겠습니까? (HP 50% 회복)`)) {
+    if (confirm(`'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까? (상대방이 수락 시 HP 50% 복귀)`)) {
       this.removeItem('item_revive_scroll', 1);
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('use_revive_scroll', {
@@ -1124,14 +1253,68 @@ class MainApp {
     }
   }
 
-  onPlayerRevived() {
+  onPlayerReviveOffered(data) {
+    const senderName = (data && data.revivedBy) ? data.revivedBy : '친구';
+    const senderEl = document.getElementById('revive-offer-sender');
+    if (senderEl) {
+      senderEl.innerText = senderName;
+    }
+    const modal = document.getElementById('modal-revive-offer');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+    if (window.AudioManager) {
+      window.AudioManager.playFanfare();
+    }
+  }
+
+  onPlayerRevived(data) {
+    this.onPlayerReviveOffered(data);
+  }
+
+  acceptReviveOffer() {
+    const modal = document.getElementById('modal-revive-offer');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+
     this.playerData.isFallen = false;
     this.engine.player.isFallen = false;
-    this.playerData.hp = Math.floor(this.playerData.maxHp * 0.5);
+    this.playerData.hp = Math.max(1, Math.floor(this.playerData.maxHp * 0.5));
     this.updateHpBar();
     this.updateBossRaidUI();
-    alert('✨ 친구가 [부활 주문서]를 사용해 주었습니다!\n체력 50%로 부활하여 다시 전투에 참여합니다!');
-    this.loadNextBossQuestion();
+
+    if (this.networkManager.socket) {
+      this.networkManager.socket.emit('player_revive_accepted', {
+        name: this.playerData.name
+      });
+    }
+
+    if (window.AudioManager) {
+      window.AudioManager.playRevive();
+    }
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('✨ 부활 수락 완료!', '동료의 부활 주문서를 수락하여 체력 50%로 전투에 복귀했습니다!\n힘을 합쳐 보스를 공략해보세요!', '💫');
+    }
+
+    // Ensure boss raid window is open and load next turn
+    if (window.BOSS_CONFIG && window.BOSS_CONFIG.active) {
+      if (this.modalBossRaid) {
+        this.modalBossRaid.classList.remove('hidden');
+      }
+      this.loadNextBossQuestion();
+    }
+  }
+
+  declineReviveOffer() {
+    const modal = document.getElementById('modal-revive-offer');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show('대기 유지', '부활을 보류하고 대기 상태를 유지합니다.\n언제든 복도 부활을 선택할 수 있습니다.', '⏳');
+    }
   }
 
   // =========================================================================

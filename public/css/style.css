@@ -1191,24 +1191,45 @@ body, html {
   transition: width 0.3s ease;
 }
 
-.player-raid-bar {
+.player-status-box {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid #1e3a8a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.player-hp-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #0f172a;
-  border: 1.5px solid #334155;
-  border-radius: 10px;
-  padding: 10px 14px;
-  flex-wrap: wrap;
-  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #93c5fd;
 }
 
-.player-raid-stats {
-  display: flex;
-  gap: 14px;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #e2e8f0;
+.player-substat-pill {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+.player-hp-track {
+  height: 16px;
+  background: #172554;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #1e40af;
+}
+
+.player-hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 0.3s ease, background 0.3s ease;
 }
 
 .btn-potion-use {
@@ -1387,3 +1408,76 @@ body, html {
   from { opacity: 0.2; transform: translateY(0); }
   to { opacity: 1; transform: translateY(3px); }
 }
+
+/* ========================================================
+   DEATH CHOICE & REVIVAL ACTION BUTTONS
+   ======================================================== */
+.respawn-choice-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn-respawn-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 800;
+  transition: all 0.18s ease;
+  text-align: center;
+}
+
+.btn-respawn-hallway {
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #eff6ff;
+  border-color: #60a5fa;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.btn-respawn-hallway:hover {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.45);
+}
+
+.btn-wait-revive {
+  background: linear-gradient(135deg, #78350f, #d97706);
+  color: #fffbeb;
+  border-color: #fbbf24;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.btn-wait-revive:hover {
+  background: linear-gradient(135deg, #92400e, #f59e0b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.waiting-revive-box {
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px dashed #f59e0b;
+  border-radius: 10px;
+  padding: 16px 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: revivePulse 2s infinite ease-in-out;
+}
+
+@keyframes revivePulse {
+  0% { box-shadow: 0 0 4px rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.55); }
+  100% { box-shadow: 0 0 4px rgba(245, 158, 11, 0.2); }
+}
+

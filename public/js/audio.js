@@ -311,6 +311,71 @@ class AudioManager {
       });
     } catch (e) {}
   }
+
+  /**
+   * Combat Hit / Damage Sound (Punchy Retro 8-Bit Hit)
+   */
+  playHit() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now + 0.14);
+
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.14);
+    } catch (e) {}
+  }
+
+  /**
+   * Revival / Divine Light Sound (Glittering Chimes)
+   */
+  playRevive() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const arpeggio = [
+        { f: 440.00, t: 0.00, d: 0.12 }, // A4
+        { f: 554.37, t: 0.08, d: 0.12 }, // C#5
+        { f: 659.25, t: 0.16, d: 0.14 }, // E5
+        { f: 880.00, t: 0.24, d: 0.22 }, // A5
+        { f: 1108.73, t: 0.32, d: 0.35 }  // C#6
+      ];
+
+      arpeggio.forEach(n => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(n.f, now + n.t);
+
+        gain.gain.setValueAtTime(0.18, now + n.t);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.d);
+      });
+    } catch (e) {}
+  }
 }
 
 window.AudioManager = new AudioManager();

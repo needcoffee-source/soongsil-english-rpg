@@ -333,14 +333,16 @@
           </div>
         </div>
 
-        <!-- Player Combat Stats & Potion Button -->
-        <div class="player-raid-bar">
-          <div class="player-raid-stats">
-            <span>❤️ 내 체력: <b id="raid-player-hp">100 / 100</b></span>
-            <span>⚔️ 공격력: <b id="raid-player-atk">10</b></span>
-            <span>🛡️ 방어력: <b id="raid-player-def">2</b></span>
+        <!-- Player HP Bar (Golem Style) & Potion Bar -->
+        <div class="player-status-box">
+          <div class="player-hp-header">
+            <span>🛡️ <b id="raid-player-name-label">내 체력</b> <span class="player-substat-pill">(⚔️ 공격력 <b id="raid-player-atk" style="color:#f87171;">10</b> · 🛡️ 방어력 <b id="raid-player-def" style="color:#60a5fa;">2</b>)</span></span>
+            <span id="raid-player-hp" style="font-weight:900; color:#34d399;">HP 100 / 100</span>
           </div>
-          <div class="raid-potion-group" style="display:flex; gap:6px;">
+          <div class="player-hp-track">
+            <div id="raid-player-hp-fill" class="player-hp-fill" style="width:100%;"></div>
+          </div>
+          <div class="raid-potion-group" style="display:flex; gap:6px; margin-top:8px;">
             <button id="btn-raid-use-red-potion" class="btn-potion-use" style="flex:1;">🍷 빨간 물약 (+10) 0개</button>
             <button id="btn-raid-use-orange-potion" class="btn-potion-use" style="flex:1; background:#c2410c; border-color:#fb923c;">🧪 주황 물약 (+25) 0개</button>
             <button id="btn-raid-use-revive-scroll" class="btn-potion-use" style="flex:1; background:#4338ca; border-color:#818cf8;">📜 부활 주문서 0개</button>
@@ -357,6 +359,28 @@
       </div>
       <div class="modal-footer">
         <button id="btn-raid-next-turn" class="btn-primary hidden">다음 공격 턴 진행 ⚔️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-D. Revival Confirmation Modal (부활 주문서 수락 모달) -->
+  <div id="modal-revive-offer" class="modal-overlay hidden" style="z-index: 120;">
+    <div class="modal-card quiz-card" style="max-width: 440px; text-align: center; border: 2.5px solid #10b981;">
+      <div class="modal-header" style="justify-content: center; border-bottom: 1.5px solid rgba(16, 185, 129, 0.4);">
+        <h3 style="color: #34d399; font-size: 18px; margin: 0;">✨ 부활 주문서 도착!</h3>
+      </div>
+      <div class="modal-body" style="padding: 20px 16px;">
+        <div style="font-size: 38px; margin-bottom: 8px;">📜💫</div>
+        <p style="font-size: 15px; font-weight: 800; color: #f8fafc; margin-bottom: 6px;">
+          <span id="revive-offer-sender" style="color: #60a5fa;">친구</span> 님이 [📜 부활 주문서]를 사용했습니다!
+        </p>
+        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.5; margin-bottom: 0;">
+          부활을 수락하고 <b>체력 50%</b> 상태로<br>1학년 2반 보스전에 즉시 복귀하시겠습니까?
+        </p>
+      </div>
+      <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center; padding: 14px 16px;">
+        <button id="btn-accept-revive" class="btn-primary" style="flex: 1.2; background: linear-gradient(135deg, #059669, #10b981); font-weight: 800; font-size: 14px; padding: 12px;">⚔️ 부활 수락 (전투 복귀)</button>
+        <button id="btn-decline-revive" class="btn-secondary" style="flex: 0.8; padding: 12px; font-size: 13px;">대기 유지</button>
       </div>
     </div>
   </div>

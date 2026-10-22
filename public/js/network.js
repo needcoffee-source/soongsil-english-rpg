@@ -161,9 +161,17 @@ class NetworkManager {
       }
     });
 
-    this.socket.on('player_revived_event', () => {
-      if (window.MainApp && window.MainApp.onPlayerRevived) {
-        window.MainApp.onPlayerRevived();
+    this.socket.on('player_revive_offered', (data) => {
+      if (window.MainApp && window.MainApp.onPlayerReviveOffered) {
+        window.MainApp.onPlayerReviveOffered(data);
+      }
+    });
+
+    this.socket.on('player_revived_event', (data) => {
+      if (window.MainApp && window.MainApp.onPlayerReviveOffered) {
+        window.MainApp.onPlayerReviveOffered(data);
+      } else if (window.MainApp && window.MainApp.onPlayerRevived) {
+        window.MainApp.onPlayerRevived(data);
       }
     });
 
