@@ -2050,17 +2050,18 @@ class MainApp {
       const row = document.createElement('div');
       row.className = `leaderboard-item rank-${idx + 1}`;
       if (isMe) {
-        row.style.outline = '2px solid #3b82f6';
+        row.style.borderColor = '#3b82f6';
+        row.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.4)';
       }
 
       const icon = rankIcons[idx] || `${idx + 1}위`;
       row.innerHTML = `
         <div class="leaderboard-left">
           <span class="leaderboard-rank-badge">${icon}</span>
-          <div>
+          <div style="display:flex; align-items:center; min-width:0; overflow:hidden;">
             <span class="leaderboard-student-name">${entry.name || '학생'}</span>
             <span class="leaderboard-student-id">(${entry.studentId || ''})</span>
-            ${isMe ? '<span style="font-size:10.5px; background:#2563eb; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:800;">나</span>' : ''}
+            ${isMe ? '<span style="font-size:10px; background:#2563eb; color:#fff; padding:1px 5px; border-radius:4px; margin-left:5px; font-weight:800; flex-shrink:0;">나</span>' : ''}
           </div>
         </div>
         <div class="leaderboard-right">

@@ -76,7 +76,23 @@ class CraftingManager {
     available.forEach(r => {
       const item = document.createElement('div');
       item.className = 'recipe-item' + (this.selectedRecipe && this.selectedRecipe.id === r.id ? ' active' : '');
-      item.innerHTML = `<span>${r.icon}</span> <span>${r.name}</span>`;
+
+      // 한글과 (English)를 깔끔하게 분리하여 두 줄로 표시
+      let nameKo = r.name;
+      let nameEn = '';
+      const match = r.name.match(/^(.*?)\s*(\([^\)]+\))$/);
+      if (match) {
+        nameKo = match[1].trim();
+        nameEn = match[2].trim();
+      }
+
+      item.innerHTML = `
+        <span class="recipe-item-icon">${r.icon}</span>
+        <div class="recipe-item-info">
+          <div class="recipe-name-ko">${nameKo}</div>
+          ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
+        </div>
+      `;
       item.addEventListener('click', () => {
         this.selectRecipe(r);
       });

@@ -79,7 +79,7 @@
   },
   {
     "id": "recipe_forsythia_ring",
-    "name": "성실의 개나리 반지",
+    "name": "성실의 개나리 반지 (Forsythia Ring)",
     "category": "equipment",
     "description": "[교화 개나리 · 꽃말: 성실] 노란 개나리 꽃잎 10개를 모아 빚은 반지입니다.",
     "icon": "🏵️",
@@ -105,9 +105,9 @@
   },
   {
     "id": "recipe_ginkgo_talisman",
-    "name": "역심의 황금 은행잎 부적",
+    "name": "황금 은행잎 부적 (Ginkgo Talisman)",
     "category": "equipment",
-    "description": "[교목 은행나무 · 7% 확률] 황금 은행잎 10개를 역심하여 모은 최고급 장신구입니다.",
+    "description": "[교목 은행나무 · 7% 확률] 황금 은행잎 10개를 모은 최고급 장신구입니다.",
     "icon": "🍂",
     "gradeLevel": 1,
     "requiredGold": 50,
@@ -121,7 +121,7 @@
     },
     "result": {
       "item": "equip_ginkgo_talisman",
-      "name": "역심의 황금 은행잎 부적",
+      "name": "황금 은행잎 부적",
       "icon": "🍂",
       "type": "equipment",
       "slot": "accessory",

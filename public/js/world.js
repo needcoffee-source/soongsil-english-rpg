@@ -18,7 +18,7 @@ const WORLD_DATA = {
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 }
       ],
       interactive: [
-        { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "실시간 랭킹보드", prompt: "레벨 순위 보기" },
+        { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 12, name: "장비 제작대", prompt: "장비 제작하기" },
         { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 12, name: "포션 제작대", prompt: "포션·주문서 제작하기" }
       ],

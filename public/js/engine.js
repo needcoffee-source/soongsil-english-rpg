@@ -1379,17 +1379,16 @@ class GameEngine {
     this.ctx.fillStyle = '#064e3b';
     this.ctx.fillRect(px + 6, py + 6, w - 12, h - 12);
 
-    // Trophy Icon & Gold Header
-    this.ctx.font = '16px sans-serif';
-    this.ctx.fillText('🏆', px + 9, py + 26);
+    // Chalkboard Header: Centered Trophy & 랭킹보드
+    this.ctx.save();
+    this.ctx.textAlign = 'center';
+    this.ctx.font = '13px sans-serif';
+    this.ctx.fillText('🏆', px + w / 2, py + 17);
 
     this.ctx.fillStyle = '#fef08a';
-    this.ctx.font = 'bold 10px "Noto Sans KR", sans-serif';
-    this.ctx.fillText('TOP 5', px + 28, py + 18);
-
-    this.ctx.fillStyle = '#a7f3d0';
-    this.ctx.font = 'bold 8px "Noto Sans KR", sans-serif';
-    this.ctx.fillText('RANKING', px + 26, py + 29);
+    this.ctx.font = 'bold 8.5px "Noto Sans KR", sans-serif';
+    this.ctx.fillText('랭킹보드', px + w / 2, py + 28);
+    this.ctx.restore();
 
     // Chalk tray with chalk sticks
     this.ctx.fillStyle = '#451a03';
@@ -1399,7 +1398,7 @@ class GameEngine {
     this.ctx.fillStyle = '#fde047';
     this.ctx.fillRect(px + 22, py + h - 3, 5, 2);
 
-    this.drawSharpLabel(px + w / 2, py + h + 16, '🏆 실시간 랭킹보드', {
+    this.drawSharpLabel(px + w / 2, py + h + 16, '🏆 랭킹보드', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#fbbf24',
       textColor: '#ffffff',
