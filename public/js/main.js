@@ -19,7 +19,7 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주황 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
-  'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 15% 체력으로 부활' } },
+  'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
 
   // 3. 1st Grade Wooden Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
@@ -1127,7 +1127,7 @@ class MainApp {
         window.AudioManager.playHit();
       }
 
-      logEl.innerHTML = `<b style="color:#ef4444; font-size:14px;">💀 쓰러졌습니다!</b><br><span style="color:#fde047; font-size:12px;">부활 방식을 선택하세요: 복도에서 부활(100%)하거나, 교실에서 친구의 부활 주문서(15%)를 기다릴 수 있습니다.</span>`;
+      logEl.innerHTML = `<b style="color:#ef4444; font-size:14px;">💀 쓰러졌습니다!</b><br><span style="color:#fde047; font-size:12px;">부활 방식을 선택하세요: 복도에서 부활(15%)하거나, 교실에서 친구의 부활 주문서(50%)를 기다릴 수 있습니다.</span>`;
       document.getElementById('raid-quiz-question').innerText = '💀 전투 불능 상태입니다. 부활 방식을 선택해 주세요.';
 
       const optionsEl = document.getElementById('raid-quiz-options');
@@ -1135,11 +1135,11 @@ class MainApp {
         <div class="respawn-choice-container">
           <button id="btn-respawn-hallway" class="btn-respawn-choice btn-respawn-hallway">
             🏛️ 복도(출발지) 부활
-            <span style="font-size:11.5px; opacity:0.9; font-weight:normal; margin-top:3px;">(체력 100% 회복 · 로비 귀환)</span>
+            <span style="font-size:11.5px; opacity:0.9; font-weight:normal; margin-top:3px;">(체력 15% 회복 · 로비 귀환)</span>
           </button>
           <button id="btn-wait-revive" class="btn-respawn-choice btn-wait-revive">
             ⏳ 교실에서 대기하기
-            <span style="font-size:11.5px; opacity:0.9; font-weight:normal; margin-top:3px;">(주문서 사용 시 체력 15% 복귀)</span>
+            <span style="font-size:11.5px; opacity:0.9; font-weight:normal; margin-top:3px;">(주문서 사용 시 체력 50% 복귀)</span>
           </button>
         </div>
       `;
@@ -1165,7 +1165,7 @@ class MainApp {
   respawnAtHallway() {
     this.playerData.isFallen = false;
     this.engine.player.isFallen = false;
-    this.playerData.hp = this.playerData.maxHp;
+    this.playerData.hp = Math.max(1, Math.floor(this.playerData.maxHp * 0.15));
     this.updateHpBar();
     this.updateBossRaidUI();
 
@@ -1190,7 +1190,7 @@ class MainApp {
     }
 
     if (window.RPGDialog) {
-      window.RPGDialog.show('🏛️ 복도 부활', '안전하게 1학년 복도로 귀환하여 체력이 100% 회복되었습니다.\n재정비 후 다시 도전해보세요!', '✨');
+      window.RPGDialog.show('🏛️ 복도 부활', '안전하게 1학년 복도로 귀환했습니다.\n(현재 체력 15% 상태이므로 물약을 마시거나 재정비 후 다시 도전해보세요!)', '✨');
     }
   }
 
@@ -1215,7 +1215,7 @@ class MainApp {
             친구가 주문서를 써주면 <b>[부활 수락]</b> 버튼이 화면에 즉시 나타납니다.
           </p>
           <button id="btn-fallback-respawn" class="btn-respawn-choice btn-respawn-hallway" style="padding:10px 16px; font-size:13px; margin-top:8px; width:auto;">
-            🏛️ 기다리지 않고 복도에서 부활하기 (체력 100%)
+            🏛️ 기다리지 않고 복도에서 부활하기 (체력 15%)
           </button>
         </div>
       `;
@@ -1241,7 +1241,7 @@ class MainApp {
     }
 
     const target = fallenOthers[0];
-    if (confirm(`'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까? (상대방이 수락 시 HP 15% 복귀)`)) {
+    if (confirm(`'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까? (상대방이 수락 시 HP 50% 복귀)`)) {
       this.removeItem('item_revive_scroll', 1);
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('use_revive_scroll', {
@@ -1280,7 +1280,7 @@ class MainApp {
 
     this.playerData.isFallen = false;
     this.engine.player.isFallen = false;
-    this.playerData.hp = Math.max(1, Math.floor(this.playerData.maxHp * 0.15));
+    this.playerData.hp = Math.max(1, Math.floor(this.playerData.maxHp * 0.5));
     this.updateHpBar();
     this.updateBossRaidUI();
 
@@ -1295,7 +1295,7 @@ class MainApp {
     }
 
     if (window.RPGDialog) {
-      window.RPGDialog.show('✨ 부활 수락 완료!', '동료의 부활 주문서를 수락하여 체력 15%로 전투에 복귀했습니다!\n힘을 합쳐 보스를 공략해보세요!', '💫');
+      window.RPGDialog.show('✨ 부활 수락 완료!', '동료의 부활 주문서를 수락하여 체력 50%로 전투에 복귀했습니다!\n힘을 합쳐 보스를 공략해보세요!', '💫');
     }
 
     // Ensure boss raid window is open and load next turn
