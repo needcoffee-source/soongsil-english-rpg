@@ -9,6 +9,18 @@ class GameEngine {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
 
+    // Safe polyfill for roundRect across all mobile & older browsers
+    if (this.ctx && !this.ctx.roundRect) {
+      this.ctx.roundRect = function(x, y, w, h, r) {
+        const rad = typeof r === 'number' ? r : (Array.isArray(r) ? r[0] : 4);
+        this.moveTo(x + rad, y);
+        this.arcTo(x + w, y, x + w, y + h, rad);
+        this.arcTo(x + w, y + h, x, y + h, rad);
+        this.arcTo(x, y + h, x, y, rad);
+        this.arcTo(x, y, x + w, y, rad);
+      };
+    }
+
     // 2x Retina Super-Sampling for Razor-Sharp Korean Typography & Pixel Art
     this.renderScale = 2;
     this.width = 860;
@@ -238,7 +250,7 @@ class GameEngine {
       }
       this.player.animFrame = 0;
     }
-    this.isMovingPrev = moving;
+    this.isMovingPrev = this.player.isMoving;
 
     // Check nearby interactable
     this.checkNearbyInteractable();
