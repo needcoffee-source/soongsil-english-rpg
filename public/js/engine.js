@@ -1970,31 +1970,63 @@ class GameEngine {
   // ========================================================
   // CHARACTER SPRITE SYSTEM (포켓몬 금/은 스타일 도트 캐릭터)
   // - 16x23 도트 그리드 · 4방향 · 4프레임 걷기 · 눈 깜빡임 · 외곽선
+  // - 교사: 여성 긴머리 캐릭터 (단정한 정장 & 찰랑이는 롱헤어)
+  // - 학생: 남학생 캐릭터 고정 (머리색 3종: 흑발/갈색/금발, 옷색 3종: 레드/블루/그린)
   // - 착용 장비(투구/갑옷/무기/장신구)가 외형에 그대로 표시
-  // - 색상은 팔레트로 분리 → 추후 캐릭터 꾸미기(머리색/옷색) 확장 용이
-  // - 한 번 그린 스프라이트는 캐시하여 다인원 접속 시에도 가볍게 유지
   // ========================================================
-  getCharacterPalette(isTeacher) {
+  getCharacterPalette(isTeacher, hairColor = 'black', outfitColor = 'red') {
     if (isTeacher) {
+      // 👩‍🏫 교사 (여성 긴머리): 다크브라운 찰랑이는 긴머리, 슬레이트 네이비 자켓, 화이트 블라우스, 단정한 스커트
       return {
-        cap: '#1e1b4b', capShade: '#0c0a24', capAccent: '#fbbf24',
-        hair: '#2a1f1a', hairHi: '#4b3a2f',
-        jacket: '#1e1b4b', jacketShade: '#110e30', jacketHi: '#312e81',
-        inner: '#f8fafc', tie: '#f59e0b',
-        pants: '#0f172a', pantsShade: '#020617',
-        shoe: '#5b2a0a', sole: '#1c0a00',
+        isTeacher: true,
+        hair: '#382216', hairHi: '#5a3825', hairShade: '#22130b',
+        jacket: '#1e293b', jacketShade: '#0f172a', jacketHi: '#334155',
+        inner: '#ffffff', accent: '#f59e0b',
+        skirt: '#1e293b', skirtShade: '#0f172a',
+        legs: '#fcd5b0',
+        shoe: '#451a03', sole: '#1c0a00',
         bag: '#78350f', bagShade: '#451a03'
       };
     }
-    return {
-      cap: '#dc2626', capShade: '#991b1b', capAccent: '#f8fafc',
-      hair: '#2a1f1a', hairHi: '#4b3a2f',
-      jacket: '#ef4444', jacketShade: '#b91c1c', jacketHi: '#f87171',
-      inner: '#1f2937', tie: null,
-      pants: '#1e40af', pantsShade: '#172554',
-      shoe: '#dc2626', sole: '#f1f5f9',
-      bag: '#eab308', bagShade: '#a16207'
+
+    // 👦 남학생 머리색 3종 (흑발, 갈색, 금발)
+    const HAIR_COLORS = {
+      black: { hair: '#221f24', hairHi: '#3d3842', hairShade: '#121013' },
+      brown: { hair: '#5c3317', hairHi: '#824c24', hairShade: '#3b200e' },
+      blonde: { hair: '#b87a1d', hairHi: '#eab308', hairShade: '#784c0c' }
     };
+    const H = HAIR_COLORS[hairColor] || HAIR_COLORS.black;
+
+    // 👦 남학생 옷 색상 3종 (레드, 블루, 그린)
+    const OUTFIT_COLORS = {
+      red: {
+        cap: '#dc2626', capShade: '#991b1b', capAccent: '#ffffff',
+        jacket: '#ef4444', jacketShade: '#b91c1c', jacketHi: '#f87171',
+        inner: '#1f2937',
+        pants: '#1e40af', pantsShade: '#172554',
+        shoe: '#dc2626', sole: '#f1f5f9',
+        bag: '#eab308', bagShade: '#a16207'
+      },
+      blue: {
+        cap: '#2563eb', capShade: '#1d4ed8', capAccent: '#ffffff',
+        jacket: '#3b82f6', jacketShade: '#1d4ed8', jacketHi: '#60a5fa',
+        inner: '#0f172a',
+        pants: '#0f172a', pantsShade: '#020617',
+        shoe: '#2563eb', sole: '#f1f5f9',
+        bag: '#f59e0b', bagShade: '#b45309'
+      },
+      green: {
+        cap: '#16a34a', capShade: '#15803d', capAccent: '#ffffff',
+        jacket: '#22c55e', jacketShade: '#15803d', jacketHi: '#4ade80',
+        inner: '#1e293b',
+        pants: '#334155', pantsShade: '#1e293b',
+        shoe: '#16a34a', sole: '#f1f5f9',
+        bag: '#eab308', bagShade: '#a16207'
+      }
+    };
+    const O = OUTFIT_COLORS[outfitColor] || OUTFIT_COLORS.red;
+
+    return Object.assign({ isTeacher: false }, H, O);
   }
 
   hashString(s) {
@@ -2005,7 +2037,7 @@ class GameEngine {
 
   // Paints one character frame onto an offscreen context in grid units (1 unit = 1 game px)
   paintCharacter(g, o) {
-    const P = this.getCharacterPalette(o.teacher);
+    const P = this.getCharacterPalette(o.teacher, o.hairColor, o.outfitColor);
     const S = { skin: '#fcd5b0', skinShade: '#e8a87c', blush: '#f9a8a8', eye: '#1e1b2e' };
     const W = {
       wood: { blade: '#e3b778', hi: '#f5d7a1', shade: '#a0703c', guard: '#6b4423', hilt: '#3f2a14' },
@@ -2047,7 +2079,7 @@ class GameEngine {
         r(2, 3, 12, 1, h.dark);
         if (gear.helmet === 'bronze') {
           r(7, -3, 2, 2, '#dc2626'); r(7, -3, 1, 1, '#f87171');
-          if (o.dir === 'down') { r(7, 4, 2, 3, h.base); r(7, 4, 1, 3, h.hi); } // 코 가리개
+          if (o.dir === 'down') { r(7, 4, 2, 3, h.base); r(7, 4, 1, 3, h.hi); }
         }
       }
     };
@@ -2069,11 +2101,24 @@ class GameEngine {
       const lDy = f === 1 ? 1 : (f === 3 ? -1 : 0);
       const rDy = -lDy;
 
-      // Legs & shoes (들어 올린 발은 1px 위로)
-      rl(4, 18, 4, 3 - lUp, P.pants); rl(8, 18, 4, 3 - rUp, P.pants);
-      rl(7, 18, 1, 3 - lUp, P.pantsShade);
-      rl(4, 21 - lUp, 4, 1, P.shoe); rl(4, 22 - lUp, 4, 1, P.sole);
-      rl(8, 21 - rUp, 4, 1, P.shoe); rl(8, 22 - rUp, 4, 1, P.sole);
+      // Legs & shoes
+      if (o.teacher) {
+        // 교사 (여성): 단정한 H라인 스커트 + 다리/스타킹 + 브라운 단화
+        rl(4, 18, 8, 3, P.skirt);
+        rl(4, 20, 8, 1, P.skirtShade);
+        rl(5, 21 - lUp, 2, 1, P.legs);
+        rl(9, 21 - rUp, 2, 1, P.legs);
+        rl(5, 22 - lUp, 3, 1, P.shoe);
+        rl(9, 22 - rUp, 3, 1, P.shoe);
+        rl(5, 23 - lUp, 3, 1, P.sole);
+        rl(9, 23 - rUp, 3, 1, P.sole);
+      } else {
+        // 남학생: 팬츠 + 스니커즈
+        rl(4, 18, 4, 3 - lUp, P.pants); rl(8, 18, 4, 3 - rUp, P.pants);
+        rl(7, 18, 1, 3 - lUp, P.pantsShade);
+        rl(4, 21 - lUp, 4, 1, P.shoe); rl(4, 22 - lUp, 4, 1, P.sole);
+        rl(8, 21 - rUp, 4, 1, P.shoe); rl(8, 22 - rUp, 4, 1, P.sole);
+      }
 
       // Arms (팔 흔들기)
       r(2, 12 + lDy, 2, 5, P.jacket); r(2, 12 + lDy, 1, 5, P.jacketShade); r(2, 17 + lDy, 2, 1, S.skin);
@@ -2085,11 +2130,17 @@ class GameEngine {
       r(5, 11, 6, 1, P.jacketHi);
       r(4, 17, 8, 1, P.jacketShade);
       if (front) {
-        if (o.teacher) { r(6, 11, 4, 1, P.inner); r(7, 12, 2, 4, P.tie); }
-        else { r(6, 11, 4, 1, P.inner); r(7, 12, 2, 2, P.inner); }
+        if (o.teacher) {
+          // 여성 교사: 화이트 이너 블라우스 + 골드 펜던트
+          r(6, 11, 4, 2, P.inner);
+          r(7, 12, 2, 1, P.accent);
+        } else {
+          r(6, 11, 4, 1, P.inner);
+          r(7, 12, 2, 2, P.inner);
+        }
       }
 
-      // Armor plate
+      // Armor plate (장비 착용 시)
       if (gear.armor) {
         const a = A[gear.armor];
         r(5, 12, 6, 5, a.base); r(5, 12, 6, 1, a.hi); r(5, 16, 6, 1, a.shade);
@@ -2103,11 +2154,12 @@ class GameEngine {
           r(5, 12, 6, 5, P.bag); r(5, 13, 6, 1, P.bagShade); r(5, 16, 6, 1, P.bagShade);
           r(5, 11, 1, 1, P.bagShade); r(10, 11, 1, 1, P.bagShade);
         } else {
+          // 여성 교사 가죽 숄더백 끈
           for (let i = 0; i < 7; i++) r(4 + i, 11 + i, 1, 1, P.bag);
         }
       }
 
-      // Shoulder pads
+      // Shoulder pads (장비 착용 시)
       if (gear.armor) {
         const a = A[gear.armor];
         if (gear.armor === 'bronze') {
@@ -2119,33 +2171,67 @@ class GameEngine {
         }
       }
 
-      // Head
+      // --- HEAD & HAIR ---
       if (front) {
         r(4, 5, 8, 5, S.skin); r(5, 10, 6, 1, S.skin);
         r(3, 7, 1, 2, S.skin); r(12, 7, 1, 2, S.skin);
-        r(3, 4, 10, 2, P.hair);
-        r(5, 5, 2, 1, S.skin); r(8, 5, 3, 1, S.skin);
-        r(3, 6, 1, 1, P.hair); r(12, 6, 1, 1, P.hair);
-        if (o.ko) { drawKoEyes(5); drawKoEyes(10); }
-        else if (o.blink) { r(5, 8, 1, 1, S.eye); r(10, 8, 1, 1, S.eye); }
-        else { r(5, 7, 1, 2, S.eye); r(10, 7, 1, 2, S.eye); }
-        r(4, 9, 1, 1, S.blush); r(11, 9, 1, 1, S.blush);
-        r(7, 9, 2, 1, o.ko ? '#7f1d1d' : S.skinShade);
+
+        if (o.teacher) {
+          // 👩‍🏫 여성 교사 (긴머리):
+          // 정수리 & 부드러운 가르마
+          r(3, 3, 10, 3, P.hair); r(5, 3, 4, 1, P.hairHi);
+          r(3, 5, 2, 2, P.hair); r(11, 5, 2, 2, P.hair);
+          r(5, 5, 2, 1, P.hair); r(9, 5, 2, 1, P.hair);
+          // 양 어깨 너머로 가슴까지 흘러내리는 풍성한 긴 생머리!
+          r(2, 6, 2, 9, P.hair); r(2, 7, 1, 7, P.hairHi); r(2, 14, 2, 1, P.hairShade);
+          r(12, 6, 2, 9, P.hair); r(13, 7, 1, 7, P.hairHi); r(12, 14, 2, 1, P.hairShade);
+          // 골드 펄 헤어핀 포인트
+          r(3, 4, 1, 1, '#fde047');
+
+          // 여성스러운 눈매 (속눈썹 라인)
+          if (o.ko) { drawKoEyes(5); drawKoEyes(10); }
+          else if (o.blink) { r(4, 7, 3, 1, S.eye); r(9, 7, 3, 1, S.eye); }
+          else {
+            r(4, 6, 3, 1, '#1e1b2e'); // 상단 속눈썹 라인
+            r(5, 7, 1, 2, S.eye);
+            r(9, 6, 3, 1, '#1e1b2e');
+            r(10, 7, 1, 2, S.eye);
+          }
+          r(4, 9, 1, 1, '#fca5a5'); r(11, 9, 1, 1, '#fca5a5'); // 핑크 볼터치
+          r(7, 9, 2, 1, '#f43f5e'); // 로즈 립
+        } else {
+          // 👦 남학생:
+          r(3, 4, 10, 2, P.hair);
+          r(5, 5, 2, 1, S.skin); r(8, 5, 3, 1, S.skin);
+          r(3, 6, 1, 1, P.hair); r(12, 6, 1, 1, P.hair);
+          if (o.ko) { drawKoEyes(5); drawKoEyes(10); }
+          else if (o.blink) { r(5, 8, 1, 1, S.eye); r(10, 8, 1, 1, S.eye); }
+          else { r(5, 7, 1, 2, S.eye); r(10, 7, 1, 2, S.eye); }
+          r(4, 9, 1, 1, S.blush); r(11, 9, 1, 1, S.blush);
+          r(7, 9, 2, 1, o.ko ? '#7f1d1d' : S.skinShade);
+        }
       } else {
-        r(3, 4, 10, 6, P.hair); r(5, 5, 3, 1, P.hairHi);
-        r(3, 7, 1, 2, S.skin); r(12, 7, 1, 2, S.skin);
-        r(5, 10, 6, 1, S.skinShade);
+        // 뒷모습 (Facing Up)
+        if (o.teacher) {
+          // 👩‍🏫 교사 뒷모습: 등 뒤 허리선까지 풍성하게 내려오는 긴 생머리!
+          r(3, 3, 10, 11, P.hair);
+          r(5, 3, 4, 2, P.hairHi);
+          r(4, 13, 8, 2, P.hair);
+          r(5, 14, 6, 1, P.hairShade);
+          r(2, 6, 1, 7, P.hair); r(13, 6, 1, 7, P.hair);
+        } else {
+          // 👦 남학생 뒷머리
+          r(3, 4, 10, 6, P.hair); r(5, 5, 3, 1, P.hairHi);
+          r(3, 7, 1, 2, S.skin); r(12, 7, 1, 2, S.skin);
+          r(5, 10, 6, 1, S.skinShade);
+        }
       }
 
-      // Headwear (투구 > 교사 학사모 > 학생 모자)
+      // Headwear (투구 > 남학생 모자 / 교사는 긴머리 유지)
       if (gear.helmet) {
         drawHelmet(false);
-      } else if (o.teacher) {
-        r(1, 0, 14, 1, P.cap); r(1, 1, 14, 1, P.capShade);
-        r(3, 2, 10, 2, P.cap);
-        const tx = front ? 13 : 2;
-        r(tx, 1, 1, 3, P.capAccent); r(tx - (front ? 1 : 0), 4, 2, 1, P.capAccent);
-      } else {
+      } else if (!o.teacher) {
+        // 남학생 캡 모자
         r(5, 0, 6, 1, P.cap); r(4, 1, 8, 1, P.cap); r(3, 2, 10, 1, P.cap);
         if (front) { r(6, 1, 4, 2, P.capAccent); r(2, 3, 12, 1, P.capShade); }
         else { r(3, 3, 10, 1, P.cap); r(6, 3, 4, 1, P.capShade); }
@@ -2172,25 +2258,37 @@ class GameEngine {
     if (!o.teacher) {
       r(9, 12, 4, 5, P.bag); r(12, 12, 1, 5, P.bagShade); r(9, 16, 4, 1, P.bagShade);
     } else {
-      r(9, 14, 3, 4, P.bag); r(11, 14, 1, 4, P.bagShade);
+      r(10, 13, 3, 4, P.bag); r(12, 13, 1, 4, P.bagShade);
     }
 
     // Legs & shoes
-    if (step) {
-      const frontC = f === 1 ? P.pants : P.pantsShade;
-      const backC = f === 1 ? P.pantsShade : P.pants;
-      rl(9, 18, 3, 3, backC); rl(9, 21, 3, 1, P.shoe); rl(9, 22, 3, 1, P.sole);
-      rl(4, 18, 3, 3, frontC); rl(3, 21, 4, 1, P.shoe); rl(3, 22, 4, 1, P.sole);
+    if (o.teacher) {
+      // 교사 측면 스커트 & 다리
+      rl(5, 18, 5, 3, P.skirt); rl(8, 18, 2, 3, P.skirtShade);
+      if (step) {
+        rl(4, 21, 2, 1, P.legs); rl(3, 22, 3, 1, P.shoe); rl(3, 23, 3, 1, P.sole);
+        rl(8, 21, 2, 1, P.legs); rl(8, 22, 3, 1, P.shoe); rl(8, 23, 3, 1, P.sole);
+      } else {
+        rl(6, 21, 3, 1, P.legs); rl(5, 22, 4, 1, P.shoe); rl(5, 23, 4, 1, P.sole);
+      }
     } else {
-      rl(6, 18, 4, 3, P.pants); rl(8, 18, 1, 3, P.pantsShade);
-      rl(5, 21, 5, 1, P.shoe); rl(5, 22, 5, 1, P.sole);
+      // 남학생 팬츠 & 스니커즈
+      if (step) {
+        const frontC = f === 1 ? P.pants : P.pantsShade;
+        const backC = f === 1 ? P.pantsShade : P.pants;
+        rl(9, 18, 3, 3, backC); rl(9, 21, 3, 1, P.shoe); rl(9, 22, 3, 1, P.sole);
+        rl(4, 18, 3, 3, frontC); rl(3, 21, 4, 1, P.shoe); rl(3, 22, 4, 1, P.sole);
+      } else {
+        rl(6, 18, 4, 3, P.pants); rl(8, 18, 1, 3, P.pantsShade);
+        rl(5, 21, 5, 1, P.shoe); rl(5, 22, 5, 1, P.sole);
+      }
     }
 
     // Torso
     r(5, 11, 6, 7, P.jacket); r(10, 11, 1, 7, P.jacketShade);
     r(5, 11, 5, 1, P.jacketHi); r(5, 17, 6, 1, P.jacketShade);
     r(5, 11, 1, 2, P.inner);
-    if (o.teacher) r(5, 12, 1, 4, P.tie);
+    if (o.teacher) r(5, 12, 1, 1, P.accent);
 
     if (gear.armor) {
       const a = A[gear.armor];
@@ -2201,26 +2299,43 @@ class GameEngine {
 
     // Head
     r(4, 5, 5, 5, S.skin); r(5, 10, 4, 1, S.skin); r(3, 8, 1, 1, S.skin);
-    r(4, 4, 9, 1, P.hair); r(9, 5, 4, 5, P.hair); r(4, 5, 1, 1, P.hair); r(8, 5, 1, 1, P.hair);
-    r(10, 6, 2, 1, P.hairHi);
-    r(9, 7, 1, 2, S.skin); r(9, 8, 1, 1, S.skinShade);
-    if (o.ko) drawKoEyes(5);
-    else if (o.blink) r(5, 8, 1, 1, S.eye);
-    else r(5, 7, 1, 2, S.eye);
-    r(6, 9, 1, 1, S.blush);
-    r(4, 9, 1, 1, S.skinShade);
 
-    // Headwear
+    if (o.teacher) {
+      // 👩‍🏫 교사 측면 긴머리: 등 뒤로 흘러내리는 긴머리 실루엣
+      r(4, 3, 6, 2, P.hair); r(4, 5, 2, 2, P.hair);
+      r(8, 4, 5, 11, P.hair);
+      r(9, 5, 2, 4, P.hairHi);
+      r(8, 14, 4, 2, P.hairShade);
+
+      if (o.ko) drawKoEyes(5);
+      else if (o.blink) r(4, 7, 2, 1, S.eye);
+      else {
+        r(4, 6, 2, 1, '#1e1b2e'); // 속눈썹 라인
+        r(5, 7, 1, 2, S.eye);
+      }
+      r(6, 9, 1, 1, '#fca5a5');
+      r(4, 9, 1, 1, S.skinShade);
+    } else {
+      // 👦 남학생 측면
+      r(4, 4, 9, 1, P.hair); r(9, 5, 4, 5, P.hair); r(4, 5, 1, 1, P.hair); r(8, 5, 1, 1, P.hair);
+      r(10, 6, 2, 1, P.hairHi);
+      r(9, 7, 1, 2, S.skin); r(9, 8, 1, 1, S.skinShade);
+      if (o.ko) drawKoEyes(5);
+      else if (o.blink) r(5, 8, 1, 1, S.eye);
+      else r(5, 7, 1, 2, S.eye);
+      r(6, 9, 1, 1, S.blush);
+      r(4, 9, 1, 1, S.skinShade);
+
+      // 남학생 측면 캡 모자
+      if (!gear.helmet) {
+        r(6, 0, 5, 1, P.cap); r(5, 1, 7, 1, P.cap); r(4, 2, 8, 1, P.cap);
+        r(5, 1, 3, 2, P.capAccent);
+        r(1, 3, 8, 1, P.capShade); r(9, 3, 3, 1, P.cap);
+      }
+    }
+
     if (gear.helmet) {
       drawHelmet(true);
-    } else if (o.teacher) {
-      r(2, 0, 12, 1, P.cap); r(2, 1, 12, 1, P.capShade);
-      r(4, 2, 8, 2, P.cap);
-      r(12, 1, 1, 3, P.capAccent); r(12, 4, 1, 1, P.capAccent);
-    } else {
-      r(6, 0, 5, 1, P.cap); r(5, 1, 7, 1, P.cap); r(4, 2, 8, 1, P.cap);
-      r(5, 1, 3, 2, P.capAccent);
-      r(1, 3, 8, 1, P.capShade); r(9, 3, 3, 1, P.cap);
     }
 
     // Near arm (앞쪽 팔 흔들기)
@@ -2249,6 +2364,7 @@ class GameEngine {
     const gr = opts.gear || {};
     const key = [
       opts.dir, opts.frame, opts.teacher ? 1 : 0, opts.blink ? 1 : 0, opts.ko ? 1 : 0,
+      opts.hairColor || 'black', opts.outfitColor || 'red',
       gr.weapon || '-', gr.helmet || '-', gr.armor || '-', gr.accessory || '-'
     ].join('|');
 
@@ -2337,6 +2453,8 @@ class GameEngine {
       teacher: isTeacher,
       blink,
       ko: isFallen,
+      hairColor: p.hairColor || 'black',
+      outfitColor: p.outfitColor || 'red',
       gear: {
         weapon: tier(gearSrc.weapon),
         helmet: tier(gearSrc.helmet),

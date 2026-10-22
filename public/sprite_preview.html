@@ -13,10 +13,10 @@ const sheet = document.getElementById('sheet');
 const ctx = sheet.getContext('2d');
 const ZOOM = 3; // extra zoom for review
 const looks = [
-  { label: '학생 기본', teacher: false, gear: {} },
-  { label: '학생 나무장비', teacher: false, gear: { weapon: 'wood', helmet: 'wood', armor: 'wood', accessory: 'forsythia' } },
-  { label: '학생 청동장비', teacher: false, gear: { weapon: 'bronze', helmet: 'bronze', armor: 'bronze', accessory: 'ginkgo' } },
-  { label: '교사', teacher: true, gear: {} },
+  { label: '남학생 (흑발 + 레드)', teacher: false, hairColor: 'black', outfitColor: 'red', gear: {} },
+  { label: '남학생 (갈색 + 블루)', teacher: false, hairColor: 'brown', outfitColor: 'blue', gear: { weapon: 'wood', helmet: 'wood', armor: 'wood', accessory: 'forsythia' } },
+  { label: '남학생 (금발 + 그린)', teacher: false, hairColor: 'blonde', outfitColor: 'green', gear: { weapon: 'bronze', helmet: 'bronze', armor: 'bronze', accessory: 'ginkgo' } },
+  { label: '여성 교사 (긴머리)', teacher: true, hairColor: 'black', outfitColor: 'red', gear: {} },
 ];
 const dirs = ['down', 'up', 'left', 'right'];
 const cellW = 24 * ZOOM * 2 + 10, cellH = 32 * ZOOM * 2 + 22;
@@ -27,14 +27,14 @@ looks.forEach((lk, row) => {
   let col = 0;
   dirs.forEach(dir => {
     for (let fr = 0; fr < 4; fr++) {
-      const spr = eng.getCharacterSprite({ dir, frame: fr, teacher: lk.teacher, blink: false, ko: false, gear: lk.gear });
+      const spr = eng.getCharacterSprite({ dir, frame: fr, teacher: lk.teacher, hairColor: lk.hairColor, outfitColor: lk.outfitColor, blink: false, ko: false, gear: lk.gear });
       const x = 10 + col * cellW, y = 10 + row * cellH;
       ctx.drawImage(spr, x, y + 16, spr.width * ZOOM, spr.height * ZOOM);
       ctx.fillStyle = '#333'; ctx.fillText(`${lk.label} ${dir} f${fr}`, x, y + 10);
       col++;
     }
   });
-  const ko = eng.getCharacterSprite({ dir: 'down', frame: 0, teacher: lk.teacher, blink: false, ko: true, gear: lk.gear });
+  const ko = eng.getCharacterSprite({ dir: 'down', frame: 0, teacher: lk.teacher, hairColor: lk.hairColor, outfitColor: lk.outfitColor, blink: false, ko: true, gear: lk.gear });
   const x = 10 + col * cellW, y = 10 + row * cellH;
   ctx.drawImage(ko, x, y + 16, ko.width * ZOOM, ko.height * ZOOM);
   ctx.fillStyle = '#333'; ctx.fillText('기절(KO)', x, y + 10);

@@ -201,11 +201,39 @@
         </div>
         <input type="hidden" id="selected-avatar" value="student_m1">
 
+        <!-- Student Customization (남학생 머리색 3종 & 옷색상 3종) -->
+        <div id="student-customization-box" class="input-group" style="margin-top: 4px;">
+          <label style="display:flex; justify-content:space-between; align-items:center;">
+            <span>👦 남학생 캐릭터 스타일</span>
+            <span style="font-size:11px; color:#94a3b8; font-weight:normal;">머리색 & 옷 색상 선택</span>
+          </label>
+          <div style="background:#18181b; border:1.5px solid #334155; border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:8px;">
+            <!-- Hair color 3 kinds -->
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+              <span style="font-size:12px; color:#cbd5e1; font-weight:700;">머리색 (3종):</span>
+              <div class="custom-pill-group" id="hair-color-options">
+                <button type="button" class="btn-custom-pill active" data-hair="black"><span class="color-dot" style="background:#221f24;"></span>흑발</button>
+                <button type="button" class="btn-custom-pill" data-hair="brown"><span class="color-dot" style="background:#824c24;"></span>갈색</button>
+                <button type="button" class="btn-custom-pill" data-hair="blonde"><span class="color-dot" style="background:#eab308;"></span>금발</button>
+              </div>
+            </div>
+            <!-- Outfit color 3 kinds -->
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+              <span style="font-size:12px; color:#cbd5e1; font-weight:700;">옷 색상 (3종):</span>
+              <div class="custom-pill-group" id="outfit-color-options">
+                <button type="button" class="btn-custom-pill active" data-outfit="red"><span class="color-dot" style="background:#ef4444;"></span>레드</button>
+                <button type="button" class="btn-custom-pill" data-outfit="blue"><span class="color-dot" style="background:#3b82f6;"></span>블루</button>
+                <button type="button" class="btn-custom-pill" data-outfit="green"><span class="color-dot" style="background:#22c55e;"></span>그린</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Teacher Login Toggle (Discreet) -->
         <div class="teacher-toggle-box">
           <label class="teacher-toggle-label">
             <input type="checkbox" id="check-is-teacher">
-            <span>🔒 교사(관리자) 계정으로 접속</span>
+            <span>🔒 교사 계정으로 접속 (👩‍🏫 긴머리 여성 교사)</span>
           </label>
           <div id="teacher-pwd-field" class="teacher-pwd-field hidden">
             <input type="password" id="input-teacher-pwd" placeholder="교사 인증 암호 입력">

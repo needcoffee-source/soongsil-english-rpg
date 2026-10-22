@@ -249,13 +249,42 @@ class MainApp {
   initModals() {
     const checkIsTeacher = document.getElementById('check-is-teacher');
     const teacherPwdField = document.getElementById('teacher-pwd-field');
+    const studentCustomBox = document.getElementById('student-customization-box');
     if (checkIsTeacher && teacherPwdField) {
       checkIsTeacher.addEventListener('change', () => {
         if (checkIsTeacher.checked) {
           teacherPwdField.classList.remove('hidden');
+          if (studentCustomBox) studentCustomBox.style.display = 'none';
         } else {
           teacherPwdField.classList.add('hidden');
+          if (studentCustomBox) studentCustomBox.style.display = 'flex';
         }
+      });
+    }
+
+    // 남학생 캐릭터 커스터마이징 (머리색 3종, 옷 색상 3종)
+    let selectedHair = 'black';
+    let selectedOutfit = 'red';
+
+    const hairGroup = document.getElementById('hair-color-options');
+    if (hairGroup) {
+      hairGroup.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-custom-pill');
+        if (!btn) return;
+        hairGroup.querySelectorAll('.btn-custom-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedHair = btn.dataset.hair || 'black';
+      });
+    }
+
+    const outfitGroup = document.getElementById('outfit-color-options');
+    if (outfitGroup) {
+      outfitGroup.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-custom-pill');
+        if (!btn) return;
+        outfitGroup.querySelectorAll('.btn-custom-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedOutfit = btn.dataset.outfit || 'red';
       });
     }
 
@@ -266,9 +295,23 @@ class MainApp {
         const studentIdInput = document.getElementById('input-student-id');
         if (studentIdInput) studentIdInput.value = lastStudentId;
         const saved = this.loadProgress(lastStudentId);
-        if (saved && saved.name) {
-          const nicknameInput = document.getElementById('input-nickname');
-          if (nicknameInput) nicknameInput.value = saved.name;
+        if (saved) {
+          if (saved.name) {
+            const nicknameInput = document.getElementById('input-nickname');
+            if (nicknameInput) nicknameInput.value = saved.name;
+          }
+          if (saved.hairColor && hairGroup) {
+            selectedHair = saved.hairColor;
+            hairGroup.querySelectorAll('.btn-custom-pill').forEach(b => {
+              b.classList.toggle('active', b.dataset.hair === selectedHair);
+            });
+          }
+          if (saved.outfitColor && outfitGroup) {
+            selectedOutfit = saved.outfitColor;
+            outfitGroup.querySelectorAll('.btn-custom-pill').forEach(b => {
+              b.classList.toggle('active', b.dataset.outfit === selectedOutfit);
+            });
+          }
         }
       }
     } catch (e) {
@@ -345,6 +388,8 @@ class MainApp {
           this.playerData.baseDef = saved.baseDef || 2;
           this.playerData.inventory = Array.isArray(saved.inventory) ? saved.inventory : [];
           this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, accessory: null };
+          if (saved.hairColor) selectedHair = saved.hairColor;
+          if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           console.log(`[Storage] 학생(${studentId}) 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
         }
         try {
@@ -356,6 +401,10 @@ class MainApp {
       this.playerData.studentId = isTeacher ? '교사' : studentId;
       this.playerData.grade = grade;
       this.playerData.avatar = 'student_m1';
+      this.playerData.hairColor = isTeacher ? 'teacher' : selectedHair;
+      this.playerData.outfitColor = isTeacher ? 'teacher' : selectedOutfit;
+      this.engine.player.hairColor = this.playerData.hairColor;
+      this.engine.player.outfitColor = this.playerData.outfitColor;
 
       this.hudName.innerText = name;
       this.hudLevel.innerText = `Lv.${this.playerData.level}`;
@@ -1967,6 +2016,8 @@ class MainApp {
         baseDef: this.playerData.baseDef,
         inventory: this.playerData.inventory,
         equipment: this.playerData.equipment,
+        hairColor: this.playerData.hairColor,
+        outfitColor: this.playerData.outfitColor,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));

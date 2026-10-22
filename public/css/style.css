@@ -754,6 +754,43 @@ body, html {
   color: #fff;
 }
 
+/* Student Character Customization Pills */
+.custom-pill-group {
+  display: flex;
+  gap: 6px;
+}
+.btn-custom-pill {
+  background: #0f172a;
+  border: 1.5px solid #334155;
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+.btn-custom-pill:hover {
+  border-color: #64748b;
+  color: #f8fafc;
+}
+.btn-custom-pill.active {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: #3b82f6;
+  color: #60a5fa;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+}
+.color-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
 /* Quiz Modal */
 .quiz-card {
   max-width: 550px;

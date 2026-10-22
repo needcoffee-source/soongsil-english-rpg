@@ -49,6 +49,8 @@ class NetworkManager {
       this.engine.player.floor = selfData.floor;
       this.engine.player.room = selfData.room;
       this.engine.player.name = selfData.name;
+      if (selfData.hairColor) this.engine.player.hairColor = selfData.hairColor;
+      if (selfData.outfitColor) this.engine.player.outfitColor = selfData.outfitColor;
       if (selfData.isTeacher !== undefined) {
         this.engine.player.isTeacher = selfData.isTeacher;
       }

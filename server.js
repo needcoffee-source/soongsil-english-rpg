@@ -175,6 +175,8 @@ io.on('connection', (socket) => {
       gold: data.gold !== undefined ? data.gold : 10,
       level: data.level || 1,
       exp: data.exp || 0,
+      hairColor: ['black', 'brown', 'blonde'].includes(data.hairColor) ? data.hairColor : 'black',
+      outfitColor: ['red', 'blue', 'green'].includes(data.outfitColor) ? data.outfitColor : 'red',
       gear: sanitizeGear(data.gear),
       inventory: []
     };
