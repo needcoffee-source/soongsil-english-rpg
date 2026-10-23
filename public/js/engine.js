@@ -1999,26 +1999,30 @@ class GameEngine {
   getCharacterPalette(isTeacher, hairColor = 'black', outfitColor = 'red') {
     if (isTeacher) {
       // 👩‍🏫 교사 (여성 긴머리):
-      // 다크 브라운 찰랑이는 볼륨 롱헤어 + 우아한 와인 버건디 자켓 & 스커트 (블랙 대신 화사하고 지적인 와인톤!)
+      // 다크 브라운 찰랑이는 볼륨 롱헤어 + 스마트하고 지적인 딥 에메랄드 틸 자켓 & 스커트
       const TEACHER_THEMES = {
+        teal: {
+          name: '딥 에메랄드 틸',
+          jacket: '#0f766e', jacketShade: '#115e59', jacketHi: '#14b8a6',
+          skirt: '#115e59', skirtShade: '#042f2e'
+        },
         burgundy: {
+          name: '와인 버건디',
           jacket: '#9f1239', jacketShade: '#881337', jacketHi: '#be123c',
           skirt: '#881337', skirtShade: '#4c0519'
         },
         camel: {
+          name: '카멜 베이지',
           jacket: '#b46b2c', jacketShade: '#8c4a16', jacketHi: '#d98b48',
           skirt: '#78350f', skirtShade: '#451a03'
         },
         purple: {
+          name: '로얄 퍼플',
           jacket: '#7e22ce', jacketShade: '#6b21a8', jacketHi: '#9333ea',
           skirt: '#581c87', skirtShade: '#3b0764'
-        },
-        teal: {
-          jacket: '#0f766e', jacketShade: '#115e59', jacketHi: '#14b8a6',
-          skirt: '#134e4a', skirtShade: '#042f2e'
         }
       };
-      const theme = TEACHER_THEMES[outfitColor] || TEACHER_THEMES.burgundy;
+      const theme = (outfitColor && TEACHER_THEMES[outfitColor]) ? TEACHER_THEMES[outfitColor] : TEACHER_THEMES.teal;
       return Object.assign({
         isTeacher: true,
         hair: '#382216', hairHi: '#5a3825', hairShade: '#22130b',

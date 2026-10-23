@@ -441,7 +441,7 @@ class MainApp {
       this.playerData.grade = grade;
       this.playerData.avatar = 'student_m1';
       this.playerData.hairColor = isTeacher ? 'teacher' : selectedHair;
-      this.playerData.outfitColor = isTeacher ? 'teacher' : selectedOutfit;
+      this.playerData.outfitColor = isTeacher ? 'teal' : selectedOutfit;
       this.engine.player.hairColor = this.playerData.hairColor;
       this.engine.player.outfitColor = this.playerData.outfitColor;
 
