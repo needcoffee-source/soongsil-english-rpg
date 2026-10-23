@@ -16,7 +16,8 @@ const WORLD_DATA = {
       name: "1학년 복도",
       rooms: [
         { id: "room_701", name: "1학년 1반", doorX: 10, doorY: 5, targetX: 15, targetY: 14 },
-        { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 }
+        { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },
+        { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 }
       ],
       interactive: [
         { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
@@ -120,6 +121,23 @@ const WORLD_DATA = {
       def: 8
     },
     desks: []
+  },
+
+  // 1학년 3반: 신규 오픈 교실 (콘텐츠 구성 준비 구역)
+  classroom_703: {
+    name: "1학년 3반",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "3반 칠판 (새 공간)",
+      prompt: "칠판 확인"
+    },
+    teacherDesk: { x: 15, y: 4, name: "교탁" },
+    desks: [
+      { x: 11, y: 8 }, { x: 15, y: 8 }, { x: 19, y: 8 },
+      { x: 11, y: 11 }, { x: 15, y: 11 }, { x: 19, y: 11 }
+    ]
   },
 
   classroom: {

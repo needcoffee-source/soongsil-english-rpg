@@ -1800,7 +1800,7 @@ class MainApp {
       list.forEach(std => {
         const opt = document.createElement('option');
         opt.value = std.id;
-        const loc = std.room === 'hallway' ? '복도' : (std.room === 'room_701' ? '1반' : '2반');
+        const loc = std.room === 'hallway' ? '복도' : (std.room === 'room_701' ? '1반' : (std.room === 'room_702' ? '2반' : (std.room === 'room_703' ? '3반' : std.room)));
         opt.innerText = `👤 [${std.studentId}] ${std.name} (${loc})`;
         grantTargetSelect.appendChild(opt);
       });
@@ -1829,7 +1829,7 @@ class MainApp {
       row.style.border = '1px solid #27272a';
       row.style.borderRadius = '6px';
 
-      const locName = std.room === 'hallway' ? '1학년 복도' : (std.room === 'room_701' ? '1학년 1반' : '1학년 2반');
+      const locName = std.room === 'hallway' ? '1학년 복도' : (std.room === 'room_701' ? '1학년 1반' : (std.room === 'room_702' ? '1학년 2반' : (std.room === 'room_703' ? '1학년 3반' : std.room)));
       const muteStatus = std.isMuted
         ? '<span style="color:#ef4444; font-size:11px; font-weight:bold; margin-left:6px;">[채팅금지중]</span>'
         : '<span style="color:#22c55e; font-size:11px; margin-left:6px;">[정상]</span>';

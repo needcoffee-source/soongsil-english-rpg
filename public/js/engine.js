@@ -326,6 +326,9 @@ class GameEngine {
   }
 
   getCurrentClassroomData() {
+    if (this.player.room === 'room_703' && WORLD_DATA.classroom_703) {
+      return WORLD_DATA.classroom_703;
+    }
     if (this.player.room === 'room_702' && WORLD_DATA.classroom_702) {
       return WORLD_DATA.classroom_702;
     }
