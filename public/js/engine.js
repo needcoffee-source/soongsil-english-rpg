@@ -1999,8 +1999,13 @@ class GameEngine {
   getCharacterPalette(isTeacher, hairColor = 'black', outfitColor = 'red') {
     if (isTeacher) {
       // 👩‍🏫 교사 (여성 긴머리):
-      // 다크 브라운 찰랑이는 볼륨 롱헤어 + 스마트하고 지적인 딥 에메랄드 틸 자켓 & 스커트
+      // 다크 브라운 찰랑이는 볼륨 롱헤어 + 눈부신 황금빛 로열 골드 정장 (화려한 골드 & 샴페인 펄!)
       const TEACHER_THEMES = {
+        gold: {
+          name: '황금빛 로열 골드',
+          jacket: '#f59e0b', jacketShade: '#b45309', jacketHi: '#fef08a',
+          skirt: '#d97706', skirtShade: '#92400e'
+        },
         teal: {
           name: '딥 에메랄드 틸',
           jacket: '#0f766e', jacketShade: '#115e59', jacketHi: '#14b8a6',
@@ -2022,7 +2027,7 @@ class GameEngine {
           skirt: '#581c87', skirtShade: '#3b0764'
         }
       };
-      const theme = (outfitColor && TEACHER_THEMES[outfitColor]) ? TEACHER_THEMES[outfitColor] : TEACHER_THEMES.teal;
+      const theme = (outfitColor && TEACHER_THEMES[outfitColor]) ? TEACHER_THEMES[outfitColor] : TEACHER_THEMES.gold;
       return Object.assign({
         isTeacher: true,
         hair: '#382216', hairHi: '#5a3825', hairShade: '#22130b',
@@ -2551,6 +2556,11 @@ class GameEngine {
       this.ctx.ellipse(px + 12, py + 29, 15, 5, 0, 0, Math.PI * 2);
       this.ctx.fill();
 
+      // === 👩‍🏫 선생님 전용 황금빛 반짝이 아우라 이펙트 (뒷쪽에서 은은하게 발광) ===
+      if (isTeacher) {
+        this.renderTeacherGoldenAura(px, py, now);
+      }
+
       this.ctx.drawImage(sprite, drawX, drawY, drawW, drawH);
     }
     this.ctx.restore();
@@ -2577,6 +2587,77 @@ class GameEngine {
 
   renderOtherPlayer(p) {
     this.renderPlayer(p, false);
+  }
+
+  // ========================================================
+  // 👩‍🏫 선생님 전용 황금빛 반짝반짝 후광 아우라 렌더러
+  // ========================================================
+  renderTeacherGoldenAura(px, py, now) {
+    this.ctx.save();
+
+    const cx = px + 12;
+    const cy = py + 4; // 캐릭터 몸통 중심
+
+    // 1. 은은하게 호흡하는 황금빛 펄스 후광 글로우 (Soft Pulsing Radiant Glow)
+    const pulse = Math.sin(now / 360) * 3;
+    const glowRadius = 28 + pulse;
+    const grad = this.ctx.createRadialGradient(cx, cy, 4, cx, cy, glowRadius);
+    grad.addColorStop(0, 'rgba(254, 240, 138, 0.58)'); // 화사한 골드빛
+    grad.addColorStop(0.45, 'rgba(245, 158, 11, 0.32)'); // 따뜻한 앰버 골드
+    grad.addColorStop(1, 'rgba(217, 119, 6, 0)');        // 자연스러운 페이드아웃
+    this.ctx.fillStyle = grad;
+    this.ctx.beginPath();
+    this.ctx.arc(cx, cy, glowRadius, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. 반짝반짝 회전하는 황금 십자별 파티클 (Twinkling Sparkle Starbursts ✦)
+    const starCount = 6;
+    for (let i = 0; i < starCount; i++) {
+      const angle = (now / 1400) + (i * Math.PI * 2 / starCount);
+      const rx = 19 + Math.sin(now / 450 + i * 2) * 5;
+      const ry = 23 + Math.cos(now / 550 + i * 2) * 5;
+      const sx = cx + Math.cos(angle) * rx;
+      const sy = cy + Math.sin(angle) * ry;
+
+      // 트윙클 애니메이션 (크기 & 투명도 숨쉬기)
+      const twinkle = Math.sin(now / 220 + i * 1.8);
+      const alpha = Math.max(0.25, 0.55 + twinkle * 0.45);
+      const size = 3 + Math.abs(twinkle) * 3.2;
+
+      // 4포인트 십자 반짝이 (✦)
+      this.ctx.fillStyle = `rgba(254, 240, 138, ${alpha})`;
+      this.ctx.beginPath();
+      this.ctx.moveTo(sx, sy - size);
+      this.ctx.lineTo(sx + size * 0.35, sy);
+      this.ctx.lineTo(sx, sy + size);
+      this.ctx.lineTo(sx - size * 0.35, sy);
+      this.ctx.closePath();
+      this.ctx.fill();
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(sx - size, sy);
+      this.ctx.lineTo(sx, sy + size * 0.35);
+      this.ctx.lineTo(sx + size, sy);
+      this.ctx.lineTo(sx, sy - size * 0.35);
+      this.ctx.closePath();
+      this.ctx.fill();
+
+      // 별 중심부 반짝이는 화이트 보석 코어
+      this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      this.ctx.fillRect(sx - 1, sy - 1, 2, 2);
+    }
+
+    // 3. 위로 솟아오르는 황금 미세 글리터 입자 (Upward Rising Gold Glitters)
+    for (let j = 0; j < 5; j++) {
+      const phase = ((now * 0.045 + j * 55) % 100) / 100;
+      const gx = cx - 14 + ((j * 9 + Math.sin(now / 400 + j) * 8 + 20) % 28);
+      const gy = (py + 24) - phase * 36;
+      const gAlpha = Math.sin(phase * Math.PI) * 0.8;
+      this.ctx.fillStyle = `rgba(253, 224, 71, ${gAlpha})`;
+      this.ctx.fillRect(gx, gy, 2, 2);
+    }
+
+    this.ctx.restore();
   }
 
   renderChatBubble(x, y, text) {
