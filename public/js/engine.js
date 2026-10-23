@@ -480,11 +480,11 @@ class GameEngine {
             }
           }
         }
-        // Central Elevator
+        // Central Elevator (모양만 / 점검 중)
         if (floorData.elevator) {
-          const eDist = Math.hypot(floorData.elevator.x * 32 - this.player.x, floorData.elevator.y * 32 - this.player.y);
+          const eDist = Math.hypot(floorData.elevator.x * 32 - this.player.x, (floorData.elevator.y + 1.5) * 32 - this.player.y);
           if (eDist < minDist) {
-            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '엘리베이터 타기 (A 버튼)' };
+            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '엘리베이터 (점검 중)' };
             minDist = eDist;
           }
         }
@@ -565,8 +565,8 @@ class GameEngine {
         for (const obj of (floorData.interactive || [])) {
           if (Math.hypot(obj.x * 32 - x, obj.y * 32 - y) < 32) return { type: obj.type, data: obj };
         }
-        if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, floorData.elevator.y * 32 - y) < 40) {
-          return { type: 'elevator', name: '중앙 엘리베이터' };
+        if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, (floorData.elevator.y + 1.5) * 32 - y) < 48) {
+          return { type: 'elevator', name: '중앙 엘리베이터', prompt: '엘리베이터 (점검 중)' };
         }
       }
     } else {
@@ -1714,7 +1714,7 @@ class GameEngine {
     this.ctx.fillRect(px + w + 3, py + 27, 4, 3);
 
     // Label
-    this.drawSharpLabel(px + w / 2, py + h + 14, '🛗 엘리베이터', {
+    this.drawSharpLabel(px + w / 2, py + h + 14, '🛗 엘리베이터 (점검 중)', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#94a3b8',
       textColor: '#ffffff',
@@ -1744,11 +1744,12 @@ class GameEngine {
     }
 
     // 2. Sunny Windows along Top Wall (between classroom doors & across expanded corridor)
-    const windowCols = [3, 6, 14, 16, 24, 27, 33, 36, 42, 45, 51, 54, 57];
+    const windowCols = [3, 6, 14, 16, 24, 27, 33, 36, 42, 45, 50, 52];
     windowCols.forEach(col => {
-      // Don't draw window if there is a classroom door at this position
+      // Don't draw window if there is a classroom door or elevator at this position
       const hasDoor = fData && fData.rooms && fData.rooms.some(r => Math.abs(r.doorX - col) <= 2);
-      if (!hasDoor && col > 0 && col < mapW - 1) {
+      const hasElevator = fData && fData.elevator && Math.abs(fData.elevator.x - col) <= 2;
+      if (!hasDoor && !hasElevator && col > 0 && col < mapW - 1) {
         this.drawHighResWindow(col, 1);
       }
     });

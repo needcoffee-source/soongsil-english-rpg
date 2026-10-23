@@ -243,6 +243,8 @@ class MainApp {
       this.openBossRaid(target.data);
     } else if (target.type === 'leaderboard') {
       this.openLeaderboard();
+    } else if (target.type === 'elevator') {
+      alert('🛗 [중앙 엘리베이터 (점검 중)]\n\n"현재 층간 이동 엘리베이터 점검 중입니다.\n(시즌 업데이트 준비 중!)"');
     }
   }
 
