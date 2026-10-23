@@ -271,9 +271,34 @@ class MainApp {
       });
     }
 
-    // 남학생 캐릭터 커스터마이징 (머리색 3종, 옷 색상 3종)
+    // 캐릭터 커스터마이징 (머리색 3종, 옷 색상 3종 & 실시간 미리보기)
     let selectedHair = 'black';
     let selectedOutfit = 'red';
+
+    const previewCanvas = document.getElementById('custom-char-preview');
+    const updatePreview = () => {
+      if (!previewCanvas || !this.engine) return;
+      const ctx = previewCanvas.getContext('2d');
+      ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      // Soft round shadow at the feet
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(28, 67, 18, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw crisp character sprite (48x64)
+      const spr = this.engine.getCharacterSprite({
+        dir: 'down',
+        frame: 0,
+        teacher: false,
+        hairColor: selectedHair,
+        outfitColor: selectedOutfit,
+        blink: false,
+        ko: false,
+        gear: {}
+      });
+      ctx.drawImage(spr, 4, 5);
+    };
 
     const hairGroup = document.getElementById('hair-color-options');
     if (hairGroup) {
@@ -283,6 +308,7 @@ class MainApp {
         hairGroup.querySelectorAll('.btn-custom-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedHair = btn.dataset.hair || 'black';
+        updatePreview();
       });
     }
 
@@ -294,6 +320,7 @@ class MainApp {
         outfitGroup.querySelectorAll('.btn-custom-pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedOutfit = btn.dataset.outfit || 'red';
+        updatePreview();
       });
     }
 
@@ -327,6 +354,9 @@ class MainApp {
       console.warn('LocalStorage access warning:', e);
     }
 
+    // 초기 캐릭터 실시간 미리보기 렌더링
+    updatePreview();
+
     document.getElementById('btn-start-game').addEventListener('click', () => {
       const isTeacher = checkIsTeacher && checkIsTeacher.checked;
       let name = document.getElementById('input-nickname').value.trim();
@@ -348,7 +378,7 @@ class MainApp {
 
       if (isTeacher) {
         const pwd = (document.getElementById('input-teacher-pwd').value || '').trim();
-        if (pwd !== '0322') {
+        if (pwd !== '03220322') {
           alert('🔒 교사 인증 암호가 일치하지 않습니다.');
           return;
         }
@@ -583,7 +613,7 @@ class MainApp {
 
         if (this.networkManager.socket) {
           this.networkManager.socket.emit('teacher_grant_item', {
-            pwd: this.playerData.teacherPwd || '0322',
+            pwd: this.playerData.teacherPwd || '03220322',
             targetSocketId,
             itemKey,
             count,

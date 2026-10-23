@@ -154,7 +154,7 @@ io.on('connection', (socket) => {
   // Player Login
   socket.on('player_join', (data) => {
     const { name, grade, studentId, avatar, isTeacher, teacherPwd } = data;
-    const isVerifiedTeacher = !!isTeacher && teacherPwd === '0322';
+    const isVerifiedTeacher = !!isTeacher && teacherPwd === '03220322';
     const resolvedName = isVerifiedTeacher ? ((name && name !== '교사') ? name : '갓준철') : (name || '학생_' + socket.id.substr(0, 4));
     players[socket.id] = {
       id: socket.id,
@@ -303,7 +303,7 @@ io.on('connection', (socket) => {
 
   // Teacher Item & Gold Grant System
   socket.on('teacher_grant_item', ({ pwd, targetSocketId, itemKey, count, reason }) => {
-    if (pwd !== '0322') {
+    if (pwd !== '03220322') {
       socket.emit('teacher_action_alert', { message: '🔒 교사 암호 인증에 실패했습니다.' });
       return;
     }
