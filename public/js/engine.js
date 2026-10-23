@@ -1998,17 +1998,35 @@ class GameEngine {
   // ========================================================
   getCharacterPalette(isTeacher, hairColor = 'black', outfitColor = 'red') {
     if (isTeacher) {
-      // 👩‍🏫 교사 (여성 긴머리): 다크브라운 찰랑이는 긴머리, 슬레이트 네이비 자켓, 화이트 블라우스, 단정한 스커트
-      return {
+      // 👩‍🏫 교사 (여성 긴머리):
+      // 다크 브라운 찰랑이는 볼륨 롱헤어 + 우아한 와인 버건디 자켓 & 스커트 (블랙 대신 화사하고 지적인 와인톤!)
+      const TEACHER_THEMES = {
+        burgundy: {
+          jacket: '#9f1239', jacketShade: '#881337', jacketHi: '#be123c',
+          skirt: '#881337', skirtShade: '#4c0519'
+        },
+        camel: {
+          jacket: '#b46b2c', jacketShade: '#8c4a16', jacketHi: '#d98b48',
+          skirt: '#78350f', skirtShade: '#451a03'
+        },
+        purple: {
+          jacket: '#7e22ce', jacketShade: '#6b21a8', jacketHi: '#9333ea',
+          skirt: '#581c87', skirtShade: '#3b0764'
+        },
+        teal: {
+          jacket: '#0f766e', jacketShade: '#115e59', jacketHi: '#14b8a6',
+          skirt: '#134e4a', skirtShade: '#042f2e'
+        }
+      };
+      const theme = TEACHER_THEMES[outfitColor] || TEACHER_THEMES.burgundy;
+      return Object.assign({
         isTeacher: true,
         hair: '#382216', hairHi: '#5a3825', hairShade: '#22130b',
-        jacket: '#1e293b', jacketShade: '#0f172a', jacketHi: '#334155',
         inner: '#ffffff', accent: '#f59e0b',
-        skirt: '#1e293b', skirtShade: '#0f172a',
         legs: '#fcd5b0',
         shoe: '#451a03', sole: '#1c0a00',
         bag: '#78350f', bagShade: '#451a03'
-      };
+      }, theme);
     }
 
     // 👦 남학생 머리색 3종 (흑발, 갈색, 금발)
@@ -2200,15 +2218,17 @@ class GameEngine {
 
         if (o.teacher) {
           // 👩‍🏫 여성 교사 (긴머리):
-          // 정수리 & 부드러운 가르마
-          r(3, 3, 10, 3, P.hair); r(5, 3, 4, 1, P.hairHi);
+          // 볼륨감 있는 둥근 정수리 라인 (납작함 완전 해소!)
+          r(5, 1, 6, 1, P.hair); r(6, 1, 4, 1, P.hairHi); // row 1 (최상단 부드러운 아치 곡선)
+          r(4, 2, 8, 1, P.hair); r(5, 2, 5, 1, P.hairHi); // row 2 (정수리 볼륨)
+          r(3, 3, 10, 2, P.hair); r(4, 3, 3, 1, P.hairHi); // row 3-4 (풍성한 상단)
           r(3, 5, 2, 2, P.hair); r(11, 5, 2, 2, P.hair);
           r(5, 5, 2, 1, P.hair); r(9, 5, 2, 1, P.hair);
           // 양 어깨 너머로 가슴까지 흘러내리는 풍성한 긴 생머리!
           r(2, 6, 2, 9, P.hair); r(2, 7, 1, 7, P.hairHi); r(2, 14, 2, 1, P.hairShade);
           r(12, 6, 2, 9, P.hair); r(13, 7, 1, 7, P.hairHi); r(12, 14, 2, 1, P.hairShade);
           // 골드 펄 헤어핀 포인트
-          r(3, 4, 1, 1, '#fde047');
+          r(3, 3, 2, 2, '#fde047'); r(4, 4, 1, 1, '#ca8a04');
 
           // 여성스러운 눈매 (속눈썹 라인)
           if (o.ko) { drawKoEyes(5); drawKoEyes(10); }
@@ -2235,7 +2255,9 @@ class GameEngine {
       } else {
         // 뒷모습 (Facing Up)
         if (o.teacher) {
-          // 👩‍🏫 교사 뒷모습: 등 뒤 허리선까지 풍성하게 내려오는 긴 생머리!
+          // 👩‍🏫 교사 뒷모습: 볼륨 정수리 & 등 뒤 허리선까지 풍성하게 내려오는 긴 생머리!
+          r(5, 1, 6, 1, P.hair); r(6, 1, 4, 1, P.hairHi);
+          r(4, 2, 8, 1, P.hair); r(5, 2, 5, 1, P.hairHi);
           r(3, 3, 10, 11, P.hair);
           r(5, 3, 4, 2, P.hairHi);
           r(4, 13, 8, 2, P.hair);
@@ -2323,8 +2345,10 @@ class GameEngine {
     r(4, 5, 5, 5, S.skin); r(5, 10, 4, 1, S.skin); r(3, 8, 1, 1, S.skin);
 
     if (o.teacher) {
-      // 👩‍🏫 교사 측면 긴머리: 등 뒤로 흘러내리는 긴머리 실루엣
-      r(4, 3, 6, 2, P.hair); r(4, 5, 2, 2, P.hair);
+      // 👩‍🏫 교사 측면 긴머리: 볼륨 정수리 & 등 뒤로 흘러내리는 롱헤어 실루엣
+      r(6, 1, 4, 1, P.hair); r(7, 1, 2, 1, P.hairHi);
+      r(5, 2, 6, 1, P.hair); r(6, 2, 3, 1, P.hairHi);
+      r(4, 3, 7, 2, P.hair); r(4, 5, 2, 2, P.hair);
       r(8, 4, 5, 11, P.hair);
       r(9, 5, 2, 4, P.hairHi);
       r(8, 14, 4, 2, P.hairShade);
