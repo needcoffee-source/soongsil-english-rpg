@@ -263,8 +263,21 @@ class GameEngine {
     this.checkNearbyInteractable();
 
     // Camera follow player
-    this.camera.x = Math.max(0, Math.min(WORLD_DATA.MAP_WIDTH * 32 - this.width, this.player.x - this.width / 2));
-    this.camera.y = Math.max(0, Math.min(WORLD_DATA.MAP_HEIGHT * 32 - this.height, this.player.y - this.height / 2));
+    const curMapWidth = this.getMapWidth();
+    const curMapHeight = this.getMapHeight();
+    this.camera.x = Math.max(0, Math.min(curMapWidth * 32 - this.width, this.player.x - this.width / 2));
+    this.camera.y = Math.max(0, Math.min(curMapHeight * 32 - this.height, this.player.y - this.height / 2));
+  }
+
+  getMapWidth() {
+    if (this.player && this.player.room === 'hallway') {
+      return WORLD_DATA.HALLWAY_WIDTH || 60;
+    }
+    return WORLD_DATA.MAP_WIDTH || 30;
+  }
+
+  getMapHeight() {
+    return WORLD_DATA.MAP_HEIGHT || 20;
   }
 
   checkCollision(x, y) {
@@ -274,12 +287,15 @@ class GameEngine {
     const tileX = Math.floor(x / 32);
     const tileY = Math.floor(y / 32);
 
+    const curMapWidth = this.getMapWidth();
+    const curMapHeight = this.getMapHeight();
+
     // Map bounds
-    if (tileX < 1 || tileX >= WORLD_DATA.MAP_WIDTH - 1) return true;
+    if (tileX < 1 || tileX >= curMapWidth - 1) return true;
     if (tileY < 1) return true;
 
     if (this.player.room === 'hallway') {
-      if (tileY >= WORLD_DATA.MAP_HEIGHT - 1) return true;
+      if (tileY >= curMapHeight - 1) return true;
       // Top wall boundary except doors
       if (tileY <= 4) {
         const floorData = WORLD_DATA.floors[this.player.floor];
@@ -1710,11 +1726,13 @@ class GameEngine {
   // ========================================================
   renderHallway() {
     const fData = WORLD_DATA.floors[this.player.floor];
+    const mapW = this.getMapWidth();
+    const mapH = this.getMapHeight();
 
-    // 1. Base Flooring & Walls
-    for (let tx = 0; tx < WORLD_DATA.MAP_WIDTH; tx++) {
-      for (let ty = 0; ty < WORLD_DATA.MAP_HEIGHT; ty++) {
-        if (ty <= 3 || tx === 0 || tx === WORLD_DATA.MAP_WIDTH - 1 || ty === WORLD_DATA.MAP_HEIGHT - 1) {
+    // 1. Base Flooring & Walls (2배 확장된 60타일 복도)
+    for (let tx = 0; tx < mapW; tx++) {
+      for (let ty = 0; ty < mapH; ty++) {
+        if (ty <= 3 || tx === 0 || tx === mapW - 1 || ty === mapH - 1) {
           this.drawHighResWall(tx, ty, false);
         } else {
           this.drawHighResHallwayTile(tx, ty);
@@ -1722,12 +1740,12 @@ class GameEngine {
       }
     }
 
-    // 2. Sunny Windows along Top Wall (between classroom doors)
-    const windowCols = [3, 6, 14, 16, 24, 27];
+    // 2. Sunny Windows along Top Wall (between classroom doors & across expanded corridor)
+    const windowCols = [3, 6, 14, 16, 24, 27, 33, 36, 42, 45, 51, 54, 57];
     windowCols.forEach(col => {
       // Don't draw window if there is a classroom door at this position
       const hasDoor = fData && fData.rooms && fData.rooms.some(r => Math.abs(r.doorX - col) <= 2);
-      if (!hasDoor && col > 0 && col < WORLD_DATA.MAP_WIDTH - 1) {
+      if (!hasDoor && col > 0 && col < mapW - 1) {
         this.drawHighResWindow(col, 1);
       }
     });

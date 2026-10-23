@@ -155,7 +155,7 @@ io.on('connection', (socket) => {
   socket.on('player_join', (data) => {
     const { name, grade, studentId, avatar, isTeacher, teacherPwd } = data;
     const isVerifiedTeacher = !!isTeacher && teacherPwd === '0322';
-    const resolvedName = isVerifiedTeacher ? '교사' : (name || '학생_' + socket.id.substr(0, 4));
+    const resolvedName = isVerifiedTeacher ? ((name && name !== '교사') ? name : '갓준철') : (name || '학생_' + socket.id.substr(0, 4));
     players[socket.id] = {
       id: socket.id,
       name: resolvedName,

@@ -252,12 +252,19 @@ class MainApp {
     const studentCustomBox = document.getElementById('student-customization-box');
     if (checkIsTeacher && teacherPwdField) {
       checkIsTeacher.addEventListener('change', () => {
+        const nickInput = document.getElementById('input-nickname');
         if (checkIsTeacher.checked) {
           teacherPwdField.classList.remove('hidden');
           if (studentCustomBox) studentCustomBox.style.display = 'none';
+          if (nickInput && (!nickInput.value.trim() || nickInput.value.trim() === '교사')) {
+            nickInput.value = '갓준철';
+          }
         } else {
           teacherPwdField.classList.add('hidden');
           if (studentCustomBox) studentCustomBox.style.display = 'flex';
+          if (nickInput && nickInput.value.trim() === '갓준철') {
+            nickInput.value = '';
+          }
         }
       });
     }
@@ -344,8 +351,8 @@ class MainApp {
           return;
         }
 
-        // 교사 계정은 입력한 이름과 상관없이 무조건 '교사' / 공·방·체 9999 통일
-        name = '교사';
+        // 교사 계정 이름은 '갓준철' / 공·방·체 9999 통일
+        name = (name && name !== '교사') ? name : '갓준철';
         this.playerData.isTeacher = true;
         this.playerData.teacherPwd = pwd;
         this.playerData.baseHp = 9999;
@@ -364,7 +371,7 @@ class MainApp {
         }
 
         this.engine.player.isTeacher = true;
-        this.engine.player.name = '교사';
+        this.engine.player.name = name;
 
         const gmPanel = document.getElementById('gm-panel');
         if (gmPanel) gmPanel.classList.remove('hidden');

@@ -8,6 +8,7 @@
 const WORLD_DATA = {
   TILE_SIZE: 32,
   MAP_WIDTH: 30,
+  HALLWAY_WIDTH: 60, // 1학년 복도 길이 2배 확장 (30타일 -> 60타일)
   MAP_HEIGHT: 20,
 
   floors: {

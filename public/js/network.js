@@ -280,9 +280,9 @@ class NetworkManager {
     const row = document.createElement('div');
     row.className = 'chat-bubble-row';
     row.id = item.id;
-    const isTeacher = item.isTeacher || item.senderName === '교사';
+    const isTeacher = item.isTeacher || item.senderName === '교사' || item.senderName === '갓준철';
     const senderTag = isTeacher 
-      ? `<span class="chat-sender" style="color:#f59e0b; font-weight:bold;">[교사]:</span>`
+      ? `<span class="chat-sender" style="color:#f59e0b; font-weight:bold;">[교사 ${item.senderName || '갓준철'}]:</span>`
       : `<span class="chat-sender">[${item.senderName}]:</span>`;
     row.innerHTML = `${senderTag} <span class="chat-text">${item.text}</span>`;
     this.chatMessagesEl.appendChild(row);
