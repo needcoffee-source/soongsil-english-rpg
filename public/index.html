@@ -316,17 +316,23 @@
 
   <!-- 4. Inventory Modal (가방) -->
   <div id="modal-inventory" class="modal-overlay hidden">
-    <div class="modal-card">
+    <div class="modal-card inv-modal-card">
       <div class="modal-header">
         <h3>🎒 가방</h3>
         <button class="btn-modal-close" id="btn-close-inv-x">✕</button>
       </div>
       <div class="modal-body">
-        <div class="inv-stats">
-          <span>🪙 골드: <b id="inv-gold-display">10 G</b></span>
-          <span>⚔️ 공격력: <b id="inv-atk-display">10</b> / 🛡️ 방어력: <b id="inv-def-display">2</b></span>
+        <div class="inv-stats-banner">
+          <div class="inv-gold-tag">🪙 골드: <b id="inv-gold-display">10 G</b></div>
+          <div class="inv-combat-tag">⚔️ 공격력: <b id="inv-atk-display">10</b> &nbsp;|&nbsp; 🛡️ 방어력: <b id="inv-def-display">2</b></div>
         </div>
-        <div class="inv-grid" id="inv-items-grid"></div>
+        <div class="inv-tab-row" id="inv-tab-container">
+          <button class="inv-tab-btn active" data-tab="all">전체</button>
+          <button class="inv-tab-btn" data-tab="equipment">⚔️ 장비</button>
+          <button class="inv-tab-btn" data-tab="consumable">🧪 소비</button>
+          <button class="inv-tab-btn" data-tab="material">📦 재료</button>
+        </div>
+        <div class="inv-items-container" id="inv-items-grid"></div>
       </div>
     </div>
   </div>

@@ -104,6 +104,87 @@
     }
   },
   {
+    "id": "recipe_bronze_sword",
+    "name": "청동검 (Bronze Sword)",
+    "category": "equipment",
+    "description": "[시즌1 고급 무기] 고목 골렘의 고목의 핵 1개와 단단한 목재 15개를 합금해 벼려낸 강력한 청동 검입니다.",
+    "icon": "⚔️",
+    "gradeLevel": 1,
+    "requiredGold": 50,
+    "requiredItems": [
+      { "item": "item_golem_core", "name": "고목의 핵", "count": 1 },
+      { "item": "item_wood", "name": "단단한 목재", "count": 15 }
+    ],
+    "unscramble": {
+      "korean": "우리는 함께 숲과 자연을 보호할 수 있다.",
+      "words": ["We", "can", "protect", "the", "forest", "and", "nature", "together."],
+      "correct": "We can protect the forest and nature together."
+    },
+    "result": {
+      "item": "equip_bronze_sword",
+      "name": "청동검",
+      "icon": "⚔️",
+      "type": "equipment",
+      "slot": "weapon",
+      "stats": { "atk": 25, "def": 0, "hp": 0 },
+      "effect": "공격력(ATK) +25"
+    }
+  },
+  {
+    "id": "recipe_bronze_helmet",
+    "name": "청동투구 (Bronze Helmet)",
+    "category": "equipment",
+    "description": "[시즌1 고급 투구] 고목 골렘의 고목의 핵 1개와 노란 개나리 꽃잎 15개의 생명력을 담아 벼려낸 단단한 청동 투구입니다.",
+    "icon": "🪖",
+    "gradeLevel": 1,
+    "requiredGold": 50,
+    "requiredItems": [
+      { "item": "item_golem_core", "name": "고목의 핵", "count": 1 },
+      { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 15 }
+    ],
+    "unscramble": {
+      "korean": "노란 개나리 꽃들은 봄에 아름답게 핀다.",
+      "words": ["Yellow", "forsythia", "flowers", "bloom", "beautifully", "in", "spring."],
+      "correct": "Yellow forsythia flowers bloom beautifully in spring."
+    },
+    "result": {
+      "item": "equip_bronze_helmet",
+      "name": "청동투구",
+      "icon": "🪖",
+      "type": "equipment",
+      "slot": "helmet",
+      "stats": { "atk": 0, "def": 14, "hp": 35 },
+      "effect": "방어력(DEF) +14, 최대체력(HP) +35"
+    }
+  },
+  {
+    "id": "recipe_bronze_armor",
+    "name": "청동갑옷 (Bronze Armor)",
+    "category": "equipment",
+    "description": "[시즌1 최상위 갑옷] 레드 드래곤의 용의 심장 1개와 농구공 가죽 조각 20개를 엮어 만든 무적의 청동 갑옷입니다.",
+    "icon": "🛡️",
+    "gradeLevel": 1,
+    "requiredGold": 70,
+    "requiredItems": [
+      { "item": "item_dragon_heart", "name": "용의 심장", "count": 1 },
+      { "item": "item_basketball_leather", "name": "농구공 가죽 조각", "count": 20 }
+    ],
+    "unscramble": {
+      "korean": "그는 강한 용기를 가지고 모든 어려움을 극복했다.",
+      "words": ["He", "overcame", "all", "difficulties", "with", "strong", "courage."],
+      "correct": "He overcame all difficulties with strong courage."
+    },
+    "result": {
+      "item": "equip_bronze_armor",
+      "name": "청동갑옷",
+      "icon": "🛡️",
+      "type": "equipment",
+      "slot": "armor",
+      "stats": { "atk": 0, "def": 22, "hp": 70 },
+      "effect": "방어력(DEF) +22, 최대체력(HP) +70"
+    }
+  },
+  {
     "id": "recipe_forsythia_ring",
     "name": "성실의 개나리 반지 (Forsythia Ring)",
     "category": "equipment",

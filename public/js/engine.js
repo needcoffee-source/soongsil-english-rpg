@@ -264,6 +264,9 @@ class GameEngine {
     }
     this.isMovingPrev = this.player.isMoving;
 
+    // Update roaming basketball monsters on playground
+    this.updateBasketballMonsters();
+
     // Check nearby interactable
     this.checkNearbyInteractable();
 
@@ -2600,6 +2603,72 @@ class GameEngine {
 
     // 8. Basketball Monsters (1:1 필드 몬스터)
     this.renderBasketballMonsters();
+  }
+
+  // Roaming & Respawn Logic for Basketball Monsters
+  updateBasketballMonsters() {
+    if (!this.player || this.player.room !== 'playground') return;
+    const pg = WORLD_DATA.playground;
+    if (!pg || !pg.basketballMonsters) return;
+
+    const now = Date.now();
+    for (const mob of pg.basketballMonsters) {
+      if (mob.defeated) {
+        if (mob.respawnAt && now >= mob.respawnAt) {
+          mob.defeated = false;
+          mob.hp = mob.maxHp;
+          if (mob.fixed) {
+            mob.x = 63;
+            mob.y = 16;
+          } else {
+            mob.x = Math.round(65 + Math.random() * 19);
+            mob.y = Math.round(8 + Math.random() * 16);
+            mob.targetX = mob.x;
+            mob.targetY = mob.y;
+          }
+        }
+        continue;
+      }
+
+      // If mob is currently in active battle, do not roam
+      if (mob.inBattle) continue;
+
+      // Rim Guardian stands firmly by the left basket hoop
+      if (mob.fixed) {
+        mob.x = 63;
+        mob.y = 16;
+        continue;
+      }
+
+      // Roaming monsters wander inside the court (x: 65 ~ 84, y: 8 ~ 24)
+      if (mob.roam) {
+        if (mob.targetX === undefined || mob.targetY === undefined) {
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+          mob.nextMoveTime = now + 1000 + Math.random() * 2000;
+        }
+
+        const dx = mob.targetX - mob.x;
+        const dy = mob.targetY - mob.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 0.1) {
+          mob.x = mob.targetX;
+          mob.y = mob.targetY;
+          if (now >= (mob.nextMoveTime || 0)) {
+            // Pick a new target within court
+            mob.targetX = Math.round((65 + Math.random() * 19) * 10) / 10;
+            mob.targetY = Math.round((8 + Math.random() * 16) * 10) / 10;
+            mob.nextMoveTime = now + 2500 + Math.random() * 3500;
+          }
+        } else {
+          // Smooth walking movement (~0.014 tiles/frame)
+          const step = 0.014;
+          mob.x += (dx / dist) * Math.min(dist, step);
+          mob.y += (dy / dist) * Math.min(dist, step);
+        }
+      }
+    }
   }
 
   // 8. Basketball Monsters Rendering

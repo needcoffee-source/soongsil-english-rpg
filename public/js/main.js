@@ -661,11 +661,26 @@ class MainApp {
     }
 
     // Inventory Modal
+    this.currentInvTab = 'all';
     document.getElementById('btn-inventory').addEventListener('click', () => {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.openInventory();
     });
     document.getElementById('btn-close-inv-x').addEventListener('click', () => this.modalInventory.classList.add('hidden'));
+
+    // Inventory Category Filter Tabs
+    const invTabContainer = document.getElementById('inv-tab-container');
+    if (invTabContainer) {
+      invTabContainer.querySelectorAll('.inv-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (window.AudioManager) window.AudioManager.playSelect();
+          invTabContainer.querySelectorAll('.inv-tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          this.currentInvTab = btn.getAttribute('data-tab') || 'all';
+          this.openInventory();
+        });
+      });
+    }
 
     // Equipment Modal
     const btnEquipment = document.getElementById('btn-equipment');
@@ -745,13 +760,13 @@ class MainApp {
     // 1:1 Field Monster Battle Modal buttons
     const btnCloseBattleX = document.getElementById('btn-close-battle-x');
     if (btnCloseBattleX && this.modalFieldBattle) {
-      btnCloseBattleX.addEventListener('click', () => this.modalFieldBattle.classList.add('hidden'));
+      btnCloseBattleX.addEventListener('click', () => this.closeFieldBattleModal());
     }
     const btnBattleFlee = document.getElementById('btn-battle-flee');
     if (btnBattleFlee && this.modalFieldBattle) {
       btnBattleFlee.addEventListener('click', () => {
         const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 농구장 코트로 돌아가시겠습니까?');
-        if (flee) this.modalFieldBattle.classList.add('hidden');
+        if (flee) this.closeFieldBattleModal();
       });
     }
     const btnBattleNextTurn = document.getElementById('btn-battle-next-turn');
@@ -1112,83 +1127,135 @@ class MainApp {
     if (this.invDefDisplay) this.invDefDisplay.innerText = this.playerData.def;
     this.invGrid.innerHTML = '';
 
-    if (this.playerData.inventory.length === 0) {
+    const currentTab = this.currentInvTab || 'all';
+
+    // Filter items based on current category tab
+    const filteredItems = this.playerData.inventory.filter(item => {
+      const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
+      const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
+      const isMaterial = !isEquip && !isPotion;
+
+      if (currentTab === 'equipment') return isEquip;
+      if (currentTab === 'consumable') return isPotion;
+      if (currentTab === 'material') return isMaterial;
+      return true; // 'all'
+    });
+
+    if (filteredItems.length === 0) {
       const emptyMsg = document.createElement('div');
-      emptyMsg.style.gridColumn = '1 / -1';
-      emptyMsg.style.padding = '32px 12px';
+      emptyMsg.style.padding = '42px 16px';
       emptyMsg.style.textAlign = 'center';
       emptyMsg.style.color = '#94a3b8';
       emptyMsg.style.fontWeight = '700';
-      emptyMsg.innerText = '비어 있음';
+      emptyMsg.style.fontSize = '14.5px';
+      let tabName = '아이템';
+      if (currentTab === 'equipment') tabName = '장비 아이템';
+      else if (currentTab === 'consumable') tabName = '소비 아이템';
+      else if (currentTab === 'material') tabName = '재료 아이템';
+      emptyMsg.innerText = `🎒 보유 중인 ${tabName}이 없습니다.`;
       this.invGrid.appendChild(emptyMsg);
+    } else {
+      filteredItems.forEach(item => {
+        const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
+        const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
+        const isScroll = (item.item === 'item_revive_scroll');
+        const equippedNow = isEquip && this.isItemEquipped(item.item);
+
+        const card = document.createElement('div');
+        card.className = 'inv-item-row' + (equippedNow ? ' is-equipped' : '');
+
+        // Determine item stats & effect text badge
+        let statBadgeHtml = '';
+        const catalogMeta = ALL_GAME_ITEMS[item.item]?.meta || {};
+        const stats = item.stats || item.meta?.stats || catalogMeta.stats;
+        const effect = item.effect || item.meta?.effect || catalogMeta.effect;
+        const heal = item.heal || item.meta?.heal || catalogMeta.heal;
+
+        if (isEquip) {
+          const parts = [];
+          if (stats) {
+            if (stats.atk) parts.push(`⚔️ ATK +${stats.atk}`);
+            if (stats.def) parts.push(`🛡️ DEF +${stats.def}`);
+            if (stats.hp) parts.push(`❤️ HP +${stats.hp}`);
+          }
+          const statText = parts.length > 0 ? parts.join(' · ') : (effect || '능력치 상승');
+          statBadgeHtml = `<span class="inv-item-stat-badge">${statText}</span>`;
+        } else if (isPotion) {
+          if (isScroll) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">💫 쓰러진 친구 50% 체력 부활</span>`;
+          } else {
+            const healAmount = heal || 10;
+            statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
+          }
+        } else {
+          // Material
+          const matDesc = effect || '장비 제작 및 상위 합성 재료';
+          statBadgeHtml = `<span class="inv-item-stat-badge material">📦 ${matDesc}</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="inv-item-icon-box">
+            <span>${item.icon || '📦'}</span>
+            <span class="inv-item-count-badge">x${item.count}</span>
+          </div>
+          <div class="inv-item-details">
+            <div class="inv-item-title-row">
+              <span class="inv-item-name">${item.name}</span>
+              ${equippedNow ? '<span class="inv-equipped-pill">E 장착중</span>' : ''}
+            </div>
+            ${statBadgeHtml}
+          </div>
+          <div class="inv-item-action-area"></div>
+        `;
+
+        const actionArea = card.querySelector('.inv-item-action-area');
+
+        if (isEquip) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-inv-action ' + (equippedNow ? 'btn-inv-equip-off' : 'btn-inv-equip-on');
+          btn.innerText = equippedNow ? '해제' : '장착';
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (window.AudioManager) window.AudioManager.playSelect();
+            this.equipItem(item.item);
+          });
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => {
+            if (window.AudioManager) window.AudioManager.playSelect();
+            this.equipItem(item.item);
+          });
+          actionArea.appendChild(btn);
+        } else if (isPotion) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-inv-action ' + (isScroll ? 'btn-inv-scroll' : 'btn-inv-potion');
+          btn.innerText = isScroll ? '사용' : '마시기';
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isScroll) {
+              this.attemptUseReviveScroll();
+            } else {
+              this.usePotion(item.item);
+            }
+          });
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => {
+            if (isScroll) {
+              this.attemptUseReviveScroll();
+            } else {
+              this.usePotion(item.item);
+            }
+          });
+          actionArea.appendChild(btn);
+        } else {
+          const tag = document.createElement('span');
+          tag.className = 'inv-material-tag';
+          tag.innerText = '재료';
+          actionArea.appendChild(tag);
+        }
+
+        this.invGrid.appendChild(card);
+      });
     }
-
-    this.playerData.inventory.forEach(item => {
-      const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
-      const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
-      const equippedNow = isEquip && this.isItemEquipped(item.item);
-
-      const card = document.createElement('div');
-      card.className = 'mat-badge';
-      card.style.display = 'flex';
-      card.style.flexDirection = 'column';
-      card.style.alignItems = 'center';
-      card.style.justifyContent = 'space-between';
-      card.style.padding = '12px 10px';
-      card.style.background = equippedNow ? 'rgba(37, 99, 235, 0.22)' : '#27272a';
-      card.style.border = equippedNow ? '2px solid #60a5fa' : '1.5px solid #3f3f46';
-      card.style.borderRadius = '10px';
-      if (isEquip || isPotion) {
-        card.style.cursor = 'pointer';
-      }
-
-      card.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center;">
-          <span style="font-size:28px;">${item.icon || '📦'}</span>
-          <span style="font-weight:800; font-size:13.5px; margin-top:4px; color:#fff;">${item.name}</span>
-          <span style="color:#93c5fd; font-size:12px;">x${item.count}</span>
-        </div>
-      `;
-
-      if (isEquip) {
-        const btn = document.createElement('button');
-        btn.className = 'btn-item-action ' + (equippedNow ? 'btn-equip-off' : 'btn-equip-on');
-        btn.innerText = equippedNow ? '해제' : '착용';
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.equipItem(item.item);
-        });
-        card.addEventListener('click', () => this.equipItem(item.item));
-        card.appendChild(btn);
-      } else if (isPotion) {
-        const isScroll = item.item === 'item_revive_scroll';
-        const btn = document.createElement('button');
-        btn.className = 'btn-item-action btn-use-potion';
-        btn.innerText = isScroll ? '사용' : '마시기';
-        btn.style.background = isScroll ? '#7c3aed' : '#059669';
-        btn.style.borderColor = isScroll ? '#8b5cf6' : '#10b981';
-        btn.style.color = '#ffffff';
-        btn.title = isScroll ? '쓰러진 친구 부활' : '체력 즉시 회복';
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (isScroll) {
-            this.attemptUseReviveScroll();
-          } else {
-            this.usePotion(item.item);
-          }
-        });
-        card.addEventListener('click', () => {
-          if (isScroll) {
-            this.attemptUseReviveScroll();
-          } else {
-            this.usePotion(item.item);
-          }
-        });
-        card.appendChild(btn);
-      }
-
-      this.invGrid.appendChild(card);
-    });
 
     this.modalInventory.classList.remove('hidden');
   }
@@ -1651,9 +1718,20 @@ class MainApp {
       return;
     }
     this.currentFieldMob = mob;
+    mob.inBattle = true;
     this.modalFieldBattle.classList.remove('hidden');
     this.updateFieldBattleUI();
     this.loadNextFieldBattleQuestion();
+  }
+
+  closeFieldBattleModal() {
+    if (this.currentFieldMob) {
+      this.currentFieldMob.inBattle = false;
+      this.currentFieldMob = null;
+    }
+    if (this.modalFieldBattle) {
+      this.modalFieldBattle.classList.add('hidden');
+    }
   }
 
   updateFieldBattleUI() {
@@ -1789,7 +1867,7 @@ class MainApp {
         this.saveProgress();
         setTimeout(() => {
           alert(`😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n가방(🎒)에서 물약을 마시거나 안전한 곳에서 휴식을 취하세요!`);
-          this.modalFieldBattle.classList.add('hidden');
+          this.closeFieldBattleModal();
         }, 500);
         return;
       }
@@ -1840,7 +1918,7 @@ class MainApp {
     if (window.AudioManager) window.AudioManager.playFanfare();
 
     this.saveProgress();
-    this.modalFieldBattle.classList.add('hidden');
+    this.closeFieldBattleModal();
 
     alert(
       `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${mob.goldReward}G, 🌟 경험치 +${mob.expReward} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n(농구공 가죽 조각 30개를 모아 복도 장비 제작대에서 🥋 가죽갑옷을 제작할 수 있습니다!)`

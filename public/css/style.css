@@ -1838,3 +1838,250 @@ body, html {
   white-space: nowrap;
 }
 
+/* ========================================================
+   ENHANCED INVENTORY MODAL & SLIM CARD UX
+   ======================================================== */
+.inv-modal-card {
+  max-width: 620px;
+  width: 95%;
+  max-height: 88vh;
+}
+
+.inv-stats-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #18181b;
+  border: 1.5px solid #3f3f46;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+}
+
+.inv-gold-tag {
+  color: #fde047;
+  font-weight: 800;
+}
+
+.inv-gold-tag b {
+  color: #facc15;
+}
+
+.inv-combat-tag {
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.inv-combat-tag b {
+  color: #60a5fa;
+}
+
+/* Category Filter Tabs */
+.inv-tab-row {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0 4px 0;
+  border-bottom: 1.5px solid #27272a;
+}
+
+.inv-tab-btn {
+  flex: 1;
+  padding: 8px 10px;
+  background: #27272a;
+  border: 1.5px solid #3f3f46;
+  border-radius: 8px;
+  color: #a1a1aa;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.inv-tab-btn:hover {
+  background: #3f3f46;
+  color: #f4f4f5;
+}
+
+.inv-tab-btn.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+/* Items Container */
+.inv-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Slim Horizontal Item Row Card */
+.inv-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #27272a;
+  border: 1.5px solid #3f3f46;
+  border-radius: 10px;
+  padding: 9px 12px;
+  transition: all 0.15s ease;
+}
+
+.inv-item-row:hover {
+  border-color: #52525b;
+  background: #2d2d32;
+}
+
+.inv-item-row.is-equipped {
+  background: rgba(30, 58, 138, 0.25);
+  border: 1.5px solid #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+}
+
+.inv-item-icon-box {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  position: relative;
+}
+
+.inv-item-count-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #0f172a;
+  border: 1px solid #475569;
+  border-radius: 9999px;
+  padding: 0 5px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #93c5fd;
+}
+
+.inv-item-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.inv-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.inv-item-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.inv-equipped-pill {
+  background: #1d4ed8;
+  color: #93c5fd;
+  border: 1px solid #3b82f6;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: -0.2px;
+}
+
+.inv-item-stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fde047;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 2px 7px;
+  border-radius: 5px;
+  width: fit-content;
+}
+
+.inv-item-stat-badge.potion {
+  color: #6ee7b7;
+}
+
+.inv-item-stat-badge.material {
+  color: #cbd5e1;
+}
+
+.inv-item-action-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-inv-action {
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-inv-equip-on {
+  background: #2563eb;
+  color: #ffffff;
+}
+.btn-inv-equip-on:hover {
+  background: #1d4ed8;
+}
+
+.btn-inv-equip-off {
+  background: #dc2626;
+  color: #ffffff;
+}
+.btn-inv-equip-off:hover {
+  background: #b91c1c;
+}
+
+.btn-inv-potion {
+  background: #059669;
+  color: #ffffff;
+}
+.btn-inv-potion:hover {
+  background: #047857;
+}
+
+.btn-inv-scroll {
+  background: #7c3aed;
+  color: #ffffff;
+}
+.btn-inv-scroll:hover {
+  background: #6d28d9;
+}
+
+.inv-material-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 4px 8px;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+}
+
