@@ -136,7 +136,7 @@ class GameEngine {
   setDashing(isDashing) {
     if (this.player.isTeacher) {
       this.player.isDashing = isDashing;
-      this.player.speed = isDashing ? 10.5 : 7.6; // 교사는 기본 이동속도가 달리기속도(2배: 7.6)
+      this.player.speed = isDashing ? 7.6 : 4.0; // 교사: 기본 이동속도 4.0, Shift 누르면 7.6
       return;
     }
     if (!this.player.hasRunningShoes) {
@@ -453,7 +453,7 @@ class GameEngine {
     this.triggerFadeWarp(() => {
       this.player.floor = parseInt(floor) || 7;
       if (this.player.isTeacher) {
-        this.player.speed = this.player.isDashing ? 10.5 : 7.6; // 교사 기본 이동속도 7.6 유지
+        this.player.speed = this.player.isDashing ? 7.6 : 4.0; // 교사 기본 이동속도 4.0 유지 (Shift 시 7.6)
       }
       if (room === 'playground_soccer') {
         this.player.room = 'playground';

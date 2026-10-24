@@ -543,7 +543,7 @@ class MainApp {
           return;
         }
         if (!name) {
-          alert('이름(닉네임)을 입력해 주세요! (예: 홍길동)');
+          alert('이름을 입력해 주세요! (예: 홍길동)');
           document.getElementById('input-nickname').focus();
           return;
         }
@@ -577,7 +577,7 @@ class MainApp {
 
         this.engine.player.isTeacher = true;
         this.engine.player.hasRunningShoes = true;
-        this.engine.player.speed = 7.6; // 교사 기본 이동속도 = 달리기속도(2배: 7.6)
+        this.engine.player.speed = 4.0; // 교사 기본 이동속도 4.0 (Shift 시 7.6)
         this.engine.player.name = name;
 
         const gmPanel = document.getElementById('gm-panel');
