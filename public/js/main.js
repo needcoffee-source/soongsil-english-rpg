@@ -80,6 +80,7 @@ class MainApp {
         accessory: null
       },
       hasReceivedSoongsilGift: false,
+      hasOpenedSecretLocker: false,
       inventory: []
     };
 
@@ -253,12 +254,13 @@ class MainApp {
   }
 
   handleSecretLocker() {
-    const now = Date.now();
-    if (this.lastSecretLockerTime && now - this.lastSecretLockerTime < 2500) {
-      alert('🤫 사물함 구석을 뒤적거리고 있습니다...\n잠시 후 다시 열어보세요!');
+    const lockerKey = 'soongsil_secret_locker_' + (this.playerData.studentId || 'default');
+    const alreadyFound = !!(this.playerData.hasOpenedSecretLocker || localStorage.getItem(lockerKey) === 'true');
+
+    if (alreadyFound && !this.playerData.isTeacher) {
+      alert('🤫 [철제 사물함]\n\n사물함 구석이 텅 비어 있습니다.\n(이미 숨겨진 비밀 재료 아이템을 모두 챙겼습니다!)');
       return;
     }
-    this.lastSecretLockerTime = now;
 
     // 4대 학교 기본 제작 재료 아이템 풀
     const materials = [
@@ -272,10 +274,16 @@ class MainApp {
     const count = Math.floor(Math.random() * 5) + 1; // 1~5개
 
     this.addItem(chosen.id, chosen.name, count, chosen.icon, chosen.meta);
+    this.playerData.hasOpenedSecretLocker = true;
+    try {
+      localStorage.setItem(lockerKey, 'true');
+    } catch (e) {}
+    this.saveProgress();
+
     if (window.AudioManager) window.AudioManager.playFanfare();
 
     alert(
-      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방(B)에 안전하게 보관되었습니다.)`
+      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방(B)에 안전하게 보관되었습니다. 이 사물함의 비밀 선물은 1회 한정입니다!)`
     );
   }
 
@@ -288,7 +296,7 @@ class MainApp {
       this.openSoongsilGiftModal();
     } else {
       alert(
-        `🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중 마스코트 숭실이야! 🐾\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿: 화면 왼쪽 아래의 반투명 조이스틱 패드\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n• 문, 책상, 게시판, 친구, 선생님 앞에서 A버튼을 눌러봐!"`
+        `🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중 마스코트 숭실이야! 🐾\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿: 화면 왼쪽 아래의 반투명 조이스틱 패드\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [SPACE] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n• 문, 책상, 게시판, 친구, 선생님 앞에서 SPACE를 눌러봐!"`
       );
     }
   }
@@ -524,9 +532,11 @@ class MainApp {
           if (saved.hairColor) selectedHair = saved.hairColor;
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
+          this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
           console.log(`[Storage] 학생(${studentId}) 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
+          this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
         }
         try {
           localStorage.setItem('soongsil_last_student_id', studentId);
@@ -2174,6 +2184,7 @@ class MainApp {
         hairColor: this.playerData.hairColor,
         outfitColor: this.playerData.outfitColor,
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
+        hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));

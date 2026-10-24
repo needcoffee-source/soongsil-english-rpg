@@ -557,7 +557,7 @@ class GameEngine {
       // Exit Door Proximity
       const exitDist = Math.hypot(cr.exitDoor.x * 32 - this.player.x, cr.exitDoor.y * 32 - this.player.y);
       if (exitDist < 64) {
-        closest = { type: 'exit', name: '복도 출구', prompt: '복도로 나가기 (A 버튼)' };
+        closest = { type: 'exit', name: '복도 출구', prompt: '복도로 나가기 (SPACE)' };
       }
     }
 
@@ -2250,15 +2250,17 @@ class GameEngine {
       this.ctx.ellipse(px + 16, py + 26, 12, 6, 0, 0, Math.PI * 2);
       this.ctx.fill();
 
-      this.ctx.fillStyle = npc.avatar === 'baird' ? '#854d0e' : (npc.avatar === 'teacher' ? '#1e3a8a' : '#047857');
+      const isTeacherNpc = (npc.avatar === 'teacher' || npc.name.includes('선생님'));
+      this.ctx.fillStyle = npc.avatar === 'baird' ? '#854d0e' : (isTeacherNpc ? '#1e3a8a' : '#047857');
       this.ctx.beginPath();
       this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
       this.ctx.fill();
       this.ctx.fillRect(px + 8, py + 18, 16, 14);
 
-      this.drawSharpLabel(px + 16, py - 11, `💬 ${npc.name}`, {
-        bgColor: 'rgba(6, 78, 59, 0.95)',
-        borderColor: '#34d399',
+      const labelIcon = isTeacherNpc ? '👨‍🏫' : (npc.avatar === 'graduate' || npc.name.includes('졸업') ? '🎓' : '💬');
+      this.drawSharpLabel(px + 16, py - 11, `${labelIcon} ${npc.name}`, {
+        bgColor: isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)',
+        borderColor: isTeacherNpc ? '#60a5fa' : '#34d399',
         textColor: '#fef08a',
         fontSize: 12.5,
         paddingX: 10,
