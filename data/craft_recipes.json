@@ -78,6 +78,32 @@
     }
   },
   {
+    "id": "recipe_leather_armor",
+    "name": "가죽갑옷 (Leather Armor)",
+    "category": "equipment",
+    "description": "[시즌1 운동장 특수장비] 농구장 몬스터들에게서 모은 질긴 농구공 가죽 조각 30장으로 정성스레 기운 튼튼한 가죽 갑옷입니다.",
+    "icon": "🥋",
+    "gradeLevel": 1,
+    "requiredGold": 50,
+    "requiredItems": [
+      { "item": "item_basketball_leather", "name": "농구공 가죽 조각", "count": 30 }
+    ],
+    "unscramble": {
+      "korean": "나는 이번 주말에 전주 한옥마을을 방문할 계획이다.",
+      "words": ["I", "am", "going", "to", "visit", "Jeonju", "Hanok", "Village", "this", "weekend."],
+      "correct": "I am going to visit Jeonju Hanok Village this weekend."
+    },
+    "result": {
+      "item": "equip_leather_armor",
+      "name": "가죽갑옷",
+      "icon": "🥋",
+      "type": "equipment",
+      "slot": "armor",
+      "stats": { "atk": 0, "def": 17, "hp": 25 },
+      "effect": "방어력(DEF) +17, 최대체력(HP) +25"
+    }
+  },
+  {
     "id": "recipe_forsythia_ring",
     "name": "성실의 개나리 반지 (Forsythia Ring)",
     "category": "equipment",

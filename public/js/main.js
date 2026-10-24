@@ -15,16 +15,18 @@ const ALL_GAME_ITEMS = {
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_golem_core': { name: '고목의 핵', icon: '🟢', count: 9999, meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
   'item_dragon_heart': { name: '용의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '드래곤 보스 전리품 · 최상위 제작 재료' } },
+  'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주황 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
 
-  // 3. 1st Grade Wooden Equipment
+  // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
   'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 25 }, effect: '방어력 +17, 체력 +25' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
 
@@ -105,7 +107,10 @@ class MainApp {
     this.modalInventory = document.getElementById('modal-inventory');
     this.modalEquipment = document.getElementById('modal-equipment');
     this.modalBossRaid = document.getElementById('modal-boss-raid');
+    this.modalFieldBattle = document.getElementById('modal-field-battle');
     this.modalTeacher = document.getElementById('modal-teacher');
+    this.currentFieldMob = null;
+    this.fieldBattleQuestion = null;
 
     this.invGoldDisplay = document.getElementById('inv-gold-display');
     this.invAtkDisplay = document.getElementById('inv-atk-display');
@@ -255,6 +260,8 @@ class MainApp {
       alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
     } else if (target.type === 'secret_locker') {
       this.handleSecretLocker();
+    } else if (target.type === 'field_monster') {
+      this.startFieldMonsterBattle(target.data);
     }
   }
 
@@ -733,6 +740,39 @@ class MainApp {
     const btnDeclineRevive = document.getElementById('btn-decline-revive');
     if (btnDeclineRevive) {
       btnDeclineRevive.addEventListener('click', () => this.declineReviveOffer());
+    }
+
+    // 1:1 Field Monster Battle Modal buttons
+    const btnCloseBattleX = document.getElementById('btn-close-battle-x');
+    if (btnCloseBattleX && this.modalFieldBattle) {
+      btnCloseBattleX.addEventListener('click', () => this.modalFieldBattle.classList.add('hidden'));
+    }
+    const btnBattleFlee = document.getElementById('btn-battle-flee');
+    if (btnBattleFlee && this.modalFieldBattle) {
+      btnBattleFlee.addEventListener('click', () => {
+        const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 농구장 코트로 돌아가시겠습니까?');
+        if (flee) this.modalFieldBattle.classList.add('hidden');
+      });
+    }
+    const btnBattleNextTurn = document.getElementById('btn-battle-next-turn');
+    if (btnBattleNextTurn) {
+      btnBattleNextTurn.addEventListener('click', () => this.loadNextFieldBattleQuestion());
+    }
+    const btnBattleRedPot = document.getElementById('btn-battle-use-red-potion');
+    if (btnBattleRedPot) {
+      btnBattleRedPot.addEventListener('click', () => {
+        if (this.usePotion('item_red_potion')) {
+          this.updateFieldBattleUI();
+        }
+      });
+    }
+    const btnBattleOrangePot = document.getElementById('btn-battle-use-orange-potion');
+    if (btnBattleOrangePot) {
+      btnBattleOrangePot.addEventListener('click', () => {
+        if (this.usePotion('item_orange_potion')) {
+          this.updateFieldBattleUI();
+        }
+      });
     }
 
     // Leaderboard Modal Close
@@ -1599,6 +1639,212 @@ class MainApp {
     }
 
     document.getElementById('btn-raid-next-turn').classList.remove('hidden');
+  }
+
+  // ========================================================
+  // 1:1 FIELD MONSTER BATTLE (농구장 1:1 퀴즈 대결)
+  // ========================================================
+  startFieldMonsterBattle(mob) {
+    if (!mob) return;
+    if (this.playerData.hp <= 0 || this.playerData.isFallen) {
+      alert('😵 [체력 고갈]\n\n현재 체력이 0입니다! 가방(🎒)에서 물약을 마시거나 안전한 곳에서 휴식을 취한 뒤 도전하세요!');
+      return;
+    }
+    this.currentFieldMob = mob;
+    this.modalFieldBattle.classList.remove('hidden');
+    this.updateFieldBattleUI();
+    this.loadNextFieldBattleQuestion();
+  }
+
+  updateFieldBattleUI() {
+    if (!this.currentFieldMob) return;
+    this.recalcCombatStats();
+
+    const mob = this.currentFieldMob;
+    const mobPct = Math.max(0, Math.min(100, Math.floor((mob.hp / mob.maxHp) * 100)));
+    const titleEl = document.getElementById('battle-monster-title');
+    if (titleEl) titleEl.innerText = `${mob.icon} ${mob.name} [1:1 배틀]`;
+
+    const mobLabel = document.getElementById('battle-mob-name-label');
+    if (mobLabel) mobLabel.innerText = `${mob.icon} ${mob.name}`;
+
+    const mobHpText = document.getElementById('battle-mob-hp-text');
+    if (mobHpText) mobHpText.innerText = `HP ${mob.hp} / ${mob.maxHp}`;
+
+    const mobHpFill = document.getElementById('battle-mob-hp-fill');
+    if (mobHpFill) mobHpFill.style.width = `${mobPct}%`;
+
+    const pName = document.getElementById('battle-player-name-label');
+    if (pName) pName.innerText = this.playerData.name ? `${this.playerData.name} (내 체력)` : '내 체력';
+
+    const pAtk = document.getElementById('battle-player-atk');
+    if (pAtk) pAtk.innerText = this.playerData.atk;
+
+    const pDef = document.getElementById('battle-player-def');
+    if (pDef) pDef.innerText = this.playerData.def;
+
+    const pHpText = document.getElementById('battle-player-hp');
+    if (pHpText) pHpText.innerText = `HP ${this.playerData.hp} / ${this.playerData.maxHp}`;
+
+    const pPct = Math.max(0, Math.min(100, Math.floor((this.playerData.hp / this.playerData.maxHp) * 100)));
+    const pHpFill = document.getElementById('battle-player-hp-fill');
+    if (pHpFill) {
+      pHpFill.style.width = `${pPct}%`;
+      if (pPct > 50) pHpFill.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+      else if (pPct > 20) pHpFill.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+      else pHpFill.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
+    }
+
+    const redPot = this.playerData.inventory.find(i => i.item === 'item_red_potion');
+    const redCount = redPot ? redPot.count : 0;
+    const btnRed = document.getElementById('btn-battle-use-red-potion');
+    if (btnRed) {
+      btnRed.innerText = `🍷 빨간 물약 (+10) ${redCount}개`;
+      btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
+    }
+
+    const orangePot = this.playerData.inventory.find(i => i.item === 'item_orange_potion');
+    const orangeCount = orangePot ? orangePot.count : 0;
+    const btnOrange = document.getElementById('btn-battle-use-orange-potion');
+    if (btnOrange) {
+      btnOrange.innerText = `🧪 주황 물약 (+25) ${orangeCount}개`;
+      btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
+    }
+  }
+
+  loadNextFieldBattleQuestion() {
+    const q = this.quizManager.getRandomQuestion('L5');
+    if (!q) {
+      alert('출제할 5단원 영어 문제가 없습니다.');
+      return;
+    }
+    this.fieldBattleQuestion = q;
+
+    const qEl = document.getElementById('battle-quiz-question');
+    if (qEl) qEl.innerText = q.question;
+
+    const optEl = document.getElementById('battle-quiz-options');
+    if (!optEl) return;
+    optEl.innerHTML = '';
+
+    const btnNext = document.getElementById('btn-battle-next-turn');
+    if (btnNext) btnNext.classList.add('hidden');
+
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt-btn';
+      btn.innerText = opt;
+      btn.addEventListener('click', () => this.handleFieldBattleAnswer(opt, btn));
+      optEl.appendChild(btn);
+    });
+  }
+
+  handleFieldBattleAnswer(selectedOpt, btnEl) {
+    const q = this.fieldBattleQuestion;
+    const mob = this.currentFieldMob;
+    if (!q || !mob) return;
+
+    const isCorrect = (selectedOpt === q.answer);
+    const allBtns = document.getElementById('battle-quiz-options').querySelectorAll('.quiz-opt-btn');
+    allBtns.forEach(b => b.disabled = true);
+
+    const logEl = document.getElementById('battle-action-log');
+
+    if (isCorrect) {
+      btnEl.classList.add('correct');
+      if (window.AudioManager) window.AudioManager.playCorrect();
+
+      const myDmg = Math.max(8, this.playerData.atk - mob.def);
+      mob.hp = Math.max(0, mob.hp - myDmg);
+      this.updateFieldBattleUI();
+
+      if (mob.hp <= 0) {
+        if (logEl) logEl.innerHTML = `⚔️ 정답! <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 결정타를 날려 승리했습니다!`;
+        setTimeout(() => this.handleFieldBattleVictory(mob), 400);
+        return;
+      }
+
+      if (logEl) logEl.innerHTML = `⚔️ <b>정답!</b> <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 피해를 입혔습니다! (남은 HP: ${mob.hp})`;
+      const btnNext = document.getElementById('btn-battle-next-turn');
+      if (btnNext) btnNext.classList.remove('hidden');
+    } else {
+      btnEl.classList.add('wrong');
+      allBtns.forEach(b => {
+        if (b.innerText === q.answer) b.classList.add('correct');
+      });
+      if (window.AudioManager) window.AudioManager.playWrong();
+
+      // 풀HP의 20% 상당의 피격 피해 (풀피 135 기준 ~27 HP)
+      const counterDmg = mob.counterDmg || Math.round(this.playerData.maxHp * 0.20);
+      this.playerData.hp = Math.max(0, this.playerData.hp - counterDmg);
+      this.updateFieldBattleUI();
+      this.updateHpBar();
+
+      if (logEl) {
+        logEl.innerHTML = `💥 <b>오답!</b> 정답은 [<b>${q.answer}</b>]입니다.<br>🚨 <b>${mob.name}</b>의 반격으로 <b>-${counterDmg} HP (풀피의 20% 피해)</b>를 입었습니다!`;
+      }
+
+      if (this.playerData.hp <= 0) {
+        this.playerData.isFallen = true;
+        this.saveProgress();
+        setTimeout(() => {
+          alert(`😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n가방(🎒)에서 물약을 마시거나 안전한 곳에서 휴식을 취하세요!`);
+          this.modalFieldBattle.classList.add('hidden');
+        }, 500);
+        return;
+      }
+
+      const btnNext = document.getElementById('btn-battle-next-turn');
+      if (btnNext) btnNext.classList.remove('hidden');
+    }
+  }
+
+  handleFieldBattleVictory(mob) {
+    mob.defeated = true;
+    mob.respawnAt = Date.now() + (mob.respawnSec || 15) * 1000;
+
+    // 1. Gold & EXP
+    this.addGold(mob.goldReward || 10);
+    this.addExp(mob.expReward || 20);
+
+    const dropsList = [];
+
+    // 2. Basketball Leather (농구공 가죽 조각)
+    const leatherCount = Math.floor(Math.random() * ((mob.leatherMax || 2) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);
+    this.addItem('item_basketball_leather', '농구공 가죽 조각', leatherCount, '🏀', {
+      type: 'material',
+      effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료'
+    });
+    dropsList.push(`🏀 농구공 가죽 조각 x${leatherCount}개`);
+
+    // 3. Forsythia Petals (1반 파밍과 동일한 10% 확률!)
+    if (Math.random() * 100 < 10) {
+      this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
+        type: 'material',
+        effect: '개나리 반지 및 주황 물약 재료'
+      });
+      dropsList.push('🌼 노란 개나리 꽃잎 1개 (10% 행운 드랍!)');
+    }
+
+    // 4. Elite Armor Drop (15% 완제품 드랍!)
+    if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {
+      this.addItem('equip_leather_armor', '가죽갑옷', 1, '🥋', {
+        type: 'equipment',
+        slot: 'armor',
+        stats: { atk: 0, def: 17, hp: 25 },
+        effect: '방어력 +17, 체력 +25'
+      });
+      dropsList.push('🥋 가죽갑옷 (15% 대박 완제품 드랍!)');
+    }
+
+    if (window.AudioManager) window.AudioManager.playFanfare();
+
+    this.saveProgress();
+    this.modalFieldBattle.classList.add('hidden');
+
+    alert(
+      `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${mob.goldReward}G, 🌟 경험치 +${mob.expReward} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n(농구공 가죽 조각 30개를 모아 복도 장비 제작대에서 🥋 가죽갑옷을 제작할 수 있습니다!)`
+    );
   }
 
   respawnAtHallway() {

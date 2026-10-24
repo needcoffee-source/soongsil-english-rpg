@@ -464,6 +464,58 @@
     </div>
   </div>
 
+  <!-- 4-C2. 1:1 Field Monster Battle Modal (농구장 1:1 퀴즈 배틀) -->
+  <div id="modal-field-battle" class="modal-overlay hidden" style="z-index: 110;">
+    <div class="modal-card quiz-card field-battle-card" style="max-width: 540px; border: 2.5px solid #f97316;">
+      <div class="modal-header field-battle-header" style="background: linear-gradient(135deg, #7c2d12, #c2410c); border-bottom: 2px solid #ea580c;">
+        <div>
+          <span class="quiz-unit-badge" style="background:#ea580c; color:#fff;">🏀 농구장 1:1 배틀 · 5단원 (L5. Walk into Korea)</span>
+          <h3 id="battle-monster-title" style="margin:4px 0 0; color:#fef08a;">🏀 덩크 고블린</h3>
+        </div>
+        <button class="btn-modal-close" id="btn-close-battle-x">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 14px 16px;">
+        <!-- Monster HP Bar -->
+        <div class="boss-status-box" style="margin-bottom: 12px; background: rgba(15, 23, 42, 0.7); padding: 10px; border-radius: 8px; border: 1px solid #475569;">
+          <div class="boss-hp-header" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 4px;">
+            <span id="battle-mob-name-label" style="color: #fdba74;">🏀 덩크 고블린</span>
+            <span id="battle-mob-hp-text" style="color: #f97316;">HP 60 / 60</span>
+          </div>
+          <div class="boss-hp-track" style="height: 12px; background: #334155; border-radius: 6px; overflow: hidden;">
+            <div id="battle-mob-hp-fill" class="boss-hp-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ea580c, #f97316); transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Player HP Bar & Potion Bar -->
+        <div class="player-status-box" style="margin-bottom: 12px; background: rgba(15, 23, 42, 0.7); padding: 10px; border-radius: 8px; border: 1px solid #475569;">
+          <div class="player-hp-header" style="display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 4px;">
+            <span>🛡️ <b id="battle-player-name-label">내 체력</b> <span class="player-substat-pill" style="font-size: 11px; color: #94a3b8; font-weight: 600;">(⚔️ <b id="battle-player-atk" style="color:#f87171;">22</b> · 🛡️ <b id="battle-player-def" style="color:#60a5fa;">25</b>)</span></span>
+            <span id="battle-player-hp" style="font-weight:900; color:#34d399;">HP 135 / 135</span>
+          </div>
+          <div class="player-hp-track" style="height: 12px; background: #334155; border-radius: 6px; overflow: hidden;">
+            <div id="battle-player-hp-fill" class="player-hp-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.3s ease;"></div>
+          </div>
+          <div class="raid-potion-group" style="display:flex; gap:6px; margin-top:8px;">
+            <button id="btn-battle-use-red-potion" class="btn-potion-use" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:#991b1b; color:#fff; border:1px solid #f87171; cursor:pointer;">🍷 빨간 물약 (+10) 0개</button>
+            <button id="btn-battle-use-orange-potion" class="btn-potion-use" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:#c2410c; color:#fff; border:1px solid #fb923c; cursor:pointer;">🧪 주황 물약 (+25) 0개</button>
+          </div>
+        </div>
+
+        <!-- Battle Action Log -->
+        <div id="battle-action-log" class="raid-battle-log" style="background:#0f172a; padding:8px 12px; border-radius:6px; font-size:12.5px; line-height:1.4; border-left:4px solid #ea580c; margin-bottom:12px; color:#e2e8f0;">
+          ⚔️ 5단원 영어 문제를 맞히면 공격하고, 틀리면 <b>풀HP의 20% 피해</b>를 입습니다!
+        </div>
+
+        <p class="quiz-question-text" id="battle-quiz-question" style="font-size:14.5px; font-weight:800; line-height:1.5; color:#f8fafc; margin-bottom:10px; background:#1e293b; padding:12px; border-radius:8px; border:1px solid #334155;">문제가 여기에 표시됩니다.</p>
+        <div class="quiz-options-grid" id="battle-quiz-options"></div>
+      </div>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:#1e293b; border-top:1px solid #334155;">
+        <button id="btn-battle-flee" class="btn-secondary" style="padding:8px 16px; font-size:13px; font-weight:700; border-radius:6px; background:#475569; color:#fff; border:none; cursor:pointer;">🏃 도망치기 (전투 이탈)</button>
+        <button id="btn-battle-next-turn" class="btn-primary hidden" style="padding:8px 16px; font-size:13px; font-weight:800; border-radius:6px; background:#ea580c; color:#fff; border:none; cursor:pointer;">다음 문제 풀기 ⚔️</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 4-D. Revival Confirmation Modal (부활 주문서 수락 모달) -->
   <div id="modal-revive-offer" class="modal-overlay hidden" style="z-index: 120;">
     <div class="modal-card quiz-card" style="max-width: 440px; text-align: center; border: 2.5px solid #10b981;">

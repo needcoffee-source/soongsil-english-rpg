@@ -199,6 +199,85 @@ const WORLD_DATA = {
     width: 90,
     height: 28,
     elevator: { x: 80, y: 3 },
-    cafeteria: { x: 86, y: 3, name: "학생 급식실", prompt: "급식실 입장" }
+    cafeteria: { x: 86, y: 3, name: "학생 급식실", prompt: "급식실 입장" },
+    basketballMonsters: [
+      {
+        id: "bb_mob_1",
+        name: "덩크 고블린",
+        type: "regular",
+        avatar: "dunk_goblin",
+        icon: "🏀",
+        x: 66,
+        y: 11,
+        hp: 60,
+        maxHp: 60,
+        atk: 11,
+        def: 2,
+        counterDmg: 20, // 오답 시 피해량 (~15%)
+        goldReward: 8,
+        expReward: 15,
+        leatherMin: 1,
+        leatherMax: 2,
+        respawnSec: 15
+      },
+      {
+        id: "bb_mob_2",
+        name: "덩크 고블린",
+        type: "regular",
+        avatar: "dunk_goblin",
+        icon: "🏀",
+        x: 82,
+        y: 20,
+        hp: 60,
+        maxHp: 60,
+        atk: 11,
+        def: 2,
+        counterDmg: 20,
+        goldReward: 8,
+        expReward: 15,
+        leatherMin: 1,
+        leatherMax: 2,
+        respawnSec: 15
+      },
+      {
+        id: "bb_mob_3",
+        name: "불꽃 드리블러",
+        type: "mid",
+        avatar: "flame_dribbler",
+        icon: "🔥",
+        x: 71,
+        y: 22,
+        hp: 90,
+        maxHp: 90,
+        atk: 14,
+        def: 3,
+        counterDmg: 27, // 오답 시 피해량 (풀피 135의 정확히 20%!)
+        goldReward: 15,
+        expReward: 25,
+        leatherMin: 1,
+        leatherMax: 2,
+        respawnSec: 20
+      },
+      {
+        id: "bb_mob_4",
+        name: "림 가디언 (엘리트)",
+        type: "elite",
+        avatar: "rim_guardian",
+        icon: "👑",
+        x: 74,
+        y: 8,
+        hp: 160,
+        maxHp: 160,
+        atk: 18,
+        def: 5,
+        counterDmg: 35, // 오답 시 피해량 (~26%)
+        goldReward: 35,
+        expReward: 50,
+        leatherMin: 3,
+        leatherMax: 5,
+        armorDropRate: 15, // 15% 가죽갑옷 완제품 드랍
+        respawnSec: 45
+      }
+    ]
   }
 };

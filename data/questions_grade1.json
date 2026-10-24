@@ -3373,5 +3373,455 @@
     ],
     "answer": "enough",
     "explanation": "enough는 '충분한'이라는 뜻입니다."
+  },
+  {
+    "id": "q5_1",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 표현은?\n'I am _______ visit Jeonju Hanok Village this Saturday.'",
+    "options": [
+      "going to",
+      "goes to",
+      "went to",
+      "going"
+    ],
+    "answer": "going to",
+    "explanation": "미래의 계획을 나타낼 때 'be going to + 동사원형'을 씁니다."
+  },
+  {
+    "id": "q5_2",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'즐거운 여행 되렴!'이라는 의미로 빈칸에 알맞은 말은?\n'A: I am going to Gyeongju tomorrow.\nB: _______!'",
+    "options": [
+      "Have a nice trip",
+      "Good morning",
+      "You are welcome",
+      "I am sorry"
+    ],
+    "answer": "Have a nice trip",
+    "explanation": "여행을 떠나는 사람에게 'Have a nice trip!(즐거운 여행 되렴!)'이라고 축하 인사를 건넵니다."
+  },
+  {
+    "id": "q5_3",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 단어는?\n'We can wear _______ Korean clothes, Hanbok, in the village.'",
+    "options": [
+      "traditional",
+      "salty",
+      "dangerous",
+      "noisy"
+    ],
+    "answer": "traditional",
+    "explanation": "traditional은 '전통의, 전통적인'이라는 뜻의 형용사입니다."
+  },
+  {
+    "id": "q5_4",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 들어갈 알맞은 be동사는?\n'There _______ many beautiful palaces in Seoul.'",
+    "options": [
+      "are",
+      "is",
+      "am",
+      "be"
+    ],
+    "answer": "are",
+    "explanation": "'palaces'가 복수명사이므로 'There are ~'를 씁니다."
+  },
+  {
+    "id": "q5_5",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'경험' 또는 '경험하다'를 뜻하는 영어 단어는 무엇일까요?",
+    "options": [
+      "experience",
+      "homework",
+      "weather",
+      "schedule"
+    ],
+    "answer": "experience",
+    "explanation": "experience는 '경험, 경험하다'라는 뜻의 핵심 단어입니다."
+  },
+  {
+    "id": "q5_6",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 대화의 빈칸에 알맞은 말은?\n'A: What are you going to do this weekend?\nB: I am going to _______ delicious bibimbap.'",
+    "options": [
+      "make",
+      "making",
+      "made",
+      "makes"
+    ],
+    "answer": "make",
+    "explanation": "'be going to' 다음에는 동사원형이 옵니다."
+  },
+  {
+    "id": "q5_7",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 중 단어와 뜻의 연결이 올바르지 않은 것은?",
+    "options": [
+      "village - 도시",
+      "culture - 문화",
+      "famous - 유명한",
+      "palace - 궁전"
+    ],
+    "answer": "village - 도시",
+    "explanation": "village는 '마을'을 의미하며, '도시'는 city입니다."
+  },
+  {
+    "id": "q5_8",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 알맞은 전치사는?\n'My family is going to go _______ a trip next Monday.'",
+    "options": [
+      "on",
+      "at",
+      "in",
+      "by"
+    ],
+    "answer": "on",
+    "explanation": "'go on a trip'은 '여행을 가다'라는 필수 숙어 표현입니다."
+  },
+  {
+    "id": "q5_9",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 단어는?\n'There are _______ kinds of Korean street food in the market.'",
+    "options": [
+      "various",
+      "lonely",
+      "bored",
+      "sleepy"
+    ],
+    "answer": "various",
+    "explanation": "various는 '다양한, 여러 가지의'라는 뜻입니다."
+  },
+  {
+    "id": "q5_10",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'나는 그 한옥이 매우 아름답다고 생각한다'를 영어로 바르게 표현한 것은?",
+    "options": [
+      "I think the Hanok is very beautiful.",
+      "I know the Hanok will be angry.",
+      "I am eating the Hanok quickly.",
+      "I clean the Hanok with water."
+    ],
+    "answer": "I think the Hanok is very beautiful.",
+    "explanation": "'I think (that) ~' 구문은 자신의 생각이나 의견을 나타낼 때 사용합니다."
+  },
+  {
+    "id": "q5_11",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 알맞은 be동사는?\n'There _______ an old stone tower in the temple.'",
+    "options": [
+      "is",
+      "are",
+      "were",
+      "be"
+    ],
+    "answer": "is",
+    "explanation": "'an old stone tower'는 단수명사이므로 'There is ~'를 씁니다."
+  },
+  {
+    "id": "q5_12",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 문장의 부정문으로 알맞은 것은?\n'He is going to buy a souvenir.'",
+    "options": [
+      "He is not going to buy a souvenir.",
+      "He doesn't going to buy a souvenir.",
+      "He not is going to buy a souvenir.",
+      "He isn't go to buy a souvenir."
+    ],
+    "answer": "He is not going to buy a souvenir.",
+    "explanation": "be going to의 부정형은 be동사 뒤에 not을 붙여 'be not going to + 동사원형' 형태가 됩니다."
+  },
+  {
+    "id": "q5_13",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'여행자, 관광객'을 뜻하는 영어 단어로 가장 알맞은 것은?",
+    "options": [
+      "traveler",
+      "pilot",
+      "painter",
+      "dentist"
+    ],
+    "answer": "traveler",
+    "explanation": "traveler는 '여행자, 여행객'을 의미합니다."
+  },
+  {
+    "id": "q5_14",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 의문사는?\n'A: _______ are you going to visit Busan?\nB: Next weekend.'",
+    "options": [
+      "When",
+      "Who",
+      "Where",
+      "Why"
+    ],
+    "answer": "When",
+    "explanation": "다음 주말(Next weekend)이라는 때를 묻고 있으므로 의문사 'When(언제)'이 적절합니다."
+  },
+  {
+    "id": "q5_15",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 대화의 밑줄 친 부분의 뜻으로 알맞은 것은?\n'A: Hanbok has beautiful colors.\nB: I think so, too.'",
+    "options": [
+      "나도 그렇게 생각해.",
+      "나는 동의하지 않아.",
+      "나는 잘 모르겠어.",
+      "정말 미안해."
+    ],
+    "answer": "나도 그렇게 생각해.",
+    "explanation": "'I think so, too.'는 상대방의 의견에 동의할 때 쓰는 표현입니다."
+  },
+  {
+    "id": "q5_16",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 공통으로 들어갈 수 있는 단어는?\n'They are going to _______ Korean history.'\n'Students _______ English hard.'",
+    "options": [
+      "learn",
+      "sleep",
+      "sing",
+      "cry"
+    ],
+    "answer": "learn",
+    "explanation": "learn은 '배우다, 학습하다'라는 뜻의 동사입니다."
+  },
+  {
+    "id": "q5_17",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'기념품'을 뜻하는 올바른 영어 단어는 무엇일까요?",
+    "options": [
+      "souvenir",
+      "season",
+      "signal",
+      "shadow"
+    ],
+    "answer": "souvenir",
+    "explanation": "souvenir는 여행지 등에서 추억을 위해 구입하는 '기념품'입니다."
+  },
+  {
+    "id": "q5_18",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 알맞은 것은?\n'Look at the map. _______ many traditional markets in this city.'",
+    "options": [
+      "There are",
+      "There is",
+      "It is",
+      "They is"
+    ],
+    "answer": "There are",
+    "explanation": "'traditional markets'가 복수이므로 'There are'가 알맞습니다."
+  },
+  {
+    "id": "q5_19",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 대화의 빈칸에 알맞은 대답은?\n'A: Are you going to take photos at Gyeongbokgung Palace?\nB: Yes, _______.'",
+    "options": [
+      "I am",
+      "I do",
+      "I will",
+      "I can"
+    ],
+    "answer": "I am",
+    "explanation": "'Are you ~?'로 물었으므로 'Yes, I am.'으로 답합니다."
+  },
+  {
+    "id": "q5_20",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'맛있는'을 의미하는 단어로 알맞은 것은?",
+    "options": [
+      "delicious",
+      "dangerous",
+      "difficult",
+      "dark"
+    ],
+    "answer": "delicious",
+    "explanation": "delicious는 '맛있는'이라는 뜻입니다."
+  },
+  {
+    "id": "q5_21",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 단어의 반의어(반대말) 관계로 알맞은 것은?\n'traditional(전통적인)'의 반대말은?",
+    "options": [
+      "modern",
+      "famous",
+      "quiet",
+      "bright"
+    ],
+    "answer": "modern",
+    "explanation": "traditional(전통적인)의 반대말은 modern(현대적인)입니다."
+  },
+  {
+    "id": "q5_22",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 말은?\n'Minho is going to _______ a boat on the river.'",
+    "options": [
+      "ride",
+      "rides",
+      "rode",
+      "riding"
+    ],
+    "answer": "ride",
+    "explanation": "be going to 뒤에는 동사원형(ride)을 써야 합니다."
+  },
+  {
+    "id": "q5_23",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 중 어법상 올바른 문장은?",
+    "options": [
+      "We are going to visit the museum.",
+      "We is going to visit the museum.",
+      "We are go to visit the museum.",
+      "We are going to visited the museum."
+    ],
+    "answer": "We are going to visit the museum.",
+    "explanation": "주어 We에 어울리는 be동사는 are이며, be going to 뒤에는 동사원형 visit이 와야 합니다."
+  },
+  {
+    "id": "q5_24",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'역사'를 뜻하는 영어 단어로 가장 알맞은 것은?",
+    "options": [
+      "history",
+      "science",
+      "music",
+      "math"
+    ],
+    "answer": "history",
+    "explanation": "history는 '역사'를 의미합니다."
+  },
+  {
+    "id": "q5_25",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 전치사는?\n'Welcome _______ Korea! Enjoy your trip.'",
+    "options": [
+      "to",
+      "at",
+      "in",
+      "for"
+    ],
+    "answer": "to",
+    "explanation": "'Welcome to ~'는 '~에 오신 것을 환영합니다'라는 인사 표현입니다."
+  },
+  {
+    "id": "q5_26",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 중 '궁전'을 뜻하는 단어의 올바른 철자는?",
+    "options": [
+      "palace",
+      "place",
+      "police",
+      "piece"
+    ],
+    "answer": "palace",
+    "explanation": "palace는 '궁전, 궁궐'을 뜻합니다. (place: 장소, police: 경찰)"
+  },
+  {
+    "id": "q5_27",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 알맞은 말은?\n'There is _______ apple tree in the garden.'",
+    "options": [
+      "an",
+      "a",
+      "two",
+      "many"
+    ],
+    "answer": "an",
+    "explanation": "apple은 모음 발음으로 시작하는 단수명사이므로 부정관사 'an'을 씁니다."
+  },
+  {
+    "id": "q5_28",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "'우리는 오늘 오후에 사진을 찍을 계획이다'를 영어로 바르게 나타낸 것은?",
+    "options": [
+      "We are going to take pictures this afternoon.",
+      "We take pictures yesterday.",
+      "We are going to sleep this afternoon.",
+      "We were at home all day."
+    ],
+    "answer": "We are going to take pictures this afternoon.",
+    "explanation": "'사진을 찍다'는 take pictures이며, 계획을 나타낼 때 are going to를 씁니다."
+  },
+  {
+    "id": "q5_29",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 대화의 빈칸에 가장 알맞은 말은?\n'A: Do you think Korean food is spicy?\nB: Yes, I _______.'",
+    "options": [
+      "think so",
+      "think not",
+      "am not",
+      "do not"
+    ],
+    "answer": "think so",
+    "explanation": "동의할 때 'Yes, I think so.(응, 그렇게 생각해.)'라고 답합니다."
+  },
+  {
+    "id": "q5_30",
+    "grade": 1,
+    "unit": "5단원 (L5. Walk into Korea)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 알맞은 단어는?\n'You can make your own traditional _______ at the workshop.'",
+    "options": [
+      "crafts",
+      "clouds",
+      "rivers",
+      "trees"
+    ],
+    "answer": "crafts",
+    "explanation": "crafts는 '공예품, 공예'를 뜻하며, 전통 공예품을 직접 만들 수 있다는 문맥입니다."
   }
 ]

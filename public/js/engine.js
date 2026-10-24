@@ -565,6 +565,22 @@ class GameEngine {
             minDist = cDist;
           }
         }
+        // 3. Basketball Monsters (1:1 퀴즈 배틀)
+        if (pg.basketballMonsters) {
+          for (const mob of pg.basketballMonsters) {
+            if (mob.defeated) continue;
+            const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
+            if (mDist < 48 && mDist < minDist) {
+              closest = {
+                type: 'field_monster',
+                data: mob,
+                name: `${mob.icon} ${mob.name}`,
+                prompt: '1:1 퀴즈 배틀'
+              };
+              minDist = mDist;
+            }
+          }
+        }
       }
     } else {
       // Inside Classroom (room_701: 노가다 채집장 / room_702: 보스 레이드)
@@ -656,6 +672,14 @@ class GameEngine {
         }
         if (pg.cafeteria && Math.hypot(pg.cafeteria.x * 32 - x, (pg.cafeteria.y + 1.5) * 32 - y) < 56) {
           return { type: 'cafeteria', name: '학생 급식실', prompt: '급식실 입장' };
+        }
+        if (pg.basketballMonsters) {
+          for (const mob of pg.basketballMonsters) {
+            if (mob.defeated) continue;
+            if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
+              return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
+            }
+          }
         }
       }
     } else {
@@ -2573,6 +2597,212 @@ class GameEngine {
       this.ctx.fillStyle = '#64748b';
       this.ctx.fillRect(fx, 27 * 32, 4, 28);
     }
+
+    // 8. Basketball Monsters (1:1 필드 몬스터)
+    this.renderBasketballMonsters();
+  }
+
+  // 8. Basketball Monsters Rendering
+  renderBasketballMonsters() {
+    const pg = WORLD_DATA.playground;
+    if (!pg || !pg.basketballMonsters) return;
+
+    const now = Date.now();
+    for (const mob of pg.basketballMonsters) {
+      if (mob.defeated) {
+        if (mob.respawnAt && now >= mob.respawnAt) {
+          mob.defeated = false;
+          mob.hp = mob.maxHp;
+        } else {
+          continue; // still defeated
+        }
+      }
+
+      // Floating / bouncing anim
+      const floatY = Math.sin((now + mob.x * 200) / 200) * 3;
+      const px = mob.x * 32;
+      const py = mob.y * 32 + floatY;
+
+      // Drop shadow on ground
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 16, mob.y * 32 + 28, 14, 6, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Monster Sprite
+      if (mob.avatar === 'dunk_goblin') {
+        this.drawDunkGoblin(px, py, now);
+      } else if (mob.avatar === 'flame_dribbler') {
+        this.drawFlameDribbler(px, py, now);
+      } else if (mob.avatar === 'rim_guardian') {
+        this.drawRimGuardian(px, py, now);
+      }
+
+      // HP Bar above monster
+      const hpW = 42;
+      const hpH = 6;
+      const hpX = px + 16 - hpW / 2;
+      const hpY = py - 14;
+      const hpPct = Math.max(0, Math.min(1, mob.hp / mob.maxHp));
+
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      this.ctx.fillRect(hpX - 1, hpY - 1, hpW + 2, hpH + 2);
+      this.ctx.fillStyle = '#dc2626';
+      this.ctx.fillRect(hpX, hpY, hpW, hpH);
+      this.ctx.fillStyle = hpPct > 0.5 ? '#16a34a' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      this.ctx.fillRect(hpX, hpY, hpW * hpPct, hpH);
+
+      // Name & Icon Label below monster
+      const isElite = (mob.type === 'elite');
+      this.drawSharpLabel(px + 16, mob.y * 32 + 40, `${mob.icon} ${mob.name}`, {
+        bgColor: isElite ? 'rgba(127, 29, 29, 0.95)' : 'rgba(30, 41, 59, 0.92)',
+        borderColor: isElite ? '#f59e0b' : '#38bdf8',
+        textColor: isElite ? '#fef08a' : '#ffffff',
+        fontSize: isElite ? 11.5 : 10.5,
+        paddingX: 8,
+        height: 20
+      });
+    }
+  }
+
+  drawDunkGoblin(px, py, now) {
+    this.ctx.save();
+    // Head & Pointy Ears (Green)
+    this.ctx.fillStyle = '#15803d';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 10, 8, 0, Math.PI * 2);
+    this.ctx.fill();
+    // Ears
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 8, py + 10);
+    this.ctx.lineTo(px + 3, py + 6);
+    this.ctx.lineTo(px + 8, py + 14);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 24, py + 10);
+    this.ctx.lineTo(px + 29, py + 6);
+    this.ctx.lineTo(px + 24, py + 14);
+    this.ctx.fill();
+
+    // Headband (Blue)
+    this.ctx.fillStyle = '#2563eb';
+    this.ctx.fillRect(px + 9, py + 6, 14, 3);
+
+    // Eyes
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px + 12, py + 9, 2.5, 2.5);
+    this.ctx.fillRect(px + 17, py + 9, 2.5, 2.5);
+
+    // Basketball Jersey (Red #7)
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.fillRect(px + 10, py + 18, 12, 10);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = 'bold 7px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('7', px + 16, py + 25);
+
+    // Shorts & Shoes
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px + 11, py + 27, 4, 4);
+    this.ctx.fillRect(px + 17, py + 27, 4, 4);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 10, py + 30, 5, 2);
+    this.ctx.fillRect(px + 17, py + 30, 5, 2);
+
+    // Bouncing Basketball beside him
+    const bounceY = py + 18 + Math.abs(Math.sin((now + px) / 120)) * 8;
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 27, bounceY, 6, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#0f172a';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+    this.ctx.restore();
+  }
+
+  drawFlameDribbler(px, py, now) {
+    this.ctx.save();
+    // Swirling Flame Aura
+    const flameFlicker = Math.sin(now / 90) * 2;
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 16 + flameFlicker, 14, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 16, 10, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 15, 6, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Intense Glowing Eyes
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 12, py + 13, 3, 2);
+    this.ctx.fillRect(px + 17, py + 13, 3, 2);
+
+    // Spinning Flaming Basketball at hand
+    const rot = now / 150;
+    const bX = px + 16 + Math.cos(rot) * 16;
+    const bY = py + 20 + Math.sin(rot) * 6;
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.arc(bX, bY, 7, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.beginPath();
+    this.ctx.arc(bX, bY, 4, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
+  }
+
+  drawRimGuardian(px, py, now) {
+    this.ctx.save();
+    // Heavy Stone Titan Body
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px + 4, py + 10, 24, 20);
+    this.ctx.fillStyle = '#475569';
+    this.ctx.fillRect(px + 6, py + 12, 20, 16);
+
+    // Golden Basketball Rim around shoulders
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 14, 15, 6, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    // White Net Mesh hanging down
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    this.ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(px + 6 + i * 5, py + 17);
+      this.ctx.lineTo(px + 8 + i * 4, py + 28);
+      this.ctx.stroke();
+    }
+
+    // Glowing Horn Crown
+    this.ctx.fillStyle = '#facc15';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 8, py + 10);
+    this.ctx.lineTo(px + 5, py + 2);
+    this.ctx.lineTo(px + 11, py + 7);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 24, py + 10);
+    this.ctx.lineTo(px + 27, py + 2);
+    this.ctx.lineTo(px + 21, py + 7);
+    this.ctx.fill();
+
+    // Glowing Red Runed Eyes
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px + 10, py + 13, 3, 2);
+    this.ctx.fillRect(px + 19, py + 13, 3, 2);
+    this.ctx.restore();
   }
 
   // Corner Pennant Flag
@@ -2939,6 +3169,7 @@ class GameEngine {
     };
     const A = {
       wood: { base: '#b7791f', hi: '#d69e2e', shade: '#7b4f12', dark: '#5c3d0e' },
+      leather: { base: '#854d0e', hi: '#a16207', shade: '#713f12', dark: '#451a03' },
       bronze: { base: '#d97706', hi: '#fcd34d', shade: '#92400e', dark: '#78350f' }
     };
     const gear = o.gear || {};
@@ -3343,6 +3574,7 @@ class GameEngine {
     const tier = (id) => {
       if (!id) return null;
       if (id.includes('bronze')) return 'bronze';
+      if (id.includes('leather')) return 'leather';
       if (id.includes('forsythia')) return 'forsythia';
       if (id.includes('ginkgo')) return 'ginkgo';
       return 'wood';

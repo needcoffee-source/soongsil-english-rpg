@@ -27,6 +27,8 @@ const ITEM_ICON_MAP = {
   item_herb: '🌿',
   item_forsythia: '🌼',
   item_ginkgo: '🍂',
+  item_basketball_leather: '🏀',
+  equip_leather_armor: '🥋',
   item_hp_potion: '🧪',
   item_red_potion: '🍷',
   item_orange_potion: '🧪',
@@ -134,7 +136,8 @@ class QuizManager {
     if (sourceType === 'gather_herb') return 'L2';
     if (sourceType === 'gather_forsythia' || sourceType === 'forsythia') return 'L3';
     if (sourceType === 'gather_ginkgo' || sourceType === 'ginkgo') return 'L4';
-    return null; // 칠판/보스 레이드/기타는 L1~L4 전체 출제
+    if (sourceType === 'basketball' || sourceType === 'basketball_monster' || sourceType === 'field_monster') return 'L5';
+    return null; // 칠판/보스 레이드/기타는 L1~L5 전체 출제
   }
 
   nextQuiz() {
