@@ -1109,6 +1109,12 @@ class MainApp {
     const beforeHp = this.playerData.hp;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + healAmount);
     const actualHealed = this.playerData.hp - beforeHp;
+    if (this.playerData.hp > 0) {
+      this.playerData.isFallen = false;
+      if (this.engine && this.engine.player) {
+        this.engine.player.isFallen = false;
+      }
+    }
     this.updateHpBar();
     this.saveProgress();
 
@@ -1864,10 +1870,18 @@ class MainApp {
 
       if (this.playerData.hp <= 0) {
         this.playerData.isFallen = true;
+        if (this.engine && this.engine.player) {
+          this.engine.player.isFallen = true;
+        }
         this.saveProgress();
         setTimeout(() => {
-          alert(`😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n가방(🎒)에서 물약을 마시거나 안전한 곳에서 휴식을 취하세요!`);
+          const respawn = confirm(
+            `😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n1학년 복도(보건실)로 안전하게 귀환하시겠습니까?\n(취소 시 가방의 물약을 사용하여 회복할 수 있습니다)`
+          );
           this.closeFieldBattleModal();
+          if (respawn) {
+            this.respawnAtHallway();
+          }
         }, 500);
         return;
       }

@@ -2678,14 +2678,7 @@ class GameEngine {
 
     const now = Date.now();
     for (const mob of pg.basketballMonsters) {
-      if (mob.defeated) {
-        if (mob.respawnAt && now >= mob.respawnAt) {
-          mob.defeated = false;
-          mob.hp = mob.maxHp;
-        } else {
-          continue; // still defeated
-        }
-      }
+      if (mob.defeated) continue;
 
       // Floating / bouncing anim
       const floatY = Math.sin((now + mob.x * 200) / 200) * 3;
