@@ -303,9 +303,9 @@ class GameEngine {
     if (this.player.room === 'playground') {
       if (tileY >= curMapHeight - 1) return true; // bottom fence
       if (tileY <= 2) {
-        // Top boundary: Elevator area (x: 6~8, y: 3) and Cafeteria door (x: 14~18, y: 3) are passable
-        const isElevator = (tileX >= 6 && tileX <= 8 && tileY >= 3);
-        const isCafeteria = (tileX >= 14 && tileX <= 18 && tileY >= 3);
+        // Top boundary: Elevator area (x: 78~82, y: 3) and Cafeteria door (x: 84~88, y: 3) are passable
+        const isElevator = (tileX >= 78 && tileX <= 82 && tileY >= 3);
+        const isCafeteria = (tileX >= 84 && tileX <= 88 && tileY >= 3);
         if (!isElevator && !isCafeteria) return true;
       }
       return false;
@@ -1988,12 +1988,26 @@ class GameEngine {
     });
   }
 
+  isElevatorUnderMaintenance() {
+    if (window.app && window.app.playerData) {
+      if (window.app.playerData.isTeacher) return false;
+      if (window.app.playerData.hasClearedDragonRaid) return false;
+      const studentId = window.app.playerData.studentId || '';
+      if (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') return false;
+      if (localStorage.getItem('soongsil_dragon_cleared_global') === 'true') return false;
+    }
+    return true;
+  }
+
   // 14. High-Res Stainless Steel Elevator with Floor LED Indicator
   drawHighResElevator(el, currentFloor = 7) {
     const px = el.x * 32 - 4;
     const py = el.y * 32 - 12;
     const w = 40;
     const h = 44;
+
+    const isHallway = (currentFloor === 7);
+    const isMaintenance = isHallway && this.isElevatorUnderMaintenance();
 
     // Floor shadow
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
@@ -2005,13 +2019,14 @@ class GameEngine {
     this.ctx.fillStyle = '#94a3b8';
     this.ctx.fillRect(px + 2, py + 2, w - 4, h - 2);
 
-    // Digital Floor Indicator Panel (Black glass with red LED)
+    // Digital Floor Indicator Panel (Black glass with LED)
     this.ctx.fillStyle = '#0f172a';
     this.ctx.fillRect(px + 8, py + 4, w - 16, 10);
-    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillStyle = isMaintenance ? '#ef4444' : '#10b981';
     this.ctx.font = 'bold 9px monospace';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText(`[ ${currentFloor}F ▲ ]`, px + w / 2, py + 12);
+    const ledText = isMaintenance ? `[ 7F 점검 ]` : (isHallway ? `[ 7F ▲▼ ]` : `[ 1F ▲ ]`);
+    this.ctx.fillText(ledText, px + w / 2, py + 12);
 
     // Double Sliding Doors (Brushed Stainless Steel)
     this.ctx.fillStyle = '#cbd5e1';
@@ -2034,15 +2049,26 @@ class GameEngine {
     this.ctx.fillRect(px + w + 3, py + 22, 4, 3);
     this.ctx.fillRect(px + w + 3, py + 27, 4, 3);
 
-    // Label
-    this.drawSharpLabel(px + w / 2, py + h + 14, '🛗 엘리베이터 (점검 중)', {
-      bgColor: 'rgba(15, 23, 42, 0.94)',
-      borderColor: '#94a3b8',
-      textColor: '#ffffff',
-      fontSize: 11.5,
-      paddingX: 9,
-      height: 20
-    });
+    // Label placed at TOP (py - 12)
+    if (isMaintenance) {
+      this.drawSharpLabel(px + w / 2, py - 12, '🛗 엘리베이터 (점검 중)', {
+        bgColor: 'rgba(15, 23, 42, 0.94)',
+        borderColor: '#ef4444',
+        textColor: '#fca5a5',
+        fontSize: 11.5,
+        paddingX: 9,
+        height: 20
+      });
+    } else {
+      this.drawSharpLabel(px + w / 2, py - 12, '🛗 중앙 엘리베이터', {
+        bgColor: 'rgba(15, 23, 42, 0.94)',
+        borderColor: '#38bdf8',
+        textColor: '#ffffff',
+        fontSize: 11.5,
+        paddingX: 9,
+        height: 20
+      });
+    }
   }
 
   // ========================================================
@@ -2286,19 +2312,13 @@ class GameEngine {
       this.ctx.fillRect(tx * 32, 2 * 32, 32, 3);
     }
 
-    // 3. Central Elevator (Ground Station at x: 7, y: 3)
-    this.drawHighResElevator({ x: 7, y: 3 }, 0);
-    this.drawSharpLabel(7 * 32 + 16, 3 * 32 + 48, '🛗 중앙 엘리베이터 (1F 복도 이동)', {
-      bgColor: 'rgba(15, 23, 42, 0.94)',
-      borderColor: '#38bdf8',
-      textColor: '#ffffff',
-      fontSize: 11,
-      paddingX: 8,
-      height: 19
-    });
+    // 3. Central Elevator (Ground Station at right end: x: 80, y: 3)
+    const pgEl = (WORLD_DATA.playground && WORLD_DATA.playground.elevator) || { x: 80, y: 3 };
+    this.drawHighResElevator(pgEl, 0);
 
-    // 4. Cafeteria Entrance (Right next to elevator: x: 16, y: 3)
-    this.drawHighResCafeteriaEntrance(16 * 32, 3 * 32);
+    // 4. Cafeteria Entrance (Right next to elevator: x: 86, y: 3)
+    const pgCaf = (WORLD_DATA.playground && WORLD_DATA.playground.cafeteria) || { x: 86, y: 3 };
+    this.drawHighResCafeteriaEntrance(pgCaf.x * 32, pgCaf.y * 32);
 
     // 5. Left & Center 2/3: SOCCER FIELD (축구장 & 우레탄 트랙)
     // 5-A. Tartan Red Running Track (우레탄 육상 트랙: x: 4 ~ 58, y: 6 ~ 26)
@@ -2778,7 +2798,7 @@ class GameEngine {
       this.ctx.fillRect(px + 8, py + 18, 16, 14);
 
       const labelIcon = isTeacherNpc ? '👨‍🏫' : (npc.avatar === 'graduate' || npc.name.includes('졸업') ? '🎓' : '💬');
-      this.drawSharpLabel(px + 16, py - 11, `${labelIcon} ${npc.name}`, {
+      this.drawSharpLabel(px + 16, py + 38, `${labelIcon} ${npc.name}`, {
         bgColor: isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)',
         borderColor: isTeacherNpc ? '#60a5fa' : '#34d399',
         textColor: '#fef08a',

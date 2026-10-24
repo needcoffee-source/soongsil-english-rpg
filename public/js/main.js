@@ -81,6 +81,7 @@ class MainApp {
       },
       hasReceivedSoongsilGift: false,
       hasOpenedSecretLocker: false,
+      hasClearedDragonRaid: false,
       inventory: []
     };
 
@@ -257,6 +258,15 @@ class MainApp {
     }
   }
 
+  isDragonCleared() {
+    if (this.playerData.isTeacher) return true;
+    if (this.playerData.hasClearedDragonRaid) return true;
+    const studentId = this.playerData.studentId || '';
+    if (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') return true;
+    if (localStorage.getItem('soongsil_dragon_cleared_global') === 'true') return true;
+    return false;
+  }
+
   handleElevatorInteraction() {
     if (this.playerData.isTeacher) {
       if (this.engine.player.room === 'playground') {
@@ -270,7 +280,7 @@ class MainApp {
         const goDown = confirm('🛗 [교사 전용 프리패스]\n\n숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)');
         if (goDown) {
           this.engine.triggerFadeWarp(() => {
-            this.engine.warpToRoom('playground', '숭실 운동장', 8 * 32, 6 * 32);
+            this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 5 * 32);
           });
         }
       }
@@ -285,7 +295,15 @@ class MainApp {
         });
       }
     } else {
-      // 1학년 복도 -> 운동장 (50G 소모)
+      // 1. 드래곤 레이드 클리어 여부 검사 (토벌 전까지는 점검 중)
+      if (!this.isDragonCleared()) {
+        alert(
+          '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 전설의 보스 [숭실 골드 드래곤]을 먼저 토벌해야 엘리베이터 점검이 완료되어 운동장으로 내려갈 수 있습니다!"'
+        );
+        return;
+      }
+
+      // 2. 1학년 복도 -> 운동장 (50G 소모)
       if (this.playerData.gold < 50) {
         alert(
           `❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 50G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)\n\n교탁(골드)이나 교실에서 퀴즈를 풀어 골드를 모아보세요!`
@@ -300,7 +318,7 @@ class MainApp {
         this.addGold(-50);
         if (window.AudioManager) window.AudioManager.playSelect();
         this.engine.triggerFadeWarp(() => {
-          this.engine.warpToRoom('playground', '숭실 운동장', 8 * 32, 6 * 32);
+          this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 5 * 32);
         });
       }
     }
@@ -586,10 +604,12 @@ class MainApp {
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
+          this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
           console.log(`[Storage] 학생(${studentId}) 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
+          this.playerData.hasClearedDragonRaid = !!((studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
         }
         try {
           localStorage.setItem('soongsil_last_student_id', studentId);
@@ -1352,8 +1372,16 @@ class MainApp {
         }
       }
 
-      // 4. 숭실 골드 드래곤 전용 드랍 (용의 심장 20%, 청동장비 15%)
+      // 4. 숭실 골드 드래곤 전용 드랍 및 엘리베이터 점검 해제 플래그
       if (bName.includes('드래곤') || bName.includes('dragon')) {
+        this.playerData.hasClearedDragonRaid = true;
+        const studentId = this.playerData.studentId || '';
+        if (studentId) {
+          localStorage.setItem('soongsil_dragon_cleared_' + studentId, 'true');
+        }
+        localStorage.setItem('soongsil_dragon_cleared_global', 'true');
+        this.saveProgress();
+
         const roll = Math.random() * 100;
         if (roll < 20) {
           this.addItem('item_dragon_heart', '용의 심장', 1, '❤️‍🔥', { type: 'material', effect: '최상위 제작 재료' });
@@ -1483,10 +1511,23 @@ class MainApp {
       } else {
         this.bossState.currentHp = Math.max(0, this.bossState.currentHp - myDmg);
         if (this.bossState.currentHp <= 0) {
+          const bName = window.BOSS_CONFIG.name || '';
+          if (bName.includes('드래곤') || bName.includes('dragon')) {
+            this.playerData.hasClearedDragonRaid = true;
+            const studentId = this.playerData.studentId || '';
+            if (studentId) {
+              localStorage.setItem('soongsil_dragon_cleared_' + studentId, 'true');
+            }
+            localStorage.setItem('soongsil_dragon_cleared_global', 'true');
+            this.saveProgress();
+          }
           this.updateBossRaidUI();
           this.addGold(window.BOSS_CONFIG.rewardGold);
           this.addExp(window.BOSS_CONFIG.rewardExp);
-          alert(`🏆 [${window.BOSS_CONFIG.name}] 처치!\n보상: 🪙 +${window.BOSS_CONFIG.rewardGold}G, 🌟 +${window.BOSS_CONFIG.rewardExp} EXP`);
+          const clearNotice = (bName.includes('드래곤') || bName.includes('dragon'))
+            ? '\n\n🎉 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!'
+            : '';
+          alert(`🏆 [${window.BOSS_CONFIG.name}] 처치!\n보상: 🪙 +${window.BOSS_CONFIG.rewardGold}G, 🌟 +${window.BOSS_CONFIG.rewardExp} EXP${clearNotice}`);
           this.bossState.currentHp = this.bossState.maxHp;
           this.modalBossRaid.classList.add('hidden');
           return;
@@ -2238,6 +2279,7 @@ class MainApp {
         outfitColor: this.playerData.outfitColor,
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
+        hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
