@@ -513,8 +513,8 @@ class GameEngine {
           closest = {
             type: 'teacher_desk',
             data: cr.teacherDesk,
-            name: cr.teacherDesk.name || '교탁 (1~4단원 종합 모의고사)',
-            prompt: cr.teacherDesk.prompt || '모의고사 풀기 (골드·EXP 2배!)'
+            name: cr.teacherDesk.name || '교탁(골드)',
+            prompt: cr.teacherDesk.prompt || '골드 문제 풀기'
           };
           minDist = tdDist;
         }
@@ -525,8 +525,8 @@ class GameEngine {
           closest = {
             type: 'teacher_desk',
             data: cr.blackboard,
-            name: cr.blackboard.name || '교실 칠판 (종합 모의고사)',
-            prompt: cr.blackboard.prompt || '모의고사 풀기 (골드·EXP 2배!)'
+            name: cr.blackboard.name || '교탁(골드)',
+            prompt: cr.blackboard.prompt || '골드 문제 풀기'
           };
           minDist = bDist;
         }
@@ -592,10 +592,10 @@ class GameEngine {
         return { type: 'exit' };
       }
       if (cr.teacherDesk && Math.hypot(cr.teacherDesk.x * 32 - x, (cr.teacherDesk.y + 0.5) * 32 - y) < 48) {
-        return { type: 'teacher_desk', data: cr.teacherDesk, name: cr.teacherDesk.name || '교탁 (1~4단원 종합 모의고사)' };
+        return { type: 'teacher_desk', data: cr.teacherDesk, name: cr.teacherDesk.name || '교탁(골드)' };
       }
       if (cr.blackboard && Math.hypot(cr.blackboard.x * 32 - x, cr.blackboard.y * 32 - y) < 60) {
-        return { type: 'teacher_desk', data: cr.blackboard, name: cr.blackboard.name || '교실 칠판 (종합 모의고사)' };
+        return { type: 'teacher_desk', data: cr.blackboard, name: cr.blackboard.name || '교탁(골드)' };
       }
       for (const spot of (cr.gatherSpots || [])) {
         if (Math.hypot(spot.x * 32 - x, spot.y * 32 - y) < 48) {
@@ -1136,11 +1136,11 @@ class GameEngine {
     this.ctx.fillRect(dx + 38, dy - 3, 1, 5);
 
     // Desk Label
-    this.drawSharpLabel(dx + dw / 2, dy + 22, '📚 모의고사 교탁 (2배)', {
+    this.drawSharpLabel(dx + dw / 2, dy + 22, '📑 교탁(골드)', {
       bgColor: 'rgba(28, 25, 23, 0.94)',
       borderColor: '#f59e0b',
       textColor: '#fef08a',
-      fontSize: 11,
+      fontSize: 11.5,
       paddingX: 8,
       height: 19
     });

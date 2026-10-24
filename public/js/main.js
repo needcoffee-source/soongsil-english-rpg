@@ -258,7 +258,7 @@ class MainApp {
     const alreadyFound = !!(this.playerData.hasOpenedSecretLocker || localStorage.getItem(lockerKey) === 'true');
 
     if (alreadyFound && !this.playerData.isTeacher) {
-      alert('🤫 [철제 사물함]\n\n사물함 구석이 텅 비어 있습니다.\n(이미 숨겨진 비밀 재료 아이템을 모두 챙겼습니다!)');
+      alert('🤫 [철제 사물함]\n\n사물함 구석이 텅 비어 있습니다.');
       return;
     }
 
@@ -283,7 +283,7 @@ class MainApp {
     if (window.AudioManager) window.AudioManager.playFanfare();
 
     alert(
-      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방(B)에 안전하게 보관되었습니다. 이 사물함의 비밀 선물은 1회 한정입니다!)`
+      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방(B)에 안전하게 보관되었습니다.)`
     );
   }
 
