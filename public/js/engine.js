@@ -134,13 +134,18 @@ class GameEngine {
   }
 
   setDashing(isDashing) {
+    if (this.player.isTeacher) {
+      this.player.isDashing = isDashing;
+      this.player.speed = isDashing ? 10.5 : 7.6; // 교사는 기본 이동속도가 달리기속도(2배: 7.6)
+      return;
+    }
     if (!this.player.hasRunningShoes) {
       this.player.isDashing = false;
       this.player.speed = 3.8;
       return;
     }
     this.player.isDashing = isDashing;
-    this.player.speed = isDashing ? 5.8 : 3.8;
+    this.player.speed = isDashing ? 7.6 : 3.8;
   }
 
   // ========================================================
@@ -390,9 +395,10 @@ class GameEngine {
         });
         return;
       }
-    } else {
-      // Exit classroom when stepping on exit door area
-      const exit = WORLD_DATA.classroom.exitDoor;
+    } else if (this.player.room !== 'playground') {
+      // Exit classroom when stepping on exit door area (Only inside classrooms)
+      const cr = this.getCurrentClassroomData();
+      const exit = (cr && cr.exitDoor) || WORLD_DATA.classroom.exitDoor;
       if (Math.abs(tileX - exit.x) <= 2 && tileY >= exit.y - 1) {
         this.triggerFadeWarp(() => {
           this.exitClassroom();
@@ -446,12 +452,31 @@ class GameEngine {
   teleportTo(floor, room) {
     this.triggerFadeWarp(() => {
       this.player.floor = parseInt(floor) || 7;
-      this.player.room = room || 'hallway';
-      if (this.player.room === 'hallway') {
+      if (this.player.isTeacher) {
+        this.player.speed = this.player.isDashing ? 10.5 : 7.6; // 교사 기본 이동속도 7.6 유지
+      }
+      if (room === 'playground_soccer') {
+        this.player.room = 'playground';
+        this.player.roomName = '숭실 운동장 (축구장)';
+        this.player.x = 31 * 32; // 천연잔디 축구장 센터서클
+        this.player.y = 16 * 32;
+      } else if (room === 'playground_basketball') {
+        this.player.room = 'playground';
+        this.player.roomName = '숭실 운동장 (농구장)';
+        this.player.x = 74 * 32; // 우레탄 농구장 센터서클
+        this.player.y = 16 * 32;
+      } else if (room === 'playground') {
+        this.player.room = 'playground';
+        this.player.roomName = '숭실 운동장';
+        this.player.x = 80 * 32;
+        this.player.y = 5 * 32;
+      } else if (room === 'hallway') {
+        this.player.room = 'hallway';
         this.player.x = 15 * 32;
         this.player.y = 10 * 32;
         this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
       } else {
+        this.player.room = room || 'room_701';
         this.player.x = 15 * 32;
         this.player.y = 13 * 32;
         const fData = WORLD_DATA.floors[this.player.floor];

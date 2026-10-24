@@ -153,7 +153,7 @@ class MainApp {
 
     btnB.addEventListener('pointerdown', (e) => {
       e.preventDefault();
-      if (!this.engine.player.hasRunningShoes) {
+      if (!this.engine.player.hasRunningShoes && !this.engine.player.isTeacher) {
         alert('👟 [달리기 잠김]\n\n특별한 신발을 얻어야 달릴 수 있습니다!\n(현재는 기본 속도로 걷습니다. 추후 제작소에서 신발을 제작해 보세요!)');
         return;
       }
@@ -161,13 +161,13 @@ class MainApp {
     });
     btnB.addEventListener('pointerup', (e) => {
       e.preventDefault();
-      if (this.engine.player.hasRunningShoes) {
+      if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
         this.engine.setDashing(false);
       }
     });
     btnB.addEventListener('pointercancel', (e) => {
       e.preventDefault();
-      if (this.engine.player.hasRunningShoes) {
+      if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
         this.engine.setDashing(false);
       }
     });
@@ -180,7 +180,7 @@ class MainApp {
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', true);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', true);
       if (e.key === 'Shift') {
-        if (this.engine.player.hasRunningShoes) {
+        if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
           this.engine.setDashing(true);
         }
       }
@@ -200,7 +200,7 @@ class MainApp {
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', false);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', false);
       if (e.key === 'Shift') {
-        if (this.engine.player.hasRunningShoes) {
+        if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
           this.engine.setDashing(false);
         }
       }
@@ -576,6 +576,8 @@ class MainApp {
         }
 
         this.engine.player.isTeacher = true;
+        this.engine.player.hasRunningShoes = true;
+        this.engine.player.speed = 7.6; // 교사 기본 이동속도 = 달리기속도(2배: 7.6)
         this.engine.player.name = name;
 
         const gmPanel = document.getElementById('gm-panel');
