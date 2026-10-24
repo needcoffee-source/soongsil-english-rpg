@@ -158,8 +158,9 @@ class QuizManager {
     this.currentQuestion = q;
 
     // 드랍 테이블/확률은 절대 노출하지 않고 단원명과 제목만 깔끔하게 표시
+    const isComprehensive = (this.currentSourceType === 'teacher_desk' || this.currentSourceType === 'board');
     this.titleEl.innerText = this.currentSourceName;
-    this.unitEl.innerText = q.unit || `Grade ${q.grade}`;
+    this.unitEl.innerText = isComprehensive ? `전범위 모의고사 (${q.unit || 'L1~L4'})` : (q.unit || `Grade ${q.grade}`);
     this.questionEl.innerText = q.question;
 
     this.feedbackEl.classList.add('hidden');
@@ -226,8 +227,12 @@ class QuizManager {
       buttonEl.classList.add('correct');
 
       const cfg = window.ECONOMY_CONFIG;
-      const earnedGold = Math.floor(Math.random() * (cfg.maxGold - cfg.minGold + 1)) + cfg.minGold;
-      const earnedExp = cfg.baseExp;
+      const isComprehensive = (this.currentSourceType === 'teacher_desk' || this.currentSourceType === 'board');
+      const multiplier = isComprehensive ? 2 : 1; // 💡 교탁 모의고사: 골드 2배 + EXP 2배 보너스!
+
+      const rawGold = Math.floor(Math.random() * (cfg.maxGold - cfg.minGold + 1)) + cfg.minGold;
+      const earnedGold = rawGold * multiplier;
+      const earnedExp = cfg.baseExp * multiplier;
 
       const dropInfo = this.resolveTargetDropInfo();
       const roll = Math.random() * 100;
@@ -243,16 +248,19 @@ class QuizManager {
         }
       }
 
-      let rewardMsg = `🪙 골드 +${earnedGold}G, 경험치 +${earnedExp} EXP`;
+      let rewardMsg = isComprehensive
+        ? `⭐ [1~4단원 전범위 모의고사 보너스: 골드 2배 & EXP 2배!]\n🪙 골드 +${earnedGold}G (2배), 경험치 +${earnedExp} EXP (2배)`
+        : `🪙 골드 +${earnedGold}G, 경험치 +${earnedExp} EXP`;
+
       if (isItemDropped) {
         this.feedbackIcon.innerText = '🌟';
-        this.feedbackText.innerText = '정답입니다! (아이템 획득)';
+        this.feedbackText.innerText = isComprehensive ? '정답입니다! (모의고사 2배 보너스 + 아이템)' : '정답입니다! (아이템 획득)';
         this.feedbackEl.style.borderColor = '#eab308';
         rewardMsg += `\n🎁 아이템 획득: ${dropInfo.icon} ${dropInfo.name} x${cfg.dropAmount}`;
       } else {
-        this.feedbackIcon.innerText = '🎉';
-        this.feedbackText.innerText = '정답입니다!';
-        this.feedbackEl.style.borderColor = '#16a34a';
+        this.feedbackIcon.innerText = isComprehensive ? '🏆' : '🎉';
+        this.feedbackText.innerText = isComprehensive ? '정답입니다! (골드·EXP 2배 보너스!)' : '정답입니다!';
+        this.feedbackEl.style.borderColor = isComprehensive ? '#eab308' : '#16a34a';
       }
 
       this.feedbackExp.innerText = `${this.currentQuestion.explanation || ''}\n\n${rewardMsg}`;

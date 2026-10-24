@@ -46,9 +46,14 @@ const WORLD_DATA = {
       x: 15,
       y: 2,
       name: "교실 칠판",
-      prompt: "문제 풀기"
+      prompt: "칠판 확인"
     },
-    teacherDesk: { x: 15, y: 4, name: "교탁" },
+    teacherDesk: {
+      x: 15,
+      y: 4,
+      name: "교실 교탁 (1~4단원 종합 모의고사)",
+      prompt: "모의고사 풀기 (골드·EXP 2배!)"
+    },
     gatherSpots: [
       {
         id: "spot_wood_1",
@@ -134,7 +139,12 @@ const WORLD_DATA = {
       name: "3반 칠판 (새 공간)",
       prompt: "칠판 확인"
     },
-    teacherDesk: { x: 15, y: 4, name: "교탁" },
+    teacherDesk: {
+      x: 15,
+      y: 4,
+      name: "3반 교탁 (1~4단원 종합 모의고사)",
+      prompt: "모의고사 풀기 (골드·EXP 2배!)"
+    },
     desks: [
       { x: 11, y: 8 }, { x: 15, y: 8 }, { x: 19, y: 8 },
       { x: 11, y: 11 }, { x: 15, y: 11 }, { x: 19, y: 11 }
@@ -145,7 +155,12 @@ const WORLD_DATA = {
     name: "교실 내부",
     exitDoor: { x: 15, y: 17 },
     blackboard: { x: 15, y: 2, name: "교실 칠판", prompt: "문제 풀기" },
-    teacherDesk: { x: 15, y: 4, name: "교탁" },
+    teacherDesk: {
+      x: 15,
+      y: 4,
+      name: "3반 교탁 (1~4단원 종합 모의고사)",
+      prompt: "모의고사 풀기 (골드·EXP 2배!)"
+    },
     desks: [
       { x: 11, y: 8 }, { x: 15, y: 8 }, { x: 19, y: 8 },
       { x: 11, y: 11 }, { x: 15, y: 11 }, { x: 19, y: 11 }

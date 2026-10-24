@@ -228,6 +228,7 @@ class MainApp {
       alert(`🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중 마스코트 숭실이야! 🐾\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿: 화면 왼쪽 아래의 반투명 조이스틱 패드\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n• 문, 책상, 게시판, 친구, 선생님 앞에서 A버튼을 눌러봐!"`);
     } else if (
       target.type === 'board' ||
+      target.type === 'teacher_desk' ||
       target.type === 'gather_wood' ||
       target.type === 'gather_herb' ||
       target.type === 'gather_forsythia' ||

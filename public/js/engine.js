@@ -507,10 +507,27 @@ class GameEngine {
     } else {
       // Inside Classroom (room_701: 노가다 채집장 / room_702: 보스 레이드)
       const cr = this.getCurrentClassroomData();
+      if (cr.teacherDesk) {
+        const tdDist = Math.hypot(cr.teacherDesk.x * 32 - this.player.x, (cr.teacherDesk.y + 0.5) * 32 - this.player.y);
+        if (tdDist < 64 && tdDist < minDist) {
+          closest = {
+            type: 'teacher_desk',
+            data: cr.teacherDesk,
+            name: cr.teacherDesk.name || '교탁 (1~4단원 종합 모의고사)',
+            prompt: cr.teacherDesk.prompt || '모의고사 풀기 (골드·EXP 2배!)'
+          };
+          minDist = tdDist;
+        }
+      }
       if (cr.blackboard) {
         const bDist = Math.hypot(cr.blackboard.x * 32 - this.player.x, cr.blackboard.y * 32 - this.player.y);
-        if (bDist < 72) {
-          closest = { type: 'board', data: cr.blackboard, name: cr.blackboard.name, prompt: cr.blackboard.prompt };
+        if (bDist < 72 && bDist < minDist) {
+          closest = {
+            type: 'teacher_desk',
+            data: cr.blackboard,
+            name: cr.blackboard.name || '교실 칠판 (종합 모의고사)',
+            prompt: cr.blackboard.prompt || '모의고사 풀기 (골드·EXP 2배!)'
+          };
           minDist = bDist;
         }
       }
@@ -574,8 +591,11 @@ class GameEngine {
       if (Math.hypot(cr.exitDoor.x * 32 - x, cr.exitDoor.y * 32 - y) < 48) {
         return { type: 'exit' };
       }
+      if (cr.teacherDesk && Math.hypot(cr.teacherDesk.x * 32 - x, (cr.teacherDesk.y + 0.5) * 32 - y) < 48) {
+        return { type: 'teacher_desk', data: cr.teacherDesk, name: cr.teacherDesk.name || '교탁 (1~4단원 종합 모의고사)' };
+      }
       if (cr.blackboard && Math.hypot(cr.blackboard.x * 32 - x, cr.blackboard.y * 32 - y) < 60) {
-        return { type: 'board', data: cr.blackboard, name: cr.blackboard.name };
+        return { type: 'teacher_desk', data: cr.blackboard, name: cr.blackboard.name || '교실 칠판 (종합 모의고사)' };
       }
       for (const spot of (cr.gatherSpots || [])) {
         if (Math.hypot(spot.x * 32 - x, spot.y * 32 - y) < 48) {
@@ -1092,13 +1112,13 @@ class GameEngine {
     this.ctx.fillRect(dx + 38, dy - 3, 1, 5);
 
     // Desk Label
-    this.drawSharpLabel(dx + dw / 2, dy + 22, '교탁', {
-      bgColor: 'rgba(28, 25, 23, 0.92)',
+    this.drawSharpLabel(dx + dw / 2, dy + 22, '📚 모의고사 교탁 (2배)', {
+      bgColor: 'rgba(28, 25, 23, 0.94)',
       borderColor: '#f59e0b',
-      textColor: '#ffffff',
-      fontSize: 11.5,
+      textColor: '#fef08a',
+      fontSize: 11,
       paddingX: 8,
-      height: 18
+      height: 19
     });
   }
 
