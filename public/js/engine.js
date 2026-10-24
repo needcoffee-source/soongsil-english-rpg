@@ -608,11 +608,35 @@ class GameEngine {
       if (cr.craftTable && Math.hypot(cr.craftTable.x * 32 - x, cr.craftTable.y * 32 - y) < 48) {
         return { type: 'craft', data: cr.craftTable, name: cr.craftTable.name };
       }
+      // 1학년 2반 가장 오른쪽 철제 사물함 이스터에그 (클릭/터치 감지)
+      if (this.player.room === 'room_702') {
+        const lockerCenterX = 26 * 32 + 16;
+        const lockerCenterY = 17 * 32 + 16;
+        if (Math.hypot(lockerCenterX - x, lockerCenterY - y) < 36) {
+          const distToPlayer = Math.hypot(lockerCenterX - this.player.x, lockerCenterY - this.player.y);
+          if (distToPlayer < 72) {
+            return { type: 'secret_locker', name: '1학년 2반 구석 사물함' };
+          }
+        }
+      }
     }
     return null;
   }
 
   interact() {
+    // 1학년 2반 가장 오른쪽 철제 사물함 이스터에그 (UI 프롬프트 버튼 없이 비밀 상호작용)
+    if (this.player.room === 'room_702') {
+      const lockerCenterX = 26 * 32 + 16;
+      const lockerCenterY = 17 * 32 + 16;
+      const distToLocker = Math.hypot(lockerCenterX - this.player.x, lockerCenterY - this.player.y);
+      if (distToLocker < 56) {
+        if (this.onInteractCallback) {
+          this.onInteractCallback({ type: 'secret_locker', name: '1학년 2반 구석 사물함' });
+        }
+        return;
+      }
+    }
+
     if (this.activeInteractable) {
       if (this.activeInteractable.type === 'exit') {
         this.triggerFadeWarp(() => {
@@ -1522,6 +1546,234 @@ class GameEngine {
     });
   }
 
+  // 11-E. High-Res Season 1 Boss: Royal Gold Dragon (1학년 2반 숭실 골드 드래곤 레이드)
+  drawHighResBossDragon(boss) {
+    const px = boss.x * 32 + 16;
+    const py = boss.y * 32 + 16;
+    const now = Date.now();
+    const bob = Math.sin(now / 280) * 4;
+    const wingFlap = Math.sin(now / 220) * 9;
+    const tailSway = Math.sin(now / 340) * 8;
+
+    this.ctx.save();
+
+    // 1. Radiant Golden Raid Magic Circle on Floor
+    this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.85)';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 26, 60, 26, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(217, 119, 6, 0.22)';
+    this.ctx.fill();
+
+    // Inner Runed Ring
+    this.ctx.strokeStyle = 'rgba(253, 224, 71, 0.6)';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 26, 42, 18, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    // Draconic Magic Glyphs / 8-Ray Star on Floor
+    for (let r = 0; r < 4; r++) {
+      const angle = (Math.PI / 4) * r + (now / 3000);
+      const rx = Math.cos(angle) * 38;
+      const ry = Math.sin(angle) * 16;
+      this.ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+      this.ctx.beginPath();
+      this.ctx.moveTo(px - rx, py + 26 - ry);
+      this.ctx.lineTo(px + rx, py + 26 + ry);
+      this.ctx.stroke();
+    }
+
+    const by = py + bob;
+
+    // 2. Dragon Tail (Curving behind body with spiked golden fin)
+    this.ctx.fillStyle = '#92400e';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 10, by + 12);
+    this.ctx.quadraticCurveTo(px + 36 + tailSway, by + 18, px + 44 + tailSway, by + 8);
+    this.ctx.lineTo(px + 40 + tailSway, by + 3);
+    this.ctx.quadraticCurveTo(px + 28 + tailSway * 0.7, by + 12, px + 8, by + 6);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Spiked Golden Fin at Tail Tip
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 44 + tailSway, by + 8);
+    this.ctx.lineTo(px + 56 + tailSway, by + 5);
+    this.ctx.lineTo(px + 46 + tailSway, by - 2);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // 3. Massive Golden Dragon Wings (Left & Right Flapping)
+    // Left Wing
+    const lTipY = by - 36 + wingFlap;
+    this.ctx.fillStyle = 'rgba(251, 191, 36, 0.85)'; // Membrane
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 14, by - 12);
+    this.ctx.lineTo(px - 58, lTipY);
+    this.ctx.quadraticCurveTo(px - 44, lTipY + 22, px - 34, by + 4);
+    this.ctx.quadraticCurveTo(px - 22, by + 14, px - 12, by + 6);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = '#78350f'; // Main Wing Bone Spine
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 12, by - 10);
+    this.ctx.lineTo(px - 36, lTipY - 6);
+    this.ctx.lineTo(px - 58, lTipY);
+    this.ctx.stroke();
+
+    // Left Wing Claw Spur
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px - 37, lTipY - 8, 4, 4);
+
+    // Right Wing
+    const rTipY = by - 36 + wingFlap;
+    this.ctx.fillStyle = 'rgba(251, 191, 36, 0.85)'; // Membrane
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 14, by - 12);
+    this.ctx.lineTo(px + 58, rTipY);
+    this.ctx.quadraticCurveTo(px + 44, rTipY + 22, px + 34, by + 4);
+    this.ctx.quadraticCurveTo(px + 22, by + 14, px + 12, by + 6);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = '#78350f'; // Main Wing Bone Spine
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 12, by - 10);
+    this.ctx.lineTo(px + 36, rTipY - 6);
+    this.ctx.lineTo(px + 58, rTipY);
+    this.ctx.stroke();
+
+    // Right Wing Claw Spur
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px + 34, rTipY - 8, 4, 4);
+
+    // 4. Dragon Hind Legs & Claws (Grounded)
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 28, by + 8, 14, 18);
+    this.ctx.fillRect(px + 14, by + 8, 14, 18);
+    // Dark Obsidian Talons
+    this.ctx.fillStyle = '#1c1917';
+    this.ctx.fillRect(px - 30, by + 24, 6, 4);
+    this.ctx.fillRect(px - 22, by + 24, 6, 4);
+    this.ctx.fillRect(px + 14, by + 24, 6, 4);
+    this.ctx.fillRect(px + 22, by + 24, 6, 4);
+
+    // 5. Scaled Gold Torso & Chest Plates
+    this.ctx.fillStyle = '#d97706'; // Base scales
+    this.ctx.fillRect(px - 18, by - 16, 36, 32);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px - 15, by - 13, 30, 26);
+
+    // Underbelly Armor Scales (Radiant Light Gold Plates)
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px - 8, by - 12, 16, 6);
+    this.ctx.fillRect(px - 7, by - 4, 14, 6);
+    this.ctx.fillRect(px - 6, by + 4, 12, 6);
+    this.ctx.fillRect(px - 5, by + 12, 10, 5);
+
+    // 6. Glowing Ruby Dragon Heart in Chest
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 3, 6, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fca5a5';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 3, 3, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 7. Powerful Front Forelegs & Claws
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(px - 22, by + 2, 9, 20);
+    this.ctx.fillRect(px + 13, by + 2, 9, 20);
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px - 23, by + 20, 11, 4);
+    this.ctx.fillRect(px + 12, by + 20, 11, 4);
+
+    // 8. Long Scaled Neck & Head
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 10, by - 30, 20, 16);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px - 8, by - 28, 16, 14);
+
+    // Dragon Head & Jaws
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(px - 14, by - 46, 28, 20);
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(px - 12, by - 44, 24, 16);
+
+    // Sweeping Majestic Golden Horns
+    this.ctx.fillStyle = '#78350f';
+    // Left Horn
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 10, by - 46);
+    this.ctx.lineTo(px - 24, by - 62);
+    this.ctx.lineTo(px - 6, by - 46);
+    this.ctx.closePath();
+    this.ctx.fill();
+    // Right Horn
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 10, by - 46);
+    this.ctx.lineTo(px + 24, by - 62);
+    this.ctx.lineTo(px + 6, by - 46);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Horn Gold Highlights
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.fillRect(px - 23, by - 61, 3, 6);
+    this.ctx.fillRect(px + 21, by - 61, 3, 6);
+
+    // Fierce Ruby-Red Dragon Eyes with Golden Gaze
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.fillRect(px - 9, by - 40, 6, 5);
+    this.ctx.fillRect(px + 3, by - 40, 6, 5);
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px - 7, by - 39, 3, 3);
+    this.ctx.fillRect(px + 5, by - 39, 3, 3);
+
+    // Dragon Snout & Sharp Fangs
+    this.ctx.fillStyle = '#92400e';
+    this.ctx.fillRect(px - 8, by - 30, 16, 4); // mouth line
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px - 6, by - 28, 3, 3); // fangs
+    this.ctx.fillRect(px + 3, by - 28, 3, 3);
+
+    // Draconic Embers & Gold Sparkles drifting upward
+    for (let i = 0; i < 4; i++) {
+      const pOffset = (now / 350 + i * 1.5) % 4;
+      const spX = px + Math.sin(now / 200 + i * 2) * 20;
+      const spY = by - 30 - pOffset * 10;
+      const spAlpha = Math.max(0, 1 - pOffset / 4);
+      this.ctx.fillStyle = `rgba(254, 240, 138, ${spAlpha})`;
+      this.ctx.fillRect(spX, spY, 3, 3);
+    }
+
+    this.ctx.restore();
+
+    // Boss Nameplate (교사 이벤트 시작 여부에 따른 상태 표시)
+    const bCfg = window.BOSS_CONFIG || boss;
+    const isRaidActive = !!(bCfg && bCfg.active);
+    const labelText = isRaidActive
+      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
+      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+
+    this.drawSharpLabel(px, py - 66, labelText, {
+      bgColor: isRaidActive ? 'rgba(120, 53, 15, 0.96)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#fbbf24' : '#94a3b8',
+      textColor: isRaidActive ? '#fef08a' : '#e2e8f0',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+  }
+
   // 12. High-Res Ginkgo Tree in Ornate Ceramic Planter
   drawHighResGinkgoPot(obj) {
     const px = obj.x * 32 + 16;
@@ -1882,7 +2134,13 @@ class GameEngine {
       this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
 
       if (cr.boss) {
-        this.drawHighResBossGolem(cr.boss);
+        const bCfg = window.BOSS_CONFIG || cr.boss;
+        const bName = ((bCfg && bCfg.name) || cr.boss.name || '').toLowerCase();
+        if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
+          this.drawHighResBossDragon(cr.boss);
+        } else {
+          this.drawHighResBossGolem(cr.boss);
+        }
       }
     } else {
       // === 1학년 1반: 시즌1 기초 재료 노가다 채집장 연출 ===

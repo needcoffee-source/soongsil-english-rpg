@@ -79,6 +79,7 @@ class MainApp {
         weapon: null,
         accessory: null
       },
+      hasReceivedSoongsilGift: false,
       inventory: []
     };
 
@@ -225,7 +226,7 @@ class MainApp {
       const npc = target.data;
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
     } else if (target.type === 'mascot') {
-      alert(`🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중 마스코트 숭실이야! 🐾\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿: 화면 왼쪽 아래의 반투명 조이스틱 패드\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n• 문, 책상, 게시판, 친구, 선생님 앞에서 A버튼을 눌러봐!"`);
+      this.handleMascotInteraction();
     } else if (
       target.type === 'board' ||
       target.type === 'teacher_desk' ||
@@ -246,7 +247,99 @@ class MainApp {
       this.openLeaderboard();
     } else if (target.type === 'elevator') {
       alert('🛗 [중앙 엘리베이터 (점검 중)]\n\n"현재 층간 이동 엘리베이터 점검 중입니다.\n(시즌 업데이트 준비 중!)"');
+    } else if (target.type === 'secret_locker') {
+      this.handleSecretLocker();
     }
+  }
+
+  handleSecretLocker() {
+    const now = Date.now();
+    if (this.lastSecretLockerTime && now - this.lastSecretLockerTime < 2500) {
+      alert('🤫 사물함 구석을 뒤적거리고 있습니다...\n잠시 후 다시 열어보세요!');
+      return;
+    }
+    this.lastSecretLockerTime = now;
+
+    // 4대 학교 기본 제작 재료 아이템 풀
+    const materials = [
+      { id: 'item_wood', name: '단단한 목재', icon: '🪵', meta: { type: 'material', effect: '장비 제작 기본 재료' } },
+      { id: 'item_herb', name: '향긋한 허브', icon: '🌿', meta: { type: 'material', effect: '물약 및 주문서 제작 재료' } },
+      { id: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', meta: { type: 'material', effect: '교화 개나리 장신구 및 주황 물약 재료' } },
+      { id: 'item_ginkgo', name: '황금 은행잎', icon: '🍂', meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } }
+    ];
+
+    const chosen = materials[Math.floor(Math.random() * materials.length)];
+    const count = Math.floor(Math.random() * 5) + 1; // 1~5개
+
+    this.addItem(chosen.id, chosen.name, count, chosen.icon, chosen.meta);
+    if (window.AudioManager) window.AudioManager.playFanfare();
+
+    alert(
+      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방(B)에 안전하게 보관되었습니다.)`
+    );
+  }
+
+  // 마스코트 숭실이 첫 대화 입학 축하 선물 이벤트
+  handleMascotInteraction() {
+    const giftKey = 'soongsil_gift_' + (this.playerData.studentId || 'default');
+    const alreadyReceived = !!(this.playerData.hasReceivedSoongsilGift || localStorage.getItem(giftKey) === 'true');
+
+    if (!alreadyReceived && !this.playerData.isTeacher) {
+      this.openSoongsilGiftModal();
+    } else {
+      alert(
+        `🐶 [마스코트 숭실이 - 조작법 가이드]\n\n"멍멍! 안녕! 나는 숭실중 마스코트 숭실이야! 🐾\n기본 조작법을 알려줄게!\n\n🎮 [이동 방법]\n• 키보드: WASD 키 또는 방향키\n• 태블릿: 화면 왼쪽 아래의 반투명 조이스틱 패드\n\n🟢 [상호작용 / 대화 / 입장]\n• 화면 우측 초록색 [A] 버튼 터치!\n• 또는 키보드 Spacebar / Enter 키\n• 문, 책상, 게시판, 친구, 선생님 앞에서 A버튼을 눌러봐!"`
+      );
+    }
+  }
+
+  openSoongsilGiftModal() {
+    const modal = document.getElementById('modal-soongsil-gift');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  claimSoongsilGift(type) {
+    let chosenItem = null;
+    if (type === 'sword') {
+      chosenItem = {
+        id: 'equip_wood_sword',
+        name: '나무검',
+        icon: '🗡️',
+        meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' }
+      };
+    } else if (type === 'armor') {
+      chosenItem = {
+        id: 'equip_wood_armor',
+        name: '나무갑옷',
+        icon: '🛡️',
+        meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 50 }, effect: '방어력 +15, 체력 +50' }
+      };
+    } else if (type === 'helmet') {
+      chosenItem = {
+        id: 'equip_wood_helmet',
+        name: '나무투구',
+        icon: '🪖',
+        meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 20 }, effect: '방어력 +8, 체력 +20' }
+      };
+    }
+
+    if (!chosenItem) return;
+
+    this.addItem(chosenItem.id, chosenItem.name, 1, chosenItem.icon, chosenItem.meta);
+    this.playerData.hasReceivedSoongsilGift = true;
+    try {
+      localStorage.setItem('soongsil_gift_' + (this.playerData.studentId || 'default'), 'true');
+    } catch (e) {}
+    this.saveProgress();
+
+    const modal = document.getElementById('modal-soongsil-gift');
+    if (modal) modal.classList.add('hidden');
+
+    if (window.AudioManager) window.AudioManager.playFanfare();
+
+    alert(
+      `🎉 [숭실이의 입학 축하 선물 지급 완료!]\n\n숭실이가 준 [${chosenItem.icon} ${chosenItem.name}]을(를) 받았습니다!\n\n🎒 가방(B 버튼)을 열어 터치하면 즉시 장착하여 전투력(공격력/방어력)을 올릴 수 있어 멍!`
+    );
   }
 
   initModals() {
@@ -430,7 +523,10 @@ class MainApp {
           this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, accessory: null };
           if (saved.hairColor) selectedHair = saved.hairColor;
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
+          this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           console.log(`[Storage] 학생(${studentId}) 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
+        } else {
+          this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
         }
         try {
           localStorage.setItem('soongsil_last_student_id', studentId);
@@ -490,6 +586,25 @@ class MainApp {
     const btnCloseEquipX = document.getElementById('btn-close-equip-x');
     if (btnCloseEquipX) {
       btnCloseEquipX.addEventListener('click', () => this.modalEquipment.classList.add('hidden'));
+    }
+
+    // Soongsil Mascot Gift Modal
+    const modalSoongsil = document.getElementById('modal-soongsil-gift');
+    const btnCloseSoongsilX = document.getElementById('btn-close-soongsil-x');
+    if (btnCloseSoongsilX && modalSoongsil) {
+      btnCloseSoongsilX.addEventListener('click', () => modalSoongsil.classList.add('hidden'));
+    }
+    const btnClaimSword = document.getElementById('btn-claim-sword');
+    if (btnClaimSword) {
+      btnClaimSword.addEventListener('click', () => this.claimSoongsilGift('sword'));
+    }
+    const btnClaimArmor = document.getElementById('btn-claim-armor');
+    if (btnClaimArmor) {
+      btnClaimArmor.addEventListener('click', () => this.claimSoongsilGift('armor'));
+    }
+    const btnClaimHelmet = document.getElementById('btn-claim-helmet');
+    if (btnClaimHelmet) {
+      btnClaimHelmet.addEventListener('click', () => this.claimSoongsilGift('helmet'));
     }
 
     // Boss Raid Modal
@@ -2058,6 +2173,7 @@ class MainApp {
         equipment: this.playerData.equipment,
         hairColor: this.playerData.hairColor,
         outfitColor: this.playerData.outfitColor,
+        hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
