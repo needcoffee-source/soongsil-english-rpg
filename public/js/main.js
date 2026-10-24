@@ -23,8 +23,8 @@ const ALL_GAME_ITEMS = {
 
   // 3. 1st Grade Wooden Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
-  'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 20 }, effect: '방어력 +8, 체력 +20' } },
-  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 50 }, effect: '방어력 +15, 체력 +50' } },
+  'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
+  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
 
@@ -230,7 +230,6 @@ class MainApp {
     } else if (target.type === 'mascot') {
       this.handleMascotInteraction();
     } else if (
-      target.type === 'board' ||
       target.type === 'teacher_desk' ||
       target.type === 'gather_wood' ||
       target.type === 'gather_herb' ||
@@ -240,6 +239,8 @@ class MainApp {
       target.type === 'forsythia'
     ) {
       this.quizManager.triggerQuiz(target.name, target.type, target.data);
+    } else if (target.type === 'board') {
+      alert('📋 [복도 게시판]\n\n"숭실중학교 학생 공지사항이 게시되어 있습니다."');
     } else if (target.type === 'craft') {
       const cat = (target.data && target.data.category) || target.category || (target.name && target.name.includes('포션') ? 'potion' : 'equipment');
       this.craftingManager.open(cat);
@@ -372,14 +373,14 @@ class MainApp {
         id: 'equip_wood_armor',
         name: '나무갑옷',
         icon: '🛡️',
-        meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 50 }, effect: '방어력 +15, 체력 +50' }
+        meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' }
       };
     } else if (type === 'helmet') {
       chosenItem = {
         id: 'equip_wood_helmet',
         name: '나무투구',
         icon: '🪖',
-        meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 20 }, effect: '방어력 +8, 체력 +20' }
+        meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' }
       };
     }
 
@@ -1330,8 +1331,8 @@ class MainApp {
         if (roll < 20) {
           const woodGears = [
             { item: 'equip_wood_sword', name: '나무검', icon: '🗡️', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' },
-            { item: 'equip_wood_helmet', name: '나무투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 8, hp: 20 }, effect: '방어력 +8, 체력 +20' },
-            { item: 'equip_wood_armor', name: '나무갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 15, hp: 50 }, effect: '방어력 +15, 체력 +50' }
+            { item: 'equip_wood_helmet', name: '나무투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' },
+            { item: 'equip_wood_armor', name: '나무갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' }
           ];
           const chosen = woodGears[Math.floor(Math.random() * woodGears.length)];
           this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });

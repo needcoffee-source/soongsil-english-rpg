@@ -58,7 +58,7 @@ const WORLD_DATA = {
           x: 54,
           y: 5,
           avatar: "teacher",
-          dialogue: "안녕! 학생주임 이상대 선생님이다. 👨‍🏫\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 50G(골드)가 소모된단다.\n\n또한 아래 운동장은 아주 넓고 거친 곳이니, 장비와 물약을 단단히 준비하지 않고 내려갔다가는 큰 코 다칠 게다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."
+          dialogue: "안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 50G(골드)가 소모된단다.\n\n또한 아래 운동장은 아주 넓고 거친 곳이니, 장비와 물약을 단단히 준비하지 않고 내려갔다가는 큰 코 다칠 게다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."
         }
       ]
     }
@@ -91,7 +91,7 @@ const WORLD_DATA = {
         dropItem: "item_wood",
         dropName: "단단한 목재",
         dropIcon: "🪵",
-        dropRate: 15
+        dropRate: 20
       },
       {
         id: "spot_herb_1",
@@ -103,7 +103,7 @@ const WORLD_DATA = {
         dropItem: "item_herb",
         dropName: "향긋한 허브",
         dropIcon: "🌿",
-        dropRate: 20
+        dropRate: 25
       },
       {
         id: "spot_forsythia_1",

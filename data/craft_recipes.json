@@ -47,8 +47,8 @@
       "icon": "🪖",
       "type": "equipment",
       "slot": "helmet",
-      "stats": { "atk": 0, "def": 8, "hp": 20 },
-      "effect": "방어력(DEF) +8, 최대체력(HP) +20"
+      "stats": { "atk": 0, "def": 8, "hp": 25 },
+      "effect": "방어력(DEF) +8, 최대체력(HP) +25"
     }
   },
   {
@@ -73,8 +73,8 @@
       "icon": "🛡️",
       "type": "equipment",
       "slot": "armor",
-      "stats": { "atk": 0, "def": 15, "hp": 50 },
-      "effect": "방어력(DEF) +15, 최대체력(HP) +50"
+      "stats": { "atk": 0, "def": 15, "hp": 10 },
+      "effect": "방어력(DEF) +15, 최대체력(HP) +10"
     }
   },
   {
@@ -133,12 +133,12 @@
     "id": "recipe_red_potion",
     "name": "빨간 물약 (Red Potion)",
     "category": "potion",
-    "description": "[시즌1 소모품] 향긋한 허브 3개를 달여 만든 기본 회복 물약입니다. 가방이나 보스전에서 마실 수 있습니다.",
+    "description": "[시즌1 소모품] 향긋한 허브 1개를 달여 만든 기본 회복 물약입니다. 가방이나 보스전에서 마실 수 있습니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 5,
     "requiredItems": [
-      { "item": "item_herb", "name": "향긋한 허브", "count": 3 }
+      { "item": "item_herb", "name": "향긋한 허브", "count": 1 }
     ],
     "unscramble": {
       "korean": "그 맛있는 오믈렛은 좋은 냄새가 난다.",
@@ -159,12 +159,12 @@
     "id": "recipe_orange_potion",
     "name": "주황 물약 (Orange Potion)",
     "category": "potion",
-    "description": "[시즌1 소모품] 향긋한 허브 3개와 개나리 꽃잎 1개를 배합해 만든 상위 회복 물약입니다.",
+    "description": "[시즌1 소모품] 향긋한 허브 2개와 개나리 꽃잎 1개를 배합해 만든 상위 회복 물약입니다.",
     "icon": "🍹",
     "gradeLevel": 1,
     "requiredGold": 10,
     "requiredItems": [
-      { "item": "item_herb", "name": "향긋한 허브", "count": 3 },
+      { "item": "item_herb", "name": "향긋한 허브", "count": 2 },
       { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 1 }
     ],
     "unscramble": {

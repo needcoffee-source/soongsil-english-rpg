@@ -15,11 +15,10 @@ window.ECONOMY_CONFIG = {
   itemDropRatePercent: 15,
   dropAmount: 1,
   spotDropRates: {
-    gather_wood: 15,
-    gather_herb: 20,
+    gather_wood: 20, // +5% 상향
+    gather_herb: 25, // +5% 상향
     gather_forsythia: 10,
-    gather_ginkgo: 7,
-    board: 15
+    gather_ginkgo: 7
   }
 };
 
@@ -158,7 +157,7 @@ class QuizManager {
     this.currentQuestion = q;
 
     // 드랍 테이블/확률은 절대 노출하지 않고 단원명과 제목만 깔끔하게 표시
-    const isComprehensive = (this.currentSourceType === 'teacher_desk' || this.currentSourceType === 'board');
+    const isComprehensive = (this.currentSourceType === 'teacher_desk');
     this.titleEl.innerText = this.currentSourceName;
     this.unitEl.innerText = isComprehensive ? `전범위 모의고사 (${q.unit || 'L1~L4'})` : (q.unit || `Grade ${q.grade}`);
     this.questionEl.innerText = q.question;
@@ -195,10 +194,10 @@ class QuizManager {
     }
 
     if (this.currentSourceType === 'gather_wood') {
-      return { item: 'item_wood', name: '단단한 목재', icon: '🪵', rate: cfg.spotDropRates.gather_wood || 15 };
+      return { item: 'item_wood', name: '단단한 목재', icon: '🪵', rate: cfg.spotDropRates.gather_wood || 20 };
     }
     if (this.currentSourceType === 'gather_herb') {
-      return { item: 'item_herb', name: '향긋한 허브', icon: '🌿', rate: cfg.spotDropRates.gather_herb || 20 };
+      return { item: 'item_herb', name: '향긋한 허브', icon: '🌿', rate: cfg.spotDropRates.gather_herb || 25 };
     }
     if (this.currentSourceType === 'gather_forsythia' || this.currentSourceType === 'forsythia') {
       return { item: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', rate: cfg.spotDropRates.gather_forsythia || 10 };
@@ -227,7 +226,7 @@ class QuizManager {
       buttonEl.classList.add('correct');
 
       const cfg = window.ECONOMY_CONFIG;
-      const isComprehensive = (this.currentSourceType === 'teacher_desk' || this.currentSourceType === 'board');
+      const isComprehensive = (this.currentSourceType === 'teacher_desk');
       const multiplier = isComprehensive ? 2 : 1; // 💡 교탁 모의고사: 골드 2배 + EXP 2배 보너스!
 
       const rawGold = Math.floor(Math.random() * (cfg.maxGold - cfg.minGold + 1)) + cfg.minGold;
