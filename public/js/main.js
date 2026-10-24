@@ -225,6 +225,7 @@ class MainApp {
   handleInteraction(target) {
     if (target.type === 'npc') {
       const npc = target.data;
+      if (!npc || !npc.dialogue) return; // 대사 없는 NPC (오예숙 선생님 등)
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
     } else if (target.type === 'mascot') {
       this.handleMascotInteraction();
@@ -247,9 +248,60 @@ class MainApp {
     } else if (target.type === 'leaderboard') {
       this.openLeaderboard();
     } else if (target.type === 'elevator') {
-      alert('🛗 [중앙 엘리베이터 (점검 중)]\n\n"현재 층간 이동 엘리베이터 점검 중입니다.\n(시즌 업데이트 준비 중!)"');
+      this.handleElevatorInteraction();
+    } else if (target.type === 'cafeteria') {
+      alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
     } else if (target.type === 'secret_locker') {
       this.handleSecretLocker();
+    }
+  }
+
+  handleElevatorInteraction() {
+    if (this.playerData.isTeacher) {
+      if (this.engine.player.room === 'playground') {
+        const goUp = confirm('🛗 [교사 전용 프리패스]\n\n1학년 복도로 이동하시겠습니까?');
+        if (goUp) {
+          this.engine.triggerFadeWarp(() => {
+            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
+          });
+        }
+      } else {
+        const goDown = confirm('🛗 [교사 전용 프리패스]\n\n숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)');
+        if (goDown) {
+          this.engine.triggerFadeWarp(() => {
+            this.engine.warpToRoom('playground', '숭실 운동장', 8 * 32, 6 * 32);
+          });
+        }
+      }
+      return;
+    }
+
+    if (this.engine.player.room === 'playground') {
+      const goUp = confirm('🛗 [중앙 엘리베이터]\n\n1학년 복도로 다시 올라가시겠습니까?');
+      if (goUp) {
+        this.engine.triggerFadeWarp(() => {
+          this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
+        });
+      }
+    } else {
+      // 1학년 복도 -> 운동장 (50G 소모)
+      if (this.playerData.gold < 50) {
+        alert(
+          `❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 50G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)\n\n교탁(골드)이나 교실에서 퀴즈를 풀어 골드를 모아보세요!`
+        );
+        return;
+      }
+
+      const goDown = confirm(
+        `🛗 [중앙 엘리베이터 이용]\n\n50G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 50}G)`
+      );
+      if (goDown) {
+        this.addGold(-50);
+        if (window.AudioManager) window.AudioManager.playSelect();
+        this.engine.triggerFadeWarp(() => {
+          this.engine.warpToRoom('playground', '숭실 운동장', 8 * 32, 6 * 32);
+        });
+      }
     }
   }
 

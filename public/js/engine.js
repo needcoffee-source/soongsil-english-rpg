@@ -270,6 +270,9 @@ class GameEngine {
   }
 
   getMapWidth() {
+    if (this.player && this.player.room === 'playground') {
+      return WORLD_DATA.PLAYGROUND_WIDTH || 90;
+    }
     if (this.player && this.player.room === 'hallway') {
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
@@ -277,6 +280,9 @@ class GameEngine {
   }
 
   getMapHeight() {
+    if (this.player && this.player.room === 'playground') {
+      return WORLD_DATA.PLAYGROUND_HEIGHT || 28;
+    }
     return WORLD_DATA.MAP_HEIGHT || 20;
   }
 
@@ -293,6 +299,17 @@ class GameEngine {
     // Map bounds
     if (tileX < 1 || tileX >= curMapWidth - 1) return true;
     if (tileY < 1) return true;
+
+    if (this.player.room === 'playground') {
+      if (tileY >= curMapHeight - 1) return true; // bottom fence
+      if (tileY <= 2) {
+        // Top boundary: Elevator area (x: 6~8, y: 3) and Cafeteria door (x: 14~18, y: 3) are passable
+        const isElevator = (tileX >= 6 && tileX <= 8 && tileY >= 3);
+        const isCafeteria = (tileX >= 14 && tileX <= 18 && tileY >= 3);
+        if (!isElevator && !isCafeteria) return true;
+      }
+      return false;
+    }
 
     if (this.player.room === 'hallway') {
       if (tileY >= curMapHeight - 1) return true;
@@ -480,11 +497,11 @@ class GameEngine {
             }
           }
         }
-        // Central Elevator (모양만 / 점검 중)
+        // Central Elevator (지상 운동장 이동)
         if (floorData.elevator) {
           const eDist = Math.hypot(floorData.elevator.x * 32 - this.player.x, (floorData.elevator.y + 1.5) * 32 - this.player.y);
           if (eDist < minDist) {
-            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '엘리베이터 (점검 중)' };
+            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '운동장으로 이동 (50G)' };
             minDist = eDist;
           }
         }
@@ -501,6 +518,26 @@ class GameEngine {
               };
               minDist = dist;
             }
+          }
+        }
+      }
+    } else if (this.player.room === 'playground') {
+      const pg = WORLD_DATA.playground;
+      if (pg) {
+        // 1. Elevator back to 1F Hallway
+        if (pg.elevator) {
+          const eDist = Math.hypot(pg.elevator.x * 32 - this.player.x, (pg.elevator.y + 1.5) * 32 - this.player.y);
+          if (eDist < minDist) {
+            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '1학년 복도로 올라가기' };
+            minDist = eDist;
+          }
+        }
+        // 2. Cafeteria entrance
+        if (pg.cafeteria) {
+          const cDist = Math.hypot(pg.cafeteria.x * 32 - this.player.x, (pg.cafeteria.y + 1.5) * 32 - this.player.y);
+          if (cDist < 64 && cDist < minDist) {
+            closest = { type: 'cafeteria', name: '학생 급식실', prompt: '급식실 입장' };
+            minDist = cDist;
           }
         }
       }
@@ -583,7 +620,17 @@ class GameEngine {
           if (Math.hypot(obj.x * 32 - x, obj.y * 32 - y) < 32) return { type: obj.type, data: obj };
         }
         if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, (floorData.elevator.y + 1.5) * 32 - y) < 48) {
-          return { type: 'elevator', name: '중앙 엘리베이터', prompt: '엘리베이터 (점검 중)' };
+          return { type: 'elevator', name: '중앙 엘리베이터', prompt: '운동장으로 이동 (50G)' };
+        }
+      }
+    } else if (this.player.room === 'playground') {
+      const pg = WORLD_DATA.playground;
+      if (pg) {
+        if (pg.elevator && Math.hypot(pg.elevator.x * 32 - x, (pg.elevator.y + 1.5) * 32 - y) < 48) {
+          return { type: 'elevator', name: '중앙 엘리베이터', prompt: '1학년 복도로 올라가기' };
+        }
+        if (pg.cafeteria && Math.hypot(pg.cafeteria.x * 32 - x, (pg.cafeteria.y + 1.5) * 32 - y) < 56) {
+          return { type: 'cafeteria', name: '학생 급식실', prompt: '급식실 입장' };
         }
       }
     } else {
@@ -663,6 +710,8 @@ class GameEngine {
 
     if (this.player.room === 'hallway') {
       this.renderHallway();
+    } else if (this.player.room === 'playground') {
+      this.renderPlayground();
     } else {
       this.renderClassroom();
     }
@@ -2192,6 +2241,477 @@ class GameEngine {
       paddingX: 12,
       height: 22
     });
+  }
+
+  // ========================================================
+  // SCENE RENDERING: PLAYGROUND (숭실 야외 운동장: 축구장 2/3, 농구장 1/3)
+  // - 복도(60타일)의 2배 규모인 90 x 28 타일 광활한 야외 운동장
+  // - 좌측 상단: 중앙 엘리베이터(복도 이동) & 급식실 입구
+  // - 좌측/중앙 2/3: 우레탄 트랙, 천연 잔디 축구장, 3D 골대, 코너 플래그
+  // - 우측 1/3: 올림픽 블루 우레탄 농구 코트, 아크릴 백보드 골대
+  // ========================================================
+  renderPlayground() {
+    const mapW = this.getMapWidth();
+    const mapH = this.getMapHeight();
+
+    // 1. Sandy Clay Ground Foundation (운동장 마사토 흙바닥 베이스)
+    this.ctx.fillStyle = '#dfd5c5';
+    this.ctx.fillRect(0, 0, mapW * 32, mapH * 32);
+
+    // Fine Playground Gravel Dots (흙바닥 질감)
+    this.ctx.fillStyle = 'rgba(120, 113, 108, 0.2)';
+    for (let gx = 0; gx < mapW; gx += 3) {
+      for (let gy = 0; gy < mapH; gy += 3) {
+        this.ctx.fillRect(gx * 32 + 10, gy * 32 + 8, 2, 2);
+        this.ctx.fillRect(gx * 32 + 22, gy * 32 + 20, 1.5, 1.5);
+      }
+    }
+
+    // 2. School South Building Annex Wall (Top Border: ty <= 2)
+    for (let tx = 0; tx < mapW; tx++) {
+      // Red Brick Facade
+      this.ctx.fillStyle = '#991b1b';
+      this.ctx.fillRect(tx * 32, 0, 32, 2 * 32);
+      this.ctx.fillStyle = '#7f1d1d';
+      this.ctx.fillRect(tx * 32, 0, 32, 4); // brick trim
+      // Mortar Lines
+      this.ctx.fillStyle = '#78350f';
+      this.ctx.fillRect(tx * 32, 16, 32, 1);
+      this.ctx.fillRect(tx * 32, 32, 32, 1);
+      this.ctx.fillRect(tx * 32, 48, 32, 1);
+      // Concrete Foundation Base
+      this.ctx.fillStyle = '#475569';
+      this.ctx.fillRect(tx * 32, 2 * 32, 32, 14);
+      this.ctx.fillStyle = '#64748b';
+      this.ctx.fillRect(tx * 32, 2 * 32, 32, 3);
+    }
+
+    // 3. Central Elevator (Ground Station at x: 7, y: 3)
+    this.drawHighResElevator({ x: 7, y: 3 }, 0);
+    this.drawSharpLabel(7 * 32 + 16, 3 * 32 + 48, '🛗 중앙 엘리베이터 (1F 복도 이동)', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#ffffff',
+      fontSize: 11,
+      paddingX: 8,
+      height: 19
+    });
+
+    // 4. Cafeteria Entrance (Right next to elevator: x: 16, y: 3)
+    this.drawHighResCafeteriaEntrance(16 * 32, 3 * 32);
+
+    // 5. Left & Center 2/3: SOCCER FIELD (축구장 & 우레탄 트랙)
+    // 5-A. Tartan Red Running Track (우레탄 육상 트랙: x: 4 ~ 58, y: 6 ~ 26)
+    const trackX = 4 * 32;
+    const trackY = 6 * 32;
+    const trackW = 54 * 32;
+    const trackH = 20 * 32;
+
+    this.ctx.fillStyle = '#991b1b'; // Red Tartan
+    this.ctx.beginPath();
+    this.ctx.roundRect(trackX, trackY, trackW, trackH, 48);
+    this.ctx.fill();
+
+    // White Running Lane Lines (3 lanes)
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+    this.ctx.lineWidth = 2;
+    for (let lane = 0; lane < 3; lane++) {
+      const inset = lane * 18 + 6;
+      this.ctx.beginPath();
+      this.ctx.roundRect(trackX + inset, trackY + inset, trackW - inset * 2, trackH - inset * 2, 42 - lane * 6);
+      this.ctx.stroke();
+    }
+
+    // 5-B. Lush Natural Grass Pitch (잔디 축구장: x: 7 ~ 55, y: 8 ~ 24)
+    const pitchX = 7 * 32;
+    const pitchY = 8 * 32;
+    const pitchW = 48 * 32;
+    const pitchH = 16 * 32;
+
+    // Grass Turf Mowing Stripes (4-tile stripes)
+    for (let sx = 0; sx < 48; sx += 4) {
+      this.ctx.fillStyle = (sx / 4) % 2 === 0 ? '#15803d' : '#16a34a';
+      this.ctx.fillRect(pitchX + sx * 32, pitchY, 4 * 32, pitchH);
+    }
+
+    // 5-C. Soccer Field Markings (Crisp Pure White Lines)
+    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.lineWidth = 2.5;
+
+    // Touchlines (Outer border)
+    this.ctx.strokeRect(pitchX, pitchY, pitchW, pitchH);
+
+    // Halfway Line
+    const midX = pitchX + pitchW / 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(midX, pitchY);
+    this.ctx.lineTo(midX, pitchY + pitchH);
+    this.ctx.stroke();
+
+    // Center Circle (Radius: 100px) & Center Spot
+    const midY = pitchY + pitchH / 2;
+    this.ctx.beginPath();
+    this.ctx.arc(midX, midY, 100, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.beginPath();
+    this.ctx.arc(midX, midY, 5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Left Penalty Box (18-yard box: width 8 tiles, height 10 tiles)
+    const penW = 8 * 32;
+    const penH = 10 * 32;
+    const penY = midY - penH / 2;
+    this.ctx.strokeRect(pitchX, penY, penW, penH);
+
+    // Left Goal Area (6-yard box: width 3.5 tiles, height 5 tiles)
+    const gAreaW = 3.5 * 32;
+    const gAreaH = 5 * 32;
+    const gAreaY = midY - gAreaH / 2;
+    this.ctx.strokeRect(pitchX, gAreaY, gAreaW, gAreaH);
+
+    // Left Penalty Spot & Arc
+    const lSpotX = pitchX + 5.5 * 32;
+    this.ctx.beginPath();
+    this.ctx.arc(lSpotX, midY, 4, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc(lSpotX, midY, 50, -0.9, 0.9);
+    this.ctx.stroke();
+
+    // Right Penalty Box (18-yard box)
+    this.ctx.strokeRect(pitchX + pitchW - penW, penY, penW, penH);
+
+    // Right Goal Area (6-yard box)
+    this.ctx.strokeRect(pitchX + pitchW - gAreaW, gAreaY, gAreaW, gAreaH);
+
+    // Right Penalty Spot & Arc
+    const rSpotX = pitchX + pitchW - 5.5 * 32;
+    this.ctx.beginPath();
+    this.ctx.arc(rSpotX, midY, 4, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc(rSpotX, midY, 50, Math.PI - 0.9, Math.PI + 0.9);
+    this.ctx.stroke();
+
+    // 4 Corner Arcs & Checkered Corner Flags
+    const cornerR = 14;
+    // Top-Left
+    this.ctx.beginPath(); this.ctx.arc(pitchX, pitchY, cornerR, 0, Math.PI / 2); this.ctx.stroke();
+    // Bottom-Left
+    this.ctx.beginPath(); this.ctx.arc(pitchX, pitchY + pitchH, cornerR, -Math.PI / 2, 0); this.ctx.stroke();
+    // Top-Right
+    this.ctx.beginPath(); this.ctx.arc(pitchX + pitchW, pitchY, cornerR, Math.PI / 2, Math.PI); this.ctx.stroke();
+    // Bottom-Right
+    this.ctx.beginPath(); this.ctx.arc(pitchX + pitchW, pitchY + pitchH, cornerR, Math.PI, Math.PI * 1.5); this.ctx.stroke();
+
+    // Corner Flags
+    this.drawCornerFlag(pitchX - 2, pitchY - 2);
+    this.drawCornerFlag(pitchX - 2, pitchY + pitchH + 2);
+    this.drawCornerFlag(pitchX + pitchW + 2, pitchY - 2);
+    this.drawCornerFlag(pitchX + pitchW + 2, pitchY + pitchH + 2);
+
+    // 5-D. High-Res Goalposts with 3D White Mesh Nets
+    this.drawHighResGoalPost(pitchX, midY - 60, true);
+    this.drawHighResGoalPost(pitchX + pitchW, midY - 60, false);
+
+    // Soccer Field Center Label
+    this.drawSharpLabel(midX, midY + 44, '⚽ 숭실 천연잔디 축구장', {
+      bgColor: 'rgba(21, 128, 61, 0.94)',
+      borderColor: '#86efac',
+      textColor: '#ffffff',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+
+    // 6. Right 1/3: BASKETBALL COURT (우레탄 농구장: x: 61 ~ 87, y: 6 ~ 26)
+    const bCourtX = 61 * 32;
+    const bCourtY = 6 * 32;
+    const bCourtW = 26 * 32;
+    const bCourtH = 20 * 32;
+
+    // Navy Border Buffer
+    this.ctx.fillStyle = '#1e3a8a';
+    this.ctx.fillRect(bCourtX - 10, bCourtY - 8, bCourtW + 20, bCourtH + 16);
+
+    // Olympic Acrylic Blue Court Surface
+    this.ctx.fillStyle = '#0284c7';
+    this.ctx.fillRect(bCourtX, bCourtY, bCourtW, bCourtH);
+
+    // Basketball Court Markings (Pure White 2.5px)
+    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.strokeRect(bCourtX, bCourtY, bCourtW, bCourtH);
+
+    // Halfcourt Line & Jump Circle
+    const bMidX = bCourtX + bCourtW / 2;
+    const bMidY = bCourtY + bCourtH / 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(bMidX, bCourtY);
+    this.ctx.lineTo(bMidX, bCourtY + bCourtH);
+    this.ctx.stroke();
+
+    // Center Jump Circle (Radius: 60px)
+    this.ctx.fillStyle = '#0369a1';
+    this.ctx.beginPath();
+    this.ctx.arc(bMidX, bMidY, 60, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.stroke();
+
+    // Left Key (Paint area in fiery orange)
+    const bKeyW = 6.5 * 32;
+    const bKeyH = 6 * 32;
+    const bKeyY = bMidY - bKeyH / 2;
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.fillRect(bCourtX, bKeyY, bKeyW, bKeyH);
+    this.ctx.strokeRect(bCourtX, bKeyY, bKeyW, bKeyH);
+
+    // Left Free-Throw Circle
+    this.ctx.beginPath();
+    this.ctx.arc(bCourtX + bKeyW, bMidY, bKeyH / 2, -Math.PI / 2, Math.PI / 2);
+    this.ctx.stroke();
+
+    // Left 3-Point Arc
+    this.ctx.beginPath();
+    this.ctx.arc(bCourtX + 32, bMidY, 150, -1.0, 1.0);
+    this.ctx.stroke();
+
+    // Right Key (Paint area in fiery orange)
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.fillRect(bCourtX + bCourtW - bKeyW, bKeyY, bKeyW, bKeyH);
+    this.ctx.strokeRect(bCourtX + bCourtW - bKeyW, bKeyY, bKeyW, bKeyH);
+
+    // Right Free-Throw Circle
+    this.ctx.beginPath();
+    this.ctx.arc(bCourtX + bCourtW - bKeyW, bMidY, bKeyH / 2, Math.PI / 2, Math.PI * 1.5);
+    this.ctx.stroke();
+
+    // Right 3-Point Arc
+    this.ctx.beginPath();
+    this.ctx.arc(bCourtX + bCourtW - 32, bMidY, 150, Math.PI - 1.0, Math.PI + 1.0);
+    this.ctx.stroke();
+
+    // High-Res Basketball Hoops
+    this.drawHighResBasketballHoop(bCourtX + 28, bMidY, true);
+    this.drawHighResBasketballHoop(bCourtX + bCourtW - 28, bMidY, false);
+
+    // Basketball Court Center Label
+    this.drawSharpLabel(bMidX, bMidY + 44, '🏀 숭실 야외 농구장', {
+      bgColor: 'rgba(2, 132, 199, 0.94)',
+      borderColor: '#7dd3fc',
+      textColor: '#ffffff',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+
+    // 7. Team Benches, Water Fountain, and Trees along Sidelines
+    // Wood Benches
+    this.drawHighResBench(28 * 32, 5 * 32 + 6);
+    this.drawHighResBench(34 * 32, 5 * 32 + 6);
+    this.drawHighResBench(70 * 32, 5 * 32 + 6);
+    this.drawHighResBench(76 * 32, 5 * 32 + 6);
+
+    // Drinking Fountain between fields (x: 59, y: 5)
+    this.drawHighResDrinkingFountain(59 * 32 + 16, 5 * 32 + 10);
+
+    // Perimeter Fence along Bottom Edge (ty === 27)
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, 27 * 32 + 16);
+    this.ctx.lineTo(mapW * 32, 27 * 32 + 16);
+    this.ctx.stroke();
+
+    for (let fx = 0; fx < mapW * 32; fx += 64) {
+      this.ctx.fillStyle = '#64748b';
+      this.ctx.fillRect(fx, 27 * 32, 4, 28);
+    }
+  }
+
+  // Corner Pennant Flag
+  drawCornerFlag(fx, fy) {
+    this.ctx.save();
+    this.ctx.fillStyle = '#e2e8f0';
+    this.ctx.fillRect(fx - 1, fy - 18, 2, 18); // Pole
+    this.ctx.fillStyle = '#ef4444'; // Red Flag
+    this.ctx.beginPath();
+    this.ctx.moveTo(fx + 1, fy - 18);
+    this.ctx.lineTo(fx + 12, fy - 13);
+    this.ctx.lineTo(fx + 1, fy - 8);
+    this.ctx.closePath();
+    this.ctx.fill();
+    this.ctx.restore();
+  }
+
+  // High-Res Soccer Goalpost with Mesh Net
+  drawHighResGoalPost(gx, gy, isLeft) {
+    this.ctx.save();
+    const gh = 120;
+    const depth = isLeft ? -28 : 28;
+
+    // Net Backing (Semitransparent Hexagon Mesh)
+    this.ctx.fillStyle = 'rgba(241, 245, 249, 0.28)';
+    this.ctx.beginPath();
+    this.ctx.moveTo(gx, gy);
+    this.ctx.lineTo(gx + depth, gy + 10);
+    this.ctx.lineTo(gx + depth, gy + gh + 10);
+    this.ctx.lineTo(gx, gy + gh);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Net Lattice Lines
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    this.ctx.lineWidth = 1;
+    for (let ny = gy + 12; ny < gy + gh; ny += 14) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(gx, ny);
+      this.ctx.lineTo(gx + depth, ny + 10);
+      this.ctx.stroke();
+    }
+
+    // Goal Frame Posts (Pure White Tubular Steel)
+    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(gx, gy);
+    this.ctx.lineTo(gx, gy + gh); // Main upright
+    this.ctx.moveTo(gx, gy);
+    this.ctx.lineTo(gx + depth, gy + 10); // Top back bar
+    this.ctx.lineTo(gx + depth, gy + gh + 10); // Back upright
+    this.ctx.stroke();
+
+    this.ctx.restore();
+  }
+
+  // High-Res Basketball Hoop with Acrylic Backboard & Orange Rim
+  drawHighResBasketballHoop(hx, hy, isLeft) {
+    this.ctx.save();
+    const dir = isLeft ? 1 : -1;
+
+    // Heavy-Duty Black Steel Support Pole
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(hx - dir * 14, hy - 40, 6, 80);
+
+    // Blue Protective Foam Padding at Base
+    this.ctx.fillStyle = '#2563eb';
+    this.ctx.fillRect(hx - dir * 16, hy + 16, 10, 24);
+
+    // Angled Gooseneck Boom Arm
+    this.ctx.strokeStyle = '#334155';
+    this.ctx.lineWidth = 4;
+    this.ctx.beginPath();
+    this.ctx.moveTo(hx - dir * 11, hy - 20);
+    this.ctx.lineTo(hx - dir * 2, hy - 16);
+    this.ctx.stroke();
+
+    // Acrylic Transparent Backboard
+    this.ctx.fillStyle = 'rgba(224, 242, 254, 0.82)';
+    this.ctx.fillRect(hx - dir * 2, hy - 38, 4, 46);
+    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(hx - dir * 2, hy - 38, 4, 46);
+
+    // Red Inner Target Box on Backboard
+    this.ctx.strokeStyle = '#dc2626';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(hx - dir * 2, hy - 24, 4, 18);
+
+    // Spring-Loaded Orange Metal Rim
+    this.ctx.strokeStyle = '#ea580c';
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.moveTo(hx, hy - 6);
+    this.ctx.lineTo(hx + dir * 16, hy - 6);
+    this.ctx.stroke();
+
+    // White Triangular Hanging Net
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    this.ctx.beginPath();
+    this.ctx.moveTo(hx, hy - 6);
+    this.ctx.lineTo(hx + dir * 16, hy - 6);
+    this.ctx.lineTo(hx + dir * 8, hy + 10);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.ctx.restore();
+  }
+
+  // High-Res Cafeteria Entrance (학생 급식실 입구)
+  drawHighResCafeteriaEntrance(cx, cy) {
+    this.ctx.save();
+    const w = 5 * 32;
+    const h = 2 * 32;
+
+    // Automatic Sliding Door Frame (Brushed Stainless Steel)
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(cx - w / 2, cy - 8, w, h + 8);
+
+    // Double Glass Sliding Doors (Cyan / Sky Tinted)
+    const dw = (w - 16) / 2;
+    this.ctx.fillStyle = '#0284c7';
+    this.ctx.fillRect(cx - w / 2 + 6, cy, dw, h - 4);
+    this.ctx.fillRect(cx + 2, cy, dw, h - 4);
+
+    this.ctx.fillStyle = '#38bdf8'; // Glass reflection
+    this.ctx.fillRect(cx - w / 2 + 8, cy + 4, dw - 4, 16);
+    this.ctx.fillRect(cx + 4, cy + 4, dw - 4, 16);
+
+    // Stainless Steel Vertical Handles
+    this.ctx.fillStyle = '#e2e8f0';
+    this.ctx.fillRect(cx - 6, cy + 18, 3, 26);
+    this.ctx.fillRect(cx + 3, cy + 18, 3, 26);
+
+    // Welcome Floor Mat in Deep Navy
+    this.ctx.fillStyle = '#1e3a8a';
+    this.ctx.fillRect(cx - w / 2 + 12, cy + h - 2, w - 24, 12);
+    this.ctx.strokeStyle = '#38bdf8';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(cx - w / 2 + 12, cy + h - 2, w - 24, 12);
+
+    // Grand Overhead Signboard
+    this.drawSharpLabel(cx, cy - 14, '🍽️ 학생 급식실 (조리실)', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#fbbf24',
+      textColor: '#fef08a',
+      fontSize: 12.5,
+      paddingX: 12,
+      height: 22
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res Wood Team Bench
+  drawHighResBench(bx, by) {
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    this.ctx.fillRect(bx - 20, by + 12, 44, 4);
+
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(bx - 20, by, 40, 6);
+    this.ctx.fillStyle = '#92400e';
+    this.ctx.fillRect(bx - 20, by + 6, 40, 6);
+
+    this.ctx.fillStyle = '#334155'; // Metal Legs
+    this.ctx.fillRect(bx - 16, by + 10, 4, 6);
+    this.ctx.fillRect(bx + 12, by + 10, 4, 6);
+    this.ctx.restore();
+  }
+
+  // Outdoor Drinking Water Fountain
+  drawHighResDrinkingFountain(fx, fy) {
+    this.ctx.save();
+    this.ctx.fillStyle = '#64748b';
+    this.ctx.fillRect(fx - 8, fy, 16, 20);
+    this.ctx.fillStyle = '#94a3b8';
+    this.ctx.fillRect(fx - 10, fy - 4, 20, 6); // basin
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(fx - 6, fy - 2, 12, 3); // water pool
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.fillRect(fx - 1, fy - 8, 3, 5); // faucet
+    this.ctx.restore();
   }
 
   renderMascots() {
