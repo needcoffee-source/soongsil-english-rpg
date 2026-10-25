@@ -1249,7 +1249,7 @@ class MainApp {
 
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
     this.playerData.def = this.playerData.baseDef + lvBonus + bonusDef;
-    this.playerData.maxHp = this.playerData.baseHp + lvBonus + bonusHp;
+    this.playerData.maxHp = this.playerData.baseHp + bonusHp; // 레벨업 시 HP 상승 삭제, 공방만 1씩 증가
     if (this.playerData.hp > this.playerData.maxHp) {
       this.playerData.hp = this.playerData.maxHp;
     }
@@ -3110,7 +3110,7 @@ class MainApp {
     this.saveProgress();
   }
 
-  // Lv.1 ~ Lv.100 성장 (1레벨당 체력 +1, 공격력 +1, 방어력 +1 증가)
+  // Lv.1 ~ Lv.100 성장 (1레벨당 공격력 +1, 방어력 +1 증가 - HP 상승 삭제)
   addExp(amount) {
     if (this.playerData.level >= MAX_LEVEL) {
       this.playerData.exp = 0;
@@ -3134,7 +3134,6 @@ class MainApp {
     if (leveledUp) {
       this.hudLevel.innerText = `Lv.${this.playerData.level}`;
       this.recalcCombatStats();
-      this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + 1);
       this.updateHpBar();
       this.showLevelUpBanner(this.playerData.level);
     }
