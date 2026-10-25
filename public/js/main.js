@@ -686,9 +686,9 @@ class MainApp {
       this.startLoop();
       this.initAutoHpRegen();
 
-      // 45초 주기 자동 저장 & 브라우저 닫기/새로고침 시 비콘 백업
+      // 60초 주기 자동 저장 (서버 부하 최소화 스마트 감지) & 브라우저 닫기/새로고침 시 비콘 백업
       if (!this.autoSaveInterval) {
-        this.autoSaveInterval = setInterval(() => this.saveProgress(), 45000);
+        this.autoSaveInterval = setInterval(() => this.saveProgress(), 60000);
       }
       if (!window.__soongsilBeforeUnloadBound) {
         window.__soongsilBeforeUnloadBound = true;
@@ -2438,6 +2438,39 @@ class MainApp {
       });
     }
 
+    // 학생 누적 백업 JSON 파일 복원 (업로드)
+    const btnRestore = document.getElementById('btn-trigger-restore-progress');
+    const inputRestore = document.getElementById('input-restore-progress');
+    if (btnRestore && inputRestore) {
+      btnRestore.addEventListener('click', () => inputRestore.click());
+      inputRestore.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (!confirm(`선택한 백업 파일("${file.name}")로 서버의 모든 학생 데이터를 복원하시겠습니까?`)) {
+          inputRestore.value = '';
+          return;
+        }
+        try {
+          const text = await file.text();
+          const parsed = JSON.parse(text);
+          const res = await fetch('/api/admin/restore-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ allData: parsed })
+          });
+          const data = await res.json();
+          if (data && data.success) {
+            alert(`✅ 성공! 총 ${data.count}명 학생의 데이터가 서버에 안전하게 복원되었습니다.`);
+          } else {
+            alert('복원 실패: 올바른 백업 파일 형식이 아닙니다.');
+          }
+        } catch (err) {
+          alert('복원 중 오류 발생: ' + err.message);
+        }
+        inputRestore.value = '';
+      });
+    }
+
     // ========================================================
     // TEACHER POP QUIZ CONTROLS (돌발 퀴즈 발령)
     // ========================================================
@@ -2744,7 +2777,7 @@ class MainApp {
   // =========================================================================
   // PERSISTENCE (2달 장기 프로젝트: LocalStorage + 서버 영구 저장 이중화)
   // =========================================================================
-  saveProgress() {
+  saveProgress(forceServerSync = false) {
     if (!this.playerData || this.playerData.isTeacher) return;
     if (!this.playerData.studentId || this.playerData.studentId === '교사') return;
 
@@ -2769,6 +2802,15 @@ class MainApp {
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
+
+      // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
+      // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasClearedDragonRaid}`;
+      if (!forceServerSync && this._lastSavedDataHash === dataHash) {
+        return;
+      }
+      this._lastSavedDataHash = dataHash;
+
       this.syncProgressToServer(saveData);
     } catch (e) {
       console.warn('LocalStorage save failed:', e);

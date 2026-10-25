@@ -117,6 +117,19 @@ app.get('/api/admin/export-progress', (req, res) => {
   res.send(fs.readFileSync(PROGRESS_FILE, 'utf8'));
 });
 
+app.post('/api/admin/restore-progress', (req, res) => {
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch (e) {}
+  }
+  const allData = (body && body.allData) || body;
+  if (!allData || typeof allData !== 'object' || Array.isArray(allData)) {
+    return res.status(400).json({ error: '올바른 백업 JSON 형식이 아닙니다.' });
+  }
+  saveStudentsProgress(allData);
+  res.json({ success: true, count: Object.keys(allData).length });
+});
+
 // Game State
 const players = {}; // socketId -> player data
 const mutedStudents = new Set(); // student names or socket IDs
