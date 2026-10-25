@@ -2635,15 +2635,15 @@ class MainApp {
           hpEl.value = 7500;
           atkEl.value = 86;
           defEl.value = 28;
-          goldEl.value = 200;
-          expEl.value = 400;
+          goldEl.value = 300;
+          expEl.value = 600;
         } else if (val === 'cerberus') {
           nameEl.value = '🐕 수행평가 3두마수 케르베로스';
           hpEl.value = 8000;
-          atkEl.value = 88;
-          defEl.value = 26;
-          goldEl.value = 300;
-          expEl.value = 600;
+          atkEl.value = 90;
+          defEl.value = 28;
+          goldEl.value = 200;
+          expEl.value = 400;
         } else if (val === 'final_god') {
           nameEl.value = '💀 기말고사 파멸신';
           hpEl.value = 99999;
