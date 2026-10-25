@@ -11,7 +11,7 @@ const ALL_GAME_ITEMS = {
   // 1. Materials
   'item_wood': { name: '단단한 목재', icon: '🪵', count: 9999, meta: { type: 'material', effect: '장비 제작 기본 재료' } },
   'item_herb': { name: '향긋한 허브', icon: '🌿', count: 9999, meta: { type: 'material', effect: '물약 및 주문서 제작 재료' } },
-  'item_forsythia': { name: '노란 개나리 꽃잎', icon: '🌼', count: 9999, meta: { type: 'material', effect: '교화 개나리 장신구 및 주황 물약 재료' } },
+  'item_forsythia': { name: '노란 개나리 꽃잎', icon: '🌼', count: 9999, meta: { type: 'material', effect: '교화 개나리 장신구 및 주홍 물약 재료' } },
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_golem_core': { name: '고목의 핵', icon: '🟢', count: 9999, meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
@@ -22,7 +22,7 @@ const ALL_GAME_ITEMS = {
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
-  'item_orange_potion': { name: '주황 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
+  'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
@@ -507,7 +507,7 @@ class MainApp {
     const materials = [
       { id: 'item_wood', name: '단단한 목재', icon: '🪵', meta: { type: 'material', effect: '장비 제작 기본 재료' } },
       { id: 'item_herb', name: '향긋한 허브', icon: '🌿', meta: { type: 'material', effect: '물약 및 주문서 제작 재료' } },
-      { id: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', meta: { type: 'material', effect: '교화 개나리 장신구 및 주황 물약 재료' } },
+      { id: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', meta: { type: 'material', effect: '교화 개나리 장신구 및 주홍 물약 재료' } },
       { id: 'item_ginkgo', name: '황금 은행잎', icon: '🍂', meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } }
     ];
 
@@ -1769,7 +1769,7 @@ class MainApp {
       this.addGold(data.rewardGold || 100);
       this.addExp(data.rewardExp || 200);
 
-      // 1. 체력회복 포션 (2~3개 확정 드랍: 빨간물약/주황물약 랜덤 조합)
+      // 1. 체력회복 포션 (2~3개 확정 드랍: 빨간물약/주홍물약 랜덤 조합)
       const potCount = Math.floor(Math.random() * 2) + 2; // 2 or 3
       let droppedRed = 0, droppedOrange = 0;
       for (let i = 0; i < potCount; i++) {
@@ -1778,13 +1778,13 @@ class MainApp {
           this.addItem('item_red_potion', '빨간 물약', 1, '🍷', { type: 'consumable', heal: 10, effect: '체력 +10 회복' });
         } else {
           droppedOrange++;
-          this.addItem('item_orange_potion', '주황 물약', 1, '🧪', { type: 'consumable', heal: 25, effect: '체력 +25 회복' });
+          this.addItem('item_orange_potion', '주홍 물약', 1, '🧪', { type: 'consumable', heal: 25, effect: '체력 +25 회복' });
         }
       }
 
       const rewardItemsList = [];
       if (droppedRed > 0) rewardItemsList.push(`🍷 빨간 물약 x${droppedRed}`);
-      if (droppedOrange > 0) rewardItemsList.push(`🧪 주황 물약 x${droppedOrange}`);
+      if (droppedOrange > 0) rewardItemsList.push(`🧪 주홍 물약 x${droppedOrange}`);
 
       // 2. 개나리 반지 (5% 확률)
       if (Math.random() * 100 < 5) {
@@ -1852,20 +1852,28 @@ class MainApp {
         }
       }
 
-      // 5. 중간고사 대마왕 전용 드랍 (주황물약 3개, 💯 백점만점 시험지, 청동검/청동투구/청동갑옷 전원 100% 드랍)
+      // 5. 중간고사 대마왕 전용 드랍 (주홍물약 3개, 💯 백점만점 시험지, 청동투구/청동갑옷 100% 확정 + 청동검 35% 확률 드랍)
       if (bName.includes('대마왕') || bName.includes('demon') || bName.includes('중간고사')) {
-        this.addItem('item_orange_potion', '주황 물약', 3, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
-        rewardItemsList.push('🧪 주황 물약 x3');
+        this.addItem('item_orange_potion', '주홍 물약', 3, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
+        rewardItemsList.push('🧪 주홍 물약 x3');
 
         this.addItem('item_perfect_exam', '💯 백점만점 시험지', 1, '💯', { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' });
         rewardItemsList.push('💯 백점만점 시험지 (호칭 교환소에서 📚 시험의 제왕 교환!)');
 
-        this.addItem('equip_bronze_sword', '청동검', 1, '⚔️', { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' });
+        // 청동 방어구 2종: 100% 고정 드랍
         this.addItem('equip_bronze_helmet', '청동투구', 1, '🪖', { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' });
         this.addItem('equip_bronze_armor', '청동갑옷', 1, '🛡️', { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' });
-        rewardItemsList.push('⚔️ 청동검 (3티어 종결 무기 완제품!)');
-        rewardItemsList.push('🪖 청동투구 (3티어 종결 투구 완제품!)');
-        rewardItemsList.push('🛡️ 청동갑옷 (3티어 종결 갑옷 완제품!)');
+        rewardItemsList.push('🪖 청동투구 (3티어 종결 투구 완제품 [확정])');
+        rewardItemsList.push('🛡️ 청동갑옷 (3티어 종결 갑옷 완제품 [확정])');
+
+        // 청동 무기 (청동검): 35% 확률 드랍
+        const swordRoll = Math.random() * 100;
+        if (swordRoll < 35) {
+          this.addItem('equip_bronze_sword', '청동검', 1, '⚔️', { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' });
+          rewardItemsList.push('⚔️ 청동검 (3티어 종결 무기 대박 획득! [35%])');
+        } else {
+          rewardItemsList.push('⚔️ 청동검 획득 실패 (다음 레이드 또는 제작대 도전!)');
+        }
       }
 
       // 6. 케르베로스 전용 드랍
@@ -1955,7 +1963,7 @@ class MainApp {
     const orangeCount = orangePot ? orangePot.count : 0;
     const btnOrange = document.getElementById('btn-raid-use-orange-potion');
     if (btnOrange) {
-      btnOrange.innerText = `🧪 주황 물약 (+25) ${orangeCount}개`;
+      btnOrange.innerText = `🧪 주홍 물약 (+25) ${orangeCount}개`;
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
@@ -2196,7 +2204,7 @@ class MainApp {
     const orangeCount = orangePot ? orangePot.count : 0;
     const btnOrange = document.getElementById('btn-battle-use-orange-potion');
     if (btnOrange) {
-      btnOrange.innerText = `🧪 주황 물약 (+25) ${orangeCount}개`;
+      btnOrange.innerText = `🧪 주홍 물약 (+25) ${orangeCount}개`;
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
   }
@@ -2319,7 +2327,7 @@ class MainApp {
       if (Math.random() * 100 < 15) {
         this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
           type: 'material',
-          effect: '개나리 반지 및 주황 물약 재료'
+          effect: '개나리 반지 및 주홍 물약 재료'
         });
         dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
       }
@@ -2358,7 +2366,7 @@ class MainApp {
       if (Math.random() * 100 < 15) {
         this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
           type: 'material',
-          effect: '개나리 반지 및 주황 물약 재료'
+          effect: '개나리 반지 및 주홍 물약 재료'
         });
         dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
       }

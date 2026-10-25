@@ -539,7 +539,7 @@
   },
   {
     "id": "recipe_orange_potion",
-    "name": "주황 물약 (Orange Potion)",
+    "name": "주홍 물약 (Orange Potion)",
     "category": "potion",
     "description": "[포션] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다.",
     "icon": "🍹",
@@ -570,7 +570,7 @@
     },
     "result": {
       "item": "item_orange_potion",
-      "name": "주황 물약",
+      "name": "주홍 물약",
       "icon": "🍹",
       "type": "consumable",
       "slot": "consumable",
