@@ -723,8 +723,8 @@ class GameEngine {
                 prompt: "보스 레이드 (숭실 청동 드래곤)",
                 level: 20,
                 maxHp: 5000,
-                atk: 36,
-                def: 15,
+                atk: 50,
+                def: 20,
                 rewardGold: 120,
                 rewardExp: 250
               }
@@ -840,8 +840,8 @@ class GameEngine {
               prompt: "보스 레이드 (숭실 청동 드래곤)",
               level: 20,
               maxHp: 5000,
-              atk: 36,
-              def: 15,
+              atk: 50,
+              def: 20,
               rewardGold: 120,
               rewardExp: 250
             }
@@ -2532,7 +2532,7 @@ class GameEngine {
     // 9. Boss Nameplate (교사 설정 및 레이드 상태 표시)
     const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
     const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '😈 중간고사 대마왕');
-    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 4000) : (boss.maxHp || 4000);
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 7500) : (boss.maxHp || 7500);
     const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
       ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
@@ -3509,7 +3509,7 @@ class GameEngine {
           ? ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase())
           : (isClearedGolem ? 'dragon' : (cr.boss.name || '').toLowerCase());
         const effectiveBoss = (isClearedGolem && !isRaidActive)
-          ? { ...cr.boss, name: '🐉 숭실 청동 드래곤', maxHp: 5000, atk: 36, def: 15 }
+          ? { ...cr.boss, name: '🐉 숭실 청동 드래곤', maxHp: 5000, atk: 50, def: 20 }
           : cr.boss;
 
         if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {

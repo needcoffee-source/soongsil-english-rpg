@@ -150,8 +150,8 @@ const WORLD_DATA = {
       prompt: "보스 레이드",
       level: 10,
       maxHp: 2000,
-      atk: 25,
-      def: 12
+      atk: 30,
+      def: 14
     },
     desks: []
   },

@@ -127,8 +127,8 @@ window.BOSS_CONFIG = {
   unitFilter: 'ALL',
   maxHp: 2000,
   currentHp: 2000,
-  atk: 25,
-  def: 12,
+  atk: 30,
+  def: 14,
   rewardGold: 50,
   rewardExp: 100
 };
@@ -2555,22 +2555,22 @@ class MainApp {
         if (val === 'golem') {
           nameEl.value = '👾 가죽 골렘';
           hpEl.value = 2000;
-          atkEl.value = 25;
-          defEl.value = 12;
+          atkEl.value = 30;
+          defEl.value = 14;
           goldEl.value = 50;
           expEl.value = 100;
         } else if (val === 'dragon') {
           nameEl.value = '🐉 숭실 청동 드래곤';
           hpEl.value = 5000;
-          atkEl.value = 36;
-          defEl.value = 15;
+          atkEl.value = 50;
+          defEl.value = 20;
           goldEl.value = 120;
           expEl.value = 250;
         } else if (val === 'demon') {
           nameEl.value = '😈 중간고사 대마왕';
-          hpEl.value = 6500;
-          atkEl.value = 45;
-          defEl.value = 18;
+          hpEl.value = 7500;
+          atkEl.value = 86;
+          defEl.value = 28;
           goldEl.value = 200;
           expEl.value = 400;
         } else if (val === 'cerberus') {
@@ -2622,8 +2622,8 @@ class MainApp {
           mode: document.getElementById('admin-boss-mode').value || 'coop',
           unitFilter: document.getElementById('admin-boss-unit').value || 'ALL',
           maxHp: Math.max(50, parseInt(document.getElementById('admin-boss-hp').value) || 2000),
-          atk: Math.max(1, parseInt(document.getElementById('admin-boss-atk').value) || 25),
-          def: Math.max(0, parseInt(document.getElementById('admin-boss-def').value) || 12),
+          atk: Math.max(1, parseInt(document.getElementById('admin-boss-atk').value) || 30),
+          def: Math.max(0, parseInt(document.getElementById('admin-boss-def').value) || 14),
           rewardGold: Math.max(0, parseInt(document.getElementById('admin-boss-gold').value) || 50),
           rewardExp: Math.max(0, parseInt(document.getElementById('admin-boss-exp').value) || 100),
           announce: document.getElementById('admin-boss-announce').checked,

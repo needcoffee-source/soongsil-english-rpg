@@ -184,8 +184,8 @@ let bossRaidEvent = {
   unitFilter: 'ALL',  // 'ALL', 'L1', 'L2', 'L3', 'L4'
   maxHp: 2000,
   currentHp: 2000,
-  atk: 25,
-  def: 12,
+  atk: 30,
+  def: 14,
   rewardGold: 50,
   rewardExp: 100,
   participants: {}
@@ -547,8 +547,8 @@ io.on('connection', (socket) => {
       unitFilter: opts.unitFilter || 'ALL',
       maxHp: Math.max(50, parseInt(opts.maxHp) || 2000),
       currentHp: Math.max(50, parseInt(opts.maxHp) || 2000),
-      atk: Math.max(1, parseInt(opts.atk) || 25),
-      def: Math.max(0, parseInt(opts.def) || 12),
+      atk: Math.max(1, parseInt(opts.atk) || 30),
+      def: Math.max(0, parseInt(opts.def) || 14),
       rewardGold: Math.max(0, parseInt(opts.rewardGold) || 50),
       rewardExp: Math.max(0, parseInt(opts.rewardExp) || 100),
       participants: {}
