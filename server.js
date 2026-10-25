@@ -697,8 +697,9 @@ io.on('connection', (socket) => {
     bossRaidEvent.currentHp = Math.max(0, bossRaidEvent.currentHp - dmg);
 
     const pName = attacker ? attacker.name : '학생';
+    const pStudentId = attacker ? attacker.studentId : null;
     if (!bossRaidEvent.participants[socket.id]) {
-      bossRaidEvent.participants[socket.id] = { name: pName, damage: 0 };
+      bossRaidEvent.participants[socket.id] = { name: pName, damage: 0, studentId: pStudentId };
     }
     bossRaidEvent.participants[socket.id].damage += dmg;
 
@@ -714,12 +715,24 @@ io.on('connection', (socket) => {
       const list = Object.values(bossRaidEvent.participants).sort((a, b) => b.damage - a.damage);
       const mvp = list.length > 0 ? list[0] : { name: pName, damage: dmg };
 
+      // 가죽 골렘 토벌 시: 실제 참가하여 공격한 학생들의 영구 세이브에 hasClearedFirstBoss = true 자동 저장
+      if (bossRaidEvent.name.includes('골렘') || bossRaidEvent.name.includes('golem')) {
+        const all = getStudentsProgress();
+        Object.values(bossRaidEvent.participants).forEach(part => {
+          if (part.studentId && all[part.studentId]) {
+            all[part.studentId].hasClearedFirstBoss = true;
+          }
+        });
+        saveStudentsProgress(all);
+      }
+
       io.emit('boss_raid_cleared', {
         bossName: bossRaidEvent.name,
         rewardGold: bossRaidEvent.rewardGold,
         rewardExp: bossRaidEvent.rewardExp,
         mvp,
-        participantIds: Object.keys(bossRaidEvent.participants)
+        participantIds: Object.keys(bossRaidEvent.participants),
+        participantStudentIds: Object.values(bossRaidEvent.participants).map(p => p.studentId).filter(Boolean)
       });
       io.emit('boss_raid_state', bossRaidEvent);
     }

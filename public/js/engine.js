@@ -543,7 +543,12 @@ class GameEngine {
         if (floorData.elevator) {
           const eDist = Math.hypot(floorData.elevator.x * 32 - this.player.x, (floorData.elevator.y + 1.5) * 32 - this.player.y);
           if (eDist < minDist) {
-            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '운동장으로 이동 (50G)' };
+            const isUnlocked = this.isStudentClearedGolem();
+            closest = {
+              type: 'elevator',
+              name: isUnlocked ? '중앙 엘리베이터' : '중앙 엘리베이터 (점검 중)',
+              prompt: isUnlocked ? '운동장으로 이동 (50G)' : '점검 중 (가죽 골렘 토벌 필요)'
+            };
             minDist = eDist;
           }
         }
@@ -722,8 +727,7 @@ class GameEngine {
         const bossDist = Math.hypot(cr.boss.x * 32 - this.player.x, cr.boss.y * 32 - this.player.y);
         if (bossDist < 96) {
           const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-          const isClearedGolem = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedFirstBoss) ||
-                                 (typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
+          const isClearedGolem = this.isStudentClearedGolem();
           const bossObj = (isClearedGolem && !isRaidActive && this.player.room === 'room_702')
             ? {
                 id: "boss_s1_bronzedragon",
@@ -780,7 +784,12 @@ class GameEngine {
           if (Math.hypot(obj.x * 32 - x, obj.y * 32 - y) < 32) return { type: obj.type, data: obj };
         }
         if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, (floorData.elevator.y + 1.5) * 32 - y) < 48) {
-          return { type: 'elevator', name: '중앙 엘리베이터', prompt: '운동장으로 이동 (50G)' };
+          const isUnlocked = this.isStudentClearedGolem();
+          return {
+            type: 'elevator',
+            name: isUnlocked ? '중앙 엘리베이터' : '중앙 엘리베이터 (점검 중)',
+            prompt: isUnlocked ? '운동장으로 이동 (50G)' : '점검 중 (가죽 골렘 토벌 필요)'
+          };
         }
       }
     } else if (this.player.room === 'playground') {
@@ -850,8 +859,7 @@ class GameEngine {
       }
       if (cr.boss && Math.hypot(cr.boss.x * 32 - x, cr.boss.y * 32 - y) < 76) {
         const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-        const isClearedGolem = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedFirstBoss) ||
-                               (typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
+        const isClearedGolem = this.isStudentClearedGolem();
         const bossObj = (isClearedGolem && !isRaidActive && this.player.room === 'room_702')
           ? {
               id: "boss_s1_bronzedragon",
@@ -3299,17 +3307,26 @@ class GameEngine {
     });
   }
 
+  isStudentClearedGolem() {
+    const app = window.MainApp || window.app;
+    if (app && app.playerData) {
+      if (app.playerData.isTeacher) return true;
+      if (app.playerData.hasClearedFirstBoss) return true;
+      const sId = app.playerData.studentId || '';
+      if (sId && typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_' + sId) === 'true') {
+        app.playerData.hasClearedFirstBoss = true;
+        return true;
+      }
+    }
+    return false;
+  }
+
   isElevatorUnderMaintenance() {
-    if (window.app && typeof window.app.isDragonCleared === 'function') {
-      return !window.app.isDragonCleared();
+    const app = window.MainApp || window.app;
+    if (app && typeof app.isElevatorUnlocked === 'function') {
+      return !app.isElevatorUnlocked();
     }
-    if (window.app && window.app.playerData) {
-      if (window.app.playerData.hasClearedDragonRaid) return false;
-      const studentId = window.app.playerData.studentId || '';
-      if (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') return false;
-      if (localStorage.getItem('soongsil_dragon_cleared_global') === 'true') return false;
-    }
-    return true;
+    return !this.isStudentClearedGolem();
   }
 
   // 14. High-Res Stainless Steel Elevator with Floor LED Indicator
@@ -3525,8 +3542,7 @@ class GameEngine {
 
       if (cr.boss) {
         const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-        const isClearedGolem = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedFirstBoss) ||
-                               (typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
+        const isClearedGolem = this.isStudentClearedGolem();
         const bName = isRaidActive
           ? ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase())
           : (isClearedGolem ? 'dragon' : (cr.boss.name || '').toLowerCase());

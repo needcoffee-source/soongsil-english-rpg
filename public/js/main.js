@@ -427,10 +427,13 @@ class MainApp {
   }
 
   isElevatorUnlocked() {
-    if (this.playerData.hasClearedFirstBoss || this.playerData.hasClearedDragonRaid) return true;
+    if (this.playerData.isTeacher) return true;
+    if (this.playerData.hasClearedFirstBoss) return true;
     const studentId = this.playerData.studentId || '';
-    if (studentId && (localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true' || localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true')) return true;
-    if (localStorage.getItem('soongsil_first_boss_cleared_global') === 'true' || localStorage.getItem('soongsil_dragon_cleared_global') === 'true') return true;
+    if (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') {
+      this.playerData.hasClearedFirstBoss = true;
+      return true;
+    }
     return false;
   }
 
@@ -828,6 +831,13 @@ class MainApp {
         const gmPanel = document.getElementById('gm-panel');
         if (gmPanel) gmPanel.classList.add('hidden');
 
+        // 이전 테스트 잔여 글로벌 플래그 초기화 (학생별 개별 계정 검증 보장)
+        try {
+          localStorage.removeItem('soongsil_first_boss_cleared_global');
+          localStorage.removeItem('soongsil_dragon_cleared_global');
+          localStorage.removeItem('soongsil_cerberus_cleared_global');
+        } catch (e) {}
+
         // 학생 세이브 데이터 복구 (서버 & 로컬 이중 동기화)
         const saved = await this.getBestProgress(studentId);
         if (saved) {
@@ -845,18 +855,18 @@ class MainApp {
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
-          this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
-          this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
-          this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_cerberus_cleared_global') === 'true');
+          this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true'));
+          this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
+          this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
           this.playerData.titles = Array.isArray(saved.titles) ? saved.titles : [];
           this.playerData.equippedTitle = saved.equippedTitle || null;
-          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}`);
+          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
-          this.playerData.hasClearedFirstBoss = !!((studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
-          this.playerData.hasClearedDragonRaid = !!((studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
-          this.playerData.hasClearedCerberusRaid = !!((studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_cerberus_cleared_global') === 'true');
+          this.playerData.hasClearedFirstBoss = !!(studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true');
+          this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
+          this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
           this.playerData.titles = [];
           this.playerData.equippedTitle = null;
         }
@@ -1688,6 +1698,8 @@ class MainApp {
       this.bossState.currentHp = window.BOSS_CONFIG.maxHp;
     }
     this.bossState.maxHp = window.BOSS_CONFIG.maxHp;
+    this.bossState.hasAttacked = false;
+    this.bossState.damageDealt = 0;
 
     const modeTag = window.BOSS_CONFIG.mode === 'coop' ? '협동 레이드' : '개인 레이드';
     document.getElementById('boss-raid-title').innerText = `${window.BOSS_CONFIG.name} [${modeTag}]`;
@@ -1701,6 +1713,10 @@ class MainApp {
 
   onBossRaidStateUpdate(state) {
     if (!state) return;
+    if (state.active) {
+      this.bossState.hasAttacked = false;
+      this.bossState.damageDealt = 0;
+    }
     window.BOSS_CONFIG = {
       ...window.BOSS_CONFIG,
       ...state
@@ -1758,18 +1774,32 @@ class MainApp {
   onBossRaidCleared(data) {
     window.BOSS_CONFIG.active = false;
     const bName = data.bossName || window.BOSS_CONFIG.name || '';
-    if (bName.includes('골렘') || bName.includes('golem')) {
-      localStorage.setItem('soongsil_first_boss_cleared_global', 'true');
-    }
-    if (bName.includes('드래곤') || bName.includes('dragon')) {
-      localStorage.setItem('soongsil_dragon_cleared_global', 'true');
-    }
+    const myId = (this.networkManager && this.networkManager.socket) ? this.networkManager.socket.id : null;
+    const myStudentId = this.playerData ? this.playerData.studentId : null;
+
+    // 참가 여부 판정 (실제로 데미지를 1회 이상 입혔거나 서버 참가자 목록에 등록된 학생)
+    const hasParticipated = (
+      (data.participantIds && myId && data.participantIds.includes(myId)) ||
+      (data.participantStudentIds && myStudentId && data.participantStudentIds.includes(myStudentId)) ||
+      (this.bossState && (this.bossState.damageDealt > 0 || this.bossState.hasAttacked))
+    );
 
     const isModalOpen = !this.modalBossRaid.classList.contains('hidden');
     const isInBossRoom = this.engine && this.engine.player && this.engine.player.room === 'room_702';
     const isInPlayground = this.engine && this.engine.player && this.engine.player.room === 'playground';
 
-    if (isModalOpen || isInBossRoom || isInPlayground) {
+    // 1차 관문 보스(가죽 골렘): 반드시 직접 레이드에 참가하여 유효 공격을 가한 학생만 엘리베이터 해금 & 보상 수령!
+    if (bName.includes('골렘') || bName.includes('golem')) {
+      if (!hasParticipated) {
+        if (isModalOpen || isInBossRoom) {
+          alert('👾 [가죽 골렘 토벌 알림]\n\n급우들이 1차 관문 보스 [가죽 골렘]을 격파했습니다!\n\n※ 직접 골렘 레이드에 참가하여 1회 이상 유효 타격을 입혀야 중앙 엘리베이터 점검이 완료되어 운동장으로 갈 수 있습니다.\n(참가하지 못한 학생은 1학년 2반에서 언제든 다시 골렘 레이드에 도전할 수 있습니다!)');
+          this.modalBossRaid.classList.add('hidden');
+        }
+        return;
+      }
+    }
+
+    if (hasParticipated || isModalOpen || isInBossRoom || isInPlayground) {
       this.addGold(data.rewardGold || 100);
       this.addExp(data.rewardExp || 200);
 
@@ -1798,17 +1828,14 @@ class MainApp {
         rewardItemsList.push('🌼 성실의 개나리 반지');
       }
 
-      const bName = data.bossName || window.BOSS_CONFIG.name || '';
-
-      // 3. 가죽 골렘 전용 드랍 (엘리베이터 해금, 100% 질긴 보스의 가죽, 25% 나무장비 1종, 15% 가죽손잡이 세이버)
+      // 3. 가죽 골렘 전용 드랍 (엘리베이터 해금, 100% 질긴 보스의 가죽, 25% 나무장비 1종)
       if (bName.includes('골렘') || bName.includes('golem')) {
         this.playerData.hasClearedFirstBoss = true;
         const studentId = this.playerData.studentId || '';
         if (studentId) {
           localStorage.setItem('soongsil_first_boss_cleared_' + studentId, 'true');
         }
-        localStorage.setItem('soongsil_first_boss_cleared_global', 'true');
-        this.saveProgress();
+        this.saveProgress(true);
 
         // 확정 재료 가변 드랍 (1~2개 가죽 장비 제작 핵심)
         const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
@@ -1835,8 +1862,7 @@ class MainApp {
         if (studentId) {
           localStorage.setItem('soongsil_dragon_cleared_' + studentId, 'true');
         }
-        localStorage.setItem('soongsil_dragon_cleared_global', 'true');
-        this.saveProgress();
+        this.saveProgress(true);
 
         // 확정 재료 드랍 (3티어 청동 장비 제작 핵심)
         this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' });
@@ -2035,6 +2061,8 @@ class MainApp {
       btnEl.classList.add('correct');
       if (window.AudioManager) window.AudioManager.playCorrect();
       const myDmg = Math.max(5, this.playerData.atk - bossDef);
+      this.bossState.hasAttacked = true;
+      this.bossState.damageDealt = (this.bossState.damageDealt || 0) + myDmg;
 
       if (window.BOSS_CONFIG.active && window.BOSS_CONFIG.mode === 'coop' && this.networkManager.socket) {
         // 협동 레이드: 서버로 데미지 전송하여 전교생 보스 HP 공유 차감
@@ -2050,11 +2078,10 @@ class MainApp {
             if (studentId) {
               localStorage.setItem('soongsil_first_boss_cleared_' + studentId, 'true');
             }
-            localStorage.setItem('soongsil_first_boss_cleared_global', 'true');
             const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
             this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
             clearNotice = `\n\n🎉 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!\n📦 획득: [🟫 질긴 보스의 가죽 x${bossLeatherCount}개]`;
-            this.saveProgress();
+            this.saveProgress(true);
           } else if (bName.includes('드래곤') || bName.includes('dragon')) {
             this.playerData.hasClearedDragonRaid = true;
             const studentId = this.playerData.studentId || '';
@@ -3376,6 +3403,7 @@ class MainApp {
         outfitColor: this.playerData.outfitColor,
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
+        hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
         titles: this.playerData.titles || [],
@@ -3386,7 +3414,7 @@ class MainApp {
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
