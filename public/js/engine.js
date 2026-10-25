@@ -547,7 +547,7 @@ class GameEngine {
             closest = {
               type: 'elevator',
               name: isUnlocked ? '중앙 엘리베이터' : '중앙 엘리베이터 (점검 중)',
-              prompt: isUnlocked ? '운동장으로 이동 (50G)' : '점검 중 (가죽 골렘 토벌 필요)'
+              prompt: isUnlocked ? '운동장으로 이동 (10G)' : '점검 중'
             };
             minDist = eDist;
           }
@@ -788,7 +788,7 @@ class GameEngine {
           return {
             type: 'elevator',
             name: isUnlocked ? '중앙 엘리베이터' : '중앙 엘리베이터 (점검 중)',
-            prompt: isUnlocked ? '운동장으로 이동 (50G)' : '점검 중 (가죽 골렘 토벌 필요)'
+            prompt: isUnlocked ? '운동장으로 이동 (10G)' : '점검 중'
           };
         }
       }
