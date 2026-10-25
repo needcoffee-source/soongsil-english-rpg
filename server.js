@@ -130,6 +130,25 @@ app.post('/api/admin/restore-progress', (req, res) => {
   res.json({ success: true, count: Object.keys(allData).length });
 });
 
+app.get('/api/admin/all-students-progress', (req, res) => {
+  res.json({ success: true, students: getStudentsProgress() });
+});
+
+app.post('/api/admin/delete-student-progress', (req, res) => {
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch (e) {}
+  }
+  const studentId = (body && body.studentId || '').trim();
+  if (!studentId) return res.status(400).json({ error: 'Missing studentId' });
+  const all = getStudentsProgress();
+  if (all[studentId]) {
+    delete all[studentId];
+    saveStudentsProgress(all);
+  }
+  res.json({ success: true });
+});
+
 // Game State
 const players = {}; // socketId -> player data
 const mutedStudents = new Set(); // student names or socket IDs

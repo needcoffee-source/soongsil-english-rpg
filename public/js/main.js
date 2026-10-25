@@ -2217,6 +2217,9 @@ class MainApp {
 
         if (tabId === 'tab-students') {
           this.requestStudentList();
+          if (this.loadSavedStudentsForEditor) {
+            this.loadSavedStudentsForEditor();
+          }
         }
       });
     });
@@ -2444,6 +2447,150 @@ class MainApp {
           alert('복원 중 오류 발생: ' + err.message);
         }
         inputRestore.value = '';
+      });
+    }
+
+    // ========================================================
+    // TEACHER DIRECT STUDENT DATA EDITOR (학생 데이터 직접 조정기)
+    // ========================================================
+    const selectEditStudent = document.getElementById('admin-edit-student-select');
+    const formEditStudent = document.getElementById('admin-edit-student-form');
+    const btnRefreshSaved = document.getElementById('btn-refresh-saved-students');
+    const btnSaveEdit = document.getElementById('btn-save-student-progress-edit');
+    const btnDeleteStudent = document.getElementById('btn-delete-student-progress');
+
+    this.loadSavedStudentsForEditor = async () => {
+      if (!selectEditStudent) return;
+      selectEditStudent.innerHTML = '<option value="">-- 불러오는 중... --</option>';
+      try {
+        const res = await fetch('/api/admin/all-students-progress');
+        const data = await res.json();
+        const all = (data && data.students) || {};
+        this._allSavedStudentsData = all;
+
+        const ids = Object.keys(all).sort();
+        if (ids.length === 0) {
+          selectEditStudent.innerHTML = '<option value="">(서버에 등록된 학생 기록이 없습니다)</option>';
+          if (formEditStudent) formEditStudent.classList.add('hidden');
+          return;
+        }
+
+        let html = '<option value="">-- 학생을 선택하세요 (' + ids.length + '명 등록됨) --</option>';
+        ids.forEach(id => {
+          const s = all[id];
+          const name = s.name || '무명';
+          const lv = s.level || 1;
+          const g = s.gold !== undefined ? s.gold : 0;
+          html += `<option value="${id}">${id} - ${name} (Lv.${lv} · ${g}G)</option>`;
+        });
+        selectEditStudent.innerHTML = html;
+      } catch (err) {
+        selectEditStudent.innerHTML = '<option value="">(목록 로딩 실패)</option>';
+      }
+    };
+
+    if (btnRefreshSaved) {
+      btnRefreshSaved.addEventListener('click', () => {
+        this.loadSavedStudentsForEditor();
+      });
+    }
+
+    if (selectEditStudent) {
+      selectEditStudent.addEventListener('change', () => {
+        const sId = selectEditStudent.value;
+        if (!sId || !this._allSavedStudentsData || !this._allSavedStudentsData[sId]) {
+          if (formEditStudent) formEditStudent.classList.add('hidden');
+          return;
+        }
+        const s = this._allSavedStudentsData[sId];
+        if (formEditStudent) formEditStudent.classList.remove('hidden');
+
+        document.getElementById('admin-edit-student-id').value = sId;
+        document.getElementById('admin-edit-student-name').value = s.name || '';
+        document.getElementById('admin-edit-student-level').value = s.level || 1;
+        document.getElementById('admin-edit-student-gold').value = s.gold !== undefined ? s.gold : 10;
+        document.getElementById('admin-edit-student-exp').value = s.exp || 0;
+        document.getElementById('admin-edit-gift').checked = !!s.hasReceivedSoongsilGift;
+        document.getElementById('admin-edit-locker').checked = !!s.hasOpenedSecretLocker;
+        document.getElementById('admin-edit-dragon').checked = !!s.hasClearedDragonRaid;
+      });
+    }
+
+    if (btnSaveEdit) {
+      btnSaveEdit.addEventListener('click', async () => {
+        const sId = document.getElementById('admin-edit-student-id').value;
+        if (!sId || !this._allSavedStudentsData || !this._allSavedStudentsData[sId]) {
+          alert('수정할 학생을 먼저 선택해 주세요.');
+          return;
+        }
+        const prev = this._allSavedStudentsData[sId];
+        const newName = document.getElementById('admin-edit-student-name').value.trim() || prev.name || '학생';
+        const newLevel = Math.max(1, parseInt(document.getElementById('admin-edit-student-level').value) || 1);
+        const newGold = Math.max(0, parseInt(document.getElementById('admin-edit-student-gold').value) || 0);
+        const newExp = Math.max(0, parseInt(document.getElementById('admin-edit-student-exp').value) || 0);
+        const newGift = document.getElementById('admin-edit-gift').checked;
+        const newLocker = document.getElementById('admin-edit-locker').checked;
+        const newDragon = document.getElementById('admin-edit-dragon').checked;
+
+        const updatedProgress = {
+          ...prev,
+          name: newName,
+          level: newLevel,
+          gold: newGold,
+          exp: newExp,
+          hasReceivedSoongsilGift: newGift,
+          hasOpenedSecretLocker: newLocker,
+          hasClearedDragonRaid: newDragon,
+          updatedAt: Date.now()
+        };
+
+        try {
+          const res = await fetch('/api/save-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              studentId: sId,
+              progress: updatedProgress
+            })
+          });
+          const data = await res.json();
+          if (data && data.success) {
+            this._allSavedStudentsData[sId] = updatedProgress;
+            alert(`✅ [${sId} ${newName}] 학생의 정보가 서버에 성공적으로 저장되었습니다!\n(Lv.${newLevel}, ${newGold}G)`);
+            this.loadSavedStudentsForEditor();
+          } else {
+            alert('저장 실패: 서버 응답 오류');
+          }
+        } catch (e) {
+          alert('저장 중 오류: ' + e.message);
+        }
+      });
+    }
+
+    if (btnDeleteStudent) {
+      btnDeleteStudent.addEventListener('click', async () => {
+        const sId = document.getElementById('admin-edit-student-id').value;
+        if (!sId) return;
+        if (!confirm(`⚠️ 정말로 [${sId}] 학생의 영구 세이브 기록을 서버에서 완전히 삭제(초기화)하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
+          return;
+        }
+        try {
+          const res = await fetch('/api/admin/delete-student-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ studentId: sId })
+          });
+          const data = await res.json();
+          if (data && data.success) {
+            alert(`🗑️ [${sId}] 학생의 데이터가 서버에서 삭제되었습니다.`);
+            if (formEditStudent) formEditStudent.classList.add('hidden');
+            this.loadSavedStudentsForEditor();
+          } else {
+            alert('삭제 실패: 서버 오류');
+          }
+        } catch (e) {
+          alert('삭제 중 오류: ' + e.message);
+        }
       });
     }
 

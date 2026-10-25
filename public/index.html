@@ -952,6 +952,68 @@
 
             <button id="btn-admin-grant-item" class="btn-primary" style="width:100%; margin-top:6px; background:linear-gradient(135deg,#059669,#10b981);">🎁 선택한 학생에게 즉시 아이템/골드 지급</button>
           </div>
+
+          <!-- Student Data Direct Editor (레벨 / 골드 / 닉네임 / 퀘스트 수정) -->
+          <div class="quiz-manage-box" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="margin:0; color:#38bdf8;">✏️ 학생 플레이 데이터 직접 조정기</h4>
+              <button type="button" id="btn-refresh-saved-students" class="btn-secondary" style="font-size:11px; padding:3px 8px; cursor:pointer;">🔄 목록 갱신</button>
+            </div>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">서버에 저장된 학생의 레벨, 골드, 닉네임, 퀘스트 상태를 PC에서 직접 수정하거나 초기화할 수 있습니다.</p>
+
+            <div class="input-row">
+              <label style="flex:1; font-size:12px; color:#93c5fd;">조정할 학생 선택
+                <select id="admin-edit-student-select">
+                  <option value="">-- 학생을 선택하세요 --</option>
+                </select>
+              </label>
+            </div>
+
+            <!-- Editor Form Container -->
+            <div id="admin-edit-student-form" class="hidden" style="background:#18181b; border:1px solid #334155; border-radius:8px; padding:10px; margin-top:8px;">
+              <div class="input-row">
+                <label style="flex:1; font-size:12px; color:#94a3b8;">학번
+                  <input type="text" id="admin-edit-student-id" readonly style="background:#0f172a; color:#94a3b8; cursor:not-allowed;">
+                </label>
+                <label style="flex:1; font-size:12px; color:#fde047;">이름 (닉네임)
+                  <input type="text" id="admin-edit-student-name">
+                </label>
+              </div>
+
+              <div class="input-row">
+                <label style="flex:1; font-size:12px; color:#38bdf8;">레벨 (Level)
+                  <input type="number" id="admin-edit-student-level" min="1" max="99">
+                </label>
+                <label style="flex:1; font-size:12px; color:#fbbf24;">골드 (Gold)
+                  <input type="number" id="admin-edit-student-gold" min="0" max="999999">
+                </label>
+                <label style="flex:1; font-size:12px; color:#a7f3d0;">경험치 (EXP)
+                  <input type="number" id="admin-edit-student-exp" min="0" max="99999">
+                </label>
+              </div>
+
+              <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:#cbd5e1;">
+                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                  <input type="checkbox" id="admin-edit-gift"> 🎁 교장선생님 선물 수령
+                </label>
+                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                  <input type="checkbox" id="admin-edit-locker"> 🗝️ 7층 비밀 사물함 발견
+                </label>
+                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                  <input type="checkbox" id="admin-edit-dragon"> 🐉 드래곤 레이드 클리어
+                </label>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:8px;">
+                <button type="button" id="btn-delete-student-progress" class="btn-secondary" style="background:#7f1d1d; border:1px solid #ef4444; color:#fecaca; padding:8px 14px; font-size:12px; font-weight:bold; cursor:pointer;">
+                  🗑️ 이 학생 데이터 초기화(삭제)
+                </button>
+                <button type="button" id="btn-save-student-progress-edit" class="btn-primary" style="background:linear-gradient(135deg, #0284c7, #2563eb); padding:8px 20px; font-size:13px; font-weight:bold; cursor:pointer;">
+                  💾 수정사항 서버에 저장
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="tab-pane hidden" id="tab-chat">
