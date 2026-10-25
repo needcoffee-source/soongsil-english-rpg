@@ -73,9 +73,24 @@ class CraftingManager {
   renderRecipeList() {
     this.recipeListEl.innerHTML = '';
     const available = this.getFilteredRecipes();
+    const inv = window.MainApp ? window.MainApp.getInventory() : [];
+    const playerGold = (window.MainApp && window.MainApp.playerData) ? window.MainApp.playerData.gold : 0;
+
     available.forEach(r => {
       const item = document.createElement('div');
       item.className = 'recipe-item' + (this.selectedRecipe && this.selectedRecipe.id === r.id ? ' active' : '');
+
+      // Check if player has all materials & gold to craft this recipe
+      let canCraft = (playerGold >= (r.requiredGold || 0));
+      if (canCraft) {
+        for (const req of r.requiredItems) {
+          const cur = inv.find(i => i.item === req.item);
+          if (!cur || cur.count < req.count) {
+            canCraft = false;
+            break;
+          }
+        }
+      }
 
       // 한글과 (English)를 깔끔하게 분리하여 두 줄로 표시
       let nameKo = r.name;
@@ -92,6 +107,7 @@ class CraftingManager {
           <div class="recipe-name-ko">${nameKo}</div>
           ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
         </div>
+        ${canCraft ? '<span class="recipe-can-craft-pill">제작 가능 🔨</span>' : ''}
       `;
       item.addEventListener('click', () => {
         this.selectRecipe(r);
@@ -116,10 +132,13 @@ class CraftingManager {
       const count = current ? current.count : 0;
       const isEnough = count >= req.count;
 
-      const badge = document.createElement('span');
-      badge.className = 'mat-badge';
-      badge.style.color = isEnough ? '#4ade80' : '#f87171';
-      badge.innerText = `${req.name}: ${count}/${req.count}개`;
+      const badge = document.createElement('div');
+      badge.className = `mat-status-badge ${isEnough ? 'enough' : 'lack'}`;
+      badge.innerHTML = `
+        <span class="mat-status-name">${req.name}</span>
+        <span class="mat-status-count">${count} / ${req.count}개</span>
+        <span class="mat-status-tag">${isEnough ? '충족 ✔️' : '부족 ❌'}</span>
+      `;
       this.materialsEl.appendChild(badge);
     });
 
@@ -128,11 +147,13 @@ class CraftingManager {
     const playerGold = (window.MainApp && window.MainApp.playerData) ? window.MainApp.playerData.gold : 0;
     if (requiredGold > 0) {
       const isGoldEnough = playerGold >= requiredGold;
-      const goldBadge = document.createElement('span');
-      goldBadge.className = 'mat-badge';
-      goldBadge.style.color = isGoldEnough ? '#fcd34d' : '#f87171';
-      goldBadge.style.borderColor = isGoldEnough ? '#d97706' : '#ef4444';
-      goldBadge.innerText = `🪙 제작 비용: ${playerGold}/${requiredGold} G`;
+      const goldBadge = document.createElement('div');
+      goldBadge.className = `mat-status-badge gold ${isGoldEnough ? 'enough' : 'lack'}`;
+      goldBadge.innerHTML = `
+        <span class="mat-status-name">🪙 필요 골드</span>
+        <span class="mat-status-count">${playerGold} / ${requiredGold} G</span>
+        <span class="mat-status-tag">${isGoldEnough ? '충족 ✔️' : '부족 ❌'}</span>
+      `;
       this.materialsEl.appendChild(goldBadge);
     }
 

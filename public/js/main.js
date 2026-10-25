@@ -682,6 +682,24 @@ class MainApp {
       });
     }
 
+    // Switch between Inventory and Equipment Modals
+    const btnSwitchToEquip = document.getElementById('btn-switch-to-equip');
+    if (btnSwitchToEquip) {
+      btnSwitchToEquip.addEventListener('click', () => {
+        if (window.AudioManager) window.AudioManager.playSelect();
+        this.modalInventory.classList.add('hidden');
+        this.openEquipmentModal();
+      });
+    }
+    const btnSwitchToInv = document.getElementById('btn-switch-to-inv');
+    if (btnSwitchToInv) {
+      btnSwitchToInv.addEventListener('click', () => {
+        if (window.AudioManager) window.AudioManager.playSelect();
+        this.modalEquipment.classList.add('hidden');
+        this.openInventory();
+      });
+    }
+
     // Equipment Modal
     const btnEquipment = document.getElementById('btn-equipment');
     if (btnEquipment) {
@@ -1312,18 +1330,32 @@ class MainApp {
         card.addEventListener('click', () => this.unequipSlot(sDef.key));
         card.appendChild(btnUnequip);
       } else {
+        card.style.cursor = 'pointer';
         card.innerHTML = `
           <div class="equip-slot-header">
             <span>${sDef.title}</span>
-            <span style="color:#71717a;">비어 있음</span>
+            <span style="color:#60a5fa; font-size:11px; font-weight:700;">+ 착용하기</span>
           </div>
           <div class="equip-slot-body">
-            <span class="equip-slot-icon" style="opacity:0.3;">${sDef.emptyIcon}</span>
+            <span class="equip-slot-icon" style="opacity:0.35;">${sDef.emptyIcon}</span>
             <div class="equip-slot-info">
-              <span class="equip-slot-name" style="color:#64748b;">없음</span>
+              <span class="equip-slot-name" style="color:#64748b;">(비어 있음)</span>
+              <span class="equip-slot-effect" style="color:#93c5fd; font-size:11.5px;">클릭하여 가방에서 장착</span>
             </div>
           </div>
         `;
+        card.addEventListener('click', () => {
+          if (window.AudioManager) window.AudioManager.playSelect();
+          this.modalEquipment.classList.add('hidden');
+          this.currentInvTab = 'equipment';
+          const tabContainer = document.getElementById('inv-tab-container');
+          if (tabContainer) {
+            tabContainer.querySelectorAll('.inv-tab-btn').forEach(b => {
+              b.classList.toggle('active', b.getAttribute('data-tab') === 'equipment');
+            });
+          }
+          this.openInventory();
+        });
       }
 
       container.appendChild(card);

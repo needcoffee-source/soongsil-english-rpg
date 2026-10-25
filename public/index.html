@@ -318,7 +318,10 @@
   <div id="modal-inventory" class="modal-overlay hidden">
     <div class="modal-card inv-modal-card">
       <div class="modal-header">
-        <h3>🎒 가방</h3>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h3 style="margin:0;">🎒 가방</h3>
+          <button class="btn-switch-modal" id="btn-switch-to-equip" title="내 장비창 확인하기">🛡️ 장비창 보기</button>
+        </div>
         <button class="btn-modal-close" id="btn-close-inv-x">✕</button>
       </div>
       <div class="modal-body">
@@ -341,7 +344,10 @@
   <div id="modal-equipment" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>🛡️ 장비창</h3>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h3 style="margin:0;">🛡️ 장비창</h3>
+          <button class="btn-switch-modal" id="btn-switch-to-inv" title="가방 열기">🎒 가방 보기</button>
+        </div>
         <button class="btn-modal-close" id="btn-close-equip-x">✕</button>
       </div>
       <div class="modal-body">
