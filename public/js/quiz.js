@@ -136,8 +136,10 @@ class QuizManager {
     if (sourceType === 'gather_herb') return 'L2';
     if (sourceType === 'gather_forsythia' || sourceType === 'forsythia') return 'L3';
     if (sourceType === 'gather_ginkgo' || sourceType === 'ginkgo') return 'L4';
-    if (sourceType === 'basketball' || sourceType === 'basketball_monster' || sourceType === 'field_monster') return 'L5';
-    return null; // 칠판/보스 레이드/기타는 L1~L5 전체 출제
+    if (sourceType === 'basketball' || sourceType === 'basketball_monster') return 'L5';
+    if (sourceType === 'futsal' || sourceType === 'futsal_monster') return 'L6';
+    if (sourceType === 'field_monster') return Math.random() < 0.5 ? 'L5' : 'L6';
+    return null; // 칠판/보스 레이드/기타는 L1~L6 전체 출제
   }
 
   nextQuiz() {

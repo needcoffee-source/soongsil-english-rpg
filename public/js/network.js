@@ -39,6 +39,13 @@ class NetworkManager {
 
     this.socket.on('connect', () => {
       console.log('[Network] Connected to server! Socket ID:', this.socket.id);
+      if (this.engine && this.engine.player) {
+        userData.floor = this.engine.player.floor;
+        userData.room = this.engine.player.room;
+        userData.x = Math.round(this.engine.player.x);
+        userData.y = Math.round(this.engine.player.y);
+        userData.direction = this.engine.player.direction;
+      }
       this.socket.emit('player_join', userData);
     });
 
