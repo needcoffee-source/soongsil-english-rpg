@@ -686,10 +686,10 @@
         <div class="teacher-tab-row">
           <button class="tab-btn active" data-tab="tab-boss-raid">👾 보스레이드</button>
           <button class="tab-btn" data-tab="tab-pop-quiz">📢 돌발 퀴즈 & 보상</button>
-          <button class="tab-btn" data-tab="tab-students">👥 학생 관리 & 지급</button>
+          <button class="tab-btn" data-tab="tab-item-grant">🎁 학생 지급</button>
           <button class="tab-btn" data-tab="tab-chat">💬 실시간 채팅</button>
           <button class="tab-btn" data-tab="tab-broadcast">📢 전체 공지</button>
-          <button class="tab-btn" data-tab="tab-quiz-manage">📝 문제 관리</button>
+          <button class="tab-btn" data-tab="tab-students">👥 학생 관리</button>
         </div>
 
         <div class="tab-pane active" id="tab-boss-raid">
@@ -874,29 +874,9 @@
           </div>
         </div>
 
-        <div class="tab-pane hidden" id="tab-students">
-          <div class="quiz-manage-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h4 style="margin:0;">👥 접속 중인 학생 실시간 관리</h4>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="2달간 누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
-                  📥 2달 백업 다운로드
-                </a>
-                <button type="button" id="btn-trigger-restore-progress" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="다운로드해 둔 백업 JSON 파일로 학생 데이터 일괄 복원">
-                  📤 백업 복원
-                </button>
-                <input type="file" id="input-restore-progress" accept=".json" style="display:none;">
-                <span id="admin-student-count-badge" style="font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px; background:#1e3a8a; color:#93c5fd;">접속자 0명</span>
-              </div>
-            </div>
-            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">수업을 방해하는 학생의 채팅을 금지하거나 서버에서 즉시 강제 퇴장(강퇴)시킬 수 있습니다.</p>
-            <div id="admin-student-list" style="max-height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
-              <p style="color:#64748b; font-size:12px; text-align:center; padding:15px;">접속 중인 학생이 없습니다.</p>
-            </div>
-          </div>
-
+        <div class="tab-pane hidden" id="tab-item-grant">
           <!-- Teacher Special Item Grant Panel -->
-          <div class="quiz-manage-box" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">
+          <div class="quiz-manage-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <h4 style="margin:0; color:#fde047;">🎁 학생 아이템 & 골드 특별 지급소</h4>
               <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:2px 8px; border-radius:4px;">👑 교사 전용</span>
@@ -967,8 +947,72 @@
 
             <button id="btn-admin-grant-item" class="btn-primary" style="width:100%; margin-top:6px; background:linear-gradient(135deg,#059669,#10b981);">🎁 선택한 학생에게 즉시 아이템/골드 지급</button>
           </div>
+        </div>
 
-          <!-- Student Data Direct Editor (레벨 / 골드 / 닉네임 / 퀘스트 수정) -->
+        <div class="tab-pane hidden" id="tab-chat">
+          <div class="admin-chat-list" id="admin-chat-logs"></div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-broadcast">
+          <div class="broadcast-box">
+            <div class="broadcast-header-row">
+              <label for="input-broadcast" style="font-size:15px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
+                📢 전교생 실시간 긴급 공지사항 & 전원 소환
+              </label>
+              <span style="font-size:12px; color:#94a3b8;">전체 접속 중인 학생 화면 중앙에 즉시 팝업 배너로 전송됩니다</span>
+            </div>
+            
+            <textarea id="input-broadcast" rows="3" class="broadcast-textarea" placeholder="학생들에게 전달할 공지사항을 입력하세요... (예: 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!)"></textarea>
+
+            <div class="broadcast-footer-row" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+              <div class="preset-pill-group">
+                <span style="font-size:12px; color:#94a3b8; font-weight:700;">빠른 문구:</span>
+                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='📢 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!'">2반 집결</button>
+                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='⏰ 수업 종료 5분 전입니다. 활동을 마무리하고 1층 로비로 모이세요.'">수업 종료 5분전</button>
+                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='🎉 오늘 영어 RPG 수업 퀘스트 모두 수고 많았습니다!'">수고 인사</button>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:#fde047; cursor:pointer; background:#27272a; border:1px solid #d97706; padding:6px 12px; border-radius:8px;">
+                  <input type="checkbox" id="check-broadcast-summon" style="width:16px; height:16px; accent-color:#f59e0b; cursor:pointer;">
+                  🌀 교사 위치로 전원 소환
+                </label>
+
+                <button id="btn-summon-all-now" type="button" class="btn-secondary" style="background:#78350f; border:1.5px solid #d97706; color:#fef08a; padding:9px 15px; font-size:13px; font-weight:800; cursor:pointer;" title="공지 없이 지금 즉시 교사 위치로 전원 소환">
+                  🌀 즉시 전원 소환
+                </button>
+
+                <button id="btn-send-broadcast" class="btn-primary" style="padding:10px 22px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #2563eb, #3b82f6); box-shadow:0 4px 12px rgba(37,99,235,0.4); cursor:pointer;">
+                  🚀 공지 전송
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane hidden" id="tab-students">
+          <!-- 1. 접속 중인 학생 실시간 관리 -->
+          <div class="quiz-manage-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <h4 style="margin:0;">👥 접속 중인 학생 실시간 관리</h4>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="2달간 누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
+                  📥 2달 백업 다운로드
+                </a>
+                <button type="button" id="btn-trigger-restore-progress" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="다운로드해 둔 백업 JSON 파일로 학생 데이터 일괄 복원">
+                  📤 백업 복원
+                </button>
+                <input type="file" id="input-restore-progress" accept=".json" style="display:none;">
+                <span id="admin-student-count-badge" style="font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px; background:#1e3a8a; color:#93c5fd;">접속자 0명</span>
+              </div>
+            </div>
+            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">수업을 방해하는 학생의 채팅을 금지하거나 서버에서 즉시 강제 퇴장(강퇴)시킬 수 있습니다.</p>
+            <div id="admin-student-list" style="max-height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+              <p style="color:#64748b; font-size:12px; text-align:center; padding:15px;">접속 중인 학생이 없습니다.</p>
+            </div>
+          </div>
+
+          <!-- 2. 학생 데이터 직접 조정기 -->
           <div class="quiz-manage-box" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <h4 style="margin:0; color:#38bdf8;">✏️ 학생 플레이 데이터 직접 조정기</h4>
@@ -1028,89 +1072,6 @@
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="tab-pane hidden" id="tab-chat">
-          <div class="admin-chat-list" id="admin-chat-logs"></div>
-        </div>
-
-        <div class="tab-pane hidden" id="tab-broadcast">
-          <div class="broadcast-box">
-            <div class="broadcast-header-row">
-              <label for="input-broadcast" style="font-size:15px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
-                📢 전교생 실시간 긴급 공지사항 & 전원 소환
-              </label>
-              <span style="font-size:12px; color:#94a3b8;">전체 접속 중인 학생 화면 중앙에 즉시 팝업 배너로 전송됩니다</span>
-            </div>
-            
-            <textarea id="input-broadcast" rows="3" class="broadcast-textarea" placeholder="학생들에게 전달할 공지사항을 입력하세요... (예: 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!)"></textarea>
-
-            <div class="broadcast-footer-row" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
-              <div class="preset-pill-group">
-                <span style="font-size:12px; color:#94a3b8; font-weight:700;">빠른 문구:</span>
-                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='📢 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!'">2반 집결</button>
-                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='⏰ 수업 종료 5분 전입니다. 활동을 마무리하고 1층 로비로 모이세요.'">수업 종료 5분전</button>
-                <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='🎉 오늘 영어 RPG 수업 퀘스트 모두 수고 많았습니다!'">수고 인사</button>
-              </div>
-
-              <div style="display:flex; align-items:center; gap:10px; margin-left:auto;">
-                <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:#fde047; cursor:pointer; background:#27272a; border:1px solid #d97706; padding:6px 12px; border-radius:8px;">
-                  <input type="checkbox" id="check-broadcast-summon" style="width:16px; height:16px; accent-color:#f59e0b; cursor:pointer;">
-                  🌀 교사 위치로 전원 소환
-                </label>
-
-                <button id="btn-summon-all-now" type="button" class="btn-secondary" style="background:#78350f; border:1.5px solid #d97706; color:#fef08a; padding:9px 15px; font-size:13px; font-weight:800; cursor:pointer;" title="공지 없이 지금 즉시 교사 위치로 전원 소환">
-                  🌀 즉시 전원 소환
-                </button>
-
-                <button id="btn-send-broadcast" class="btn-primary" style="padding:10px 22px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #2563eb, #3b82f6); box-shadow:0 4px 12px rgba(37,99,235,0.4); cursor:pointer;">
-                  🚀 공지 전송
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tab-pane hidden" id="tab-quiz-manage">
-          <div class="quiz-manage-box">
-            <h4 style="margin:0 0 10px 0; color:#38bdf8;">📝 새 영어 퀴즈 데이터베이스 등록</h4>
-            <div class="input-row">
-              <label style="flex:1;">출제 대상 학년:
-                <select id="admin-q-grade">
-                  <option value="1">1학년 풀</option>
-                  <option value="2">2학년 풀</option>
-                  <option value="3">3학년 풀</option>
-                </select>
-              </label>
-              <label style="flex:1;">단원 구분:
-                <input type="text" id="admin-q-unit" placeholder="예: 천재 L3">
-              </label>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label>문제 내용:
-                <textarea id="admin-q-question" rows="2" style="width:100%; margin-top:4px;" placeholder="영어 문제 내용을 입력하세요..."></textarea>
-              </label>
-            </div>
-            <div class="input-row">
-              <label style="flex:1;">보기 1: <input type="text" id="admin-q-opt1" placeholder="보기 1"></label>
-              <label style="flex:1;">보기 2: <input type="text" id="admin-q-opt2" placeholder="보기 2"></label>
-            </div>
-            <div class="input-row">
-              <label style="flex:1;">보기 3: <input type="text" id="admin-q-opt3" placeholder="보기 3"></label>
-              <label style="flex:1;">보기 4: <input type="text" id="admin-q-opt4" placeholder="보기 4"></label>
-            </div>
-            <div class="input-row">
-              <label style="flex:1; color:#34d399;">정답 (보기와 동일한 텍스트):
-                <input type="text" id="admin-q-answer" placeholder="정답 텍스트를 정확히 입력하세요">
-              </label>
-              <label style="flex:1; color:#94a3b8;">문제 해설 (선택):
-                <input type="text" id="admin-q-exp" placeholder="오답 시 학생에게 보여줄 해설">
-              </label>
-            </div>
-            <button id="btn-save-new-quiz" class="btn-primary" style="width:100%; padding:10px; font-weight:800; background:linear-gradient(135deg,#0284c7,#0369a1); margin-top:6px; cursor:pointer;">
-              💾 퀴즈 데이터베이스 저장
-            </button>
           </div>
         </div>
       </div>

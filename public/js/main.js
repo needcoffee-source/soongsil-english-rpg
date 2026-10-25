@@ -2274,9 +2274,9 @@ class MainApp {
         const pane = document.getElementById(tabId);
         if (pane) pane.classList.remove('hidden');
 
-        if (tabId === 'tab-students') {
+        if (tabId === 'tab-students' || tabId === 'tab-item-grant') {
           this.requestStudentList();
-          if (this.loadSavedStudentsForEditor) {
+          if (tabId === 'tab-students' && this.loadSavedStudentsForEditor) {
             this.loadSavedStudentsForEditor();
           }
         }
@@ -2433,48 +2433,6 @@ class MainApp {
         }
       });
     }
-
-    document.getElementById('btn-save-new-quiz').addEventListener('click', async () => {
-      const grade = document.getElementById('admin-q-grade').value;
-      const unit = document.getElementById('admin-q-unit').value || '교과서 단원';
-      const question = document.getElementById('admin-q-question').value;
-      const opt1 = document.getElementById('admin-q-opt1').value;
-      const opt2 = document.getElementById('admin-q-opt2').value;
-      const opt3 = document.getElementById('admin-q-opt3').value;
-      const opt4 = document.getElementById('admin-q-opt4').value;
-      const answer = document.getElementById('admin-q-answer').value;
-      const explanation = document.getElementById('admin-q-exp').value;
-
-      if (!question || !answer || !opt1 || !opt2) {
-        alert('문제, 보기, 정답을 모두 입력해주세요.');
-        return;
-      }
-
-      const qData = {
-        grade: parseInt(grade),
-        unit,
-        category: 'vocabulary',
-        question,
-        options: [opt1, opt2, opt3, opt4].filter(o => o.trim().length > 0),
-        answer,
-        explanation
-      };
-
-      try {
-        const res = await fetch('/api/admin/questions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ grade, questionData: qData })
-        });
-        const result = await res.json();
-        if (result.success) {
-          alert('새 퀴즈가 성공적으로 데이터베이스에 추가되었습니다!');
-          this.quizManager.loadQuestions(this.playerData.grade);
-        }
-      } catch (e) {
-        alert('저장에 실패했습니다.');
-      }
-    });
 
     // 학생 누적 백업 JSON 파일 복원 (업로드)
     const btnRestore = document.getElementById('btn-trigger-restore-progress');
