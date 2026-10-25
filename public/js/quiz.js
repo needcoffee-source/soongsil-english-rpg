@@ -15,7 +15,7 @@ window.ECONOMY_CONFIG = {
   itemDropRatePercent: 15,
   dropAmount: 1,
   spotDropRates: {
-    gather_wood: 20, // +5% 상향
+    gather_wood: 35, // 35%로 대폭 상향!
     gather_herb: 25, // +5% 상향
     gather_forsythia: 10,
     gather_ginkgo: 7

@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -81,6 +81,23 @@
         <div id="announcement-banner" class="hidden">
           <span class="announcement-icon">📢</span>
           <span id="announcement-text">선생님 공지사항</span>
+        </div>
+
+        <!-- Level Up Celebration Banner -->
+        <div id="level-up-banner" class="level-up-banner hidden">
+          <div class="level-up-sparkle">✨ LEVEL UP! ✨</div>
+          <div class="level-up-title" id="level-up-title">Lv.2 달성!</div>
+          <div class="level-up-stats">
+            <span class="stat-boost">❤️ HP +1</span>
+            <span class="stat-boost">⚔️ ATK +1</span>
+            <span class="stat-boost">🛡️ DEF +1</span>
+          </div>
+        </div>
+
+        <!-- Game Toast Notification -->
+        <div id="game-toast" class="game-toast hidden">
+          <span id="game-toast-icon">ℹ️</span>
+          <span id="game-toast-text">알림 내용</span>
         </div>
       </div>
     </div>
@@ -154,8 +171,10 @@
             <option value="7_room_703">1학년 3반 교실</option>
             <option value="0_playground_soccer">⚽ 숭실 운동장 (축구장)</option>
             <option value="0_playground_basketball">🏀 숭실 운동장 (농구장)</option>
+            <option value="0_playground_futsal">🥅 숭실 운동장 (풋살장)</option>
           </select>
           <button class="gm-btn teacher-admin-btn" id="btn-teacher">👩‍🏫 교사 실시간 관제탑</button>
+          <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" class="gm-btn" style="text-decoration:none; text-align:center; background:#14532d; color:#86efac; border:1px solid #22c55e; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:700;" title="전체 아이템 획득경로 및 드랍테이블 엑셀 다운로드">📥 엑셀 드랍테이블 (.xlsx)</a>
         </div>
       </section>
 
@@ -416,7 +435,7 @@
               <div style="font-size: 36px; margin-bottom: 4px;">🛡️</div>
               <div style="font-weight: 900; font-size: 15px; color: #0f172a;">나무갑옷</div>
               <div style="font-size: 11px; color: #64748b; margin: 2px 0;">[갑옷 슬롯]</div>
-              <div style="font-size: 11.5px; color: #2563eb; font-weight: 900; margin: 6px 0 10px; background: #dbeafe; padding: 3px 4px; border-radius: 6px;">방어 +15 · HP +10</div>
+              <div style="font-size: 11.5px; color: #2563eb; font-weight: 900; margin: 6px 0 10px; background: #dbeafe; padding: 3px 4px; border-radius: 6px;">방어 +15 · HP +15</div>
             </div>
             <button id="btn-claim-armor" class="btn-primary" style="width: 100%; font-size: 12.5px; font-weight: 800; padding: 7px 0; background: #2563eb; border-color: #1d4ed8;">나무갑옷 받기</button>
           </div>
@@ -436,6 +455,78 @@
         <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0;">
           💡 받은 장비는 가방(B 버튼)에서 터치하여 착용할 수 있습니다.
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-H. Store Modal (매점 - 아이템 매각 창) -->
+  <div id="modal-store" class="modal-overlay hidden">
+    <div class="modal-card store-modal-card" style="max-width: 680px; width: 94%;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e293b, #0f172a); border-bottom: 2px solid #f59e0b;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 26px;">🏪</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; color:#fef08a;">매점 (아이템 매각)</h3>
+            <span style="font-size: 11.5px; color:#94a3b8;">불필요한 장비와 재료를 판매하여 골드를 획득하세요!</span>
+          </div>
+        </div>
+        <button class="btn-modal-close" id="btn-close-store-x">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <!-- Store Top Stats -->
+        <div class="inv-stats-banner" style="background: rgba(15, 23, 42, 0.7); border: 1.5px solid #334155; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div class="inv-gold-tag" style="font-size: 14px;">🪙 내 보유 골드: <b id="store-gold-display" style="color:#fbbf24;">10 G</b></div>
+          <div style="font-size: 11.5px; color:#94a3b8;">💡 착용 중인 장비 및 소비품(물약/주문서)은 매각할 수 없습니다.</div>
+        </div>
+
+        <!-- Store Filter Tabs -->
+        <div class="inv-tab-row" id="store-tab-container" style="display:flex; gap:8px; margin-bottom: 14px;">
+          <button class="inv-tab-btn active" data-tab="all">전체</button>
+          <button class="inv-tab-btn" data-tab="equipment">⚔️ 장비</button>
+          <button class="inv-tab-btn" data-tab="material">📦 재료</button>
+        </div>
+
+        <!-- Store Sell Items List Container -->
+        <div id="store-items-list" style="max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 10px 16px; justify-content: flex-end; background: #0f172a; border-top: 1px solid #334155;">
+        <button id="btn-close-store" class="btn-secondary">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-I. Title Exchange Modal (호칭 교환소) -->
+  <div id="modal-title-exchange" class="modal-overlay hidden">
+    <div class="modal-card title-exchange-card" style="max-width: 640px; width: 94%;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b, #0f172a); border-bottom: 2px solid #38bdf8;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 26px;">🏅</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; color:#7dd3fc;">호칭 교환소 (Title Exchange)</h3>
+            <span style="font-size: 11.5px; color:#94a3b8;">열정으로 획득한 명예로운 호칭을 이름 위에 착용하세요!</span>
+          </div>
+        </div>
+        <button class="btn-modal-close" id="btn-close-title-x">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <!-- Current Title Banner -->
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #38bdf8; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 12px; color: #94a3b8;">현재 착용 중인 호칭</div>
+            <div id="current-equipped-title-badge" style="font-size: 16px; font-weight: 800; color: #fef08a; margin-top: 2px;">없음</div>
+          </div>
+          <button id="btn-unequip-title" class="btn-secondary" style="font-size: 12px; padding: 6px 12px;">호칭 해제</button>
+        </div>
+
+        <!-- Title Cards List -->
+        <div id="title-exchange-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 10px 16px; justify-content: flex-end; background: #0f172a; border-top: 1px solid #334155;">
+        <button id="btn-close-title" class="btn-secondary">닫기</button>
       </div>
     </div>
   </div>
@@ -778,7 +869,12 @@
   <div id="modal-teacher" class="modal-overlay hidden">
     <div class="modal-card teacher-card">
       <div class="modal-header">
-        <h3>👩‍🏫 숭실 교사 실시간 관제탑 (Teacher Control Tower)</h3>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <h3 style="margin:0;">👩‍🏫 숭실 교사 실시간 관제탑 (Teacher Control Tower)</h3>
+          <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" style="text-decoration:none; font-size:12px; font-weight:800; padding:4px 12px; border-radius:6px; background:#15803d; color:#ffffff; border:1px solid #4ade80; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.3); transition:all 0.2s;" title="전체 아이템 획득경로, 필드/보스 드랍테이블, 제작 레시피 엑셀(.xlsx) 다운로드">
+            📥 엑셀 드랍테이블 다운로드 (.xlsx)
+          </a>
+        </div>
         <button class="btn-modal-close" id="btn-close-teacher-x">✕</button>
       </div>
       <div class="modal-body teacher-body">
@@ -800,18 +896,18 @@
             <div class="input-row">
               <label style="flex:1; font-size:12px; color:#fca5a5;">보스 프리셋 선택
                 <select id="admin-boss-preset">
-                  <option value="golem">👾 고목 골렘 (10인 권장 · HP 1500 / ATK 17 / DEF 8)</option>
-                  <option value="dragon">🐉 숭실 골드 드래곤 (20인 권장 · HP 4000 / ATK 28 / DEF 10)</option>
+                  <option value="golem">👾 가죽 골렘 (1학년 2반 1차 · 10인 권장 · HP 2000 / ATK 17 / DEF 8)</option>
+                  <option value="dragon">🐉 숭실 청동 드래곤 (1학년 2반 2차 · 20인 권장 · HP 5000 / ATK 28 / DEF 10)</option>
                   <option value="demon">😈 중간고사 대마왕 (처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
-                  <option value="cerberus">🐕 수행평가 3두마수 케르베로스 (25레벨 · HP 6000 / ATK 35 / DEF 15)</option>
-                  <option value="final_god">💀 기말고사 파멸신 (30레벨 최종보스 · HP 9000 / ATK 45 / DEF 20)</option>
-                  <option value="sloth_titan">🦥 방학 직전 나태의 거인 (35레벨 · HP 12000 / ATK 55 / DEF 25)</option>
-                  <option value="white_tiger">🐯 숭실 백호 성수 (40레벨 전설 신수 · HP 15000 / ATK 70 / DEF 30)</option>
+                  <option value="cerberus">🐕 수행평가 3두마수 케르베로스 (축구장 서쪽 골대 · 처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
+                  <option value="final_god">💀 기말고사 파멸신 (축구장 서쪽 골대 · 처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
+                  <option value="sloth_titan">🦥 방학 직전 나태의 거인 (축구장 서쪽 골대 · 처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
+                  <option value="white_tiger">🐯 숭실 백호 성수 (축구장 서쪽 골대 · 처치 불가 1.2배 거대 신수 · HP 999999 / ATK 150 / DEF 50)</option>
                   <option value="custom">⚙️ 직접 입력</option>
                 </select>
               </label>
               <label style="flex:1; font-size:12px; color:#fca5a5;">보스 이름
-                <input type="text" id="admin-boss-name" value="👾 고목 골렘">
+                <input type="text" id="admin-boss-name" value="👾 가죽 골렘">
               </label>
             </div>
             <p style="font-size:11.5px; color:#fde047; margin:2px 0 8px;">💡 인원수는 권장사항이며, 실제 접속 학생 수(1명~전교생)와 무관하게 교사가 [시작]을 누르면 즉시 레이드가 열립니다.</p>
@@ -834,7 +930,7 @@
             </div>
             <div class="input-row">
               <label style="flex:1; font-size:12px; color:#f87171;">보스 최대 체력 (HP)
-                <input type="number" id="admin-boss-hp" value="1500" min="50" max="999999" step="100">
+                <input type="number" id="admin-boss-hp" value="2000" min="50" max="999999" step="100">
               </label>
               <label style="flex:1; font-size:12px; color:#fb923c;">보스 공격력 (ATK)
                 <input type="number" id="admin-boss-atk" value="17" min="1" max="9999">
@@ -845,10 +941,10 @@
             </div>
             <div class="input-row">
               <label style="flex:1; font-size:12px; color:#fde047;">처치 보상 골드 (G)
-                <input type="number" id="admin-boss-gold" value="100" min="0" max="100000">
+                <input type="number" id="admin-boss-gold" value="50" min="0" max="100000">
               </label>
               <label style="flex:1; font-size:12px; color:#34d399;">처치 보상 경험치 (EXP)
-                <input type="number" id="admin-boss-exp" value="200" min="0" max="100000">
+                <input type="number" id="admin-boss-exp" value="100" min="0" max="100000">
               </label>
             </div>
             <div style="display:flex; gap:16px; margin:6px 0 10px; font-size:12px; color:#e2e8f0;">
@@ -939,6 +1035,9 @@
                       <option value="item_orange_potion">🧪 주황 물약 (+25 HP)</option>
                       <option value="item_red_potion">🍷 빨간 물약 (+10 HP)</option>
                       <option value="item_revive_scroll">📜 부활 주문서 (50% 부활)</option>
+                      <option value="item_boss_leather">🟫 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
+                      <option value="item_bronze_heart">🥉 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
+                      <option value="equip_leather_sword">🗡️ 가죽손잡이 세이버 (공격력 +20)</option>
                       <option value="item_golem_core">🟢 고목의 핵 (희귀 재료)</option>
                       <option value="item_dragon_heart">❤️‍🔥 용의 심장 (최상위 재료)</option>
                       <option value="item_ginkgo">🍂 황금 은행잎</option>
@@ -981,7 +1080,12 @@
           <!-- Teacher Special Item Grant Panel -->
           <div class="quiz-manage-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h4 style="margin:0; color:#fde047;">🎁 학생 아이템 & 골드 특별 지급소</h4>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <h4 style="margin:0; color:#fde047;">🎁 학생 아이템 & 골드 특별 지급소</h4>
+                <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" style="text-decoration:none; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; background:#14532d; color:#86efac; border:1px solid #22c55e; display:inline-flex; align-items:center; gap:4px;" title="아이템 획득경로와 드랍테이블 엑셀 다운로드">
+                  📥 엑셀 드랍테이블
+                </a>
+              </div>
               <span style="font-size:11px; color:#94a3b8; background:#1e293b; padding:2px 8px; border-radius:4px;">👑 교사 전용</span>
             </div>
             <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">학생 1:1 교환 대신 교사가 학생(또는 전교생)에게 원하는 아이템과 수량을 직접 세심하게 지급합니다.</p>
@@ -1004,6 +1108,8 @@
                     <option value="item_ginkgo">🍂 황금 은행잎 (4단원)</option>
                   </optgroup>
                   <optgroup label="🟢 보스 전리품 (상위 제작 재료)">
+                    <option value="item_boss_leather">🟫 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
+                    <option value="item_bronze_heart">🥉 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
                     <option value="item_golem_core">🟢 고목의 핵 (골렘 전리품)</option>
                     <option value="item_dragon_heart">❤️‍🔥 용의 심장 (드래곤 전리품)</option>
                   </optgroup>
@@ -1012,17 +1118,24 @@
                     <option value="item_orange_potion">🧪 주황 물약 (HP +25 회복)</option>
                     <option value="item_revive_scroll">📜 부활 주문서 (동료 50% 부활)</option>
                   </optgroup>
+                  <optgroup label="🥋 스포츠 가죽 장비 (농구장 & 풋살장)">
+                    <option value="item_basketball_leather">🏀 농구공 가죽 조각 (재료)</option>
+                    <option value="item_futsal_leather">⚽ 탄력있는 풋살공 가죽 (재료)</option>
+                    <option value="equip_leather_sword">🗡️ 가죽손잡이 세이버 (ATK +20)</option>
+                    <option value="equip_leather_helmet">⛑️ 가죽투구 (DEF +12, HP +28)</option>
+                    <option value="equip_leather_armor">🥋 가죽갑옷 (DEF +17, HP +20)</option>
+                  </optgroup>
                   <optgroup label="🛡️ 1학년 기본 나무 장비">
                     <option value="equip_wood_sword">🗡️ 나무검 (ATK +15)</option>
                     <option value="equip_wood_helmet">🪖 나무투구 (DEF +8, HP +20)</option>
-                    <option value="equip_wood_armor">🛡️ 나무갑옷 (DEF +15, HP +50)</option>
+                    <option value="equip_wood_armor">🛡️ 나무갑옷 (DEF +15, HP +15)</option>
                     <option value="equip_forsythia_ring">🌼 성실의 개나리 반지 (ATK/DEF +10, HP +20)</option>
                     <option value="equip_ginkgo_talisman">🍂 합심의 황금 은행잎 부적 (ATK +20, DEF +12, HP +40)</option>
                   </optgroup>
                   <optgroup label="⚔️ 상위 청동 장비 (보스 드랍제)">
                     <option value="equip_bronze_sword">⚔️ 청동검 (ATK +25)</option>
                     <option value="equip_bronze_helmet">🪖 청동투구 (DEF +14, HP +35)</option>
-                    <option value="equip_bronze_armor">🛡️ 청동갑옷 (DEF +22, HP +70)</option>
+                    <option value="equip_bronze_armor">🛡️ 청동갑옷 (DEF +22, HP +25)</option>
                   </optgroup>
                 </select>
               </label>
@@ -1094,6 +1207,9 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <h4 style="margin:0;">👥 접속 중인 학생 실시간 관리</h4>
               <div style="display:flex; align-items:center; gap:8px;">
+                <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#14532d; color:#86efac; border:1px solid #22c55e; display:inline-flex; align-items:center; gap:4px;" title="전체 아이템 획득경로와 필드/보스 드랍테이블, 제작 레시피가 정리된 엑셀(.xlsx) 파일 다운로드">
+                  📊 엑셀 드랍테이블
+                </a>
                 <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
                   📥 백업 다운로드
                 </a>
@@ -1181,12 +1297,12 @@
   <script src="js/dialog.js?v=6"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=6"></script>
-  <script src="js/engine.js?v=6"></script>
-  <script src="js/quiz.js?v=6"></script>
-  <script src="js/crafting.js?v=6"></script>
-  <script src="js/network.js?v=6"></script>
-  <script src="js/acid_rain.js?v=1"></script>
-  <script src="js/main.js?v=6"></script>
+  <script src="js/world.js?v=10"></script>
+  <script src="js/engine.js?v=10"></script>
+  <script src="js/quiz.js?v=10"></script>
+  <script src="js/crafting.js?v=10"></script>
+  <script src="js/network.js?v=10"></script>
+  <script src="js/acid_rain.js?v=10"></script>
+  <script src="js/main.js?v=10"></script>
 </body>
 </html>

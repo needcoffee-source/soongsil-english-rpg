@@ -9,8 +9,8 @@ const WORLD_DATA = {
   TILE_SIZE: 32,
   MAP_WIDTH: 30,
   HALLWAY_WIDTH: 60, // 1학년 복도 길이 2배 확장 (30타일 -> 60타일)
-  PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 28 타일)
-  PLAYGROUND_HEIGHT: 28,
+  PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
+  PLAYGROUND_HEIGHT: 54, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
   MAP_HEIGHT: 20,
 
   floors: {
@@ -25,7 +25,8 @@ const WORLD_DATA = {
       interactive: [
         { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 14, name: "장비 제작대", prompt: "장비 제작하기" },
-        { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" }
+        { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" },
+        { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 14, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
       npcs: [
         {
@@ -42,7 +43,7 @@ const WORLD_DATA = {
           x: 22,
           y: 5,
           avatar: "teacher",
-          dialogue: "안녕! 1학년 2반 담임 한강우 선생님이란다. 👨‍🏫\n\n👾 [보스 레이드 도전 안내]\n이 2반 문으로 들어가면 거대한 '고목 골렘' 혹은 전설의 '숭실 골드 드래곤' 보스가 기다리고 있단다!\n\n⚔️ [선생님의 레이드 조언]\n1. 복도에서 장비를 제작하고 [가방(🎒)]에서 꼭 착용했는지 확인하렴! 방어력이 높아야 보스의 강력한 일격을 버틸 수 있단다.\n2. 보스의 일격에 대비해 빨간 물약과 주황 물약, 그리고 쓰러진 친구를 살려줄 부활 주문서를 넉넉히 챙겨오렴.\n3. 준비가 다 되었다면 2반 교실로 들어가 보스 앞에서 SPACE를 눌러 친구들과 함께 협동 레이드를 펼쳐보렴!"
+          dialogue: "안녕! 1학년 2반 담임 한강우 선생님이란다. 👨‍🏫\n\n👾 [보스 레이드 도전 안내]\n이 2반 문으로 들어가면 1차 관문 보스 '가죽 골렘' 혹은 2차 졸업 보스인 '숭실 청동 드래곤'이 기다리고 있단다!\n\n⚔️ [선생님의 레이드 조언]\n1. 1반에서 나무 장비를 제작하고 1차 관문인 가죽 골렘을 먼저 쓰러뜨리렴! 가죽 골렘을 토벌하면 지상 운동장 엘리베이터가 즉시 개방된단다.\n2. 운동장(농구/풋살장)에서 2티어 가죽 풀세트를 맞춘 뒤 2차 보스인 청동 드래곤에게 도전해보렴!"
         },
         {
           id: "npc_teacher_yesook",
@@ -58,7 +59,7 @@ const WORLD_DATA = {
           x: 54,
           y: 5,
           avatar: "teacher",
-          dialogue: "안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 50G(골드)가 소모된단다.\n\n또한 아래 운동장은 아주 넓고 거친 곳이니, 장비와 물약을 단단히 준비하지 않고 내려갔다가는 큰 코 다칠 게다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."
+          dialogue: "안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ [엘리베이터 점검 안내]\n지금은 엘리베이터 점검 중이라 지상 운동장으로 내려갈 수 없단다!\n1학년 2반 교실의 1차 관문 보스 [가죽 골렘]을 토벌해야 점검이 완료되어 운동장으로 갈 수 있단다."
         }
       ]
     }
@@ -145,10 +146,10 @@ const WORLD_DATA = {
       type: "boss_raid",
       x: 15,
       y: 8,
-      name: "👾 고목 골렘",
+      name: "👾 가죽 골렘",
       prompt: "보스 레이드",
       level: 10,
-      maxHp: 1500,
+      maxHp: 2000,
       atk: 17,
       def: 8
     },
@@ -211,13 +212,41 @@ const WORLD_DATA = {
     ]
   },
 
-  // 숭실 야외 운동장 (복도 면적의 2배 규모: 축구장 2/3, 농구장 1/3, 엘베 및 급식실 입구)
+  // 숭실 야외 종합 체육공간 (축구장, 농구장, 신규 인조잔디 풋살장, 관람석 스탠드)
   playground: {
     name: "숭실 운동장",
     width: 90,
-    height: 28,
+    height: 54,
     elevator: { x: 80, y: 3 },
     cafeteria: { x: 86, y: 3, name: "학생 급식실", prompt: "급식실 입장" },
+    store: {
+      id: "store_canteen",
+      type: "store",
+      x: 84,
+      y: 5,
+      name: "매점",
+      prompt: "매점 이용하기 (물품 매각)"
+    },
+    titleExchange: {
+      id: "title_exchange",
+      type: "title_exchange",
+      x: 30,
+      y: 15,
+      name: "🏅 호칭 교환소",
+      prompt: "호칭 교환소 이용하기"
+    },
+    boss: {
+      id: "boss_soccer_raid",
+      type: "boss_raid",
+      x: 13,
+      y: 35, // 축구장 절반의 서쪽 골대 앞 신규 보스 레이드 전장
+      name: "🐯 숭실 백호 성수",
+      prompt: "보스 레이드",
+      level: 40,
+      maxHp: 999999,
+      atk: 150,
+      def: 50
+    },
     basketballMonsters: [
       {
         id: "bb_mob_1",
@@ -357,7 +386,157 @@ const WORLD_DATA = {
         expReward: 50,
         leatherMin: 3,
         leatherMax: 5,
-        armorDropRate: 15, // 15% 가죽갑옷 완제품 드랍
+        armorDropRate: 8, // 8% 가죽갑옷 완제품 드랍
+        respawnSec: 45
+      }
+    ],
+    futsalMonsters: [
+      {
+        id: "ft_mob_1",
+        name: "태클 고블린",
+        court: "futsal",
+        type: "regular",
+        avatar: "tackle_goblin",
+        icon: "⚽",
+        x: 67,
+        y: 35,
+        roam: true,
+        hp: 95,
+        maxHp: 95,
+        atk: 16,
+        def: 4,
+        counterDmg: 24,
+        goldReward: 14,
+        expReward: 28,
+        leatherMin: 1,
+        leatherMax: 3,
+        respawnSec: 15
+      },
+      {
+        id: "ft_mob_2",
+        name: "태클 고블린",
+        court: "futsal",
+        type: "regular",
+        avatar: "tackle_goblin",
+        icon: "⚽",
+        x: 81,
+        y: 36,
+        roam: true,
+        hp: 95,
+        maxHp: 95,
+        atk: 16,
+        def: 4,
+        counterDmg: 24,
+        goldReward: 14,
+        expReward: 28,
+        leatherMin: 1,
+        leatherMax: 3,
+        respawnSec: 15
+      },
+      {
+        id: "ft_mob_3",
+        name: "태클 고블린",
+        court: "futsal",
+        type: "regular",
+        avatar: "tackle_goblin",
+        icon: "⚽",
+        x: 68,
+        y: 45,
+        roam: true,
+        hp: 95,
+        maxHp: 95,
+        atk: 16,
+        def: 4,
+        counterDmg: 24,
+        goldReward: 14,
+        expReward: 28,
+        leatherMin: 1,
+        leatherMax: 3,
+        respawnSec: 15
+      },
+      {
+        id: "ft_mob_4",
+        name: "태클 고블린",
+        court: "futsal",
+        type: "regular",
+        avatar: "tackle_goblin",
+        icon: "⚽",
+        x: 82,
+        y: 44,
+        roam: true,
+        hp: 95,
+        maxHp: 95,
+        atk: 16,
+        def: 4,
+        counterDmg: 24,
+        goldReward: 14,
+        expReward: 28,
+        leatherMin: 1,
+        leatherMax: 3,
+        respawnSec: 15
+      },
+      {
+        id: "ft_mob_5",
+        name: "불꽃 스트라이커",
+        court: "futsal",
+        type: "mid",
+        avatar: "flame_striker",
+        icon: "🔥",
+        x: 73,
+        y: 34,
+        roam: true,
+        hp: 120,
+        maxHp: 120,
+        atk: 22,
+        def: 6,
+        counterDmg: 32,
+        goldReward: 24,
+        expReward: 42,
+        leatherMin: 2,
+        leatherMax: 4,
+        respawnSec: 20
+      },
+      {
+        id: "ft_mob_6",
+        name: "불꽃 스트라이커",
+        court: "futsal",
+        type: "mid",
+        avatar: "flame_striker",
+        icon: "🔥",
+        x: 77,
+        y: 46,
+        roam: true,
+        hp: 120,
+        maxHp: 120,
+        atk: 22,
+        def: 6,
+        counterDmg: 32,
+        goldReward: 24,
+        expReward: 42,
+        leatherMin: 2,
+        leatherMax: 4,
+        respawnSec: 20
+      },
+      {
+        id: "ft_mob_7",
+        name: "거미손 골키퍼",
+        court: "futsal",
+        type: "elite",
+        avatar: "spider_keeper",
+        icon: "🧤",
+        x: 63,
+        y: 40,
+        fixed: true,
+        hp: 190,
+        maxHp: 190,
+        atk: 28,
+        def: 8,
+        counterDmg: 42,
+        goldReward: 50,
+        expReward: 80,
+        leatherMin: 4,
+        leatherMax: 6,
+        armorDropRate: 8,
         respawnSec: 45
       }
     ]

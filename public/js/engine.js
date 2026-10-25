@@ -266,6 +266,7 @@ class GameEngine {
 
     // Update roaming basketball monsters on playground
     this.updateBasketballMonsters();
+    this.updateFutsalMonsters();
 
     // Check nearby interactable
     this.checkNearbyInteractable();
@@ -475,7 +476,7 @@ class GameEngine {
         this.player.room = 'playground';
         this.player.roomName = '숭실 운동장 (축구장)';
         this.player.x = 31 * 32; // 천연잔디 축구장 센터서클
-        this.player.y = 16 * 32;
+        this.player.y = 35 * 32;
       } else if (room === 'playground_basketball') {
         this.player.room = 'playground';
         this.player.roomName = '숭실 운동장 (농구장)';
@@ -581,8 +582,68 @@ class GameEngine {
             minDist = cDist;
           }
         }
-        // 3. Basketball Monsters (1:1 퀴즈 배틀)
+        // 2-B. Store (매점)
+        if (pg.store) {
+          const sDist = Math.hypot(pg.store.x * 32 - this.player.x, (pg.store.y + 0.5) * 32 - this.player.y);
+          if (sDist < 64 && sDist < minDist) {
+            closest = { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '물품 매각' };
+            minDist = sDist;
+          }
+        }
+        // 2-C. Title Exchange (호칭 교환소)
+        if (pg.titleExchange) {
+          const tDist = Math.hypot(pg.titleExchange.x * 32 - this.player.x, (pg.titleExchange.y + 0.5) * 32 - this.player.y);
+          if (tDist < 64 && tDist < minDist) {
+            closest = { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
+            minDist = tDist;
+          }
+        }
+        // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
+        if (pg.boss) {
+          const bDist = Math.hypot(pg.boss.x * 32 - this.player.x, (pg.boss.y + 0.5) * 32 - this.player.y);
+          if (bDist < 72 && bDist < minDist) {
+            closest = {
+              type: 'boss_raid',
+              data: pg.boss,
+              name: pg.boss.name,
+              prompt: pg.boss.prompt || '보스 레이드'
+            };
+            minDist = bDist;
+          }
+        }
+        // 4. Basketball Monsters (1:1 퀴즈 배틀)
         if (pg.basketballMonsters) {
+          for (const mob of pg.basketballMonsters) {
+            if (mob.defeated) continue;
+            const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
+            if (mDist < 48 && mDist < minDist) {
+              closest = {
+                type: 'field_monster',
+                data: mob,
+                name: `${mob.icon} ${mob.name}`,
+                prompt: '1:1 퀴즈 배틀'
+              };
+              minDist = mDist;
+            }
+          }
+        }
+        // 5. Futsal Monsters (1:1 퀴즈 배틀)
+        if (pg.futsalMonsters) {
+          for (const mob of pg.futsalMonsters) {
+            if (mob.defeated) continue;
+            const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
+            if (mDist < 48 && mDist < minDist) {
+              closest = {
+                type: 'field_monster',
+                data: mob,
+                name: `${mob.icon} ${mob.name}`,
+                prompt: '1:1 퀴즈 배틀'
+              };
+              minDist = mDist;
+            }
+          }
+        }
+        if (false) {
           for (const mob of pg.basketballMonsters) {
             if (mob.defeated) continue;
             const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
@@ -701,8 +762,25 @@ class GameEngine {
         if (pg.cafeteria && Math.hypot(pg.cafeteria.x * 32 - x, (pg.cafeteria.y + 1.5) * 32 - y) < 56) {
           return { type: 'cafeteria', name: '학생 급식실', prompt: '급식실 입장' };
         }
+        if (pg.store && Math.hypot(pg.store.x * 32 - x, (pg.store.y + 0.5) * 32 - y) < 56) {
+          return { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '물품 매각' };
+        }
+        if (pg.titleExchange && Math.hypot(pg.titleExchange.x * 32 - x, (pg.titleExchange.y + 0.5) * 32 - y) < 56) {
+          return { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
+        }
+        if (pg.boss && Math.hypot(pg.boss.x * 32 - x, (pg.boss.y + 0.5) * 32 - y) < 64) {
+          return { type: 'boss_raid', data: pg.boss, name: pg.boss.name, prompt: pg.boss.prompt || '보스 레이드' };
+        }
         if (pg.basketballMonsters) {
           for (const mob of pg.basketballMonsters) {
+            if (mob.defeated) continue;
+            if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
+              return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
+            }
+          }
+        }
+        if (pg.futsalMonsters) {
+          for (const mob of pg.futsalMonsters) {
             if (mob.defeated) continue;
             if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
               return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
@@ -1739,22 +1817,46 @@ class GameEngine {
     this.ctx.fillStyle = 'rgba(153, 27, 27, 0.28)';
     this.ctx.fill();
 
-    // Boss Body (Massive Ancient Bark & Stone Golem)
+    // Boss Body (Toughened Stitched Leather Golem - 가죽 골렘)
     const by = py + bob;
-    // Giant Shoulders & Torso
-    this.ctx.fillStyle = '#3f2e21';
+    // Giant Tanned Leather Torso
+    this.ctx.fillStyle = '#451a03';
     this.ctx.fillRect(px - 28, by - 26, 56, 42);
-    this.ctx.fillStyle = '#5c4033';
+    this.ctx.fillStyle = '#78350f';
     this.ctx.fillRect(px - 24, by - 22, 48, 34);
 
-    // Mossy Shoulder Pads
-    this.ctx.fillStyle = '#15803d';
+    // Stitched Heavy Leather Shoulder Pads
+    this.ctx.fillStyle = '#92400e';
     this.ctx.fillRect(px - 32, by - 28, 18, 12);
     this.ctx.fillRect(px + 14, by - 28, 18, 12);
+    // Leather Studs on Shoulders
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(px - 30, by - 26, 3, 3);
+    this.ctx.fillRect(px - 22, by - 26, 3, 3);
+    this.ctx.fillRect(px + 17, by - 26, 3, 3);
+    this.ctx.fillRect(px + 25, by - 26, 3, 3);
 
-    // Golem Head & Crown
+    // Thick Leather Harness Straps (X-Chest)
+    this.ctx.strokeStyle = '#291d12';
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 20, by - 22);
+    this.ctx.lineTo(px + 20, by + 12);
+    this.ctx.moveTo(px + 20, by - 22);
+    this.ctx.lineTo(px - 20, by + 12);
+    this.ctx.stroke();
+
+    // Stitched Leather Mask & Horns
     this.ctx.fillStyle = '#291d12';
     this.ctx.fillRect(px - 16, by - 44, 32, 22);
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 14, by - 42, 28, 18);
+
+    // Leather Seam Stitches
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px - 1, by - 42, 2, 4);
+    this.ctx.fillRect(px - 1, by - 36, 2, 4);
+    this.ctx.fillRect(px - 1, by - 30, 2, 4);
 
     // Glowing Crimson Boss Eyes
     this.ctx.fillStyle = '#ef4444';
@@ -1774,10 +1876,13 @@ class GameEngine {
     this.ctx.arc(px, by - 6, 4, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Massive Golem Fists
-    this.ctx.fillStyle = '#451a03';
+    // Massive Leather Wrapped Fists
+    this.ctx.fillStyle = '#78350f';
     this.ctx.fillRect(px - 42, by - 14, 14, 26);
     this.ctx.fillRect(px + 28, by - 14, 14, 26);
+    this.ctx.fillStyle = '#92400e';
+    this.ctx.fillRect(px - 40, by - 10, 10, 18);
+    this.ctx.fillRect(px + 30, by - 10, 10, 18);
     this.ctx.restore();
 
     // Boss Nameplate (교사 이벤트 시작 여부에 따른 상태 표시)
@@ -1797,7 +1902,7 @@ class GameEngine {
     });
   }
 
-  // 11-E. High-Res Season 1 Boss: Royal Gold Dragon (1학년 2반 숭실 골드 드래곤 레이드)
+  // 11-E. High-Res Season 1 Boss: Ancient Bronze Dragon (1학년 2반 숭실 청동 드래곤 레이드)
   drawHighResBossDragon(boss) {
     const px = boss.x * 32 + 16;
     const py = boss.y * 32 + 16;
@@ -1808,29 +1913,29 @@ class GameEngine {
 
     this.ctx.save();
 
-    // 1. Radiant Golden Raid Magic Circle on Floor
-    this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.85)';
+    // 1. Ancient Bronze & Verdigris (청동 녹청) Magic Circle on Floor
+    this.ctx.strokeStyle = 'rgba(180, 83, 9, 0.92)'; // Deep Metallic Bronze
     this.ctx.lineWidth = 3.5;
     this.ctx.beginPath();
     this.ctx.ellipse(px, py + 26, 60, 26, 0, 0, Math.PI * 2);
     this.ctx.stroke();
 
-    this.ctx.fillStyle = 'rgba(217, 119, 6, 0.22)';
+    this.ctx.fillStyle = 'rgba(120, 53, 15, 0.28)';
     this.ctx.fill();
 
-    // Inner Runed Ring
-    this.ctx.strokeStyle = 'rgba(253, 224, 71, 0.6)';
-    this.ctx.lineWidth = 1.5;
+    // Inner Antique Verdigris (청동 녹빛 옥색) Runed Ring
+    this.ctx.strokeStyle = 'rgba(20, 184, 166, 0.75)';
+    this.ctx.lineWidth = 2;
     this.ctx.beginPath();
     this.ctx.ellipse(px, py + 26, 42, 18, 0, 0, Math.PI * 2);
     this.ctx.stroke();
 
-    // Draconic Magic Glyphs / 8-Ray Star on Floor
+    // Ancient Draconic Bronze Rune Lines
     for (let r = 0; r < 4; r++) {
-      const angle = (Math.PI / 4) * r + (now / 3000);
+      const angle = (Math.PI / 4) * r + (now / 3200);
       const rx = Math.cos(angle) * 38;
       const ry = Math.sin(angle) * 16;
-      this.ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+      this.ctx.strokeStyle = (r % 2 === 0) ? 'rgba(217, 119, 6, 0.55)' : 'rgba(45, 212, 191, 0.55)';
       this.ctx.beginPath();
       this.ctx.moveTo(px - rx, py + 26 - ry);
       this.ctx.lineTo(px + rx, py + 26 + ry);
@@ -1839,8 +1944,8 @@ class GameEngine {
 
     const by = py + bob;
 
-    // 2. Dragon Tail (Curving behind body with spiked golden fin)
-    this.ctx.fillStyle = '#92400e';
+    // 2. Heavy Bronze Dragon Tail (With Antiqued Bronze Spikes)
+    this.ctx.fillStyle = '#5c2b09';
     this.ctx.beginPath();
     this.ctx.moveTo(px + 10, by + 12);
     this.ctx.quadraticCurveTo(px + 36 + tailSway, by + 18, px + 44 + tailSway, by + 8);
@@ -1849,19 +1954,22 @@ class GameEngine {
     this.ctx.closePath();
     this.ctx.fill();
 
-    // Spiked Golden Fin at Tail Tip
-    this.ctx.fillStyle = '#fbbf24';
+    // Spiked Bronze Fin at Tail Tip with Verdigris Spine
+    this.ctx.fillStyle = '#b45309';
     this.ctx.beginPath();
     this.ctx.moveTo(px + 44 + tailSway, by + 8);
     this.ctx.lineTo(px + 56 + tailSway, by + 5);
     this.ctx.lineTo(px + 46 + tailSway, by - 2);
     this.ctx.closePath();
     this.ctx.fill();
+    // Verdigris Patina Spine Highlight
+    this.ctx.fillStyle = '#14b8a6';
+    this.ctx.fillRect(px + 43 + tailSway, by + 3, 3, 4);
 
-    // 3. Massive Golden Dragon Wings (Left & Right Flapping)
+    // 3. Massive Armored Bronze Wings (Dark Cast Bronze Spines & Antique Copper Membranes)
     // Left Wing
     const lTipY = by - 36 + wingFlap;
-    this.ctx.fillStyle = 'rgba(251, 191, 36, 0.85)'; // Membrane
+    this.ctx.fillStyle = 'rgba(154, 52, 18, 0.88)'; // Antique Copper/Bronze Membrane
     this.ctx.beginPath();
     this.ctx.moveTo(px - 14, by - 12);
     this.ctx.lineTo(px - 58, lTipY);
@@ -1870,21 +1978,32 @@ class GameEngine {
     this.ctx.closePath();
     this.ctx.fill();
 
-    this.ctx.strokeStyle = '#78350f'; // Main Wing Bone Spine
-    this.ctx.lineWidth = 3.5;
+    // Verdigris Patina Rib Veins on Wing
+    this.ctx.strokeStyle = '#0d9488';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 26, by - 2);
+    this.ctx.lineTo(px - 46, lTipY + 12);
+    this.ctx.moveTo(px - 18, by + 4);
+    this.ctx.lineTo(px - 34, by + 10);
+    this.ctx.stroke();
+
+    // Cast Bronze Main Wing Bone Spine
+    this.ctx.strokeStyle = '#451a03';
+    this.ctx.lineWidth = 4;
     this.ctx.beginPath();
     this.ctx.moveTo(px - 12, by - 10);
     this.ctx.lineTo(px - 36, lTipY - 6);
     this.ctx.lineTo(px - 58, lTipY);
     this.ctx.stroke();
 
-    // Left Wing Claw Spur
-    this.ctx.fillStyle = '#fef08a';
-    this.ctx.fillRect(px - 37, lTipY - 8, 4, 4);
+    // Left Wing Bronze Claw Spur
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(px - 37, lTipY - 8, 5, 4);
 
     // Right Wing
     const rTipY = by - 36 + wingFlap;
-    this.ctx.fillStyle = 'rgba(251, 191, 36, 0.85)'; // Membrane
+    this.ctx.fillStyle = 'rgba(154, 52, 18, 0.88)'; // Antique Copper/Bronze Membrane
     this.ctx.beginPath();
     this.ctx.moveTo(px + 14, by - 12);
     this.ctx.lineTo(px + 58, rTipY);
@@ -1893,122 +2012,165 @@ class GameEngine {
     this.ctx.closePath();
     this.ctx.fill();
 
-    this.ctx.strokeStyle = '#78350f'; // Main Wing Bone Spine
-    this.ctx.lineWidth = 3.5;
+    // Verdigris Patina Rib Veins on Right Wing
+    this.ctx.strokeStyle = '#0d9488';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 26, by - 2);
+    this.ctx.lineTo(px + 46, rTipY + 12);
+    this.ctx.moveTo(px + 18, by + 4);
+    this.ctx.lineTo(px + 34, by + 10);
+    this.ctx.stroke();
+
+    // Cast Bronze Main Wing Bone Spine
+    this.ctx.strokeStyle = '#451a03';
+    this.ctx.lineWidth = 4;
     this.ctx.beginPath();
     this.ctx.moveTo(px + 12, by - 10);
     this.ctx.lineTo(px + 36, rTipY - 6);
     this.ctx.lineTo(px + 58, rTipY);
     this.ctx.stroke();
 
-    // Right Wing Claw Spur
-    this.ctx.fillStyle = '#fef08a';
-    this.ctx.fillRect(px + 34, rTipY - 8, 4, 4);
+    // Right Wing Bronze Claw Spur
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(px + 33, rTipY - 8, 5, 4);
 
-    // 4. Dragon Hind Legs & Claws (Grounded)
-    this.ctx.fillStyle = '#b45309';
+    // 4. Heavy Bronze Hind Legs & Grounded Talons
+    this.ctx.fillStyle = '#78350f';
     this.ctx.fillRect(px - 28, by + 8, 14, 18);
     this.ctx.fillRect(px + 14, by + 8, 14, 18);
-    // Dark Obsidian Talons
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 26, by + 10, 10, 14);
+    this.ctx.fillRect(px + 16, by + 10, 10, 14);
+
+    // Heavy Dark Iron Talons
     this.ctx.fillStyle = '#1c1917';
     this.ctx.fillRect(px - 30, by + 24, 6, 4);
     this.ctx.fillRect(px - 22, by + 24, 6, 4);
     this.ctx.fillRect(px + 14, by + 24, 6, 4);
     this.ctx.fillRect(px + 22, by + 24, 6, 4);
 
-    // 5. Scaled Gold Torso & Chest Plates
-    this.ctx.fillStyle = '#d97706'; // Base scales
+    // 5. Scaled Heavy Bronze Torso & Metallic Armor Plates
+    this.ctx.fillStyle = '#451a03'; // Deep shadow bronze
     this.ctx.fillRect(px - 18, by - 16, 36, 32);
-    this.ctx.fillStyle = '#f59e0b';
-    this.ctx.fillRect(px - 15, by - 13, 30, 26);
+    this.ctx.fillStyle = '#78350f'; // Mid bronze
+    this.ctx.fillRect(px - 16, by - 14, 32, 28);
+    this.ctx.fillStyle = '#b45309'; // Polished bronze plates
+    this.ctx.fillRect(px - 14, by - 12, 28, 24);
 
-    // Underbelly Armor Scales (Radiant Light Gold Plates)
-    this.ctx.fillStyle = '#fef08a';
+    // Segmented Antiqued Underbelly Plates (Heavy Riveted Bronze)
+    this.ctx.fillStyle = '#9a3412';
     this.ctx.fillRect(px - 8, by - 12, 16, 6);
     this.ctx.fillRect(px - 7, by - 4, 14, 6);
     this.ctx.fillRect(px - 6, by + 4, 12, 6);
     this.ctx.fillRect(px - 5, by + 12, 10, 5);
 
-    // 6. Glowing Ruby Dragon Heart in Chest
-    this.ctx.fillStyle = '#ef4444';
+    // Verdigris Patina Edge on Belly Plates
+    this.ctx.fillStyle = '#14b8a6';
+    this.ctx.fillRect(px - 8, by - 7, 16, 1.5);
+    this.ctx.fillRect(px - 7, by + 1, 14, 1.5);
+    this.ctx.fillRect(px - 6, by + 9, 12, 1.5);
+
+    // 6. Molten Bronze Draconic Core in Chest (청동 드래곤의 심장)
+    this.ctx.fillStyle = '#ea580c';
     this.ctx.beginPath();
-    this.ctx.arc(px, by - 3, 6, 0, Math.PI * 2);
+    this.ctx.arc(px, by - 2, 7, 0, Math.PI * 2);
     this.ctx.fill();
-    this.ctx.fillStyle = '#fca5a5';
+    this.ctx.fillStyle = '#f97316';
     this.ctx.beginPath();
-    this.ctx.arc(px, by - 3, 3, 0, Math.PI * 2);
+    this.ctx.arc(px, by - 2, 4.5, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fed7aa';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 2, 2, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // 7. Powerful Front Forelegs & Claws
-    this.ctx.fillStyle = '#d97706';
+    // 7. Muscular Armored Forelegs & Bronze Gauntlets
+    this.ctx.fillStyle = '#78350f';
     this.ctx.fillRect(px - 22, by + 2, 9, 20);
     this.ctx.fillRect(px + 13, by + 2, 9, 20);
-    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 21, by + 4, 7, 16);
+    this.ctx.fillRect(px + 14, by + 4, 7, 16);
+    // Foreleg Talons
+    this.ctx.fillStyle = '#1c1917';
     this.ctx.fillRect(px - 23, by + 20, 11, 4);
     this.ctx.fillRect(px + 12, by + 20, 11, 4);
 
-    // 8. Long Scaled Neck & Head
-    this.ctx.fillStyle = '#b45309';
+    // 8. Long Plated Bronze Neck
+    this.ctx.fillStyle = '#451a03';
     this.ctx.fillRect(px - 10, by - 30, 20, 16);
-    this.ctx.fillStyle = '#f59e0b';
-    this.ctx.fillRect(px - 8, by - 28, 16, 14);
-
-    // Dragon Head & Jaws
-    this.ctx.fillStyle = '#d97706';
-    this.ctx.fillRect(px - 14, by - 46, 28, 20);
-    this.ctx.fillStyle = '#fbbf24';
-    this.ctx.fillRect(px - 12, by - 44, 24, 16);
-
-    // Sweeping Majestic Golden Horns
     this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px - 8, by - 28, 16, 14);
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 6, by - 26, 12, 10);
+
+    // 9. Angular Armored Bronze Dragon Head
+    this.ctx.fillStyle = '#5c2b09';
+    this.ctx.fillRect(px - 14, by - 46, 28, 20);
+    this.ctx.fillStyle = '#9a3412';
+    this.ctx.fillRect(px - 12, by - 44, 24, 16);
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 10, by - 42, 20, 12);
+
+    // Sweeping Heavy Ancient Bronze Horns (With Verdigris Ridges)
+    this.ctx.fillStyle = '#451a03';
     // Left Horn
     this.ctx.beginPath();
     this.ctx.moveTo(px - 10, by - 46);
-    this.ctx.lineTo(px - 24, by - 62);
-    this.ctx.lineTo(px - 6, by - 46);
+    this.ctx.lineTo(px - 26, by - 64);
+    this.ctx.lineTo(px - 5, by - 46);
     this.ctx.closePath();
     this.ctx.fill();
     // Right Horn
     this.ctx.beginPath();
     this.ctx.moveTo(px + 10, by - 46);
-    this.ctx.lineTo(px + 24, by - 62);
-    this.ctx.lineTo(px + 6, by - 46);
+    this.ctx.lineTo(px + 26, by - 64);
+    this.ctx.lineTo(px + 5, by - 46);
     this.ctx.closePath();
     this.ctx.fill();
 
-    // Horn Gold Highlights
-    this.ctx.fillStyle = '#fde047';
-    this.ctx.fillRect(px - 23, by - 61, 3, 6);
-    this.ctx.fillRect(px + 21, by - 61, 3, 6);
+    // Horn Verdigris Patina & Bronze Highlights
+    this.ctx.fillStyle = '#14b8a6'; // Verdigris Patina
+    this.ctx.fillRect(px - 22, by - 61, 3, 5);
+    this.ctx.fillRect(px + 20, by - 61, 3, 5);
+    this.ctx.fillStyle = '#d97706'; // Polished bronze edge
+    this.ctx.fillRect(px - 25, by - 63, 2, 4);
+    this.ctx.fillRect(px + 24, by - 63, 2, 4);
 
-    // Fierce Ruby-Red Dragon Eyes with Golden Gaze
-    this.ctx.fillStyle = '#dc2626';
+    // Fierce Mystic Cyan/Turquoise Draconic Eyes (신비로운 청동 고대 안광)
+    this.ctx.fillStyle = '#0f766e'; // Dark Teal Socket
     this.ctx.fillRect(px - 9, by - 40, 6, 5);
     this.ctx.fillRect(px + 3, by - 40, 6, 5);
-    this.ctx.fillStyle = '#fef08a';
-    this.ctx.fillRect(px - 7, by - 39, 3, 3);
-    this.ctx.fillRect(px + 5, by - 39, 3, 3);
+    this.ctx.fillStyle = '#06b6d4'; // Bright Cyan Eye
+    this.ctx.fillRect(px - 8, by - 39, 4, 3);
+    this.ctx.fillRect(px + 4, by - 39, 4, 3);
+    this.ctx.fillStyle = '#a5f3fc'; // Piercing Mystic Pupil
+    this.ctx.fillRect(px - 7, by - 38, 2, 2);
+    this.ctx.fillRect(px + 5, by - 38, 2, 2);
 
-    // Dragon Snout & Sharp Fangs
-    this.ctx.fillStyle = '#92400e';
+    // Snout & Armored Jaw with Sharp Ivory Fangs
+    this.ctx.fillStyle = '#5c2b09';
     this.ctx.fillRect(px - 8, by - 30, 16, 4); // mouth line
-    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillStyle = '#f8fafc';
     this.ctx.fillRect(px - 6, by - 28, 3, 3); // fangs
     this.ctx.fillRect(px + 3, by - 28, 3, 3);
 
-    // Draconic Embers & Gold Sparkles drifting upward
-    for (let i = 0; i < 4; i++) {
-      const pOffset = (now / 350 + i * 1.5) % 4;
-      const spX = px + Math.sin(now / 200 + i * 2) * 20;
-      const spY = by - 30 - pOffset * 10;
+    // Drifting Molten Bronze Embers & Mystic Verdigris Sparks
+    for (let i = 0; i < 5; i++) {
+      const pOffset = (now / 340 + i * 1.3) % 4;
+      const spX = px + Math.sin(now / 220 + i * 1.8) * 22;
+      const spY = by - 28 - pOffset * 10;
       const spAlpha = Math.max(0, 1 - pOffset / 4);
-      this.ctx.fillStyle = `rgba(254, 240, 138, ${spAlpha})`;
+      this.ctx.fillStyle = (i % 2 === 0)
+        ? `rgba(249, 115, 22, ${spAlpha})` // Molten Bronze Ember
+        : `rgba(45, 212, 191, ${spAlpha})`; // Verdigris Mystic Sparkle
       this.ctx.fillRect(spX, spY, 3, 3);
     }
 
     this.ctx.restore();
 
-    // Boss Nameplate (교사 이벤트 시작 여부에 따른 상태 표시)
+    // Boss Nameplate (청동 & 청록 녹청 하이테크 네임플레이트)
     const bCfg = window.BOSS_CONFIG || boss;
     const isRaidActive = !!(bCfg && bCfg.active);
     const labelText = isRaidActive
@@ -2016,9 +2178,9 @@ class GameEngine {
       : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
 
     this.drawSharpLabel(px, py - 66, labelText, {
-      bgColor: isRaidActive ? 'rgba(120, 53, 15, 0.96)' : 'rgba(30, 41, 59, 0.94)',
-      borderColor: isRaidActive ? '#fbbf24' : '#94a3b8',
-      textColor: isRaidActive ? '#fef08a' : '#e2e8f0',
+      bgColor: isRaidActive ? 'rgba(69, 26, 3, 0.96)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#14b8a6' : '#94a3b8',
+      textColor: isRaidActive ? '#fed7aa' : '#e2e8f0',
       fontSize: 13,
       paddingX: 12,
       height: 24
@@ -2780,6 +2942,10 @@ class GameEngine {
     const sparkPulse = 0.7 + Math.sin(now / 140) * 0.3;
 
     this.ctx.save();
+    // 🐯 숭실 백호 성수 1.5배 거대화 스케일 변환 (1.5x Scale Transformation)
+    this.ctx.translate(px, py);
+    this.ctx.scale(1.5, 1.5);
+    this.ctx.translate(-px, -py);
 
     // 1. Sacred Azure Lightning Circle
     this.ctx.strokeStyle = `rgba(56, 189, 248, ${sparkPulse})`;
@@ -2883,7 +3049,7 @@ class GameEngine {
       ? `✨ ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
       : `⏳ [성스러운 대기] ${bCfg.name || boss.name}`;
 
-    this.drawSharpLabel(px, py - 68, labelText, {
+    this.drawSharpLabel(px, py - 90, labelText, {
       bgColor: isRaidActive ? 'rgba(2, 44, 84, 0.96)' : 'rgba(30, 41, 59, 0.94)',
       borderColor: isRaidActive ? '#38bdf8' : '#fbbf24',
       textColor: isRaidActive ? '#ffffff' : '#fef08a',
@@ -3239,6 +3405,8 @@ class GameEngine {
           this.drawHighResGinkgoPot(obj);
         } else if (obj.type === 'forsythia') {
           this.drawHighResForsythiaPot(obj);
+        } else if (obj.type === 'water_purifier') {
+          this.drawHighResWaterPurifier(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -3406,14 +3574,31 @@ class GameEngine {
     const pgCaf = (WORLD_DATA.playground && WORLD_DATA.playground.cafeteria) || { x: 86, y: 3 };
     this.drawHighResCafeteriaEntrance(pgCaf.x * 32, pgCaf.y * 32);
 
-    // 5. Left & Center 2/3: SOCCER FIELD (축구장 & 우레탄 트랙)
-    // 5-A. Tartan Red Running Track (우레탄 육상 트랙: x: 4 ~ 58, y: 6 ~ 26)
-    const trackX = 4 * 32;
-    const trackY = 6 * 32;
-    const trackW = 54 * 32;
-    const trackH = 20 * 32;
+    // 4-B. Store NPC (매점 - 학생 급식실 앞: x: 84, y: 5)
+    const pgStore = (WORLD_DATA.playground && WORLD_DATA.playground.store) || { x: 84, y: 5 };
+    this.drawHighResStoreNPC(pgStore.x * 32, pgStore.y * 32);
 
-    this.ctx.fillStyle = '#991b1b'; // Red Tartan
+    // ========================================================
+    // 5. TOP: OUTDOOR SPECTATOR BLEACHERS (야외 스탠드 관람석)
+    // 위치: x: 6 ~ 54, y: 5 ~ 15 (관람석과 축구장 위치 맞바꿈 / 야외 체력단련장 삭제)
+    // ========================================================
+    this.drawHighResBleachers(6 * 32, 5 * 32, 48 * 32, 11 * 32);
+
+    // 5-B. Title Exchange (호칭 교환소 - 관람석 스탠드 중앙: x: 30, y: 15)
+    const pgTitle = (WORLD_DATA.playground && WORLD_DATA.playground.titleExchange) || { x: 30, y: 15 };
+    this.drawHighResTitleExchange(pgTitle.x * 32, pgTitle.y * 32);
+
+    // ========================================================
+    // 6. BOTTOM: SOCCER FIELD (축구장 & 우레탄 트랙)
+    // 위치: x: 4 ~ 58, y: 19 ~ 51 (서쪽 골대 앞 신규 보스 레이드 전장)
+    // ========================================================
+    const trackX = 4 * 32;
+    const trackY = 19 * 32;
+    const trackW = 54 * 32;
+    const trackH = 32 * 32;
+
+    // Tartan Red Running Track
+    this.ctx.fillStyle = '#991b1b';
     this.ctx.beginPath();
     this.ctx.roundRect(trackX, trackY, trackW, trackH, 48);
     this.ctx.fill();
@@ -3428,11 +3613,11 @@ class GameEngine {
       this.ctx.stroke();
     }
 
-    // 5-B. Lush Natural Grass Pitch (잔디 축구장: x: 7 ~ 55, y: 8 ~ 24)
+    // Lush Natural Grass Pitch (잔디 축구장: x: 7 ~ 55, y: 22 ~ 48)
     const pitchX = 7 * 32;
-    const pitchY = 8 * 32;
+    const pitchY = 22 * 32;
     const pitchW = 48 * 32;
-    const pitchH = 16 * 32;
+    const pitchH = 26 * 32;
 
     // Grass Turf Mowing Stripes (4-tile stripes)
     for (let sx = 0; sx < 48; sx += 4) {
@@ -3440,7 +3625,7 @@ class GameEngine {
       this.ctx.fillRect(pitchX + sx * 32, pitchY, 4 * 32, pitchH);
     }
 
-    // 5-C. Soccer Field Markings (Crisp Pure White Lines)
+    // Soccer Field Markings (Crisp Pure White Lines)
     this.ctx.strokeStyle = '#ffffff';
     this.ctx.lineWidth = 2.5;
 
@@ -3454,7 +3639,7 @@ class GameEngine {
     this.ctx.lineTo(midX, pitchY + pitchH);
     this.ctx.stroke();
 
-    // Center Circle (Radius: 100px) & Center Spot
+    // Center Circle (Radius: 100px) & Center Spot (중앙선 y = 35 * 32)
     const midY = pitchY + pitchH / 2;
     this.ctx.beginPath();
     this.ctx.arc(midX, midY, 100, 0, Math.PI * 2);
@@ -3464,15 +3649,15 @@ class GameEngine {
     this.ctx.arc(midX, midY, 5, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Left Penalty Box (18-yard box: width 8 tiles, height 10 tiles)
+    // Left Penalty Box (West 18-yard box)
     const penW = 8 * 32;
-    const penH = 10 * 32;
+    const penH = 12 * 32;
     const penY = midY - penH / 2;
     this.ctx.strokeRect(pitchX, penY, penW, penH);
 
-    // Left Goal Area (6-yard box: width 3.5 tiles, height 5 tiles)
+    // Left Goal Area (West 6-yard box)
     const gAreaW = 3.5 * 32;
-    const gAreaH = 5 * 32;
+    const gAreaH = 6 * 32;
     const gAreaY = midY - gAreaH / 2;
     this.ctx.strokeRect(pitchX, gAreaY, gAreaW, gAreaH);
 
@@ -3485,10 +3670,10 @@ class GameEngine {
     this.ctx.arc(lSpotX, midY, 50, -0.9, 0.9);
     this.ctx.stroke();
 
-    // Right Penalty Box (18-yard box)
+    // Right Penalty Box (East 18-yard box)
     this.ctx.strokeRect(pitchX + pitchW - penW, penY, penW, penH);
 
-    // Right Goal Area (6-yard box)
+    // Right Goal Area (East 6-yard box)
     this.ctx.strokeRect(pitchX + pitchW - gAreaW, gAreaY, gAreaW, gAreaH);
 
     // Right Penalty Spot & Arc
@@ -3502,27 +3687,22 @@ class GameEngine {
 
     // 4 Corner Arcs & Checkered Corner Flags
     const cornerR = 14;
-    // Top-Left
     this.ctx.beginPath(); this.ctx.arc(pitchX, pitchY, cornerR, 0, Math.PI / 2); this.ctx.stroke();
-    // Bottom-Left
     this.ctx.beginPath(); this.ctx.arc(pitchX, pitchY + pitchH, cornerR, -Math.PI / 2, 0); this.ctx.stroke();
-    // Top-Right
     this.ctx.beginPath(); this.ctx.arc(pitchX + pitchW, pitchY, cornerR, Math.PI / 2, Math.PI); this.ctx.stroke();
-    // Bottom-Right
     this.ctx.beginPath(); this.ctx.arc(pitchX + pitchW, pitchY + pitchH, cornerR, Math.PI, Math.PI * 1.5); this.ctx.stroke();
 
-    // Corner Flags
     this.drawCornerFlag(pitchX - 2, pitchY - 2);
     this.drawCornerFlag(pitchX - 2, pitchY + pitchH + 2);
     this.drawCornerFlag(pitchX + pitchW + 2, pitchY - 2);
     this.drawCornerFlag(pitchX + pitchW + 2, pitchY + pitchH + 2);
 
-    // 5-D. High-Res Goalposts with 3D White Mesh Nets
+    // High-Res Goalposts (West & East)
     this.drawHighResGoalPost(pitchX, midY - 60, true);
     this.drawHighResGoalPost(pitchX + pitchW, midY - 60, false);
 
     // Soccer Field Center Label
-    this.drawSharpLabel(midX, midY + 44, '⚽ 숭실 천연잔디 축구장', {
+    this.drawSharpLabel(midX, midY + 54, '⚽ 숭실 천연잔디 축구장', {
       bgColor: 'rgba(21, 128, 61, 0.94)',
       borderColor: '#86efac',
       textColor: '#ffffff',
@@ -3531,7 +3711,17 @@ class GameEngine {
       height: 24
     });
 
-    // 6. Right 1/3: BASKETBALL COURT (우레탄 농구장: x: 61 ~ 87, y: 6 ~ 26)
+    // ========================================================
+    // 7. NEW BOSS RAID ARENA: 서쪽 골대 앞 신규 보스 레이드 전장 (x: 13, y: 35)
+    // ========================================================
+    const pg = WORLD_DATA.playground;
+    if (pg && pg.boss) {
+      this.drawSoccerBossArena(13 * 32, 35 * 32, pg.boss);
+    }
+
+    // ========================================================
+    // 8. RIGHT TOP: BASKETBALL COURT (우레탄 농구장: x: 61 ~ 87, y: 6 ~ 26)
+    // ========================================================
     const bCourtX = 61 * 32;
     const bCourtY = 6 * 32;
     const bCourtW = 26 * 32;
@@ -3545,7 +3735,7 @@ class GameEngine {
     this.ctx.fillStyle = '#0284c7';
     this.ctx.fillRect(bCourtX, bCourtY, bCourtW, bCourtH);
 
-    // Basketball Court Markings (Pure White 2.5px)
+    // Basketball Court Markings
     this.ctx.strokeStyle = '#ffffff';
     this.ctx.lineWidth = 2.5;
     this.ctx.strokeRect(bCourtX, bCourtY, bCourtW, bCourtH);
@@ -3558,47 +3748,38 @@ class GameEngine {
     this.ctx.lineTo(bMidX, bCourtY + bCourtH);
     this.ctx.stroke();
 
-    // Center Jump Circle (Radius: 60px)
     this.ctx.fillStyle = '#0369a1';
     this.ctx.beginPath();
     this.ctx.arc(bMidX, bMidY, 60, 0, Math.PI * 2);
     this.ctx.fill();
     this.ctx.stroke();
 
-    // Left Key (Paint area in fiery orange)
+    // Left Key & 3-pt
     const bKeyW = 6.5 * 32;
     const bKeyH = 6 * 32;
     const bKeyY = bMidY - bKeyH / 2;
     this.ctx.fillStyle = '#ea580c';
     this.ctx.fillRect(bCourtX, bKeyY, bKeyW, bKeyH);
     this.ctx.strokeRect(bCourtX, bKeyY, bKeyW, bKeyH);
-
-    // Left Free-Throw Circle
     this.ctx.beginPath();
     this.ctx.arc(bCourtX + bKeyW, bMidY, bKeyH / 2, -Math.PI / 2, Math.PI / 2);
     this.ctx.stroke();
-
-    // Left 3-Point Arc
     this.ctx.beginPath();
     this.ctx.arc(bCourtX + 32, bMidY, 150, -1.0, 1.0);
     this.ctx.stroke();
 
-    // Right Key (Paint area in fiery orange)
+    // Right Key & 3-pt
     this.ctx.fillStyle = '#ea580c';
     this.ctx.fillRect(bCourtX + bCourtW - bKeyW, bKeyY, bKeyW, bKeyH);
     this.ctx.strokeRect(bCourtX + bCourtW - bKeyW, bKeyY, bKeyW, bKeyH);
-
-    // Right Free-Throw Circle
     this.ctx.beginPath();
     this.ctx.arc(bCourtX + bCourtW - bKeyW, bMidY, bKeyH / 2, Math.PI / 2, Math.PI * 1.5);
     this.ctx.stroke();
-
-    // Right 3-Point Arc
     this.ctx.beginPath();
     this.ctx.arc(bCourtX + bCourtW - 32, bMidY, 150, Math.PI - 1.0, Math.PI + 1.0);
     this.ctx.stroke();
 
-    // High-Res Basketball Hoops
+    // Basketball Hoops
     this.drawHighResBasketballHoop(bCourtX + 28, bMidY, true);
     this.drawHighResBasketballHoop(bCourtX + bCourtW - 28, bMidY, false);
 
@@ -3612,31 +3793,40 @@ class GameEngine {
       height: 24
     });
 
-    // 7. Team Benches, Water Fountain, and Trees along Sidelines
-    // Wood Benches
-    this.drawHighResBench(28 * 32, 5 * 32 + 6);
-    this.drawHighResBench(34 * 32, 5 * 32 + 6);
+    // ========================================================
+    // 9. RIGHT BOTTOM: FUTSAL COURT (신규 인조잔디 풋살장: x: 61 ~ 87, y: 30 ~ 50)
+    // ========================================================
+    this.drawHighResFutsalCourt(61 * 32, 30 * 32, 26 * 32, 20 * 32);
+
+    // ========================================================
+    // 10. Sidelines, Benches, Water Fountain, and Perimeter Fences
+    // ========================================================
+    this.drawHighResBench(26 * 32, 16 * 32 + 6);
+    this.drawHighResBench(34 * 32, 16 * 32 + 6);
     this.drawHighResBench(70 * 32, 5 * 32 + 6);
     this.drawHighResBench(76 * 32, 5 * 32 + 6);
+    this.drawHighResBench(70 * 32, 28 * 32 + 6);
+    this.drawHighResBench(76 * 32, 28 * 32 + 6);
 
     // Drinking Fountain between fields (x: 59, y: 5)
     this.drawHighResDrinkingFountain(59 * 32 + 16, 5 * 32 + 10);
 
-    // Perimeter Fence along Bottom Edge (ty === 27)
+    // Perimeter Fence along Bottom Edge (ty === 53)
     this.ctx.strokeStyle = '#94a3b8';
     this.ctx.lineWidth = 2;
     this.ctx.beginPath();
-    this.ctx.moveTo(0, 27 * 32 + 16);
-    this.ctx.lineTo(mapW * 32, 27 * 32 + 16);
+    this.ctx.moveTo(0, 53 * 32 + 16);
+    this.ctx.lineTo(mapW * 32, 53 * 32 + 16);
     this.ctx.stroke();
 
     for (let fx = 0; fx < mapW * 32; fx += 64) {
       this.ctx.fillStyle = '#64748b';
-      this.ctx.fillRect(fx, 27 * 32, 4, 28);
+      this.ctx.fillRect(fx, 53 * 32, 4, 28);
     }
 
-    // 8. Basketball Monsters (1:1 필드 몬스터)
+    // 11. Render Playground Field Monsters (Basketball & Futsal)
     this.renderBasketballMonsters();
+    this.renderFutsalMonsters();
   }
 
   // Roaming & Respawn Logic for Basketball Monsters
@@ -4741,7 +4931,8 @@ class GameEngine {
     // Nameplate & Crown (2배 캐릭터 높이에 맞춰 머리 위로 배치)
     const name = p.name || '학생';
     const plateY = py - 32;
-    const displayName = isFallen ? `💀 [기절] ${name}` : name;
+    const title = p.equippedTitle;
+    const displayName = isFallen ? `💀 [기절] ${name}` : (title ? `[${title}] ${name}` : name);
 
     this.drawSharpLabel(px + 12, plateY, displayName, {
       bgColor: isFallen ? 'rgba(153, 27, 27, 0.96)' : (isTeacher ? 'rgba(180, 83, 9, 0.96)' : (isLocal ? 'rgba(185, 28, 28, 0.96)' : 'rgba(15, 23, 42, 0.92)')),
@@ -4855,6 +5046,721 @@ class GameEngine {
     this.ctx.fillText(text, x, y - bubbleHeight / 2 + 0.5);
     this.ctx.restore();
   }
+
+  // ========================================================
+  // OUTDOOR SPECTATOR BLEACHERS RENDERING (야외 스탠드 관람석)
+  // ========================================================
+  drawHighResBleachers(sx, sy, sw, sh) {
+    this.ctx.save();
+
+    // Bleacher Concrete Base Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    this.ctx.fillRect(sx - 4, sy - 2, sw + 8, sh + 8);
+
+    // 5 Tiered Concrete Stadium Steps
+    const tiers = 5;
+    const tierH = sh / (tiers + 1);
+
+    const stepColors = ['#475569', '#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0'];
+    const seatColors = ['#1e3a8a', '#1d4ed8', '#15803d', '#16a34a', '#b45309'];
+
+    for (let i = 0; i < tiers; i++) {
+      const ty = sy + i * tierH;
+      this.ctx.fillStyle = stepColors[i % stepColors.length];
+      this.ctx.fillRect(sx, ty, sw, tierH);
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      this.ctx.fillRect(sx, ty, sw, 2);
+
+      const seatY = ty + 4;
+      const seatH = tierH - 8;
+      for (let bx = sx + 16; bx < sx + sw - 16; bx += 36) {
+        if (Math.abs(bx - (sx + sw / 2)) < 50) continue;
+        if (Math.abs(bx - (sx + sw / 4)) < 24) continue;
+        if (Math.abs(bx - (sx + (sw * 3) / 4)) < 24) continue;
+
+        this.ctx.fillStyle = seatColors[i % seatColors.length];
+        this.ctx.beginPath();
+        this.ctx.roundRect(bx, seatY, 28, seatH, 4);
+        this.ctx.fill();
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.fillRect(bx + 2, seatY + 1, 24, 2);
+      }
+    }
+
+    // Center Grandstand Canopy / Awning
+    const canopyW = 20 * 32;
+    const canopyH = 6 * 32;
+    const canopyX = sx + (sw - canopyW) / 2;
+    const canopyY = sy - 14;
+
+    this.ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    this.ctx.beginPath();
+    this.ctx.roundRect(canopyX, canopyY, canopyW, canopyH, 8);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#38bdf8';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#94a3b8';
+    this.ctx.fillRect(canopyX + 10, canopyY + canopyH, 6, sh - canopyH);
+    this.ctx.fillRect(canopyX + canopyW - 16, canopyY + canopyH, 6, sh - canopyH);
+
+    this.drawSharpLabel(sx + sw / 2, sy + sh + 24, '🏫 숭실 야외 스탠드 관람석', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#fbbf24',
+      textColor: '#fef08a',
+      fontSize: 13,
+      paddingX: 14,
+      height: 24
+    });
+
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // SOCCER BOSS RAID ARENA (축구장 서쪽 골대 앞 신규 보스 레이드 장소)
+  // ========================================================
+  drawSoccerBossArena(bx, by, boss) {
+    this.ctx.save();
+    const now = Date.now();
+    const pulse = 0.7 + Math.sin(now / 180) * 0.3;
+    const rot = now / 1200;
+
+    // Sacred Magic Circle
+    this.ctx.save();
+    this.ctx.translate(bx, by);
+
+    this.ctx.strokeStyle = `rgba(250, 204, 21, ${pulse})`;
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.arc(0, 0, 72, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(234, 88, 12, 0.18)';
+    this.ctx.fill();
+
+    this.ctx.rotate(rot);
+    this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    for (let r = 0; r < 8; r++) {
+      const ang = (r * Math.PI) / 4;
+      this.ctx.moveTo(Math.cos(ang) * 45, Math.sin(ang) * 45);
+      this.ctx.lineTo(Math.cos(ang) * 68, Math.sin(ang) * 68);
+    }
+    this.ctx.stroke();
+
+    for (let r = 0; r < 6; r++) {
+      const ang = (r * Math.PI) / 3;
+      this.ctx.fillStyle = '#fef08a';
+      this.ctx.beginPath();
+      this.ctx.arc(Math.cos(ang) * 56, Math.sin(ang) * 56, 3, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+    this.ctx.restore();
+
+    // Draw Active Boss Sprite
+    const bCfg = window.BOSS_CONFIG || boss;
+    const bName = ((bCfg && bCfg.name) || boss.name || '').toLowerCase();
+
+    if (bName.includes('백호') || bName.includes('성수') || bName.includes('tiger')) {
+      this.drawHighResBossWhiteTiger(boss);
+    } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
+      this.drawHighResBossCerberus(boss);
+    } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
+      this.drawHighResBossFinalGod(boss);
+    } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+      this.drawHighResBossSlothTitan(boss);
+    } else if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon')) {
+      this.drawHighResBossDragon(boss);
+    } else if (bName.includes('대마왕') || bName.includes('demon')) {
+      this.drawHighResBossDemon(boss);
+    } else {
+      this.drawHighResBossWhiteTiger(boss);
+    }
+
+    this.drawSharpLabel(bx, by + 46, '⚔️ [SPACE: 보스 레이드 도전]', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#ef4444',
+      textColor: '#ffffff',
+      fontSize: 11,
+      paddingX: 10,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // NEW FUTSAL COURT RENDERING (신규 인조잔디 풋살장)
+  // 위치: x: 61 ~ 87, y: 30 ~ 50
+  // ========================================================
+  drawHighResFutsalCourt(fx, fy, fw, fh) {
+    this.ctx.save();
+
+    this.ctx.fillStyle = '#064e3b';
+    this.ctx.fillRect(fx - 10, fy - 8, fw + 20, fh + 16);
+
+    this.ctx.fillStyle = '#059669';
+    this.ctx.fillRect(fx, fy, fw, fh);
+
+    for (let s = 0; s < fw; s += 64) {
+      this.ctx.fillStyle = ((s / 64) % 2 === 0) ? '#047857' : '#10b981';
+      this.ctx.fillRect(fx + s, fy, 64, fh);
+    }
+
+    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.strokeRect(fx, fy, fw, fh);
+
+    const fMidX = fx + fw / 2;
+    const fMidY = fy + fh / 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(fMidX, fy);
+    this.ctx.lineTo(fMidX, fy + fh);
+    this.ctx.stroke();
+
+    this.ctx.beginPath();
+    this.ctx.arc(fMidX, fMidY, 50, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.beginPath();
+    this.ctx.arc(fMidX, fMidY, 4, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.beginPath();
+    this.ctx.arc(fx, fMidY, 90, -Math.PI / 2, Math.PI / 2);
+    this.ctx.stroke();
+
+    this.ctx.beginPath();
+    this.ctx.arc(fx + fw, fMidY, 90, Math.PI / 2, Math.PI * 1.5);
+    this.ctx.stroke();
+
+    this.drawHighResGoalPost(fx, fMidY - 45, true);
+    this.drawHighResGoalPost(fx + fw, fMidY - 45, false);
+
+    this.drawSharpLabel(fMidX, fMidY + 44, '⚽ 숭실 인조잔디 풋살장', {
+      bgColor: 'rgba(5, 150, 105, 0.94)',
+      borderColor: '#6ee7b7',
+      textColor: '#ffffff',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // FUTSAL MONSTERS ROAMING & RENDERING LOGIC
+  // ========================================================
+  updateFutsalMonsters() {
+    if (!this.player || this.player.room !== 'playground') return;
+    const pg = WORLD_DATA.playground;
+    if (!pg || !pg.futsalMonsters) return;
+
+    const now = Date.now();
+    for (const mob of pg.futsalMonsters) {
+      if (mob.defeated) {
+        if (mob.respawnAt && now >= mob.respawnAt) {
+          mob.defeated = false;
+          mob.hp = mob.maxHp;
+          if (mob.fixed) {
+            mob.x = 63;
+            mob.y = 40;
+          } else {
+            mob.x = Math.round(66 + Math.random() * 18);
+            mob.y = Math.round(33 + Math.random() * 14);
+            mob.targetX = mob.x;
+            mob.targetY = mob.y;
+          }
+        }
+        continue;
+      }
+
+      if (mob.inBattle) continue;
+
+      if (mob.fixed) {
+        mob.x = 63;
+        mob.y = 40;
+        continue;
+      }
+
+      if (mob.roam) {
+        if (mob.targetX === undefined || mob.targetY === undefined) {
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+          mob.nextMoveTime = now + 1000 + Math.random() * 2000;
+        }
+
+        const dx = mob.targetX - mob.x;
+        const dy = mob.targetY - mob.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 0.1) {
+          mob.x = mob.targetX;
+          mob.y = mob.targetY;
+          if (now >= (mob.nextMoveTime || 0)) {
+            mob.targetX = Math.round((66 + Math.random() * 18) * 10) / 10;
+            mob.targetY = Math.round((33 + Math.random() * 14) * 10) / 10;
+            mob.nextMoveTime = now + 2500 + Math.random() * 3500;
+          }
+        } else {
+          const step = 0.014;
+          mob.x += (dx / dist) * Math.min(dist, step);
+          mob.y += (dy / dist) * Math.min(dist, step);
+        }
+      }
+    }
+  }
+
+  renderFutsalMonsters() {
+    const pg = WORLD_DATA.playground;
+    if (!pg || !pg.futsalMonsters) return;
+
+    const now = Date.now();
+    for (const mob of pg.futsalMonsters) {
+      if (mob.defeated) continue;
+
+      const floatY = Math.sin((now + mob.x * 200) / 200) * 3;
+      const px = mob.x * 32;
+      const py = mob.y * 32 + floatY;
+
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 16, mob.y * 32 + 28, 14, 6, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      if (mob.avatar === 'tackle_goblin') {
+        this.drawTackleGoblin(px, py, now);
+      } else if (mob.avatar === 'flame_striker') {
+        this.drawFlameStriker(px, py, now);
+      } else if (mob.avatar === 'spider_keeper') {
+        this.drawSpiderKeeper(px, py, now);
+      }
+
+      const hpW = 42;
+      const hpH = 6;
+      const hpX = px + 16 - hpW / 2;
+      const hpY = py - 14;
+      const hpPct = Math.max(0, Math.min(1, mob.hp / mob.maxHp));
+
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      this.ctx.fillRect(hpX - 1, hpY - 1, hpW + 2, hpH + 2);
+      this.ctx.fillStyle = '#dc2626';
+      this.ctx.fillRect(hpX, hpY, hpW, hpH);
+      this.ctx.fillStyle = hpPct > 0.5 ? '#16a34a' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      this.ctx.fillRect(hpX, hpY, hpW * hpPct, hpH);
+
+      const isElite = (mob.type === 'elite');
+      this.drawSharpLabel(px + 16, mob.y * 32 + 40, `${mob.icon} ${mob.name}`, {
+        bgColor: isElite ? 'rgba(127, 29, 29, 0.95)' : 'rgba(30, 41, 59, 0.92)',
+        borderColor: isElite ? '#f59e0b' : '#34d399',
+        textColor: isElite ? '#fef08a' : '#ffffff',
+        fontSize: isElite ? 11.5 : 10.5,
+        paddingX: 8,
+        height: 20
+      });
+    }
+  }
+
+  // Futsal: Tackle Goblin
+  drawTackleGoblin(px, py, now) {
+    this.ctx.save();
+    this.ctx.fillStyle = '#16a34a';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 10, 8, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 8, py + 10);
+    this.ctx.lineTo(px + 2, py + 6);
+    this.ctx.lineTo(px + 8, py + 14);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 24, py + 10);
+    this.ctx.lineTo(px + 30, py + 6);
+    this.ctx.lineTo(px + 24, py + 14);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.fillRect(px + 9, py + 6, 14, 3);
+
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(px + 12, py + 9, 2.5, 2.5);
+    this.ctx.fillRect(px + 17, py + 9, 2.5, 2.5);
+
+    this.ctx.fillStyle = '#2563eb';
+    this.ctx.fillRect(px + 10, py + 18, 12, 10);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = 'bold 7px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('10', px + 16, py + 25);
+
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 11, py + 27, 4, 4);
+    this.ctx.fillRect(px + 17, py + 27, 4, 4);
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px + 10, py + 30, 5, 2);
+    this.ctx.fillRect(px + 17, py + 30, 5, 2);
+
+    const ballX = px + 26;
+    const ballY = py + 24 + Math.sin(now / 150) * 3;
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.beginPath();
+    this.ctx.arc(ballX, ballY, 6, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#0f172a';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(ballX - 1.5, ballY - 1.5, 3, 3);
+    this.ctx.restore();
+  }
+
+  // Futsal: Flame Striker
+  drawFlameStriker(px, py, now) {
+    this.ctx.save();
+    const flicker = Math.sin(now / 80) * 3;
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 16 + flicker, 15, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 16, 11, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 15, 7, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 12, py + 13, 3, 2);
+    this.ctx.fillRect(px + 17, py + 13, 3, 2);
+
+    const rot = now / 140;
+    const fbX = px + 16 + Math.cos(rot) * 18;
+    const fbY = py + 20 + Math.sin(rot) * 8;
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.arc(fbX, fbY, 7, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.beginPath();
+    this.ctx.arc(fbX, fbY, 4, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
+  }
+
+  // Futsal: Spider Keeper
+  drawSpiderKeeper(px, py, now) {
+    this.ctx.save();
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px + 3, py + 8, 26, 22);
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px + 5, py + 10, 22, 18);
+
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 16, 20, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    for (let w = 0; w < 4; w++) {
+      const wAng = (w * Math.PI) / 4;
+      this.ctx.beginPath();
+      this.ctx.moveTo(px + 16 - Math.cos(wAng) * 20, py + 16 - Math.sin(wAng) * 20);
+      this.ctx.lineTo(px + 16 + Math.cos(wAng) * 20, py + 16 + Math.sin(wAng) * 20);
+      this.ctx.stroke();
+    }
+
+    const gloveWave = Math.sin(now / 150) * 2;
+    this.ctx.fillStyle = '#facc15';
+    this.ctx.fillRect(px - 4, py + 12 + gloveWave, 8, 12);
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(px - 4, py + 12 + gloveWave, 8, 12);
+
+    this.ctx.fillStyle = '#facc15';
+    this.ctx.fillRect(px + 28, py + 12 - gloveWave, 8, 12);
+    this.ctx.strokeRect(px + 28, py + 12 - gloveWave, 8, 12);
+
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px + 9, py + 14, 14, 3);
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // HIGH-RES INDOOR WATER PURIFIER (복도 정수기)
+  // ========================================================
+  drawHighResWaterPurifier(px, py) {
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 30, 16, 7, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    const bx = px + 4;
+    const by = py - 4;
+    const bw = 24;
+    const bh = 34;
+
+    this.ctx.fillStyle = '#f1f5f9';
+    this.ctx.fillRect(bx, by, bw, bh);
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(bx, by, bw, bh);
+
+    this.ctx.fillStyle = '#cbd5e1';
+    this.ctx.fillRect(bx + 1, by + 1, 4, bh - 2);
+
+    const tankY = by - 10;
+    this.ctx.fillStyle = 'rgba(56, 189, 248, 0.75)';
+    this.ctx.beginPath();
+    this.ctx.roundRect(bx + 3, tankY, bw - 6, 12, [6, 6, 2, 2]);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    this.ctx.fillRect(bx + 5, tankY + 2, 3, 7);
+    this.ctx.fillRect(bx + 14, tankY + 4, 2, 2);
+
+    const alcoveX = bx + 4;
+    const alcoveY = by + 7;
+    const alcoveW = bw - 8;
+    const alcoveH = 14;
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(alcoveX, alcoveY, alcoveW, alcoveH);
+
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(alcoveX + 3, alcoveY + 1, 3, 5);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(alcoveX + alcoveW - 6, alcoveY + 1, 3, 5);
+
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(alcoveX + 1, alcoveY + alcoveH - 3, alcoveW - 2, 3);
+
+    this.ctx.fillStyle = '#4ade80';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 8, by + 4, 1.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 16, by + 4, 1.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.drawSharpLabel(px + 16, py - 22, '🚰 복도 정수기', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res School Canteen (매점 - 학생급식실 앞)
+  drawHighResStoreNPC(cx, cy) {
+    this.ctx.save();
+    const w = 72;
+    const h = 56;
+
+    // Ground shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(cx + 36, cy + 44, 38, 12, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Wooden Counter base
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.beginPath();
+    this.ctx.roundRect(cx + 4, cy + 18, 64, 28, 4);
+    this.ctx.fill();
+
+    // Counter wood planks texture
+    this.ctx.strokeStyle = '#451a03';
+    this.ctx.lineWidth = 1.5;
+    for (let py = cy + 24; py < cy + 44; py += 7) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx + 6, py);
+      this.ctx.lineTo(cx + 66, py);
+      this.ctx.stroke();
+    }
+
+    // Glass display counter / snack showcase
+    this.ctx.fillStyle = 'rgba(186, 230, 253, 0.55)';
+    this.ctx.beginPath();
+    this.ctx.roundRect(cx + 8, cy + 20, 56, 12, 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    // Counter top marble / polished board
+    this.ctx.fillStyle = '#fde68a';
+    this.ctx.beginPath();
+    this.ctx.roundRect(cx + 2, cy + 15, 68, 5, 2);
+    this.ctx.fill();
+
+    // Canteen Clerk NPC (Behind counter)
+    const clerkX = cx + 36;
+    const clerkY = cy + 10;
+    // Clerk Hat / Cap
+    this.ctx.fillStyle = '#f87171';
+    this.ctx.beginPath();
+    this.ctx.arc(clerkX, clerkY - 6, 8, Math.PI, Math.PI * 2);
+    this.ctx.fill();
+    // Head / Face
+    this.ctx.fillStyle = '#fed7aa';
+    this.ctx.beginPath();
+    this.ctx.arc(clerkX, clerkY - 4, 7, 0, Math.PI * 2);
+    this.ctx.fill();
+    // Eyes
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(clerkX - 3, clerkY - 5, 2, 2);
+    this.ctx.fillRect(clerkX + 1, clerkY - 5, 2, 2);
+    // Smile
+    this.ctx.strokeStyle = '#e11d48';
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.arc(clerkX, clerkY - 3, 3, 0.1 * Math.PI, 0.9 * Math.PI);
+    this.ctx.stroke();
+    // Clerk Uniform & Apron
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(clerkX - 7, clerkY + 3, 14, 12);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(clerkX - 5, clerkY + 5, 10, 8);
+
+    // Awning Canopy (Striped red & white)
+    const awningW = 76;
+    const awningH = 16;
+    const ax = cx - 2;
+    const ay = cy - 4;
+    const stripeW = 9.5;
+    for (let s = 0; s < 8; s++) {
+      this.ctx.fillStyle = (s % 2 === 0) ? '#dc2626' : '#ffffff';
+      this.ctx.beginPath();
+      this.ctx.roundRect(ax + s * stripeW, ay, stripeW, awningH, [3, 3, 4, 4]);
+      this.ctx.fill();
+    }
+    this.ctx.strokeStyle = '#b91c1c';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(ax, ay, awningW, awningH);
+
+    // Support poles
+    this.ctx.fillStyle = '#94a3b8';
+    this.ctx.fillRect(cx + 2, ay + awningH, 3, 24);
+    this.ctx.fillRect(cx + 67, ay + awningH, 3, 24);
+
+    // Sign label
+    this.drawSharpLabel(cx + 36, cy - 18, '🏪 매점', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
+      fontSize: 12.5,
+      paddingX: 11,
+      height: 22
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res Title Exchange (호칭 교환소 - 스탠드 관람석 구역)
+  drawHighResTitleExchange(cx, cy) {
+    this.ctx.save();
+
+    // Ground Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(cx + 36, cy + 38, 42, 14, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Royal Ceremonial Rug / Dais
+    this.ctx.fillStyle = '#831843'; // Deep crimson
+    this.ctx.beginPath();
+    this.ctx.roundRect(cx + 2, cy + 18, 68, 22, 6);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#fbbf24'; // Gold border
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // Pedestal stand
+    this.ctx.fillStyle = '#475569';
+    this.ctx.beginPath();
+    this.ctx.roundRect(cx + 18, cy + 6, 36, 18, 4);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    // Golden Laurel / Trophy on stand
+    const time = Date.now() / 400;
+    const floatY = Math.sin(time) * 3;
+
+    // Golden Medal Trophy
+    const tx = cx + 36;
+    const ty = cy - 2 + floatY;
+
+    // Golden radial aura
+    const grad = this.ctx.createRadialGradient(tx, ty, 2, tx, ty, 20);
+    grad.addColorStop(0, 'rgba(251, 191, 36, 0.6)');
+    grad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+    this.ctx.fillStyle = grad;
+    this.ctx.beginPath();
+    this.ctx.arc(tx, ty, 20, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Golden Medal
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.arc(tx, ty, 11, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#fef08a';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // Medal Ribbon
+    this.ctx.fillStyle = '#3b82f6';
+    this.ctx.beginPath();
+    this.ctx.moveTo(tx - 6, ty - 10);
+    this.ctx.lineTo(tx, ty - 2);
+    this.ctx.lineTo(tx + 6, ty - 10);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Medal Star Icon
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = '10px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText('★', tx, ty);
+
+    // Sparkles
+    const spX1 = tx + Math.cos(time * 1.5) * 16;
+    const spY1 = ty + Math.sin(time * 1.5) * 12;
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(spX1, spY1, 2, 2);
+
+    // Sign label
+    this.drawSharpLabel(cx + 36, cy - 24, '🏅 호칭 교환소', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#38bdf8',
+      textColor: '#7dd3fc',
+      fontSize: 12.5,
+      paddingX: 11,
+      height: 22
+    });
+
+    this.ctx.restore();
+  }
+
 }
 
 window.GameEngine = GameEngine;

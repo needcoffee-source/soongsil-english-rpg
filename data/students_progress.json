@@ -30,6 +30,9 @@
     },
     "hairColor": "blonde",
     "outfitColor": "green",
-    "updatedAt": 1792721057609
+    "hasReceivedSoongsilGift": false,
+    "hasOpenedSecretLocker": false,
+    "hasClearedDragonRaid": false,
+    "updatedAt": 1792913299730
   }
 }

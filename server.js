@@ -117,6 +117,27 @@ app.get('/api/admin/export-progress', (req, res) => {
   res.send(fs.readFileSync(PROGRESS_FILE, 'utf8'));
 });
 
+// Download Complete Item Drop Table & Acquisition Routes Excel (.xlsx)
+app.get('/api/admin/download-item-drops-excel', (req, res) => {
+  const excelPath = path.join(__dirname, 'public', 'downloads', 'soongsil_rpg_item_drops_catalog.xlsx');
+  const filename = encodeURIComponent('숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"; filename*=UTF-8''${filename}`);
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  if (fs.existsSync(excelPath)) {
+    return res.sendFile(excelPath);
+  }
+  try {
+    const { buildItemDropWorkbook } = require('./scripts/generate_item_excel.js');
+    const XLSX = require('xlsx');
+    const wb = buildItemDropWorkbook();
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    return res.send(buf);
+  } catch (err) {
+    console.error('[Excel Generation Error]', err);
+    return res.status(500).json({ error: 'Failed to generate Excel file' });
+  }
+});
+
 app.post('/api/admin/restore-progress', (req, res) => {
   let body = req.body;
   if (typeof body === 'string') {
@@ -157,16 +178,16 @@ const chatLogs = []; // for teacher review
 // Boss Raid Event State (Teacher Controlled)
 let bossRaidEvent = {
   active: false,
-  name: '👾 고목 골렘',
+  name: '👾 가죽 골렘',
   level: 10,
   mode: 'coop',       // 'coop' (협동 공유 체력) or 'solo' (개인별 레이드)
   unitFilter: 'ALL',  // 'ALL', 'L1', 'L2', 'L3', 'L4'
-  maxHp: 3000,
-  currentHp: 3000,
-  atk: 18,
-  def: 5,
-  rewardGold: 100,
-  rewardExp: 200,
+  maxHp: 2000,
+  currentHp: 2000,
+  atk: 17,
+  def: 8,
+  rewardGold: 50,
+  rewardExp: 100,
   participants: {}
 };
 
@@ -178,8 +199,11 @@ const ALL_GAME_ITEMS = {
   'item_forsythia': { name: '노란 개나리 꽃잎', icon: '🌼', meta: { type: 'material', effect: '교화 개나리 장신구 및 주황 물약 재료' } },
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_golem_core': { name: '고목의 핵', icon: '🟢', meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
+  'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_dragon_heart': { name: '용의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '드래곤 보스 전리품 · 최상위 제작 재료' } },
+  'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
+  'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
@@ -188,14 +212,16 @@ const ALL_GAME_ITEMS = {
 
   // 3. Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
-  'equip_wood_helmet': { name: '나무투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 20 }, effect: '방어력 +8, 체력 +20' } },
-  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 50 }, effect: '방어력 +15, 체력 +50' } },
-  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 25 }, effect: '방어력 +17, 체력 +25' } },
+  'equip_wood_helmet': { name: '나무투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
+  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
+  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
+  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' } },
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
@@ -271,6 +297,7 @@ io.on('connection', (socket) => {
       hairColor: ['black', 'brown', 'blonde'].includes(data.hairColor) ? data.hairColor : 'black',
       outfitColor: ['red', 'blue', 'green'].includes(data.outfitColor) ? data.outfitColor : 'red',
       gear: sanitizeGear(data.gear),
+      equippedTitle: data.equippedTitle || null,
       inventory: []
     };
 
@@ -320,6 +347,15 @@ io.on('connection', (socket) => {
     player.gear = sanitizeGear(gear);
     const currentRoom = `server_${player.grade}_f${player.floor}_${player.room}`;
     socket.to(currentRoom).emit('player_gear_updated', { id: socket.id, gear: player.gear });
+  });
+
+  // Equipped title sync (호칭 착용 동기화)
+  socket.on('player_title_update', (title) => {
+    const player = players[socket.id];
+    if (!player) return;
+    player.equippedTitle = typeof title === 'string' ? title.slice(0, 30) : null;
+    const currentRoom = `server_${player.grade}_f${player.floor}_${player.room}`;
+    socket.to(currentRoom).emit('player_title_updated', { id: socket.id, equippedTitle: player.equippedTitle });
   });
 
   // Room / Floor Change (Pokemon-style warp)
@@ -520,14 +556,22 @@ io.on('connection', (socket) => {
 
     io.emit('boss_raid_state', bossRaidEvent);
 
+    const bName = bossRaidEvent.name || '';
+    const isSoccerBoss = bName.includes('케르베로스') || bName.includes('파멸신') || bName.includes('나태') || bName.includes('백호') || bName.includes('대마왕');
+    const locText = isSoccerBoss ? '숭실 운동장(축구장 서쪽 골대)' : '1학년 2반';
+
     if (opts.announce !== false) {
       io.emit('teacher_announcement_popup', {
-        message: `🔥 [보스레이드 시작] 1학년 2반에 '${bossRaidEvent.name}'(HP ${bossRaidEvent.maxHp})이(가) 출현했습니다!`
+        message: `🔥 [보스레이드 시작] ${locText}에 '${bossRaidEvent.name}'(HP ${bossRaidEvent.maxHp})이(가) 출현했습니다!`
       });
     }
 
     if (opts.summonAll) {
-      io.emit('boss_raid_force_warp', { floor: 7, room: 'room_702' });
+      if (isSoccerBoss) {
+        io.emit('boss_raid_force_warp', { floor: 0, room: 'playground', x: 17 * 32, y: 35 * 32 });
+      } else {
+        io.emit('boss_raid_force_warp', { floor: 7, room: 'room_702' });
+      }
     }
   });
 

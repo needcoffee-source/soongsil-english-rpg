@@ -8,11 +8,21 @@
     "gradeLevel": 1,
     "requiredGold": 15,
     "requiredItems": [
-      { "item": "item_wood", "name": "단단한 목재", "count": 10 }
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 10
+      }
     ],
     "unscramble": {
       "korean": "나는 매일 영어를 공부한다.",
-      "words": ["I", "study", "English", "every", "day."],
+      "words": [
+        "I",
+        "study",
+        "English",
+        "every",
+        "day."
+      ],
       "correct": "I study English every day."
     },
     "result": {
@@ -21,7 +31,11 @@
       "icon": "🗡️",
       "type": "equipment",
       "slot": "weapon",
-      "stats": { "atk": 15, "def": 0, "hp": 0 },
+      "stats": {
+        "atk": 15,
+        "def": 0,
+        "hp": 0
+      },
       "effect": "보스 공격 시 공격력(ATK) +15"
     }
   },
@@ -34,11 +48,21 @@
     "gradeLevel": 1,
     "requiredGold": 15,
     "requiredItems": [
-      { "item": "item_wood", "name": "단단한 목재", "count": 10 }
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 10
+      }
     ],
     "unscramble": {
       "korean": "우리는 플라스틱 병들을 재활용할 수 있다.",
-      "words": ["We", "can", "recycle", "plastic", "bottles."],
+      "words": [
+        "We",
+        "can",
+        "recycle",
+        "plastic",
+        "bottles."
+      ],
       "correct": "We can recycle plastic bottles."
     },
     "result": {
@@ -47,7 +71,11 @@
       "icon": "🪖",
       "type": "equipment",
       "slot": "helmet",
-      "stats": { "atk": 0, "def": 8, "hp": 25 },
+      "stats": {
+        "atk": 0,
+        "def": 8,
+        "hp": 25
+      },
       "effect": "방어력(DEF) +8, 최대체력(HP) +25"
     }
   },
@@ -58,13 +86,27 @@
     "description": "[갑옷] 단단한 목재를 엮어 만든 갑옷으로 보스의 강타를 막아줍니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
-    "requiredGold": 20,
+    "requiredGold": 15,
     "requiredItems": [
-      { "item": "item_wood", "name": "단단한 목재", "count": 10 }
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 10
+      }
     ],
     "unscramble": {
       "korean": "그녀는 책장에서 책을 꺼내고 있다.",
-      "words": ["She", "is", "taking", "out", "a", "book", "from", "the", "bookshelf."],
+      "words": [
+        "She",
+        "is",
+        "taking",
+        "out",
+        "a",
+        "book",
+        "from",
+        "the",
+        "bookshelf."
+      ],
       "correct": "She is taking out a book from the bookshelf."
     },
     "result": {
@@ -73,24 +115,48 @@
       "icon": "🛡️",
       "type": "equipment",
       "slot": "armor",
-      "stats": { "atk": 0, "def": 15, "hp": 10 },
-      "effect": "방어력(DEF) +15, 최대체력(HP) +10"
+      "stats": {
+        "atk": 0,
+        "def": 15,
+        "hp": 15
+      },
+      "effect": "방어력(DEF) +15, 최대체력(HP) +15"
     }
   },
   {
     "id": "recipe_leather_armor",
     "name": "가죽갑옷 (Leather Armor)",
     "category": "equipment",
-    "description": "[고급 갑옷] 질긴 농구공 가죽 조각으로 정성스레 기운 튼튼한 가죽 갑옷입니다.",
+    "description": "[2티어 갑옷] 질긴 보스의 가죽과 농구공 가죽을 엮어 만든 유연하고 튼튼한 2티어 가죽 갑옷입니다.",
     "icon": "🥋",
     "gradeLevel": 1,
     "requiredGold": 50,
     "requiredItems": [
-      { "item": "item_basketball_leather", "name": "농구공 가죽 조각", "count": 30 }
+      {
+        "item": "item_boss_leather",
+        "name": "질긴 보스의 가죽",
+        "count": 1
+      },
+      {
+        "item": "item_basketball_leather",
+        "name": "농구공 가죽 조각",
+        "count": 30
+      }
     ],
     "unscramble": {
       "korean": "나는 이번 주말에 전주 한옥마을을 방문할 계획이다.",
-      "words": ["I", "am", "going", "to", "visit", "Jeonju", "Hanok", "Village", "this", "weekend."],
+      "words": [
+        "I",
+        "am",
+        "going",
+        "to",
+        "visit",
+        "Jeonju",
+        "Hanok",
+        "Village",
+        "this",
+        "weekend."
+      ],
       "correct": "I am going to visit Jeonju Hanok Village this weekend."
     },
     "result": {
@@ -99,25 +165,148 @@
       "icon": "🥋",
       "type": "equipment",
       "slot": "armor",
-      "stats": { "atk": 0, "def": 17, "hp": 25 },
-      "effect": "방어력(DEF) +17, 최대체력(HP) +25"
+      "stats": {
+        "atk": 0,
+        "def": 17,
+        "hp": 20
+      },
+      "effect": "방어력(DEF) +17, 최대체력(HP) +20"
+    }
+  },
+  {
+    "id": "recipe_leather_helmet",
+    "name": "가죽투구 (Leather Helmet)",
+    "category": "equipment",
+    "description": "[2티어 투구] 질긴 보스의 가죽과 풋살공 가죽으로 제작하여 머리를 안전하게 감싸는 2티어 가죽 헤드기어입니다.",
+    "icon": "⛑️",
+    "gradeLevel": 1,
+    "requiredGold": 40,
+    "requiredItems": [
+      {
+        "item": "item_boss_leather",
+        "name": "질긴 보스의 가죽",
+        "count": 1
+      },
+      {
+        "item": "item_futsal_leather",
+        "name": "탄력있는 풋살공 가죽",
+        "count": 20
+      }
+    ],
+    "unscramble": {
+      "korean": "축구와 풋살 경기에서 팀워크는 가장 중요한 요소이다.",
+      "words": [
+        "Teamwork",
+        "is",
+        "the",
+        "most",
+        "important",
+        "factor",
+        "in",
+        "the",
+        "game."
+      ],
+      "correct": "Teamwork is the most important factor in the game."
+    },
+    "result": {
+      "item": "equip_leather_helmet",
+      "name": "가죽투구",
+      "icon": "⛑️",
+      "type": "equipment",
+      "slot": "helmet",
+      "stats": {
+        "atk": 0,
+        "def": 12,
+        "hp": 28
+      },
+      "effect": "방어력(DEF) +12, 최대체력(HP) +28"
+    }
+  },
+  {
+    "id": "recipe_leather_sword",
+    "name": "가죽손잡이 세이버 (Leather-Grip Saber)",
+    "category": "equipment",
+    "description": "[2티어 무기] 질긴 보스의 가죽과 농구공·풋살공 가죽을 배합해 튼튼하게 감아쥔 2티어 가죽손잡이 세이버입니다.",
+    "icon": "🗡️",
+    "gradeLevel": 1,
+    "requiredGold": 35,
+    "requiredItems": [
+      {
+        "item": "item_boss_leather",
+        "name": "질긴 보스의 가죽",
+        "count": 1
+      },
+      {
+        "item": "item_basketball_leather",
+        "name": "농구공 가죽 조각",
+        "count": 10
+      },
+      {
+        "item": "item_futsal_leather",
+        "name": "탄력있는 풋살공 가죽",
+        "count": 10
+      }
+    ],
+    "unscramble": {
+      "korean": "우리는 운동장에서 함께 축구를 즐긴다.",
+      "words": [
+        "We",
+        "enjoy",
+        "playing",
+        "soccer",
+        "together",
+        "on",
+        "the",
+        "playground."
+      ],
+      "correct": "We enjoy playing soccer together on the playground."
+    },
+    "result": {
+      "item": "equip_leather_sword",
+      "name": "가죽손잡이 세이버",
+      "icon": "🗡️",
+      "type": "equipment",
+      "slot": "weapon",
+      "stats": {
+        "atk": 20,
+        "def": 0,
+        "hp": 0
+      },
+      "effect": "공격력(ATK) +20"
     }
   },
   {
     "id": "recipe_bronze_sword",
     "name": "청동검 (Bronze Sword)",
     "category": "equipment",
-    "description": "[희귀 무기] 고목의 핵과 단단한 목재를 합금해 벼려낸 강력한 청동 검입니다.",
+    "description": "[무기] 청동 드래곤의 심장과 노란 개나리 꽃잎으로 벼려낸 최상급 청동검입니다.",
     "icon": "⚔️",
     "gradeLevel": 1,
     "requiredGold": 50,
     "requiredItems": [
-      { "item": "item_golem_core", "name": "고목의 핵", "count": 1 },
-      { "item": "item_wood", "name": "단단한 목재", "count": 15 }
+      {
+        "item": "item_bronze_heart",
+        "name": "청동 드래곤의 심장",
+        "count": 1
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 20
+      }
     ],
     "unscramble": {
       "korean": "우리는 함께 숲과 자연을 보호할 수 있다.",
-      "words": ["We", "can", "protect", "the", "forest", "and", "nature", "together."],
+      "words": [
+        "We",
+        "can",
+        "protect",
+        "the",
+        "forest",
+        "and",
+        "nature",
+        "together."
+      ],
       "correct": "We can protect the forest and nature together."
     },
     "result": {
@@ -126,7 +315,11 @@
       "icon": "⚔️",
       "type": "equipment",
       "slot": "weapon",
-      "stats": { "atk": 25, "def": 0, "hp": 0 },
+      "stats": {
+        "atk": 25,
+        "def": 0,
+        "hp": 0
+      },
       "effect": "공격력(ATK) +25"
     }
   },
@@ -134,17 +327,33 @@
     "id": "recipe_bronze_helmet",
     "name": "청동투구 (Bronze Helmet)",
     "category": "equipment",
-    "description": "[희귀 투구] 고목의 핵과 노란 개나리 꽃잎의 생명력을 담아 벼려낸 단단한 청동 투구입니다.",
+    "description": "[3티어 투구] 청동 드래곤의 심장과 노란 개나리 꽃잎의 생명력을 담아 벼려낸 단단한 3티어 청동 투구입니다.",
     "icon": "🪖",
     "gradeLevel": 1,
     "requiredGold": 50,
     "requiredItems": [
-      { "item": "item_golem_core", "name": "고목의 핵", "count": 1 },
-      { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 15 }
+      {
+        "item": "item_bronze_heart",
+        "name": "청동 드래곤의 심장",
+        "count": 1
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 10
+      }
     ],
     "unscramble": {
       "korean": "노란 개나리 꽃들은 봄에 아름답게 핀다.",
-      "words": ["Yellow", "forsythia", "flowers", "bloom", "beautifully", "in", "spring."],
+      "words": [
+        "Yellow",
+        "forsythia",
+        "flowers",
+        "bloom",
+        "beautifully",
+        "in",
+        "spring."
+      ],
       "correct": "Yellow forsythia flowers bloom beautifully in spring."
     },
     "result": {
@@ -153,7 +362,11 @@
       "icon": "🪖",
       "type": "equipment",
       "slot": "helmet",
-      "stats": { "atk": 0, "def": 14, "hp": 35 },
+      "stats": {
+        "atk": 0,
+        "def": 14,
+        "hp": 35
+      },
       "effect": "방어력(DEF) +14, 최대체력(HP) +35"
     }
   },
@@ -161,17 +374,33 @@
     "id": "recipe_bronze_armor",
     "name": "청동갑옷 (Bronze Armor)",
     "category": "equipment",
-    "description": "[희귀 갑옷] 용의 심장과 가죽 조각을 엮어 만든 무적의 청동 갑옷입니다.",
+    "description": "[3티어 갑옷] 청동 드래곤의 심장과 노란 개나리 꽃잎을 엮어 만든 무적의 3티어 청동 갑옷입니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
     "requiredGold": 70,
     "requiredItems": [
-      { "item": "item_dragon_heart", "name": "용의 심장", "count": 1 },
-      { "item": "item_basketball_leather", "name": "농구공 가죽 조각", "count": 20 }
+      {
+        "item": "item_bronze_heart",
+        "name": "청동 드래곤의 심장",
+        "count": 1
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 15
+      }
     ],
     "unscramble": {
       "korean": "그는 강한 용기를 가지고 모든 어려움을 극복했다.",
-      "words": ["He", "overcame", "all", "difficulties", "with", "strong", "courage."],
+      "words": [
+        "He",
+        "overcame",
+        "all",
+        "difficulties",
+        "with",
+        "strong",
+        "courage."
+      ],
       "correct": "He overcame all difficulties with strong courage."
     },
     "result": {
@@ -180,8 +409,12 @@
       "icon": "🛡️",
       "type": "equipment",
       "slot": "armor",
-      "stats": { "atk": 0, "def": 22, "hp": 70 },
-      "effect": "방어력(DEF) +22, 최대체력(HP) +70"
+      "stats": {
+        "atk": 0,
+        "def": 22,
+        "hp": 25
+      },
+      "effect": "방어력(DEF) +22, 최대체력(HP) +25"
     }
   },
   {
@@ -193,11 +426,22 @@
     "gradeLevel": 1,
     "requiredGold": 30,
     "requiredItems": [
-      { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 10 }
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 20
+      }
     ],
     "unscramble": {
       "korean": "우리는 옛 이야기들로부터 지혜를 배웠다.",
-      "words": ["We", "learned", "wisdom", "from", "old", "stories."],
+      "words": [
+        "We",
+        "learned",
+        "wisdom",
+        "from",
+        "old",
+        "stories."
+      ],
       "correct": "We learned wisdom from old stories."
     },
     "result": {
@@ -206,7 +450,11 @@
       "icon": "🏵️",
       "type": "equipment",
       "slot": "accessory",
-      "stats": { "atk": 10, "def": 10, "hp": 20 },
+      "stats": {
+        "atk": 10,
+        "def": 10,
+        "hp": 20
+      },
       "effect": "공격력(ATK) +10, 방어력(DEF) +10, 최대체력 +20"
     }
   },
@@ -219,11 +467,24 @@
     "gradeLevel": 1,
     "requiredGold": 50,
     "requiredItems": [
-      { "item": "item_ginkgo", "name": "황금 은행잎", "count": 10 }
+      {
+        "item": "item_ginkgo",
+        "name": "황금 은행잎",
+        "count": 10
+      }
     ],
     "unscramble": {
       "korean": "그는 영어를 공부하기 위해 도서관에 갔다.",
-      "words": ["He", "went", "to", "the", "library", "to", "study", "English."],
+      "words": [
+        "He",
+        "went",
+        "to",
+        "the",
+        "library",
+        "to",
+        "study",
+        "English."
+      ],
       "correct": "He went to the library to study English."
     },
     "result": {
@@ -232,7 +493,11 @@
       "icon": "🍂",
       "type": "equipment",
       "slot": "accessory",
-      "stats": { "atk": 20, "def": 12, "hp": 40 },
+      "stats": {
+        "atk": 20,
+        "def": 12,
+        "hp": 40
+      },
       "effect": "공격력(ATK) +20, 방어력(DEF) +12, 최대체력 +40"
     }
   },
@@ -245,11 +510,21 @@
     "gradeLevel": 1,
     "requiredGold": 5,
     "requiredItems": [
-      { "item": "item_herb", "name": "향긋한 허브", "count": 1 }
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 1
+      }
     ],
     "unscramble": {
       "korean": "그 맛있는 오믈렛은 좋은 냄새가 난다.",
-      "words": ["The", "delicious", "omelet", "smells", "good."],
+      "words": [
+        "The",
+        "delicious",
+        "omelet",
+        "smells",
+        "good."
+      ],
       "correct": "The delicious omelet smells good."
     },
     "result": {
@@ -271,12 +546,26 @@
     "gradeLevel": 1,
     "requiredGold": 10,
     "requiredItems": [
-      { "item": "item_herb", "name": "향긋한 허브", "count": 2 },
-      { "item": "item_forsythia", "name": "노란 개나리 꽃잎", "count": 1 }
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 2
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 1
+      }
     ],
     "unscramble": {
       "korean": "우리는 플라스틱 병들을 재활용해야 한다.",
-      "words": ["We", "should", "recycle", "plastic", "bottles."],
+      "words": [
+        "We",
+        "should",
+        "recycle",
+        "plastic",
+        "bottles."
+      ],
       "correct": "We should recycle plastic bottles."
     },
     "result": {
@@ -298,12 +587,27 @@
     "gradeLevel": 1,
     "requiredGold": 25,
     "requiredItems": [
-      { "item": "item_herb", "name": "향긋한 허브", "count": 3 },
-      { "item": "item_ginkgo", "name": "황금 은행잎", "count": 1 }
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 3
+      },
+      {
+        "item": "item_ginkgo",
+        "name": "황금 은행잎",
+        "count": 1
+      }
     ],
     "unscramble": {
       "korean": "작은 실천이 큰 차이를 만듭니다.",
-      "words": ["Small", "actions", "make", "a", "big", "difference."],
+      "words": [
+        "Small",
+        "actions",
+        "make",
+        "a",
+        "big",
+        "difference."
+      ],
       "correct": "Small actions make a big difference."
     },
     "result": {

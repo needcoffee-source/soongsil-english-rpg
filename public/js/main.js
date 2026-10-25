@@ -14,8 +14,11 @@ const ALL_GAME_ITEMS = {
   'item_forsythia': { name: '노란 개나리 꽃잎', icon: '🌼', count: 9999, meta: { type: 'material', effect: '교화 개나리 장신구 및 주황 물약 재료' } },
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_golem_core': { name: '고목의 핵', icon: '🟢', count: 9999, meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
+  'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_dragon_heart': { name: '용의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '드래곤 보스 전리품 · 최상위 제작 재료' } },
+  'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
+  'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
@@ -25,15 +28,17 @@ const ALL_GAME_ITEMS = {
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
   'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
-  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' } },
-  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 25 }, effect: '방어력 +17, 체력 +25' } },
+  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
+  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
+  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' } },
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
 
   // 5. Legendary Season Boss Artifacts & Rewards
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
@@ -43,18 +48,89 @@ const ALL_GAME_ITEMS = {
   'equip_tiger_amulet': { name: '숭실 백호 수호 부적', icon: '🐯', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '숭실 백호 성수 전리품 · 공격력 +35, 방어력 +25, 체력 +100' } }
 };
 
+window.ALL_GAME_ITEMS = ALL_GAME_ITEMS;
+
+// 매점 아이템 판매 가격 테이블 (소비품 판매 금지 / 장비 제작비 20% 환급 적용)
+const ITEM_SELL_PRICES = {
+  // 1. 기초 채집 재료
+  'item_wood': 1, // 단단한 목재 (호칭교환 30개 = 30G 가치)
+  'item_herb': 1, // 향긋한 허브 (호칭교환 30개 = 30G 가치)
+  'item_forsythia': 2, // 노란 개나리 꽃잎 (15% 드랍)
+  'item_ginkgo': 3, // 황금 은행잎 (부적 재료)
+
+  // 2. 몬스터 / 보스 전리품
+  'item_basketball_leather': 2, // 농구공 가죽 조각
+  'item_futsal_leather': 2, // 탄력있는 풋살공 가죽 (유저 확정: 2G)
+  'item_golem_core': 10, // 고목의 핵
+  'item_boss_leather': 15, // 질긴 보스의 가죽
+  'item_bronze_heart': 30, // 청동 드래곤의 심장
+  'item_dragon_heart': 30, // 용의 심장
+  'item_eval_paper': 25, // A+ 만점 수행평가지
+
+  // 3. 1티어 나무 장비 (제작비 15G의 20% = 3G 환급)
+  'equip_wood_sword': 3,
+  'equip_wood_helmet': 3,
+  'equip_wood_armor': 3,
+
+  // 4. 2티어 가죽 / 개나리 장비 (제작비의 20% 환급)
+  'equip_leather_sword': 7, // 제작비 35G -> 20% = 7G
+  'equip_leather_helmet': 8, // 제작비 40G -> 20% = 8G
+  'equip_leather_armor': 10, // 제작비 50G -> 20% = 10G
+  'equip_forsythia_ring': 6, // 제작비 30G -> 20% = 6G
+
+  // 5. 3티어 청동 / 은행잎 장비 (제작비의 20% 환급)
+  'equip_bronze_sword': 10, // 제작비 50G -> 20% = 10G
+  'equip_bronze_helmet': 10, // 제작비 50G -> 20% = 10G
+  'equip_bronze_armor': 14, // 제작비 70G -> 20% = 14G
+  'equip_ginkgo_talisman': 10, // 제작비 50G -> 20% = 10G
+
+  // 6. 최상위 엔드 레이드 전리품
+  'equip_laurel_crown': 20,
+  'equip_omr_wand': 20,
+  'equip_tiger_amulet': 25
+};
+
+// 호칭 교환소 3대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자)
+const TITLE_DEFINITIONS = [
+  {
+    id: 'title_wood_king',
+    name: '🪵 숭실 벌목왕',
+    desc: '수많은 영어 문제를 풀고 학교 나무를 가꾼 진정한 벌목의 달인!',
+    costType: 'item',
+    costItem: 'item_wood',
+    costItemName: '단단한 목재',
+    costAmount: 30
+  },
+  {
+    id: 'title_forest_healer',
+    name: '🌿 숲의 치유사',
+    desc: '자연의 향기로운 약초를 모아 동료들의 생명을 보살피는 숭실의 힐러!',
+    costType: 'item',
+    costItem: 'item_herb',
+    costItemName: '향긋한 허브',
+    costAmount: 30
+  },
+  {
+    id: 'title_soongsil_rich',
+    name: '🪙 숭실 부자',
+    desc: '꾸준한 퀴즈와 근면한 상거래로 황금 50냥을 당당히 보유한 자산가!',
+    costType: 'gold',
+    costAmount: 50
+  }
+];
+
 window.BOSS_CONFIG = {
   active: false,
-  name: '👾 고목 골렘',
+  name: '👾 가죽 골렘',
   level: 10,
   mode: 'coop',
   unitFilter: 'ALL',
-  maxHp: 3000,
-  currentHp: 3000,
-  atk: 18,
-  def: 5,
-  rewardGold: 100,
-  rewardExp: 200
+  maxHp: 2000,
+  currentHp: 2000,
+  atk: 17,
+  def: 8,
+  rewardGold: 50,
+  rewardExp: 100
 };
 
 class MainApp {
@@ -91,8 +167,13 @@ class MainApp {
       hasReceivedSoongsilGift: false,
       hasOpenedSecretLocker: false,
       hasClearedDragonRaid: false,
+      titles: [],
+      equippedTitle: null,
       inventory: []
     };
+
+    this.ITEM_SELL_PRICES = ITEM_SELL_PRICES;
+    this.TITLE_DEFINITIONS = TITLE_DEFINITIONS;
 
     this.bossState = {
       currentHp: window.BOSS_CONFIG.maxHp,
@@ -242,11 +323,11 @@ class MainApp {
 
       // 1학년 복도 담임 이상대 선생님 (중앙 엘리베이터 안내 NPC)
       if (npc.id === 'npc_teacher_sangdae' || (npc.name && npc.name.includes('이상대'))) {
-        if (!this.isDragonCleared()) {
-          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 전설의 보스 [숭실 골드 드래곤]을 먼저 토벌해야 비로소 엘리베이터가 정상 가동될 게다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 보스 레이드를 준비해보렴!"`);
+        if (!this.isElevatorUnlocked()) {
+          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 비로소 엘리베이터 점검이 완료되어 운동장으로 내려갈 수 있단다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 가죽 골렘 레이드를 준비해보렴!"`);
           return;
         } else {
-          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 전설의 골드 드래곤을 멋지게 토벌했구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터 점검이 모두 완료되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 50G(골드)가 소모된단다.\n\n또한 아래 운동장은 아주 넓고 거친 몬스터들이 있으니, 장비와 물약을 단단히 준비하지 않고 내려갔다가는 큰 코 다칠 게다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."`);
+          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 1차 관문 보스 [가죽 골렘]을 멋지게 토벌했구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터 점검이 모두 완료되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 50G(골드)가 소모된단다.\n\n운동장 농구장과 풋살장에서 거친 몬스터들을 물리쳐 농구가죽과 풋살가죽을 모으면 2티어 가죽 장비를 제작할 수 있단다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."`);
           return;
         }
       }
@@ -286,6 +367,10 @@ class MainApp {
       this.handleElevatorInteraction();
     } else if (target.type === 'cafeteria') {
       alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
+    } else if (target.type === 'store') {
+      this.openStoreModal();
+    } else if (target.type === 'title_exchange') {
+      this.openTitleExchangeModal();
     } else if (target.type === 'secret_locker') {
       this.handleSecretLocker();
     } else if (target.type === 'field_monster') {
@@ -294,15 +379,51 @@ class MainApp {
       if (window.AcidRain) {
         window.AcidRain.open();
       }
+    } else if (target.type === 'water_purifier') {
+      this.handleWaterPurifier();
     }
   }
 
-  isDragonCleared() {
-    if (this.playerData.hasClearedDragonRaid) return true;
+  handleWaterPurifier() {
+    this.waterPurifierCooldown = this.waterPurifierCooldown || 0;
+    const now = Date.now();
+    if (now < this.waterPurifierCooldown) {
+      const remainingSec = Math.ceil((this.waterPurifierCooldown - now) / 1000);
+      this.showToast(`⏳ 복도 정수기 냉수 충전 중입니다... (${remainingSec}초 후 사용 가능)`, 'warning');
+      return;
+    }
+
+    if (this.playerData.hp >= this.playerData.maxHp) {
+      this.showToast('🚰 이미 체력이 100% 가득 차 있어 물을 마실 필요가 없습니다!', 'info');
+      return;
+    }
+
+    const healAmount = Math.max(1, Math.floor(this.playerData.maxHp * 0.5));
+    const prevHp = this.playerData.hp;
+    this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + healAmount);
+    const actualHealed = this.playerData.hp - prevHp;
+    this.waterPurifierCooldown = now + 90000; // 90초 (1분 30초 쿨타임)
+
+    this.updateHpBar();
+    this.saveProgress();
+
+    if (window.AudioManager) {
+      window.AudioManager.playRevive();
+    }
+
+    this.showToast(`🚰 시원한 정수기 냉수를 마셨습니다! HP +${actualHealed} 회복 (${this.playerData.hp}/${this.playerData.maxHp}) [쿨타임: 1분 30초]`, 'success');
+  }
+
+  isElevatorUnlocked() {
+    if (this.playerData.hasClearedFirstBoss || this.playerData.hasClearedDragonRaid) return true;
     const studentId = this.playerData.studentId || '';
-    if (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') return true;
-    if (localStorage.getItem('soongsil_dragon_cleared_global') === 'true') return true;
+    if (studentId && (localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true' || localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true')) return true;
+    if (localStorage.getItem('soongsil_first_boss_cleared_global') === 'true' || localStorage.getItem('soongsil_dragon_cleared_global') === 'true') return true;
     return false;
+  }
+
+  isDragonCleared() {
+    return this.isElevatorUnlocked();
   }
 
   handleElevatorInteraction() {
@@ -333,10 +454,10 @@ class MainApp {
         });
       }
     } else {
-      // 1. 드래곤 레이드 클리어 여부 검사 (토벌 전까지는 점검 중)
-      if (!this.isDragonCleared()) {
+      // 1. 1차 관문 보스(가죽 골렘) 토벌 여부 검사 (토벌 전까지는 점검 중)
+      if (!this.isElevatorUnlocked()) {
         alert(
-          '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 전설의 보스 [숭실 골드 드래곤]을 먼저 토벌해야 엘리베이터 점검이 완료되어 운동장으로 내려갈 수 있습니다!"'
+          '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 엘리베이터 점검이 완료되어 운동장으로 내려갈 수 있습니다!"'
         );
         return;
       }
@@ -429,7 +550,7 @@ class MainApp {
         id: 'equip_wood_armor',
         name: '나무갑옷',
         icon: '🛡️',
-        meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' }
+        meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' }
       };
     } else if (type === 'helmet') {
       chosenItem = {
@@ -712,12 +833,18 @@ class MainApp {
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
+          this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
-          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
+          this.playerData.titles = Array.isArray(saved.titles) ? saved.titles : [];
+          this.playerData.equippedTitle = saved.equippedTitle || null;
+          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
+          this.playerData.hasClearedFirstBoss = !!((studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
           this.playerData.hasClearedDragonRaid = !!((studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
+          this.playerData.titles = [];
+          this.playerData.equippedTitle = null;
         }
         try {
           localStorage.setItem('soongsil_last_student_id', studentId);
@@ -733,7 +860,7 @@ class MainApp {
       this.engine.player.hairColor = this.playerData.hairColor;
       this.engine.player.outfitColor = this.playerData.outfitColor;
 
-      this.hudName.innerText = name;
+      this.updatePlayerNameDisplay();
       this.hudLevel.innerText = `Lv.${this.playerData.level}`;
       this.hudGold.innerText = this.playerData.gold;
       const studentIdEl = document.getElementById('side-student-id');
@@ -1616,6 +1743,9 @@ class MainApp {
   onBossRaidCleared(data) {
     window.BOSS_CONFIG.active = false;
     const bName = data.bossName || window.BOSS_CONFIG.name || '';
+    if (bName.includes('골렘') || bName.includes('golem')) {
+      localStorage.setItem('soongsil_first_boss_cleared_global', 'true');
+    }
     if (bName.includes('드래곤') || bName.includes('dragon')) {
       localStorage.setItem('soongsil_dragon_cleared_global', 'true');
     }
@@ -1654,34 +1784,35 @@ class MainApp {
 
       const bName = data.bossName || window.BOSS_CONFIG.name || '';
 
-      // 3. 고목골렘 전용 드랍 (나무장비 20%, 고목의 핵 15%, 청동장비 8%)
+      // 3. 가죽 골렘 전용 드랍 (엘리베이터 해금, 100% 질긴 보스의 가죽, 25% 나무장비 1종, 15% 가죽손잡이 세이버)
       if (bName.includes('골렘') || bName.includes('golem')) {
+        this.playerData.hasClearedFirstBoss = true;
+        const studentId = this.playerData.studentId || '';
+        if (studentId) {
+          localStorage.setItem('soongsil_first_boss_cleared_' + studentId, 'true');
+        }
+        localStorage.setItem('soongsil_first_boss_cleared_global', 'true');
+        this.saveProgress();
+
+        // 확정 재료 가변 드랍 (1~2개 가죽 장비 제작 핵심)
+        const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
+        this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
+        rewardItemsList.push(`🟫 질긴 보스의 가죽 x${bossLeatherCount}`);
+
         const roll = Math.random() * 100;
-        if (roll < 20) {
+        if (roll < 25) {
           const woodGears = [
             { item: 'equip_wood_sword', name: '나무검', icon: '🗡️', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' },
             { item: 'equip_wood_helmet', name: '나무투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' },
-            { item: 'equip_wood_armor', name: '나무갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 15, hp: 10 }, effect: '방어력 +15, 체력 +10' }
+            { item: 'equip_wood_armor', name: '나무갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' }
           ];
           const chosen = woodGears[Math.floor(Math.random() * woodGears.length)];
           this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
           rewardItemsList.push(`${chosen.icon} ${chosen.name}`);
-        } else if (roll < 35) { // 15%
-          this.addItem('item_golem_core', '고목의 핵', 1, '🟢', { type: 'material', effect: '상위 장비 제작 재료' });
-          rewardItemsList.push('🟢 고목의 핵');
-        } else if (roll < 43) { // 8%
-          const bronzeGears = [
-            { item: 'equip_bronze_sword', name: '청동검', icon: '⚔️', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' },
-            { item: 'equip_bronze_helmet', name: '청동투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' },
-            { item: 'equip_bronze_armor', name: '청동갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' }
-          ];
-          const chosen = bronzeGears[Math.floor(Math.random() * bronzeGears.length)];
-          this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
-          rewardItemsList.push(`${chosen.icon} ${chosen.name} (대박!)`);
         }
       }
 
-      // 4. 숭실 골드 드래곤 전용 드랍 및 엘리베이터 점검 해제 플래그
+      // 4. 숭실 청동 드래곤 전용 드랍 (100% 청동 드래곤의 심장, 20% 청동 장비 완제품)
       if (bName.includes('드래곤') || bName.includes('dragon')) {
         this.playerData.hasClearedDragonRaid = true;
         const studentId = this.playerData.studentId || '';
@@ -1691,19 +1822,21 @@ class MainApp {
         localStorage.setItem('soongsil_dragon_cleared_global', 'true');
         this.saveProgress();
 
+        // 확정 재료 드랍 (3티어 청동 장비 제작 핵심)
+        this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' });
+        rewardItemsList.push('🥉 청동 드래곤의 심장');
+
+        // 2티어 가죽 장비 완제품 드랍 (20% 확률)
         const roll = Math.random() * 100;
         if (roll < 20) {
-          this.addItem('item_dragon_heart', '용의 심장', 1, '❤️‍🔥', { type: 'material', effect: '최상위 제작 재료' });
-          rewardItemsList.push('❤️‍🔥 용의 심장');
-        } else if (roll < 35) { // 15%
-          const bronzeGears = [
-            { item: 'equip_bronze_sword', name: '청동검', icon: '⚔️', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' },
-            { item: 'equip_bronze_helmet', name: '청동투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' },
-            { item: 'equip_bronze_armor', name: '청동갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' }
+          const leatherGears = [
+            { item: 'equip_leather_sword', name: '가죽손잡이 세이버', icon: '🗡️', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' },
+            { item: 'equip_leather_helmet', name: '가죽투구', icon: '⛑️', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' },
+            { item: 'equip_leather_armor', name: '가죽갑옷', icon: '🥋', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' }
           ];
-          const chosen = bronzeGears[Math.floor(Math.random() * bronzeGears.length)];
+          const chosen = leatherGears[Math.floor(Math.random() * leatherGears.length)];
           this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
-          rewardItemsList.push(`${chosen.icon} ${chosen.name} (희귀 드랍)`);
+          rewardItemsList.push(`${chosen.icon} ${chosen.name} (완제품 드랍!)`);
         }
       }
 
@@ -1854,21 +1987,32 @@ class MainApp {
         this.bossState.currentHp = Math.max(0, this.bossState.currentHp - myDmg);
         if (this.bossState.currentHp <= 0) {
           const bName = window.BOSS_CONFIG.name || '';
-          if (bName.includes('드래곤') || bName.includes('dragon')) {
+          let clearNotice = '';
+          if (bName.includes('골렘') || bName.includes('golem')) {
+            this.playerData.hasClearedFirstBoss = true;
+            const studentId = this.playerData.studentId || '';
+            if (studentId) {
+              localStorage.setItem('soongsil_first_boss_cleared_' + studentId, 'true');
+            }
+            localStorage.setItem('soongsil_first_boss_cleared_global', 'true');
+            const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
+            this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
+            clearNotice = `\n\n🎉 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!\n📦 획득: [🟫 질긴 보스의 가죽 x${bossLeatherCount}개]`;
+            this.saveProgress();
+          } else if (bName.includes('드래곤') || bName.includes('dragon')) {
             this.playerData.hasClearedDragonRaid = true;
             const studentId = this.playerData.studentId || '';
             if (studentId) {
               localStorage.setItem('soongsil_dragon_cleared_' + studentId, 'true');
             }
             localStorage.setItem('soongsil_dragon_cleared_global', 'true');
+            this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 핵심 재료' });
+            clearNotice = '\n\n🏆 숭실 청동 드래곤 토벌 성공!\n📦 획득: [🥉 청동 드래곤의 심장] (3티어 청동 장비 제작 재료)';
             this.saveProgress();
           }
           this.updateBossRaidUI();
           this.addGold(window.BOSS_CONFIG.rewardGold);
           this.addExp(window.BOSS_CONFIG.rewardExp);
-          const clearNotice = (bName.includes('드래곤') || bName.includes('dragon'))
-            ? '\n\n🎉 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!'
-            : '';
           alert(`🏆 [${window.BOSS_CONFIG.name}] 처치!\n보상: 🪙 +${window.BOSS_CONFIG.rewardGold}G, 🌟 +${window.BOSS_CONFIG.rewardExp} EXP${clearNotice}`);
           this.bossState.currentHp = this.bossState.maxHp;
           this.modalBossRaid.classList.add('hidden');
@@ -1876,19 +2020,25 @@ class MainApp {
         }
       }
 
-      const incomingDmg = this.playerData.isTeacher ? 0 : Math.max(1, bossAtk - this.playerData.def);
+      // 정답 시: (보스 공격력 - 나의 방어력)만큼만 피격 (방어력이 높으면 0 피해)
+      const incomingDmg = this.playerData.isTeacher ? 0 : Math.max(0, bossAtk - this.playerData.def);
       this.playerData.hp = Math.max(0, this.playerData.hp - incomingDmg);
       this.updateBossRaidUI();
 
-      logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
+      if (incomingDmg > 0) {
+        logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
+      } else {
+        logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 결정타! / 🛡️ 방어력(${this.playerData.def})으로 보스 공격 완벽 방어 (피해 0)!`;
+      }
     } else {
       btnEl.classList.add('wrong');
       if (window.AudioManager) window.AudioManager.playWrong();
-      const incomingDmg = this.playerData.isTeacher ? 0 : Math.max(2, Math.floor(bossAtk * 1.2) - this.playerData.def);
+      // 추천안 A: 오답 시 방어력을 무시하고 무조건 보스의 순수 공격력(bossAtk)만큼 직격 피해!
+      const incomingDmg = this.playerData.isTeacher ? 0 : bossAtk;
       this.playerData.hp = Math.max(0, this.playerData.hp - incomingDmg);
       this.updateBossRaidUI();
 
-      logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 💥 보스 공격 <b>-${incomingDmg} HP</b>`;
+      logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (방어력 무시)`;
     }
 
     if (this.playerData.hp <= 0) {
@@ -2128,32 +2278,72 @@ class MainApp {
 
     const dropsList = [];
 
-    // 2. Basketball Leather (농구공 가죽 조각)
-    const leatherCount = Math.floor(Math.random() * ((mob.leatherMax || 2) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);
-    this.addItem('item_basketball_leather', '농구공 가죽 조각', leatherCount, '🏀', {
-      type: 'material',
-      effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료'
-    });
-    dropsList.push(`🏀 농구공 가죽 조각 x${leatherCount}개`);
-
-    // 3. Forsythia Petals (1반 파밍과 동일한 10% 확률!)
-    if (Math.random() * 100 < 10) {
-      this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
+    // 2. Drops based on field court
+    if (mob.court === 'futsal') {
+      const fLeatherCount = Math.floor(Math.random() * ((mob.leatherMax || 3) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);
+      this.addItem('item_futsal_leather', '탄력있는 풋살공 가죽', fLeatherCount, '⚽', {
         type: 'material',
-        effect: '개나리 반지 및 주황 물약 재료'
+        effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료'
       });
-      dropsList.push('🌼 노란 개나리 꽃잎 1개 (10% 행운 드랍!)');
-    }
+      dropsList.push(`⚽ 탄력있는 풋살공 가죽 x${fLeatherCount}개`);
 
-    // 4. Elite Armor Drop (15% 완제품 드랍!)
-    if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {
-      this.addItem('equip_leather_armor', '가죽갑옷', 1, '🥋', {
-        type: 'equipment',
-        slot: 'armor',
-        stats: { atk: 0, def: 17, hp: 25 },
-        effect: '방어력 +17, 체력 +25'
+      // Forsythia Petal (15% drop rate for futsal monsters)
+      if (Math.random() * 100 < 15) {
+        this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
+          type: 'material',
+          effect: '개나리 반지 및 주황 물약 재료'
+        });
+        dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
+      }
+
+      // Elite Leather Helmet Drop (8% 대박 완제품 드랍!)
+      if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {
+        this.addItem('equip_leather_helmet', '가죽투구', 1, '⛑️', {
+          type: 'equipment',
+          slot: 'helmet',
+          stats: { atk: 0, def: 12, hp: 28 },
+          effect: '방어력 +12, 체력 +28'
+        });
+        dropsList.push('⛑️ 가죽투구 (8% 대박 완제품 드랍!)');
+      }
+
+      // Elite 2-Tier Leather Saber Drop (거미손 골키퍼 전용 5% 대박 완제품 드랍!)
+      if (mob.type === 'elite' && Math.random() * 100 < 5) {
+        this.addItem('equip_leather_sword', '가죽손잡이 세이버', 1, '🗡️', {
+          type: 'equipment',
+          slot: 'weapon',
+          stats: { atk: 20, def: 0, hp: 0 },
+          effect: '공격력 +20'
+        });
+        dropsList.push('🗡️ 가죽손잡이 세이버 (5% 대박 완제품 드랍!)');
+      }
+    } else {
+      // Basketball Court Standard Drops
+      const leatherCount = Math.floor(Math.random() * ((mob.leatherMax || 2) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);
+      this.addItem('item_basketball_leather', '농구공 가죽 조각', leatherCount, '🏀', {
+        type: 'material',
+        effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료'
       });
-      dropsList.push('🥋 가죽갑옷 (15% 대박 완제품 드랍!)');
+      dropsList.push(`🏀 농구공 가죽 조각 x${leatherCount}개`);
+
+      // Forsythia Petal (15% drop rate for basketball monsters)
+      if (Math.random() * 100 < 15) {
+        this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
+          type: 'material',
+          effect: '개나리 반지 및 주황 물약 재료'
+        });
+        dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
+      }
+
+      if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {
+        this.addItem('equip_leather_armor', '가죽갑옷', 1, '🥋', {
+          type: 'equipment',
+          slot: 'armor',
+          stats: { atk: 0, def: 17, hp: 20 },
+          effect: '방어력 +17, 체력 +20'
+        });
+        dropsList.push('🥋 가죽갑옷 (8% 대박 완제품 드랍!)');
+      }
     }
 
     if (window.AudioManager) window.AudioManager.playFanfare();
@@ -2161,8 +2351,12 @@ class MainApp {
     this.saveProgress();
     this.closeFieldBattleModal();
 
+    const craftGuide = (mob.court === 'futsal')
+      ? '(탄력있는 풋살공 가죽과 보스가죽을 모아 복도 장비 제작대에서 ⛑️ 가죽투구와 🗡️ 가죽손잡이 세이버를 제작할 수 있습니다!)'
+      : '(농구공 가죽 조각과 보스가죽을 모아 복도 장비 제작대에서 🥋 가죽갑옷과 🗡️ 가죽손잡이 세이버를 제작할 수 있습니다!)';
+
     alert(
-      `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${mob.goldReward}G, 🌟 경험치 +${mob.expReward} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n(농구공 가죽 조각 30개를 모아 복도 장비 제작대에서 🥋 가죽갑옷을 제작할 수 있습니다!)`
+      `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${mob.goldReward}G, 🌟 경험치 +${mob.expReward} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n${craftGuide}`
     );
   }
 
@@ -2359,15 +2553,15 @@ class MainApp {
         const expEl = document.getElementById('admin-boss-exp');
 
         if (val === 'golem') {
-          nameEl.value = '👾 고목 골렘';
-          hpEl.value = 1500;
+          nameEl.value = '👾 가죽 골렘';
+          hpEl.value = 2000;
           atkEl.value = 17;
           defEl.value = 8;
           goldEl.value = 50;
           expEl.value = 100;
         } else if (val === 'dragon') {
-          nameEl.value = '🐉 숭실 골드 드래곤';
-          hpEl.value = 4000;
+          nameEl.value = '🐉 숭실 청동 드래곤';
+          hpEl.value = 5000;
           atkEl.value = 28;
           defEl.value = 10;
           goldEl.value = 120;
@@ -2381,32 +2575,32 @@ class MainApp {
           expEl.value = 0;
         } else if (val === 'cerberus') {
           nameEl.value = '🐕 수행평가 3두마수 케르베로스';
-          hpEl.value = 6000;
-          atkEl.value = 35;
-          defEl.value = 15;
-          goldEl.value = 200;
-          expEl.value = 400;
+          hpEl.value = 999999;
+          atkEl.value = 150;
+          defEl.value = 50;
+          goldEl.value = 0;
+          expEl.value = 0;
         } else if (val === 'final_god') {
           nameEl.value = '💀 기말고사 파멸신';
-          hpEl.value = 9000;
-          atkEl.value = 45;
-          defEl.value = 20;
-          goldEl.value = 350;
-          expEl.value = 700;
+          hpEl.value = 999999;
+          atkEl.value = 150;
+          defEl.value = 50;
+          goldEl.value = 0;
+          expEl.value = 0;
         } else if (val === 'sloth_titan') {
           nameEl.value = '🦥 방학 직전 나태의 거인';
-          hpEl.value = 12000;
-          atkEl.value = 55;
-          defEl.value = 25;
-          goldEl.value = 500;
-          expEl.value = 1000;
+          hpEl.value = 999999;
+          atkEl.value = 150;
+          defEl.value = 50;
+          goldEl.value = 0;
+          expEl.value = 0;
         } else if (val === 'white_tiger') {
           nameEl.value = '🐯 숭실 백호 성수';
-          hpEl.value = 15000;
-          atkEl.value = 70;
-          defEl.value = 30;
-          goldEl.value = 800;
-          expEl.value = 1500;
+          hpEl.value = 999999;
+          atkEl.value = 150;
+          defEl.value = 50;
+          goldEl.value = 0;
+          expEl.value = 0;
         }
 
         if (window.BOSS_CONFIG) {
@@ -2947,7 +3141,7 @@ class MainApp {
       this.recalcCombatStats();
       this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + 1);
       this.updateHpBar();
-      alert(`🌟 Lv.${this.playerData.level} 달성! (체력 +1, 공격력 +1, 방어력 +1)`);
+      this.showLevelUpBanner(this.playerData.level);
     }
 
     this.saveProgress();
@@ -2976,6 +3170,60 @@ class MainApp {
     const fill = document.getElementById('side-exp-fill');
     if (txt) txt.innerText = `${this.playerData.exp} / ${maxExp}`;
     if (fill) fill.style.width = `${pct}%`;
+  }
+
+  showLevelUpBanner(level) {
+    const banner = document.getElementById('level-up-banner');
+    const title = document.getElementById('level-up-title');
+    if (!banner) return;
+
+    if (title) title.innerText = `Lv.${level} 달성!`;
+    if (window.AudioManager) window.AudioManager.playFanfare();
+
+    if (this._levelUpTimer) clearTimeout(this._levelUpTimer);
+    if (this._levelUpFadeTimer) clearTimeout(this._levelUpFadeTimer);
+
+    banner.classList.remove('hidden', 'fade-out');
+
+    this._levelUpFadeTimer = setTimeout(() => {
+      banner.classList.add('fade-out');
+    }, 3200);
+
+    this._levelUpTimer = setTimeout(() => {
+      banner.classList.add('hidden');
+      banner.classList.remove('fade-out');
+    }, 3700);
+  }
+
+  showToast(message, type = 'info') {
+    const toast = document.getElementById('game-toast');
+    const toastText = document.getElementById('game-toast-text');
+    const toastIcon = document.getElementById('game-toast-icon');
+    if (!toast || !toastText) {
+      console.log(`[Toast] ${message}`);
+      return;
+    }
+
+    if (this._toastTimer) clearTimeout(this._toastTimer);
+    if (this._toastFadeTimer) clearTimeout(this._toastFadeTimer);
+
+    toast.className = `game-toast toast-${type}`;
+    if (toastIcon) {
+      if (type === 'success') toastIcon.innerText = '✨';
+      else if (type === 'warning') toastIcon.innerText = '⏳';
+      else toastIcon.innerText = '🚰';
+    }
+    toastText.innerText = message;
+    toast.classList.remove('hidden', 'fade-out');
+
+    this._toastFadeTimer = setTimeout(() => {
+      toast.classList.add('fade-out');
+    }, 2800);
+
+    this._toastTimer = setTimeout(() => {
+      toast.classList.add('hidden');
+      toast.classList.remove('fade-out');
+    }, 3200);
   }
 
   addItem(itemId, name, count = 1, icon = '📦', meta = {}) {
@@ -3040,13 +3288,15 @@ class MainApp {
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
+        titles: this.playerData.titles || [],
+        equippedTitle: this.playerData.equippedTitle || null,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasClearedDragonRaid}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
@@ -3387,6 +3637,406 @@ class MainApp {
     }
     const reasonInput = document.getElementById('admin-grant-reason');
     if (reasonInput) reasonInput.focus();
+  }
+
+  // =========================================================================
+  // 🏷️ PLAYER NAME & TITLE DISPLAY HELPER
+  // =========================================================================
+  updatePlayerNameDisplay() {
+    const title = this.playerData.equippedTitle;
+    const name = this.playerData.name || '학생';
+    const fullDisplayName = title ? `[${title}] ${name}` : name;
+    if (this.hudName) {
+      this.hudName.innerText = fullDisplayName;
+    }
+    if (this.engine && this.engine.player) {
+      this.engine.player.name = name;
+      this.engine.player.equippedTitle = title;
+    }
+  }
+
+  // =========================================================================
+  // 🏪 매점 (CANTEEN STORE) - 아이템 및 장비 매각 시스템
+  // =========================================================================
+  openStoreModal() {
+    const modal = document.getElementById('modal-store');
+    if (!modal) return;
+
+    this.currentStoreTab = this.currentStoreTab || 'all';
+    this.renderStoreModal();
+    modal.classList.remove('hidden');
+
+    if (!this._storeTabsInitialized) {
+      this._storeTabsInitialized = true;
+      const tabContainer = document.getElementById('store-tab-container');
+      if (tabContainer) {
+        tabContainer.querySelectorAll('.inv-tab-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            tabContainer.querySelectorAll('.inv-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            this.currentStoreTab = btn.dataset.tab;
+            this.renderStoreModal();
+          });
+        });
+      }
+      const btnCloseX = document.getElementById('btn-close-store-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+      const btnClose = document.getElementById('btn-close-store');
+      if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+  }
+
+  getItemSellPrice(itemId) {
+    if (this.ITEM_SELL_PRICES && this.ITEM_SELL_PRICES[itemId] !== undefined) {
+      return this.ITEM_SELL_PRICES[itemId];
+    }
+    if (itemId.startsWith('equip_bronze')) return 10;
+    if (itemId.startsWith('equip_leather')) return 8;
+    if (itemId.startsWith('equip_wood')) return 3;
+    if (itemId.startsWith('item_')) return 2;
+    return 1;
+  }
+
+  renderStoreModal() {
+    const goldDisplay = document.getElementById('store-gold-display');
+    if (goldDisplay) goldDisplay.innerText = `${this.playerData.gold} G`;
+
+    const listContainer = document.getElementById('store-items-list');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+
+    const inv = this.playerData.inventory || [];
+    const equippedItemIds = new Set(
+      Object.values(this.playerData.equipment || {})
+        .filter(eq => eq && eq.item)
+        .map(eq => eq.item)
+    );
+
+    const filtered = inv.filter(invItem => {
+      const def = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[invItem.item]) || {};
+      const type = (def.meta && def.meta.type) || (invItem.item.startsWith('equip_') ? 'equipment' : 'material');
+
+      // 소비품(물약, 주문서 등)은 매점 매각 금지
+      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll')) {
+        return false;
+      }
+
+      if (this.currentStoreTab === 'all') return true;
+      if (this.currentStoreTab === 'equipment') return type === 'equipment' || invItem.item.startsWith('equip_');
+      if (this.currentStoreTab === 'material') return type === 'material' || (!invItem.item.startsWith('equip_'));
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      listContainer.innerHTML = `
+        <div style="text-align:center; padding: 36px 12px; color: #64748b;">
+          <div style="font-size: 32px; margin-bottom: 6px;">📦</div>
+          <div style="font-size: 13.5px; font-weight:700;">해당 분류에 판매 가능한 아이템이 없습니다.</div>
+          <div style="font-size: 11.5px; margin-top: 4px;">퀴즈를 풀거나 몬스터를 사냥하여 재료와 장비를 획득해보세요!</div>
+        </div>
+      `;
+      return;
+    }
+
+    filtered.forEach(invItem => {
+      const def = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[invItem.item]) || {};
+      const icon = def.icon || invItem.icon || '📦';
+      const name = def.name || invItem.name || invItem.item;
+      const isEquipped = equippedItemIds.has(invItem.item);
+      const unitPrice = this.getItemSellPrice(invItem.item);
+      const count = invItem.count || 1;
+      const isStackable = count > 1;
+
+      const itemCard = document.createElement('div');
+      itemCard.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: ${isEquipped ? 'rgba(30, 41, 59, 0.5)' : '#1e293b'};
+        border: 1.5px solid ${isEquipped ? '#475569' : '#334155'};
+        border-radius: 8px;
+        padding: 8px 12px;
+        transition: border-color 0.15s;
+      `;
+
+      itemCard.innerHTML = `
+        <div style="display:flex; align-items:center; gap: 10px;">
+          <div style="font-size: 26px; line-height: 1;">${icon}</div>
+          <div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-weight: 800; font-size: 13.5px; color: ${isEquipped ? '#94a3b8' : '#f8fafc'};">${name}</span>
+              ${isEquipped ? '<span style="font-size:10.5px; font-weight:700; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px;">🛡️ 착용 중</span>' : ''}
+              <span style="font-size: 12px; color: #38bdf8; font-weight: 700;">x${count}</span>
+            </div>
+            <div style="font-size: 11.5px; color: #fbbf24; margin-top: 2px;">
+              개당 판매가: <b>${unitPrice} G</b> ${isStackable ? `<span style="color:#94a3b8;">(전체: ${unitPrice * count} G)</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap: 6px;">
+          ${isEquipped ? `
+            <button disabled style="padding: 6px 12px; font-size: 11.5px; font-weight: 700; background: #334155; color: #64748b; border: 1px solid #475569; border-radius: 6px; cursor: not-allowed;">
+              착용 중
+            </button>
+          ` : `
+            ${isStackable ? `
+              <button class="btn-sell-one btn-secondary" style="padding: 5px 10px; font-size: 11.5px; font-weight: 700; border-color: #f59e0b; color: #fef08a;">
+                1개 판매 (+${unitPrice}G)
+              </button>
+              <button class="btn-sell-all btn-primary" style="padding: 5px 10px; font-size: 11.5px; font-weight: 800; background: #d97706; border-color: #b45309;">
+                전체 판매 (+${unitPrice * count}G)
+              </button>
+            ` : `
+              <button class="btn-sell-one btn-primary" style="padding: 6px 12px; font-size: 12px; font-weight: 800; background: #d97706; border-color: #b45309;">
+                판매 (+${unitPrice}G)
+              </button>
+            `}
+          `}
+        </div>
+      `;
+
+      if (!isEquipped) {
+        const btnOne = itemCard.querySelector('.btn-sell-one');
+        if (btnOne) {
+          btnOne.addEventListener('click', () => {
+            this.sellItem(invItem.item, 1, name, unitPrice);
+          });
+        }
+        const btnAll = itemCard.querySelector('.btn-sell-all');
+        if (btnAll) {
+          btnAll.addEventListener('click', () => {
+            this.sellItem(invItem.item, count, name, unitPrice * count);
+          });
+        }
+      }
+
+      listContainer.appendChild(itemCard);
+    });
+  }
+
+  sellItem(itemId, count, itemName, totalGold) {
+    const def = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[itemId]) || {};
+    const type = (def.meta && def.meta.type) || '';
+    if (type === 'consumable' || itemId.includes('potion') || itemId.includes('scroll')) {
+      this.showToast('소비품(물약 및 주문서)은 매점에서 매각할 수 없습니다!', 'warning');
+      return;
+    }
+
+    const existing = (this.playerData.inventory || []).find(i => i.item === itemId);
+    if (!existing || existing.count < count) {
+      this.showToast('보유 수량이 부족합니다.', 'error');
+      return;
+    }
+
+    const equippedItemIds = new Set(
+      Object.values(this.playerData.equipment || {})
+        .filter(eq => eq && eq.item)
+        .map(eq => eq.item)
+    );
+    if (equippedItemIds.has(itemId)) {
+      this.showToast('착용 중인 장비는 판매할 수 없습니다!', 'warning');
+      return;
+    }
+
+    this.removeItem(itemId, count);
+    this.playerData.gold = (this.playerData.gold || 0) + totalGold;
+    if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
+    const invGoldDisplay = document.getElementById('inv-gold-display');
+    if (invGoldDisplay) invGoldDisplay.innerText = `${this.playerData.gold} G`;
+
+    this.showToast(`🪙 ${itemName} x${count}개 매각 완료! (+${totalGold} G)`, 'success');
+    this.saveProgress();
+    this.renderStoreModal();
+
+    const modalInv = document.getElementById('modal-inventory');
+    if (modalInv && !modalInv.classList.contains('hidden') && this.renderInventory) {
+      this.renderInventory();
+    }
+  }
+
+  // =========================================================================
+  // 🏅 호칭 교환소 (TITLE EXCHANGE)
+  // =========================================================================
+  openTitleExchangeModal() {
+    const modal = document.getElementById('modal-title-exchange');
+    if (!modal) return;
+
+    this.renderTitleExchangeModal();
+    modal.classList.remove('hidden');
+
+    if (!this._titleExchangeInitialized) {
+      this._titleExchangeInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-title-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+      const btnClose = document.getElementById('btn-close-title');
+      if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+      const btnUnequip = document.getElementById('btn-unequip-title');
+      if (btnUnequip) {
+        btnUnequip.addEventListener('click', () => {
+          this.unequipTitle();
+        });
+      }
+    }
+  }
+
+  renderTitleExchangeModal() {
+    const badge = document.getElementById('current-equipped-title-badge');
+    const btnUnequip = document.getElementById('btn-unequip-title');
+    const equipped = this.playerData.equippedTitle;
+
+    if (badge) {
+      badge.innerText = equipped ? `[${equipped}]` : '없음';
+      badge.style.color = equipped ? '#fef08a' : '#94a3b8';
+    }
+    if (btnUnequip) {
+      btnUnequip.style.display = equipped ? 'inline-block' : 'none';
+    }
+
+    const listContainer = document.getElementById('title-exchange-list');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+
+    const titles = this.TITLE_DEFINITIONS || [];
+    const ownedTitles = this.playerData.titles || [];
+
+    titles.forEach(t => {
+      const isOwned = ownedTitles.includes(t.name);
+      const isEquipped = (this.playerData.equippedTitle === t.name);
+
+      let canAfford = false;
+      let costText = '';
+      let progressText = '';
+
+      if (t.costType === 'item') {
+        const myItem = (this.playerData.inventory || []).find(i => i.item === t.costItem);
+        const myCount = myItem ? myItem.count : 0;
+        canAfford = (myCount >= t.costAmount);
+        costText = `${t.costItemName} ${t.costAmount}개`;
+        progressText = `(보유: ${myCount} / ${t.costAmount})`;
+      } else if (t.costType === 'gold') {
+        const myGold = this.playerData.gold || 0;
+        canAfford = (myGold >= t.costAmount);
+        costText = `황금 ${t.costAmount} G`;
+        progressText = `(보유: ${myGold} / ${t.costAmount} G)`;
+      }
+
+      const card = document.createElement('div');
+      card.style.cssText = `
+        background: ${isEquipped ? 'rgba(56, 189, 248, 0.12)' : (isOwned ? 'rgba(30, 41, 59, 0.7)' : '#1e293b')};
+        border: 2px solid ${isEquipped ? '#38bdf8' : (isOwned ? '#10b981' : '#334155')};
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      `;
+
+      card.innerHTML = `
+        <div style="flex: 1;">
+          <div style="display:flex; align-items:center; gap: 8px;">
+            <span style="font-size: 16px; font-weight: 900; color: #fef08a;">${t.name}</span>
+            ${isEquipped ? '<span style="font-size:11px; font-weight:800; background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px;">착용 중</span>' : ''}
+            ${isOwned && !isEquipped ? '<span style="font-size:11px; font-weight:800; background:#059669; color:#fff; padding:2px 8px; border-radius:12px;">보유 중</span>' : ''}
+          </div>
+          <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">${t.desc}</div>
+          ${!isOwned ? `
+            <div style="font-size: 11.5px; margin-top: 6px; color: ${canAfford ? '#4ade80' : '#f87171'}; font-weight: 700;">
+              필요: ${costText} <span style="font-weight:400; color:#94a3b8;">${progressText}</span>
+            </div>
+          ` : ''}
+        </div>
+        <div style="flex-shrink: 0;">
+          ${isEquipped ? `
+            <button class="btn-unequip-card btn-secondary" style="font-size: 12px; padding: 7px 14px; font-weight:700;">
+              해제하기
+            </button>
+          ` : (isOwned ? `
+            <button class="btn-equip-card btn-primary" style="font-size: 12px; padding: 7px 16px; font-weight:800; background:#0284c7; border-color:#0369a1;">
+              착용하기
+            </button>
+          ` : `
+            <button class="btn-exchange-card btn-primary" ${!canAfford ? 'disabled' : ''} style="font-size: 12px; padding: 7px 16px; font-weight:800; ${!canAfford ? 'background:#334155; border-color:#475569; color:#64748b; cursor:not-allowed;' : 'background:#d97706; border-color:#b45309;'}">
+              교환하기
+            </button>
+          `)}
+        </div>
+      `;
+
+      const btnEquip = card.querySelector('.btn-equip-card');
+      if (btnEquip) {
+        btnEquip.addEventListener('click', () => {
+          this.equipTitle(t.name);
+        });
+      }
+      const btnUnequipCard = card.querySelector('.btn-unequip-card');
+      if (btnUnequipCard) {
+        btnUnequipCard.addEventListener('click', () => {
+          this.unequipTitle();
+        });
+      }
+      const btnExchange = card.querySelector('.btn-exchange-card');
+      if (btnExchange && canAfford) {
+        btnExchange.addEventListener('click', () => {
+          this.exchangeTitle(t);
+        });
+      }
+
+      listContainer.appendChild(card);
+    });
+  }
+
+  exchangeTitle(titleDef) {
+    if (!titleDef) return;
+    this.playerData.titles = this.playerData.titles || [];
+    if (this.playerData.titles.includes(titleDef.name)) {
+      this.showToast('이미 보유한 호칭입니다!', 'info');
+      return;
+    }
+
+    if (titleDef.costType === 'item') {
+      const myItem = (this.playerData.inventory || []).find(i => i.item === titleDef.costItem);
+      if (!myItem || myItem.count < titleDef.costAmount) {
+        this.showToast(`${titleDef.costItemName}이(가) 부족합니다!`, 'error');
+        return;
+      }
+      this.removeItem(titleDef.costItem, titleDef.costAmount);
+    } else if (titleDef.costType === 'gold') {
+      if ((this.playerData.gold || 0) < titleDef.costAmount) {
+        this.showToast('골드가 부족합니다!', 'error');
+        return;
+      }
+      this.playerData.gold -= titleDef.costAmount;
+      if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
+    }
+
+    this.playerData.titles.push(titleDef.name);
+    this.equipTitle(titleDef.name);
+    this.showToast(`🎉 새로운 호칭 [${titleDef.name}] 획득 및 착용 완료!`, 'success');
+    this.saveProgress();
+    this.renderTitleExchangeModal();
+  }
+
+  equipTitle(titleName) {
+    this.playerData.equippedTitle = titleName;
+    this.updatePlayerNameDisplay();
+    if (this.networkManager && this.networkManager.sendTitleUpdate) {
+      this.networkManager.sendTitleUpdate(titleName);
+    }
+    this.showToast(`🏷️ [${titleName}] 호칭을 착용했습니다!`, 'info');
+    this.saveProgress();
+    this.renderTitleExchangeModal();
+  }
+
+  unequipTitle() {
+    this.playerData.equippedTitle = null;
+    this.updatePlayerNameDisplay();
+    if (this.networkManager && this.networkManager.sendTitleUpdate) {
+      this.networkManager.sendTitleUpdate(null);
+    }
+    this.showToast('호칭을 해제했습니다.', 'info');
+    this.saveProgress();
+    this.renderTitleExchangeModal();
   }
 
   startLoop() {

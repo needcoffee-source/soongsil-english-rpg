@@ -86,6 +86,12 @@ class NetworkManager {
       if (p) p.gear = gear;
     });
 
+    // 다른 학생이 호칭을 바꾸면 외형 갱신
+    this.socket.on('player_title_updated', ({ id, equippedTitle }) => {
+      const p = this.engine.otherPlayers[id];
+      if (p) p.equippedTitle = equippedTitle;
+    });
+
     this.socket.on('player_left', (socketId) => {
       const p = this.engine.otherPlayers[socketId];
       if (p) {
@@ -154,9 +160,14 @@ class NetworkManager {
       }
     });
 
-    this.socket.on('boss_raid_force_warp', ({ floor, room }) => {
+    this.socket.on('boss_raid_force_warp', ({ floor, room, x, y }) => {
       if (this.engine) {
-        this.engine.teleportTo(floor || 7, room || 'room_702');
+        if (x !== undefined && y !== undefined) {
+          this.engine.floor = floor !== undefined ? floor : 0;
+          this.engine.warpToRoom(room || 'playground', room === 'playground' ? '숭실 운동장' : (room || '1학년 2반'), x, y);
+        } else {
+          this.engine.teleportTo(floor || 7, room || 'room_702');
+        }
       }
     });
 
@@ -261,6 +272,12 @@ class NetworkManager {
   changeLocation(data) {
     if (this.socket) {
       this.socket.emit('change_location', data);
+    }
+  }
+
+  sendTitleUpdate(title) {
+    if (this.socket) {
+      this.socket.emit('player_title_update', title);
     }
   }
 
