@@ -2594,6 +2594,8 @@ class MainApp {
           defEl.value = 9999;
           goldEl.value = 0;
           expEl.value = 0;
+        } else if (val === 'custom') {
+          nameEl.value = '⚙️ 커스텀 보스';
         }
 
         if (window.BOSS_CONFIG) {
