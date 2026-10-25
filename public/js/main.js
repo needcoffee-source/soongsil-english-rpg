@@ -231,7 +231,20 @@ class MainApp {
   handleInteraction(target) {
     if (target.type === 'npc') {
       const npc = target.data;
-      if (!npc || !npc.dialogue) return; // 대사 없는 NPC (오예숙 선생님 등)
+      if (!npc) return;
+
+      // 1학년 복도 담임 이상대 선생님 (중앙 엘리베이터 안내 NPC)
+      if (npc.id === 'npc_teacher_sangdae' || (npc.name && npc.name.includes('이상대'))) {
+        if (!this.isDragonCleared()) {
+          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 전설의 보스 [숭실 골드 드래곤]을 먼저 토벌해야 비로소 엘리베이터가 정상 가동될 게다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 보스 레이드를 준비해보렴!"`);
+          return;
+        } else {
+          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 전설의 골드 드래곤을 멋지게 토벌했구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터 점검이 모두 완료되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 50G(골드)가 소모된단다.\n\n또한 아래 운동장은 아주 넓고 거친 몬스터들이 있으니, 장비와 물약을 단단히 준비하지 않고 내려갔다가는 큰 코 다칠 게다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."`);
+          return;
+        }
+      }
+
+      if (!npc.dialogue) return; // 대사 없는 NPC (오예숙 선생님 등)
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
     } else if (target.type === 'mascot') {
       this.handleMascotInteraction();
@@ -266,7 +279,6 @@ class MainApp {
   }
 
   isDragonCleared() {
-    if (this.playerData.isTeacher) return true;
     if (this.playerData.hasClearedDragonRaid) return true;
     const studentId = this.playerData.studentId || '';
     if (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') return true;
@@ -1590,6 +1602,11 @@ class MainApp {
 
   onBossRaidCleared(data) {
     window.BOSS_CONFIG.active = false;
+    const bName = data.bossName || window.BOSS_CONFIG.name || '';
+    if (bName.includes('드래곤') || bName.includes('dragon')) {
+      localStorage.setItem('soongsil_dragon_cleared_global', 'true');
+    }
+
     const isModalOpen = !this.modalBossRaid.classList.contains('hidden');
     const isInBossRoom = this.engine && this.engine.player && this.engine.player.room === 'room_702';
 
@@ -1680,7 +1697,11 @@ class MainApp {
       const dropText = rewardItemsList.length > 0 ? `\n🎁 획득 아이템:\n• ${rewardItemsList.join('\n• ')}` : '';
       const mvpText = data.mvp ? `\n\n👑 최고 기여(MVP): ${data.mvp.name} (누적 데미지 ${data.mvp.damage})` : '';
 
-      alert(`🏆 [${data.bossName}] 협동 토벌 성공!\n\n🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}`);
+      const clearNotice = (bName.includes('드래곤') || bName.includes('dragon'))
+        ? '\n\n🎉 숭실 골드 드래곤을 토벌하여 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!'
+        : '';
+
+      alert(`🏆 [${data.bossName}] 협동 토벌 성공!\n\n🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}${clearNotice}`);
       this.modalBossRaid.classList.add('hidden');
     }
   }
@@ -2386,28 +2407,16 @@ class MainApp {
     if (btnSendBroadcast) {
       btnSendBroadcast.addEventListener('click', () => {
         const input = document.getElementById('input-broadcast');
-        const msg = input.value.trim();
-        const isSummon = document.getElementById('check-broadcast-summon') && document.getElementById('check-broadcast-summon').checked;
+        const msg = input ? input.value.trim() : '';
 
-        if (!msg && !isSummon) {
+        if (!msg) {
           alert('전송할 공지 내용을 입력해 주세요.');
           return;
         }
 
         if (this.networkManager && this.networkManager.socket) {
-          if (isSummon) {
-            this.networkManager.socket.emit('teacher_summon_all_to_me', {
-              floor: this.engine.player.floor,
-              room: this.engine.player.room,
-              x: this.engine.player.x,
-              y: this.engine.player.y,
-              message: msg || '선생님께서 여러분을 현재 위치로 소환하셨습니다!'
-            });
-            alert(`📢 [공지 & 소환 완료]\n전교생에게 공지 전송과 함께 현재 교사 위치(${this.engine.player.floor}층 ${this.engine.player.roomName})로 전원 소환을 완료했습니다!`);
-          } else {
-            this.networkManager.socket.emit('teacher_broadcast', { message: msg });
-            alert(`📢 [공지 전송 완료]\n전교생에게 공지사항이 전송되었습니다:\n"${msg}"`);
-          }
+          this.networkManager.socket.emit('teacher_broadcast', { message: msg });
+          alert(`📢 [공지 전송 완료]\n전교생에게 긴급 공지사항이 전송되었습니다:\n\n"${msg}"`);
           input.value = '';
         }
       });
@@ -2416,20 +2425,29 @@ class MainApp {
     const btnSummonNow = document.getElementById('btn-summon-all-now');
     if (btnSummonNow) {
       btnSummonNow.addEventListener('click', () => {
-        const roomName = this.engine.player.roomName || '현재 교실';
+        const roomName = this.engine.player.roomName || '현재 위치';
         const floor = this.engine.player.floor || 7;
-        if (!confirm(`🌀 현재 위치 (${floor}층 ${roomName})로 접속 중인 모든 학생을 즉시 소환하시겠습니까?`)) {
+        const input = document.getElementById('input-broadcast');
+        const customMsg = input ? input.value.trim() : '';
+
+        const confirmMsg = customMsg
+          ? `🌀 현재 교사 위치 (${floor}층 ${roomName})로 접속 중인 모든 학생을 소환하시겠습니까?\n\n📢 함께 전달할 공지:\n"${customMsg}"`
+          : `🌀 현재 교사 위치 (${floor}층 ${roomName})로 접속 중인 모든 학생을 즉시 소환하시겠습니까?`;
+
+        if (!confirm(confirmMsg)) {
           return;
         }
+
         if (this.networkManager && this.networkManager.socket) {
+          const summonMsg = customMsg || '선생님께서 여러분을 현재 위치로 소환하셨습니다!';
           this.networkManager.socket.emit('teacher_summon_all_to_me', {
             floor: this.engine.player.floor,
             room: this.engine.player.room,
             x: this.engine.player.x,
             y: this.engine.player.y,
-            message: '🌀 선생님께서 여러분을 현재 위치로 긴급 소환하셨습니다!'
+            message: summonMsg
           });
-          alert(`🌀 [전원 소환 완료]\n접속 중인 모든 학생을 현재 교사 위치(${floor}층 ${roomName})로 즉시 소환했습니다!`);
+          alert(`🌀 [전원 소환 완료]\n접속 중인 모든 학생을 현재 교사 위치(${floor}층 ${roomName})로 소환했습니다!${customMsg ? `\n(공지 내용: "${customMsg}")` : ''}`);
         }
       });
     }

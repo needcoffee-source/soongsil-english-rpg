@@ -2054,8 +2054,10 @@ class GameEngine {
   }
 
   isElevatorUnderMaintenance() {
+    if (window.app && typeof window.app.isDragonCleared === 'function') {
+      return !window.app.isDragonCleared();
+    }
     if (window.app && window.app.playerData) {
-      if (window.app.playerData.isTeacher) return false;
       if (window.app.playerData.hasClearedDragonRaid) return false;
       const studentId = window.app.playerData.studentId || '';
       if (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') return false;
