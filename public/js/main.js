@@ -1852,7 +1852,7 @@ class MainApp {
         }
       }
 
-      // 5. 중간고사 대마왕 전용 드랍 (주홍물약 3개, 💯 백점만점 시험지, 청동투구/청동갑옷 100% 확정 + 청동검 35% 확률 드랍)
+      // 5. 중간고사 대마왕 전용 드랍 (주홍물약 3개, 💯 백점만점 시험지 100% 확정 + 35% 확률로 청동 무기/방어구 중 1종 획득)
       if (bName.includes('대마왕') || bName.includes('demon') || bName.includes('중간고사')) {
         this.addItem('item_orange_potion', '주홍 물약', 3, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
         rewardItemsList.push('🧪 주홍 물약 x3');
@@ -1860,19 +1860,19 @@ class MainApp {
         this.addItem('item_perfect_exam', '💯 백점만점 시험지', 1, '💯', { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' });
         rewardItemsList.push('💯 백점만점 시험지 (호칭 교환소에서 📚 시험의 제왕 교환!)');
 
-        // 청동 방어구 2종: 100% 고정 드랍
-        this.addItem('equip_bronze_helmet', '청동투구', 1, '🪖', { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' });
-        this.addItem('equip_bronze_armor', '청동갑옷', 1, '🛡️', { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' });
-        rewardItemsList.push('🪖 청동투구 (3티어 종결 투구 완제품 [확정])');
-        rewardItemsList.push('🛡️ 청동갑옷 (3티어 종결 갑옷 완제품 [확정])');
-
-        // 청동 무기 (청동검): 35% 확률 드랍
-        const swordRoll = Math.random() * 100;
-        if (swordRoll < 35) {
-          this.addItem('equip_bronze_sword', '청동검', 1, '⚔️', { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' });
-          rewardItemsList.push('⚔️ 청동검 (3티어 종결 무기 대박 획득! [35%])');
+        // 청동 장비 (청동검, 청동투구, 청동갑옷 중 1종): 35% 확률 드랍
+        const roll = Math.random() * 100;
+        if (roll < 35) {
+          const bronzeGears = [
+            { item: 'equip_bronze_sword', name: '청동검', icon: '⚔️', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' },
+            { item: 'equip_bronze_helmet', name: '청동투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' },
+            { item: 'equip_bronze_armor', name: '청동갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' }
+          ];
+          const chosen = bronzeGears[Math.floor(Math.random() * bronzeGears.length)];
+          this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
+          rewardItemsList.push(`${chosen.icon} ${chosen.name} (3티어 청동 장비 득템 성공! [35%])`);
         } else {
-          rewardItemsList.push('⚔️ 청동검 획득 실패 (다음 레이드 또는 제작대 도전!)');
+          rewardItemsList.push('💨 청동 장비 획득 실패 (다음 레이드 또는 제작대 도전!)');
         }
       }
 
