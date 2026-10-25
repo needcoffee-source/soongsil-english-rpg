@@ -107,7 +107,7 @@ class CraftingManager {
           <div class="recipe-name-ko">${nameKo}</div>
           ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
         </div>
-        ${canCraft ? '<span class="recipe-can-craft-pill">제작 가능 🔨</span>' : ''}
+        ${canCraft ? '<span class="recipe-can-craft-icon" title="지금 제작 가능">🔨</span>' : ''}
       `;
       item.addEventListener('click', () => {
         this.selectRecipe(r);
