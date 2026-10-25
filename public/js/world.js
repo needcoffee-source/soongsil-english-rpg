@@ -26,7 +26,7 @@ const WORLD_DATA = {
         { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 14, name: "장비 제작대", prompt: "장비 제작하기" },
         { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" },
-        { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 14, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+        { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 16, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
       npcs: [
         {
@@ -150,8 +150,8 @@ const WORLD_DATA = {
       prompt: "보스 레이드",
       level: 10,
       maxHp: 2000,
-      atk: 17,
-      def: 8
+      atk: 25,
+      def: 12
     },
     desks: []
   },
@@ -234,18 +234,6 @@ const WORLD_DATA = {
       y: 15,
       name: "🏅 호칭 교환소",
       prompt: "호칭 교환소 이용하기"
-    },
-    boss: {
-      id: "boss_soccer_raid",
-      type: "boss_raid",
-      x: 13,
-      y: 35, // 축구장 절반의 서쪽 골대 앞 신규 보스 레이드 전장
-      name: "🐯 숭실 백호 성수",
-      prompt: "보스 레이드",
-      level: 40,
-      maxHp: 12000,
-      atk: 55,
-      def: 25
     },
     basketballMonsters: [
       {

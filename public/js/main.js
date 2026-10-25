@@ -127,8 +127,8 @@ window.BOSS_CONFIG = {
   unitFilter: 'ALL',
   maxHp: 2000,
   currentHp: 2000,
-  atk: 17,
-  def: 8,
+  atk: 25,
+  def: 12,
   rewardGold: 50,
   rewardExp: 100
 };
@@ -1664,47 +1664,12 @@ class MainApp {
           return;
         }
       } else {
-        // 단체 레이드 미개최 시 학생 개인 단독 레이드(솔로) 도전 지원
-        const isDragon = !!this.playerData.hasClearedFirstBoss;
-        const defaultName = isDragon ? '🐉 숭실 청동 드래곤' : '👾 가죽 골렘';
-        const defaultHp = isDragon ? 5000 : 2000;
-        const defaultAtk = isDragon ? 28 : 17;
-        const defaultDef = isDragon ? 10 : 8;
-        const defaultGold = isDragon ? 120 : 50;
-        const defaultExp = isDragon ? 250 : 100;
-
-        const bossTarget = (bossData && bossData.name && !bossData.name.includes('가죽 골렘'))
-          ? bossData
-          : {
-              name: defaultName,
-              maxHp: defaultHp,
-              atk: defaultAtk,
-              def: defaultDef,
-              rewardGold: defaultGold,
-              rewardExp: defaultExp
-            };
-
-        const enterSolo = confirm(
-          `⚔️ 현재 교사 주최 단체 레이드가 대기 중입니다.\n\n[개인 단독 레이드]\n상대: ${bossTarget.name} (HP ${bossTarget.maxHp} / ATK ${bossTarget.atk} / DEF ${bossTarget.def})\n\n혼자서 보스에게 도전하시겠습니까?`
-        );
-        if (!enterSolo) return;
-
-        window.BOSS_CONFIG = {
-          active: false,
-          name: bossTarget.name,
-          mode: 'solo',
-          unitFilter: 'ALL',
-          maxHp: bossTarget.maxHp,
-          currentHp: bossTarget.maxHp,
-          atk: bossTarget.atk,
-          def: bossTarget.def,
-          rewardGold: bossTarget.rewardGold || defaultGold,
-          rewardExp: bossTarget.rewardExp || defaultExp
-        };
+        alert('⏳ 현재 진행 중인 보스레이드 이벤트가 없습니다.\n선생님이 보스레이드를 시작하면 입장할 수 있습니다!');
+        return;
       }
     }
 
-    if (this.bossState.currentHp <= 0 || !window.BOSS_CONFIG.active) {
+    if (this.bossState.currentHp <= 0) {
       this.bossState.currentHp = window.BOSS_CONFIG.maxHp;
     }
     this.bossState.maxHp = window.BOSS_CONFIG.maxHp;
@@ -2590,52 +2555,45 @@ class MainApp {
         if (val === 'golem') {
           nameEl.value = '👾 가죽 골렘';
           hpEl.value = 2000;
-          atkEl.value = 17;
-          defEl.value = 8;
+          atkEl.value = 25;
+          defEl.value = 12;
           goldEl.value = 50;
           expEl.value = 100;
         } else if (val === 'dragon') {
           nameEl.value = '🐉 숭실 청동 드래곤';
           hpEl.value = 5000;
-          atkEl.value = 28;
-          defEl.value = 10;
+          atkEl.value = 36;
+          defEl.value = 15;
           goldEl.value = 120;
           expEl.value = 250;
         } else if (val === 'demon') {
           nameEl.value = '😈 중간고사 대마왕';
-          hpEl.value = 4000;
-          atkEl.value = 24;
-          defEl.value = 9;
-          goldEl.value = 150;
-          expEl.value = 300;
-        } else if (val === 'cerberus') {
-          nameEl.value = '🐕 수행평가 3두마수 케르베로스';
-          hpEl.value = 6000;
-          atkEl.value = 35;
-          defEl.value = 15;
+          hpEl.value = 6500;
+          atkEl.value = 45;
+          defEl.value = 18;
           goldEl.value = 200;
           expEl.value = 400;
-        } else if (val === 'final_god') {
-          nameEl.value = '💀 기말고사 파멸신';
-          hpEl.value = 8000;
-          atkEl.value = 42;
-          defEl.value = 18;
+        } else if (val === 'cerberus') {
+          nameEl.value = '🐕 수행평가 3두마수 케르베로스';
+          hpEl.value = 8500;
+          atkEl.value = 55;
+          defEl.value = 22;
           goldEl.value = 300;
           expEl.value = 600;
+        } else if (val === 'final_god') {
+          nameEl.value = '💀 기말고사 파멸신';
+          hpEl.value = 99999;
+          atkEl.value = 9999;
+          defEl.value = 9999;
+          goldEl.value = 0;
+          expEl.value = 0;
         } else if (val === 'sloth_titan') {
           nameEl.value = '🦥 방학 직전 나태의 거인';
-          hpEl.value = 10000;
-          atkEl.value = 48;
-          defEl.value = 22;
-          goldEl.value = 350;
-          expEl.value = 700;
-        } else if (val === 'white_tiger') {
-          nameEl.value = '🐯 숭실 백호 성수';
-          hpEl.value = 12000;
-          atkEl.value = 55;
-          defEl.value = 25;
-          goldEl.value = 500;
-          expEl.value = 1000;
+          hpEl.value = 99999;
+          atkEl.value = 9999;
+          defEl.value = 9999;
+          goldEl.value = 0;
+          expEl.value = 0;
         }
 
         if (window.BOSS_CONFIG) {
@@ -2658,12 +2616,12 @@ class MainApp {
     if (btnStartBoss) {
       btnStartBoss.addEventListener('click', () => {
         const opts = {
-          name: document.getElementById('admin-boss-name').value.trim() || '👾 고목 골렘',
+          name: document.getElementById('admin-boss-name').value.trim() || '👾 가죽 골렘',
           mode: document.getElementById('admin-boss-mode').value || 'coop',
           unitFilter: document.getElementById('admin-boss-unit').value || 'ALL',
-          maxHp: Math.max(50, parseInt(document.getElementById('admin-boss-hp').value) || 1500),
-          atk: Math.max(1, parseInt(document.getElementById('admin-boss-atk').value) || 17),
-          def: Math.max(0, parseInt(document.getElementById('admin-boss-def').value) || 8),
+          maxHp: Math.max(50, parseInt(document.getElementById('admin-boss-hp').value) || 2000),
+          atk: Math.max(1, parseInt(document.getElementById('admin-boss-atk').value) || 25),
+          def: Math.max(0, parseInt(document.getElementById('admin-boss-def').value) || 12),
           rewardGold: Math.max(0, parseInt(document.getElementById('admin-boss-gold').value) || 50),
           rewardExp: Math.max(0, parseInt(document.getElementById('admin-boss-exp').value) || 100),
           announce: document.getElementById('admin-boss-announce').checked,

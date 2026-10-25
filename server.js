@@ -184,8 +184,8 @@ let bossRaidEvent = {
   unitFilter: 'ALL',  // 'ALL', 'L1', 'L2', 'L3', 'L4'
   maxHp: 2000,
   currentHp: 2000,
-  atk: 17,
-  def: 8,
+  atk: 25,
+  def: 12,
   rewardGold: 50,
   rewardExp: 100,
   participants: {}
@@ -547,8 +547,8 @@ io.on('connection', (socket) => {
       unitFilter: opts.unitFilter || 'ALL',
       maxHp: Math.max(50, parseInt(opts.maxHp) || 2000),
       currentHp: Math.max(50, parseInt(opts.maxHp) || 2000),
-      atk: Math.max(1, parseInt(opts.atk) || 17),
-      def: Math.max(0, parseInt(opts.def) || 8),
+      atk: Math.max(1, parseInt(opts.atk) || 25),
+      def: Math.max(0, parseInt(opts.def) || 12),
       rewardGold: Math.max(0, parseInt(opts.rewardGold) || 50),
       rewardExp: Math.max(0, parseInt(opts.rewardExp) || 100),
       participants: {}
@@ -557,7 +557,7 @@ io.on('connection', (socket) => {
     io.emit('boss_raid_state', bossRaidEvent);
 
     const bName = bossRaidEvent.name || '';
-    const isSoccerBoss = bName.includes('케르베로스') || bName.includes('파멸신') || bName.includes('나태') || bName.includes('백호') || bName.includes('대마왕');
+    const isSoccerBoss = bName.includes('케르베로스') || bName.includes('파멸신') || bName.includes('나태') || bName.includes('대마왕');
     const locText = isSoccerBoss ? '숭실 운동장(축구장 서쪽 골대)' : '1학년 2반';
 
     if (opts.announce !== false) {

@@ -723,8 +723,8 @@ class GameEngine {
                 prompt: "보스 레이드 (숭실 청동 드래곤)",
                 level: 20,
                 maxHp: 5000,
-                atk: 28,
-                def: 10,
+                atk: 36,
+                def: 15,
                 rewardGold: 120,
                 rewardExp: 250
               }
@@ -840,8 +840,8 @@ class GameEngine {
               prompt: "보스 레이드 (숭실 청동 드래곤)",
               level: 20,
               maxHp: 5000,
-              atk: 28,
-              def: 10,
+              atk: 36,
+              def: 15,
               rewardGold: 120,
               rewardExp: 250
             }
@@ -3509,7 +3509,7 @@ class GameEngine {
           ? ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase())
           : (isClearedGolem ? 'dragon' : (cr.boss.name || '').toLowerCase());
         const effectiveBoss = (isClearedGolem && !isRaidActive)
-          ? { ...cr.boss, name: '🐉 숭실 청동 드래곤', maxHp: 5000, atk: 28, def: 10 }
+          ? { ...cr.boss, name: '🐉 숭실 청동 드래곤', maxHp: 5000, atk: 36, def: 15 }
           : cr.boss;
 
         if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
@@ -3522,8 +3522,6 @@ class GameEngine {
           this.drawHighResBossFinalGod(effectiveBoss);
         } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
           this.drawHighResBossSlothTitan(effectiveBoss);
-        } else if (bName.includes('백호') || bName.includes('성수') || bName.includes('tiger')) {
-          this.drawHighResBossWhiteTiger(effectiveBoss);
         } else {
           this.drawHighResBossGolem(effectiveBoss);
         }
