@@ -2341,10 +2341,10 @@ class MainApp {
               y: this.engine.player.y,
               message: msg || '선생님께서 여러분을 현재 위치로 소환하셨습니다!'
             });
-            alert(`📢 전교생에게 공지 전송과 함께 현재 교사 위치(${this.engine.player.floor}층 ${this.engine.player.roomName})로 전원 소환을 완료했습니다!`);
+            alert(`📢 [공지 & 소환 완료]\n전교생에게 공지 전송과 함께 현재 교사 위치(${this.engine.player.floor}층 ${this.engine.player.roomName})로 전원 소환을 완료했습니다!`);
           } else {
             this.networkManager.socket.emit('teacher_broadcast', { message: msg });
-            alert(`📢 전교생에게 공지사항이 전송되었습니다:\n"${msg}"`);
+            alert(`📢 [공지 전송 완료]\n전교생에게 공지사항이 전송되었습니다:\n"${msg}"`);
           }
           input.value = '';
         }
@@ -2356,7 +2356,7 @@ class MainApp {
       btnSummonNow.addEventListener('click', () => {
         const roomName = this.engine.player.roomName || '현재 교실';
         const floor = this.engine.player.floor || 7;
-        if (!confirm(`🌀 현재 위치 [${floor}층 ${roomName}]로 접속 중인 모든 학생을 즉시 소환하시겠습니까?`)) {
+        if (!confirm(`🌀 현재 위치 (${floor}층 ${roomName})로 접속 중인 모든 학생을 즉시 소환하시겠습니까?`)) {
           return;
         }
         if (this.networkManager && this.networkManager.socket) {
@@ -2367,7 +2367,7 @@ class MainApp {
             y: this.engine.player.y,
             message: '🌀 선생님께서 여러분을 현재 위치로 긴급 소환하셨습니다!'
           });
-          alert(`🌀 모든 학생을 현재 위치 [${floor}층 ${roomName}]로 소환했습니다!`);
+          alert(`🌀 [전원 소환 완료]\n접속 중인 모든 학생을 현재 교사 위치(${floor}층 ${roomName})로 즉시 소환했습니다!`);
         }
       });
     }

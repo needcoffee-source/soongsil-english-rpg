@@ -1688,6 +1688,8 @@ body, html {
   justify-content: center;
   font-size: 18px;
   flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .rpg-speaker-pill {
@@ -1696,6 +1698,10 @@ body, html {
   color: #fde047;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
 }
 
 .rpg-dialog-close-btn {

@@ -178,27 +178,37 @@ class RPGDialogManager {
     let avatar = '🏫';
     let body = msg;
 
-    // Pattern 1: Emoji at start e.g. "🐶 [마스코트 숭실이]..."
-    const match = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[^\[\n]+)?\s*\[([^\]]+)\]\s*\n*([\s\S]*)$/);
-    if (match) {
-      if (match[1] && match[1].trim()) avatar = match[1].trim();
-      if (match[2]) speaker = match[2].trim();
-      if (match[3] !== undefined) body = match[3].trim();
-    } else if (msg.includes('멘토')) {
-      speaker = '1학년 멘토';
-      avatar = '🎓';
-    } else if (msg.includes('숭실이')) {
-      speaker = '마스코트 숭실이';
-      avatar = '🐶';
-    } else if (msg.includes('물약') || msg.includes('포션')) {
-      speaker = '포션 알림';
-      avatar = '🧪';
-    } else if (msg.includes('제작')) {
-      speaker = '제작대';
-      avatar = '🔨';
-    } else if (msg.includes('선물')) {
-      speaker = '선생님 선물';
-      avatar = '🎁';
+    // Pattern 1: Leading emoji (optional) followed immediately by [Speaker]
+    // e.g. "🐶 [마스코트 숭실이] 대사..." or "🌀 [전원 소환 완료] 내용..."
+    const matchWithSpeaker = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])?\s*\[([^\]]{1,25})\]\s*\n*([\s\S]*)$/u);
+    if (matchWithSpeaker) {
+      if (matchWithSpeaker[1]) avatar = matchWithSpeaker[1].trim();
+      if (matchWithSpeaker[2]) speaker = matchWithSpeaker[2].trim();
+      if (matchWithSpeaker[3] !== undefined) body = matchWithSpeaker[3].trim();
+    } else {
+      // Pattern 2: Starts with single emoji without immediate bracket
+      // e.g. "🌀 모든 학생을 현재 위치 (7층 복도)로 소환했습니다!"
+      const matchLeadingEmoji = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\s*([\s\S]+)$/u);
+      if (matchLeadingEmoji) {
+        avatar = matchLeadingEmoji[1];
+        body = matchLeadingEmoji[2].trim();
+        speaker = '숭실 알림';
+      } else if (msg.includes('멘토')) {
+        speaker = '1학년 멘토';
+        avatar = '🎓';
+      } else if (msg.includes('숭실이')) {
+        speaker = '마스코트 숭실이';
+        avatar = '🐶';
+      } else if (msg.includes('물약') || msg.includes('포션')) {
+        speaker = '포션 알림';
+        avatar = '🧪';
+      } else if (msg.includes('제작')) {
+        speaker = '제작대';
+        avatar = '🔨';
+      } else if (msg.includes('선물')) {
+        speaker = '선생님 선물';
+        avatar = '🎁';
+      }
     }
 
     // Clean leading/trailing quotes if wrapped
