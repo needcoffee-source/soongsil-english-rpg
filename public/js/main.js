@@ -178,6 +178,7 @@ class MainApp {
       hasReceivedSoongsilGift: false,
       hasOpenedSecretLocker: false,
       hasClearedDragonRaid: false,
+      hasClearedCerberusRaid: false,
       titles: [],
       equippedTitle: null,
       inventory: []
@@ -846,6 +847,7 @@ class MainApp {
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
           this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
+          this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_cerberus_cleared_global') === 'true');
           this.playerData.titles = Array.isArray(saved.titles) ? saved.titles : [];
           this.playerData.equippedTitle = saved.equippedTitle || null;
           console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}`);
@@ -854,6 +856,7 @@ class MainApp {
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
           this.playerData.hasClearedFirstBoss = !!((studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
           this.playerData.hasClearedDragonRaid = !!((studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
+          this.playerData.hasClearedCerberusRaid = !!((studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_cerberus_cleared_global') === 'true');
           this.playerData.titles = [];
           this.playerData.equippedTitle = null;
         }
@@ -915,6 +918,7 @@ class MainApp {
               hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
               hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
+              hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
               updatedAt: Date.now()
             };
             try {
@@ -1876,13 +1880,21 @@ class MainApp {
         }
       }
 
-      // 6. 케르베로스 전용 드랍
+      // 6. 케르베로스 전용 드랍 & 다음 구역 해금
       if (bName.includes('케르베로스') || bName.includes('cerberus')) {
+        this.playerData.hasClearedCerberusRaid = true;
+        const studentId = this.playerData.studentId || '';
+        if (studentId) {
+          localStorage.setItem('soongsil_cerberus_cleared_' + studentId, 'true');
+        }
+        localStorage.setItem('soongsil_cerberus_cleared_global', 'true');
+        this.saveProgress();
+
         this.addItem('item_eval_paper', 'A+ 만점 수행평가지', 1, '📜', { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' });
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
       }
 
-      // 6. 기말고사 파멸신 전용 드랍
+      // 7. 기말고사 파멸신 전용 드랍
       if (bName.includes('파멸신') || bName.includes('기말고사')) {
         if (Math.random() < 0.5) {
           this.addItem('equip_laurel_crown', '종강의 황금 월계관', 1, '👑', { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '방어력 +25, 체력 +80' });
@@ -1893,13 +1905,13 @@ class MainApp {
         }
       }
 
-      // 7. 나태의 거인 전용 드랍
+      // 8. 나태의 거인 전용 드랍
       if (bName.includes('나태') || bName.includes('거인')) {
         this.addItem('item_ice_potion', '시원한 아이스 물약', 2, '🧊', { type: 'consumable', slot: 'consumable', heal: 50, effect: '체력 +50 대량 회복' });
         rewardItemsList.push('🧊 시원한 아이스 물약 x2');
       }
 
-      // 8. 숭실 백호 성수 전용 드랍
+      // 9. 숭실 백호 성수 전용 드랍
       if (bName.includes('백호') || bName.includes('성수')) {
         this.addItem('equip_tiger_amulet', '숭실 백호 수호 부적', 1, '🐯', { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '공격력 +35, 방어력 +25, 체력 +100' });
         rewardItemsList.push('🐯 숭실 백호 수호 부적 (전설 보물!)');
@@ -1909,8 +1921,10 @@ class MainApp {
       const mvpText = data.mvp ? `\n\n👑 최고 기여(MVP): ${data.mvp.name} (누적 데미지 ${data.mvp.damage})` : '';
 
       const clearNotice = (bName.includes('드래곤') || bName.includes('dragon'))
-        ? '\n\n🎉 숭실 골드 드래곤을 토벌하여 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!'
-        : '';
+        ? '\n\n🎉 숭실 청동 드래곤을 토벌하여 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!'
+        : ((bName.includes('케르베로스') || bName.includes('cerberus'))
+          ? '\n\n🎉 [신규 구역 해금] 3두마수 케르베로스를 토벌하여 다음 미지의 모험 구역으로 향하는 길이 열렸습니다!'
+          : '');
 
       alert(`🏆 [${data.bossName}] 협동 토벌 성공!\n\n🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}${clearNotice}`);
       this.modalBossRaid.classList.add('hidden');
@@ -1977,9 +1991,15 @@ class MainApp {
   }
 
   loadNextBossQuestion() {
-    const uFilter = (window.BOSS_CONFIG.unitFilter && window.BOSS_CONFIG.unitFilter !== 'ALL')
+    let uFilter = (window.BOSS_CONFIG.unitFilter && window.BOSS_CONFIG.unitFilter !== 'ALL')
       ? window.BOSS_CONFIG.unitFilter
       : null;
+
+    // 케르베로스는 5~6단원에서 집중 출제
+    if (!uFilter && window.BOSS_CONFIG.name && (window.BOSS_CONFIG.name.includes('케르베로스') || window.BOSS_CONFIG.name.includes('cerberus'))) {
+      uFilter = Math.random() < 0.5 ? '5단원' : '6단원';
+    }
+
     const q = this.quizManager.getRandomQuestion(uFilter);
     if (!q) {
       alert('출제할 영어 문제가 없습니다.');
@@ -2207,12 +2227,20 @@ class MainApp {
       btnOrange.innerText = `🧪 주홍 물약 (+25) ${orangeCount}개`;
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
+
+    const isFutsal = (mob.court === 'futsal');
+    const logEl = document.getElementById('battle-action-log');
+    if (logEl) {
+      logEl.innerHTML = `⚔️ <b>${isFutsal ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)'}</b> 영어 문제를 맞히면 공격하고, 틀리면 <b>풀HP의 20% 피해</b>를 입습니다!`;
+    }
   }
 
   loadNextFieldBattleQuestion() {
-    const q = this.quizManager.getRandomQuestion('L5');
+    const isFutsal = (this.currentFieldMob && this.currentFieldMob.court === 'futsal');
+    const unitFilter = isFutsal ? '6단원' : '5단원';
+    const q = this.quizManager.getRandomQuestion(unitFilter);
     if (!q) {
-      alert('출제할 5단원 영어 문제가 없습니다.');
+      alert(`출제할 ${isFutsal ? '6단원' : '5단원'} 영어 문제가 없습니다.`);
       return;
     }
     this.fieldBattleQuestion = q;
@@ -2611,9 +2639,9 @@ class MainApp {
           expEl.value = 400;
         } else if (val === 'cerberus') {
           nameEl.value = '🐕 수행평가 3두마수 케르베로스';
-          hpEl.value = 8500;
-          atkEl.value = 55;
-          defEl.value = 22;
+          hpEl.value = 8000;
+          atkEl.value = 88;
+          defEl.value = 26;
           goldEl.value = 300;
           expEl.value = 600;
         } else if (val === 'final_god') {
@@ -3327,6 +3355,7 @@ class MainApp {
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
+        hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
         titles: this.playerData.titles || [],
         equippedTitle: this.playerData.equippedTitle || null,
         updatedAt: Date.now()

@@ -222,8 +222,8 @@ const WORLD_DATA = {
     store: {
       id: "store_canteen",
       type: "store",
-      x: 84,
-      y: 5,
+      x: 72,
+      y: 4,
       name: "매점",
       prompt: "매점 이용하기 (물품 매각)"
     },

@@ -3654,8 +3654,8 @@ class GameEngine {
     const pgCaf = (WORLD_DATA.playground && WORLD_DATA.playground.cafeteria) || { x: 86, y: 3 };
     this.drawHighResCafeteriaEntrance(pgCaf.x * 32, pgCaf.y * 32);
 
-    // 4-B. Store NPC (매점 - 학생 급식실 앞: x: 84, y: 5)
-    const pgStore = (WORLD_DATA.playground && WORLD_DATA.playground.store) || { x: 84, y: 5 };
+    // 4-B. Store NPC (매점 - 엘리베이터 좌측 넓은 공터: x: 72, y: 4)
+    const pgStore = (WORLD_DATA.playground && WORLD_DATA.playground.store) || { x: 72, y: 4 };
     this.drawHighResStoreNPC(pgStore.x * 32, pgStore.y * 32);
 
     // ========================================================
