@@ -2839,7 +2839,29 @@ class MainApp {
     const btnSaveEdit = document.getElementById('btn-save-student-progress-edit');
     const btnDeleteStudent = document.getElementById('btn-delete-student-progress');
 
-    this.loadSavedStudentsForEditor = async () => {
+    this.populateEditStudentForm = (sId) => {
+      if (!sId || !this._allSavedStudentsData || !this._allSavedStudentsData[sId]) {
+        if (formEditStudent) formEditStudent.classList.add('hidden');
+        return;
+      }
+      const s = this._allSavedStudentsData[sId];
+      if (formEditStudent) formEditStudent.classList.remove('hidden');
+
+      document.getElementById('admin-edit-student-id').value = sId;
+      document.getElementById('admin-edit-student-name').value = s.name || '';
+      document.getElementById('admin-edit-student-level').value = s.level || 1;
+      document.getElementById('admin-edit-student-gold').value = s.gold !== undefined ? s.gold : 10;
+      document.getElementById('admin-edit-student-exp').value = s.exp || 0;
+      document.getElementById('admin-edit-gift').checked = !!s.hasReceivedSoongsilGift;
+      document.getElementById('admin-edit-locker').checked = !!s.hasOpenedSecretLocker;
+      const golemEl = document.getElementById('admin-edit-golem');
+      if (golemEl) golemEl.checked = !!s.hasClearedFirstBoss;
+      document.getElementById('admin-edit-dragon').checked = !!s.hasClearedDragonRaid;
+      const cerberusEl = document.getElementById('admin-edit-cerberus');
+      if (cerberusEl) cerberusEl.checked = !!s.hasClearedCerberusRaid;
+    };
+
+    this.loadSavedStudentsForEditor = async (selectedIdToKeep = null) => {
       if (!selectEditStudent) return;
       selectEditStudent.innerHTML = '<option value="">-- 불러오는 중... --</option>';
       try {
@@ -2864,6 +2886,13 @@ class MainApp {
           html += `<option value="${id}">${id} - ${name} (Lv.${lv} · ${g}G)</option>`;
         });
         selectEditStudent.innerHTML = html;
+
+        if (selectedIdToKeep && all[selectedIdToKeep]) {
+          selectEditStudent.value = selectedIdToKeep;
+          this.populateEditStudentForm(selectedIdToKeep);
+        } else if (!selectEditStudent.value && formEditStudent) {
+          formEditStudent.classList.add('hidden');
+        }
       } catch (err) {
         selectEditStudent.innerHTML = '<option value="">(목록 로딩 실패)</option>';
       }
@@ -2871,28 +2900,14 @@ class MainApp {
 
     if (btnRefreshSaved) {
       btnRefreshSaved.addEventListener('click', () => {
-        this.loadSavedStudentsForEditor();
+        this.loadSavedStudentsForEditor(selectEditStudent ? selectEditStudent.value : null);
       });
     }
 
     if (selectEditStudent) {
       selectEditStudent.addEventListener('change', () => {
         const sId = selectEditStudent.value;
-        if (!sId || !this._allSavedStudentsData || !this._allSavedStudentsData[sId]) {
-          if (formEditStudent) formEditStudent.classList.add('hidden');
-          return;
-        }
-        const s = this._allSavedStudentsData[sId];
-        if (formEditStudent) formEditStudent.classList.remove('hidden');
-
-        document.getElementById('admin-edit-student-id').value = sId;
-        document.getElementById('admin-edit-student-name').value = s.name || '';
-        document.getElementById('admin-edit-student-level').value = s.level || 1;
-        document.getElementById('admin-edit-student-gold').value = s.gold !== undefined ? s.gold : 10;
-        document.getElementById('admin-edit-student-exp').value = s.exp || 0;
-        document.getElementById('admin-edit-gift').checked = !!s.hasReceivedSoongsilGift;
-        document.getElementById('admin-edit-locker').checked = !!s.hasOpenedSecretLocker;
-        document.getElementById('admin-edit-dragon').checked = !!s.hasClearedDragonRaid;
+        this.populateEditStudentForm(sId);
       });
     }
 
@@ -2910,7 +2925,11 @@ class MainApp {
         const newExp = Math.max(0, parseInt(document.getElementById('admin-edit-student-exp').value) || 0);
         const newGift = document.getElementById('admin-edit-gift').checked;
         const newLocker = document.getElementById('admin-edit-locker').checked;
+        const golemEl = document.getElementById('admin-edit-golem');
+        const newGolem = golemEl ? golemEl.checked : !!prev.hasClearedFirstBoss;
         const newDragon = document.getElementById('admin-edit-dragon').checked;
+        const cerberusEl = document.getElementById('admin-edit-cerberus');
+        const newCerberus = cerberusEl ? cerberusEl.checked : !!prev.hasClearedCerberusRaid;
 
         const updatedProgress = {
           ...prev,
@@ -2920,7 +2939,9 @@ class MainApp {
           exp: newExp,
           hasReceivedSoongsilGift: newGift,
           hasOpenedSecretLocker: newLocker,
+          hasClearedFirstBoss: newGolem,
           hasClearedDragonRaid: newDragon,
+          hasClearedCerberusRaid: newCerberus,
           updatedAt: Date.now()
         };
 
@@ -2937,7 +2958,7 @@ class MainApp {
           if (data && data.success) {
             this._allSavedStudentsData[sId] = updatedProgress;
             alert(`✅ [${sId} ${newName}] 학생의 정보가 서버에 성공적으로 저장되었습니다!\n(Lv.${newLevel}, ${newGold}G)`);
-            this.loadSavedStudentsForEditor();
+            this.loadSavedStudentsForEditor(sId);
           } else {
             alert('저장 실패: 서버 응답 오류');
           }
@@ -2963,6 +2984,7 @@ class MainApp {
           const data = await res.json();
           if (data && data.success) {
             alert(`🗑️ [${sId}] 학생의 데이터가 서버에서 삭제되었습니다.`);
+            if (this._allSavedStudentsData) delete this._allSavedStudentsData[sId];
             if (formEditStudent) formEditStudent.classList.add('hidden');
             this.loadSavedStudentsForEditor();
           } else {
@@ -3419,13 +3441,74 @@ class MainApp {
     return null;
   }
 
+  clearLocalStudentData(studentId) {
+    if (!studentId || studentId === '교사') return;
+    try {
+      localStorage.removeItem('soongsil_save_' + studentId);
+      localStorage.removeItem('soongsil_gift_' + studentId);
+      localStorage.removeItem('soongsil_secret_locker_' + studentId);
+      localStorage.removeItem('soongsil_first_boss_cleared_' + studentId);
+      localStorage.removeItem('soongsil_dragon_cleared_' + studentId);
+      localStorage.removeItem('soongsil_cerberus_cleared_' + studentId);
+      console.log(`[Storage] 학생(${studentId}) 로컬 브라우저 세이브 초기화 완료`);
+    } catch (e) {
+      console.warn('Failed to clear local student data', e);
+    }
+  }
+
+  onAdminProgressSynced(updatedProgress) {
+    if (!this.playerData || this.playerData.studentId !== updatedProgress.studentId) return;
+    this.playerData.level = updatedProgress.level || this.playerData.level;
+    this.playerData.gold = updatedProgress.gold !== undefined ? updatedProgress.gold : this.playerData.gold;
+    this.playerData.exp = updatedProgress.exp !== undefined ? updatedProgress.exp : this.playerData.exp;
+    this.playerData.name = updatedProgress.name || this.playerData.name;
+    this.playerData.hasReceivedSoongsilGift = !!updatedProgress.hasReceivedSoongsilGift;
+    this.playerData.hasOpenedSecretLocker = !!updatedProgress.hasOpenedSecretLocker;
+    this.playerData.hasClearedFirstBoss = !!updatedProgress.hasClearedFirstBoss;
+    this.playerData.hasClearedDragonRaid = !!updatedProgress.hasClearedDragonRaid;
+    this.playerData.hasClearedCerberusRaid = !!updatedProgress.hasClearedCerberusRaid;
+    this.saveProgress(true);
+    this.recalcCombatStats();
+    this.updateExpBar();
+    this.updatePlayerNameDisplay();
+    this.showToast(`선생님께서 학생 정보를 갱신하셨습니다! (Lv.${this.playerData.level}, ${this.playerData.gold}G)`, 'info');
+  }
+
+  onAdminProgressReset(data) {
+    if (this.playerData && this.playerData.studentId === data.studentId) {
+      this.clearLocalStudentData(data.studentId);
+      alert('⚠️ 선생님에 의해 플레이 세이브 데이터가 완전히 초기화(삭제)되었습니다.\n처음 화면으로 돌아갑니다.');
+      window.location.reload();
+    }
+  }
+
   async getBestProgress(studentId) {
     if (!studentId || studentId === '교사') return null;
     const local = this.loadProgress(studentId);
     let server = null;
+    let deletedAt = 0;
     try {
-      server = await this.fetchProgressFromServer(studentId);
-    } catch (e) {}
+      const res = await fetch(`/api/load-progress?studentId=${encodeURIComponent(studentId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success) {
+          server = data.progress;
+          deletedAt = data.deletedAt || 0;
+        }
+      }
+    } catch (e) {
+      console.warn('[Storage] Server progress fetch failed:', e);
+    }
+
+    // 교사가 서버에서 삭제(초기화)한 경우: 브라우저 localStorage의 옛날 데이터로 부활하지 못하도록 영구 제거
+    if (deletedAt > 0) {
+      const localTime = (local && local.updatedAt) || 0;
+      if (deletedAt >= localTime) {
+        console.log(`[Storage] 학생(${studentId}) 데이터가 교사에 의해 삭제(초기화)되었습니다. 로컬 세이브를 클리어합니다.`);
+        this.clearLocalStudentData(studentId);
+        return null;
+      }
+    }
 
     if (server && local) {
       const serverTime = server.updatedAt || 0;

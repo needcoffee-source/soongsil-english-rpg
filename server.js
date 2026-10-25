@@ -68,8 +68,13 @@ app.post('/api/admin/questions', (req, res) => {
 // PERSISTENT STUDENT PROGRESS STORAGE (2-Month Curriculum)
 // ========================================================
 const PROGRESS_FILE = path.join(DATA_DIR, 'students_progress.json');
+const DELETED_FILE = path.join(DATA_DIR, 'deleted_students.json');
+
 if (!fs.existsSync(PROGRESS_FILE)) {
   fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}), 'utf8');
+}
+if (!fs.existsSync(DELETED_FILE)) {
+  fs.writeFileSync(DELETED_FILE, JSON.stringify({}), 'utf8');
 }
 
 function getStudentsProgress() {
@@ -88,11 +93,33 @@ function saveStudentsProgress(allData) {
   }
 }
 
+function getDeletedStudents() {
+  try {
+    if (fs.existsSync(DELETED_FILE)) {
+      return JSON.parse(fs.readFileSync(DELETED_FILE, 'utf8'));
+    }
+  } catch (e) {}
+  return {};
+}
+
+function saveDeletedStudents(data) {
+  try {
+    fs.writeFileSync(DELETED_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Deleted Save Error]', e);
+  }
+}
+
 app.get('/api/load-progress', (req, res) => {
   const studentId = (req.query.studentId || '').trim();
   if (!studentId) return res.status(400).json({ error: 'Missing studentId' });
   const all = getStudentsProgress();
-  res.json({ success: true, progress: all[studentId] || null });
+  const deletedMap = getDeletedStudents();
+  res.json({
+    success: true,
+    progress: all[studentId] || null,
+    deletedAt: deletedMap[studentId] || 0
+  });
 });
 
 app.post('/api/save-progress', (req, res) => {
@@ -108,6 +135,25 @@ app.post('/api/save-progress', (req, res) => {
     updatedAt: progress.updatedAt || Date.now()
   };
   saveStudentsProgress(all);
+
+  // If this student was previously deleted, remove from deleted map now that fresh data exists
+  const deletedMap = getDeletedStudents();
+  if (deletedMap[studentId]) {
+    delete deletedMap[studentId];
+    saveDeletedStudents(deletedMap);
+  }
+
+  // Real-time synchronization to active connected student
+  const activeStudent = Object.values(players).find(p => p.studentId === studentId);
+  if (activeStudent) {
+    if (progress.level !== undefined) activeStudent.level = progress.level;
+    if (progress.gold !== undefined) activeStudent.gold = progress.gold;
+    if (progress.exp !== undefined) activeStudent.exp = progress.exp;
+    if (progress.name) activeStudent.name = progress.name;
+    io.to(activeStudent.id).emit('student_progress_sync_from_admin', all[studentId]);
+    broadcastStudentList();
+  }
+
   res.json({ success: true });
 });
 
@@ -167,6 +213,22 @@ app.post('/api/admin/delete-student-progress', (req, res) => {
     delete all[studentId];
     saveStudentsProgress(all);
   }
+
+  // Record deleted timestamp so student client cannot resurrect from browser localStorage
+  const deletedMap = getDeletedStudents();
+  deletedMap[studentId] = Date.now();
+  saveDeletedStudents(deletedMap);
+
+  // If student is currently online, notify their client immediately to clear and reset
+  const activeStudent = Object.values(players).find(p => p.studentId === studentId);
+  if (activeStudent) {
+    io.to(activeStudent.id).emit('student_progress_reset_by_admin', { studentId });
+    activeStudent.level = 1;
+    activeStudent.exp = 0;
+    activeStudent.gold = 10;
+    broadcastStudentList();
+  }
+
   res.json({ success: true });
 });
 

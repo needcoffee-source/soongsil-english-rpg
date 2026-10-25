@@ -147,6 +147,19 @@ class NetworkManager {
       }
     });
 
+    // Real-Time Student Progress Sync & Reset by Teacher
+    this.socket.on('student_progress_sync_from_admin', (progress) => {
+      if (window.MainApp && window.MainApp.onAdminProgressSynced) {
+        window.MainApp.onAdminProgressSynced(progress);
+      }
+    });
+
+    this.socket.on('student_progress_reset_by_admin', (data) => {
+      if (window.MainApp && window.MainApp.onAdminProgressReset) {
+        window.MainApp.onAdminProgressReset(data);
+      }
+    });
+
     // Boss Raid Event Sync
     this.socket.on('boss_raid_state', (state) => {
       if (window.MainApp && window.MainApp.onBossRaidStateUpdate) {
