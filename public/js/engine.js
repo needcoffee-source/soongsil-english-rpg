@@ -599,14 +599,25 @@ class GameEngine {
           }
         }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
-        if (pg.boss) {
-          const bDist = Math.hypot(pg.boss.x * 32 - this.player.x, (pg.boss.y + 0.5) * 32 - this.player.y);
+        const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
+          (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
+           window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태')));
+        const soccerBossObj = pg.boss || (isSoccerRaid ? {
+          id: 'boss_soccer_raid',
+          type: 'boss_raid',
+          x: 13,
+          y: 35,
+          name: window.BOSS_CONFIG.name,
+          prompt: '보스 레이드'
+        } : null);
+        if (soccerBossObj) {
+          const bDist = Math.hypot(soccerBossObj.x * 32 - this.player.x, (soccerBossObj.y + 0.5) * 32 - this.player.y);
           if (bDist < 72 && bDist < minDist) {
             closest = {
               type: 'boss_raid',
-              data: pg.boss,
-              name: pg.boss.name,
-              prompt: pg.boss.prompt || '보스 레이드'
+              data: soccerBossObj,
+              name: soccerBossObj.name,
+              prompt: soccerBossObj.prompt || '보스 레이드'
             };
             minDist = bDist;
           }
@@ -787,8 +798,19 @@ class GameEngine {
         if (pg.titleExchange && Math.hypot(pg.titleExchange.x * 32 - x, (pg.titleExchange.y + 0.5) * 32 - y) < 56) {
           return { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
         }
-        if (pg.boss && Math.hypot(pg.boss.x * 32 - x, (pg.boss.y + 0.5) * 32 - y) < 64) {
-          return { type: 'boss_raid', data: pg.boss, name: pg.boss.name, prompt: pg.boss.prompt || '보스 레이드' };
+        const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
+          (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
+           window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태')));
+        const soccerBossObj = pg.boss || (isSoccerRaid ? {
+          id: 'boss_soccer_raid',
+          type: 'boss_raid',
+          x: 13,
+          y: 35,
+          name: window.BOSS_CONFIG.name,
+          prompt: '보스 레이드'
+        } : null);
+        if (soccerBossObj && Math.hypot(soccerBossObj.x * 32 - x, (soccerBossObj.y + 0.5) * 32 - y) < 64) {
+          return { type: 'boss_raid', data: soccerBossObj, name: soccerBossObj.name, prompt: soccerBossObj.prompt || '보스 레이드' };
         }
         if (pg.basketballMonsters) {
           for (const mob of pg.basketballMonsters) {
@@ -3773,8 +3795,19 @@ class GameEngine {
     // 7. NEW BOSS RAID ARENA: 서쪽 골대 앞 신규 보스 레이드 전장 (x: 13, y: 35)
     // ========================================================
     const pg = WORLD_DATA.playground;
-    if (pg && pg.boss) {
-      this.drawSoccerBossArena(13 * 32, 35 * 32, pg.boss);
+    const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
+      (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
+       window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태')));
+    const soccerBossObj = (pg && pg.boss) || (isSoccerRaid ? {
+      id: 'boss_soccer_raid',
+      type: 'boss_raid',
+      x: 13,
+      y: 35,
+      name: window.BOSS_CONFIG.name,
+      prompt: '보스 레이드'
+    } : null);
+    if (soccerBossObj) {
+      this.drawSoccerBossArena(13 * 32, 35 * 32, soccerBossObj);
     }
 
     // ========================================================
@@ -5221,20 +5254,18 @@ class GameEngine {
     const bCfg = window.BOSS_CONFIG || boss;
     const bName = ((bCfg && bCfg.name) || boss.name || '').toLowerCase();
 
-    if (bName.includes('백호') || bName.includes('성수') || bName.includes('tiger')) {
-      this.drawHighResBossWhiteTiger(boss);
+    if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
+      this.drawHighResBossDemon(boss);
     } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
       this.drawHighResBossCerberus(boss);
     } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
       this.drawHighResBossFinalGod(boss);
     } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
       this.drawHighResBossSlothTitan(boss);
-    } else if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon')) {
+    } else if (bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
       this.drawHighResBossDragon(boss);
-    } else if (bName.includes('대마왕') || bName.includes('demon')) {
-      this.drawHighResBossDemon(boss);
     } else {
-      this.drawHighResBossWhiteTiger(boss);
+      this.drawHighResBossDemon(boss);
     }
 
     this.drawSharpLabel(bx, by + 46, '⚔️ [SPACE: 보스 레이드 도전]', {

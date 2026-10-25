@@ -2598,6 +2598,15 @@ class MainApp {
           nameEl.value = '⚙️ 커스텀 보스';
         }
 
+        const summonLabel = document.getElementById('admin-boss-summon-label');
+        if (summonLabel) {
+          if (val === 'golem' || val === 'dragon') {
+            summonLabel.innerText = '🚀 접속 중인 학생 전원 1학년 2반으로 즉시 소환';
+          } else {
+            summonLabel.innerText = '🚀 접속 중인 학생 전원 축구장 서쪽 골대로 즉시 소환';
+          }
+        }
+
         if (window.BOSS_CONFIG) {
           window.BOSS_CONFIG.name = nameEl.value;
           window.BOSS_CONFIG.maxHp = parseInt(hpEl.value) || 1500;

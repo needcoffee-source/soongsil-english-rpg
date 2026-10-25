@@ -163,8 +163,12 @@ class NetworkManager {
     this.socket.on('boss_raid_force_warp', ({ floor, room, x, y }) => {
       if (this.engine) {
         if (x !== undefined && y !== undefined) {
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 16 + Math.random() * 36;
+          const targetX = Math.round(x + Math.cos(angle) * radius);
+          const targetY = Math.round(y + Math.sin(angle) * radius);
           this.engine.floor = floor !== undefined ? floor : 0;
-          this.engine.warpToRoom(room || 'playground', room === 'playground' ? '숭실 운동장' : (room || '1학년 2반'), x, y);
+          this.engine.warpToRoom(room || 'playground', room === 'playground' ? '숭실 운동장' : (room || '1학년 2반'), targetX, targetY);
         } else {
           this.engine.teleportTo(floor || 7, room || 'room_702');
         }
