@@ -570,7 +570,42 @@ class MainApp {
     // 초기 캐릭터 실시간 미리보기 렌더링
     updatePreview();
 
+    // Tablet & Desktop Fullscreen Helper Functions
+    const requestFullscreenSafe = () => {
+      try {
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.mozRequestFullScreen) {
+          docEl.mozRequestFullScreen();
+        } else if (docEl.msRequestFullscreen) {
+          docEl.msRequestFullscreen();
+        }
+      } catch (e) {}
+    };
+
+    const exitFullscreenSafe = () => {
+      try {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      } catch (e) {}
+    };
+
     document.getElementById('btn-start-game').addEventListener('click', async () => {
+      const checkFs = document.getElementById('check-auto-fullscreen');
+      if (checkFs && checkFs.checked) {
+        requestFullscreenSafe();
+      }
+
       const isTeacher = checkIsTeacher && checkIsTeacher.checked;
       let name = document.getElementById('input-nickname').value.trim();
       const studentId = document.getElementById('input-student-id').value.trim();
@@ -732,6 +767,30 @@ class MainApp {
         window.AudioManager.toggleMute();
       });
     }
+
+    // Tablet & Desktop Fullscreen Toggle Button (상단 탭/주소창 숨기기)
+    const btnToggleFs = document.getElementById('btn-toggle-fullscreen');
+    const updateFsIcon = () => {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+      if (btnToggleFs) {
+        btnToggleFs.innerHTML = isFs ? '🗗' : '⛶';
+        btnToggleFs.title = isFs ? '전체화면 종료' : '전체화면 (상단 탭/주소창 숨기기)';
+      }
+    };
+
+    if (btnToggleFs) {
+      btnToggleFs.addEventListener('click', () => {
+        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+        if (!isFs) {
+          requestFullscreenSafe();
+        } else {
+          exitFullscreenSafe();
+        }
+      });
+    }
+
+    document.addEventListener('fullscreenchange', updateFsIcon);
+    document.addEventListener('webkitfullscreenchange', updateFsIcon);
 
     // Inventory Modal
     this.currentInvTab = 'all';

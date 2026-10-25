@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  <rect x="24" y="24" width="464" height="464" rx="80" fill="none" stroke="url(#blue)" stroke-width="8" opacity="0.6"/>
+  <!-- Castle / School Emblem -->
+  <path d="M256 90 L390 150 V280 C390 370 256 430 256 430 C256 430 122 370 122 280 V150 Z" fill="#1e293b" stroke="url(#gold)" stroke-width="14"/>
+  <!-- School Roof / Crown -->
+  <path d="M256 140 L340 185 V200 H172 V185 Z" fill="url(#gold)"/>
+  <!-- Pillars -->
+  <rect x="195" y="215" width="22" height="65" fill="#f8fafc" rx="4"/>
+  <rect x="245" y="215" width="22" height="65" fill="#f8fafc" rx="4"/>
+  <rect x="295" y="215" width="22" height="65" fill="#f8fafc" rx="4"/>
+  <!-- Base -->
+  <rect x="175" y="285" width="162" height="18" fill="url(#gold)" rx="4"/>
+  <!-- RPG Star / Sparkle -->
+  <polygon points="256,325 264,345 285,348 269,362 274,382 256,370 238,382 243,362 227,348 248,345" fill="url(#gold)"/>
+</svg>

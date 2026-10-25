@@ -2,8 +2,18 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>숭실중학교 영어 오픈월드 RPG (Soongsil World)</title>
+
+  <!-- Tablet & Mobile PWA Standalone Meta Tags (주소창/탭 숨김) -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="숭실 RPG">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/icon.svg">
+
   <link rel="stylesheet" href="css/style.css?v=6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +33,7 @@
         <span id="current-floor-tag" class="floor-pill">1학년</span>
         <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
           <button id="btn-toggle-sound" class="btn-sound-toggle" title="8비트 소리 켜기/끄기">🔊</button>
+          <button id="btn-toggle-fullscreen" class="btn-sound-toggle" title="전체화면 (상단 탭/주소창 숨기기)">⛶</button>
         </div>
       </div>
 
@@ -251,8 +262,12 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button id="btn-start-game" class="btn-primary">숭실 오픈월드 입장하기 🚀</button>
+      <div class="modal-footer" style="display:flex; flex-direction:column; gap:8px;">
+        <label style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:#94a3b8; cursor:pointer;">
+          <input type="checkbox" id="check-auto-fullscreen" checked style="accent-color:#38bdf8; width:14px; height:14px;">
+          <span>⛶ 태블릿 전체화면으로 시작 (상단 탭/주소창 자동 숨김)</span>
+        </label>
+        <button id="btn-start-game" class="btn-primary" style="width:100%;">숭실 오픈월드 입장하기 🚀</button>
       </div>
     </div>
   </div>
