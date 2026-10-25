@@ -814,43 +814,46 @@ body, html {
 
 /* Quiz Modal */
 .quiz-card {
-  max-width: 550px;
+  width: 92%;
+  max-width: 720px;
 }
 .quiz-unit-badge {
   background: #2563eb;
   color: #fff;
-  font-size: 12px;
-  padding: 3px 8px;
+  font-size: 13px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-weight: 700;
 }
 .quiz-question-text {
-  font-size: 18px;
-  line-height: 1.5;
+  font-size: 19px;
+  line-height: 1.6;
   color: #fff;
   font-weight: 700;
   background: #27272a;
-  padding: 14px;
-  border-radius: 10px;
-  border-left: 4px solid #3b82f6;
+  padding: 18px 22px;
+  border-radius: 12px;
+  border-left: 5px solid #3b82f6;
+  word-break: keep-all;
 }
 .quiz-options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 10px;
 }
 .quiz-opt-btn {
   background: #3f3f46;
   border: 2px solid #52525b;
   border-radius: 10px;
-  padding: 14px 10px;
+  padding: 16px 14px;
   color: #fff;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   text-align: center;
   transition: all 0.15s;
+  word-break: keep-all;
 }
 .quiz-opt-btn:active {
   transform: scale(0.97);

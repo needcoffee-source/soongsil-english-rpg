@@ -504,7 +504,7 @@ class MainApp {
       });
     }
 
-    // 학생 마지막 학번 및 세이브 데이터 자동 완성 (2달 장기 프로젝트: 서버 + 로컬 동기화)
+    // 학생 마지막 학번 및 세이브 데이터 자동 완성 (서버 + 로컬 동기화)
     const studentIdInput = document.getElementById('input-student-id');
     const syncBadge = document.getElementById('student-id-sync-badge');
 
@@ -538,7 +538,7 @@ class MainApp {
         updatePreview();
         if (syncBadge) {
           const saveDateStr = saved.updatedAt ? new Date(saved.updatedAt).toLocaleDateString() : '최근';
-          syncBadge.innerHTML = `<span style="color:#4ade80; font-weight:700;">✨ [2달 누적 세이브 확인] Lv.${saved.level || 1} ${saved.name || ''} · ${saved.gold || 0}G (${saveDateStr})</span>`;
+          syncBadge.innerHTML = `<span style="color:#4ade80; font-weight:700;">✨ [누적 세이브 확인] Lv.${saved.level || 1} ${saved.name || ''} · ${saved.gold || 0}G (${saveDateStr})</span>`;
         }
       } else {
         if (syncBadge) {
@@ -664,7 +664,7 @@ class MainApp {
         const gmPanel = document.getElementById('gm-panel');
         if (gmPanel) gmPanel.classList.add('hidden');
 
-        // 학생 세이브 데이터 복구 (2달 장기 누적: 서버 & 로컬 이중 동기화)
+        // 학생 세이브 데이터 복구 (서버 & 로컬 이중 동기화)
         const saved = await this.getBestProgress(studentId);
         if (saved) {
           name = saved.name || name;
@@ -682,7 +682,7 @@ class MainApp {
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
-          console.log(`[Storage] 학생(${studentId}) 2달 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
+          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
@@ -2915,7 +2915,7 @@ class MainApp {
   }
 
   // =========================================================================
-  // PERSISTENCE (2달 장기 프로젝트: LocalStorage + 서버 영구 저장 이중화)
+  // PERSISTENCE (LocalStorage + 서버 영구 저장 이중화)
   // =========================================================================
   saveProgress(forceServerSync = false) {
     if (!this.playerData || this.playerData.isTeacher) return;

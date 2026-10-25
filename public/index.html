@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -596,7 +596,7 @@
 
   <!-- 4-F. Student Pop Quiz Modal (선생님 돌발 퀴즈 모달) -->
   <div id="modal-pop-quiz" class="modal-overlay hidden" style="z-index: 125;">
-    <div class="modal-card quiz-card" style="max-width: 520px; border: 2.5px solid #f59e0b; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);">
+    <div class="modal-card quiz-card" style="max-width: 700px; width: 92%; border: 2.5px solid #f59e0b; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);">
       <div class="modal-header" style="border-bottom: 2px solid rgba(245, 158, 11, 0.4); justify-content: space-between; align-items: center;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:24px;">📢</span>
@@ -996,8 +996,8 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <h4 style="margin:0;">👥 접속 중인 학생 실시간 관리</h4>
               <div style="display:flex; align-items:center; gap:8px;">
-                <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="2달간 누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
-                  📥 2달 백업 다운로드
+                <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
+                  📥 백업 다운로드
                 </a>
                 <button type="button" id="btn-trigger-restore-progress" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="다운로드해 둔 백업 JSON 파일로 학생 데이터 일괄 복원">
                   📤 백업 복원
