@@ -1,1 +1,35 @@
-{}
+{
+  "10101": {
+    "name": "김숭실",
+    "studentId": "10101",
+    "grade": 1,
+    "level": 1,
+    "exp": 75,
+    "gold": 40,
+    "baseHp": 100,
+    "baseAtk": 10,
+    "baseDef": 2,
+    "inventory": [
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 2,
+        "icon": "🌼",
+        "type": "material",
+        "slot": null,
+        "stats": null,
+        "heal": 0,
+        "effect": ""
+      }
+    ],
+    "equipment": {
+      "helmet": null,
+      "armor": null,
+      "weapon": null,
+      "accessory": null
+    },
+    "hairColor": "blonde",
+    "outfitColor": "green",
+    "updatedAt": 1792721057609
+  }
+}

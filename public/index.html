@@ -641,6 +641,105 @@
     </div>
   </div>
 
+  <!-- 4-G. Acid Rain English Word Typing Game Modal (1학년 3반 영어 타자 산성비 게임) -->
+  <div id="modal-acid-rain" class="modal-overlay hidden" style="z-index: 128;">
+    <div class="modal-card acid-rain-card" style="max-width: 760px; width: 94%; background: #0b1120; border: 2.5px solid #38bdf8; box-shadow: 0 0 35px rgba(56, 189, 248, 0.35); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;">
+      
+      <!-- Header -->
+      <div class="modal-header" style="background: linear-gradient(135deg, #0f172a, #1e293b); border-bottom: 2px solid #38bdf8; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:26px;">🌧️</span>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h3 style="color:#38bdf8; font-size:18px; margin:0; font-weight:900;">영어 단어 산성비 방어전 (Acid Rain)</h3>
+              <span class="quiz-unit-badge" style="background:#0284c7; color:#fff; font-size:11px; padding:2px 8px;">1학년 3반 컴퓨터실</span>
+            </div>
+            <span style="font-size:12px; color:#94a3b8;">하늘에서 떨어지는 단어가 바닥에 닿기 전에 정확히 타이핑하세요!</span>
+          </div>
+        </div>
+        <button class="btn-modal-close" id="btn-close-acid-rain-x">✕</button>
+      </div>
+
+      <!-- Stats Bar (Score, Level, Combo, Lives, Bomb) -->
+      <div style="background: rgba(15, 23, 42, 0.95); border-bottom: 1.5px solid #1e293b; padding: 10px 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 800;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <span style="color:#fde047;">🏆 점수: <span id="ar-score" style="color:#ffffff; font-size:16px;">0</span></span>
+          <span style="color:#38bdf8;">🔥 콤보: <span id="ar-combo" style="color:#67e8f9; font-size:15px;">0</span>x</span>
+          <span style="color:#a78bfa;">⚡ 단계: <span id="ar-level" style="color:#c4b5fd;">Lv.1</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="display:flex; align-items:center; gap:4px;" title="남은 기회">
+            <span style="color:#94a3b8; font-size:12px;">방어막:</span>
+            <span id="ar-lives" style="font-size:16px; letter-spacing:2px;">💖💖💖💖💖</span>
+          </div>
+          <button id="btn-ar-bomb" type="button" class="btn-secondary" style="background:#dc2626; border:1.5px solid #f87171; color:#fff; font-size:12px; font-weight:800; padding:4px 10px; border-radius:6px; cursor:pointer;" title="화면의 모든 단어 일괄 정화 (1회)">
+            💣 폭탄 (1/1)
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Game Canvas Container -->
+      <div style="position: relative; width: 100%; height: 380px; background: #030712; overflow: hidden; border-bottom: 2px solid #1e293b;">
+        <!-- Canvas for rendering falling words, rain lines, laser explosions -->
+        <canvas id="acid-rain-canvas" width="720" height="380" style="width: 100%; height: 100%; display: block;"></canvas>
+
+        <!-- Start Overlay -->
+        <div id="ar-overlay-start" style="position: absolute; inset: 0; background: rgba(3, 7, 18, 0.88); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; padding: 20px; text-align: center;">
+          <div style="font-size: 42px;">🌧️ ⌨️ ⚡</div>
+          <h2 style="color: #38bdf8; margin: 0; font-size: 22px;">영어 단어 산성비 방어전</h2>
+          <p style="color: #cbd5e1; font-size: 13.5px; max-width: 440px; margin: 0; line-height: 1.6;">
+            1학년 교과서 핵심 어휘가 하늘에서 빗방울처럼 쏟아집니다.<br>
+            단어를 빠르고 정확하게 타이핑하여 컴퓨터실 방화벽을 지키고<br>
+            <b style="color: #fde047;">골드(G)</b>와 <b style="color: #a78bfa;">경험치(EXP)</b>를 획득하세요!
+          </p>
+
+          <!-- Difficulty Selector -->
+          <div style="display: flex; gap: 8px; margin: 6px 0;">
+            <label style="display:flex; align-items:center; gap:5px; font-size:13px; color:#a7f3d0; background:#064e3b; padding:6px 12px; border-radius:6px; border:1px solid #10b981; cursor:pointer;">
+              <input type="radio" name="ar-diff" value="easy" checked style="accent-color:#10b981;"> 초급 (1~2단원 단어)
+            </label>
+            <label style="display:flex; align-items:center; gap:5px; font-size:13px; color:#fef08a; background:#78350f; padding:6px 12px; border-radius:6px; border:1px solid #f59e0b; cursor:pointer;">
+              <input type="radio" name="ar-diff" value="normal" style="accent-color:#f59e0b;"> 중급 (3~4단원 단어)
+            </label>
+            <label style="display:flex; align-items:center; gap:5px; font-size:13px; color:#fca5a5; background:#7f1d1d; padding:6px 12px; border-radius:6px; border:1px solid #ef4444; cursor:pointer;">
+              <input type="radio" name="ar-diff" value="hard" style="accent-color:#ef4444;"> 고급 (전범위 챌린지)
+            </label>
+          </div>
+
+          <button id="btn-ar-start" class="btn-primary" style="padding: 12px 36px; font-size: 16px; font-weight: 900; background: linear-gradient(135deg, #0284c7, #38bdf8); box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4); border-radius: 8px; cursor: pointer;">
+            🚀 방어전 시작하기 (Start)
+          </button>
+        </div>
+
+        <!-- Game Over / Result Overlay -->
+        <div id="ar-overlay-gameover" class="hidden" style="position: absolute; inset: 0; background: rgba(3, 7, 18, 0.94); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; padding: 20px; text-align: center;">
+          <div id="ar-result-icon" style="font-size: 44px;">💥</div>
+          <h2 id="ar-result-title" style="color: #f87171; margin: 0; font-size: 24px;">방어 실패 (Game Over)</h2>
+          <div style="background: rgba(15, 23, 42, 0.8); border: 1.5px solid #334155; border-radius: 10px; padding: 14px 24px; min-width: 280px; text-align: left; font-size: 14px; line-height: 1.8;">
+            <div>🏆 <b>최종 점수:</b> <span id="ar-res-score" style="color:#fde047; font-weight:800;">0</span> 점</div>
+            <div>⌨️ <b>타자 단어 수:</b> <span id="ar-res-words" style="color:#38bdf8; font-weight:800;">0</span> 개</div>
+            <div>⚡ <b>최고 콤보:</b> <span id="ar-res-combo" style="color:#c084fc; font-weight:800;">0</span> 콤보</div>
+            <div>🎁 <b>수여 보상:</b> <span id="ar-res-reward" style="color:#34d399; font-weight:800;">🪙 +0G, 🌟 +0 EXP</span></div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 6px;">
+            <button id="btn-ar-retry" class="btn-primary" style="padding: 10px 24px; font-size: 14px; font-weight: 800; cursor: pointer;">다시 도전 🔄</button>
+            <button id="btn-ar-exit" class="btn-secondary" style="padding: 10px 20px; font-size: 14px; cursor: pointer;">교실로 복귀 🚪</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Typing Input Bar -->
+      <div style="padding: 14px 18px; background: #0f172a; display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 20px;">⌨️</span>
+        <input type="text" id="acid-rain-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="떨어지는 영단어를 타이핑하고 Enter를 누르세요..." style="flex: 1; padding: 12px 16px; font-size: 17px; font-weight: 800; background: #1e293b; border: 2px solid #38bdf8; border-radius: 8px; color: #f8fafc; outline: none; font-family: monospace; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);">
+        <button id="btn-ar-submit" class="btn-primary" style="padding: 12px 20px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0284c7, #38bdf8); border-radius: 8px; cursor: pointer;">
+          입력 (Enter)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- 5. 1:1 Trade Modal -->
   <div id="modal-trade" class="modal-overlay hidden">
     <div class="modal-card trade-card">
@@ -703,7 +802,11 @@
                 <select id="admin-boss-preset">
                   <option value="golem">👾 고목 골렘 (10인 권장 · HP 1500 / ATK 17 / DEF 8)</option>
                   <option value="dragon">🐉 숭실 골드 드래곤 (20인 권장 · HP 4000 / ATK 28 / DEF 10)</option>
-                  <option value="demon">👹 중간고사 대마왕 (처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
+                  <option value="demon">😈 중간고사 대마왕 (처치 불가 · HP 999999 / ATK 150 / DEF 50)</option>
+                  <option value="cerberus">🐕 수행평가 3두마수 케르베로스 (25레벨 · HP 6000 / ATK 35 / DEF 15)</option>
+                  <option value="final_god">💀 기말고사 파멸신 (30레벨 최종보스 · HP 9000 / ATK 45 / DEF 20)</option>
+                  <option value="sloth_titan">🦥 방학 직전 나태의 거인 (35레벨 · HP 12000 / ATK 55 / DEF 25)</option>
+                  <option value="white_tiger">🐯 숭실 백호 성수 (40레벨 전설 신수 · HP 15000 / ATK 70 / DEF 30)</option>
                   <option value="custom">⚙️ 직접 입력</option>
                 </select>
               </label>
@@ -1083,6 +1186,7 @@
   <script src="js/quiz.js?v=6"></script>
   <script src="js/crafting.js?v=6"></script>
   <script src="js/network.js?v=6"></script>
+  <script src="js/acid_rain.js?v=1"></script>
   <script src="js/main.js?v=6"></script>
 </body>
 </html>

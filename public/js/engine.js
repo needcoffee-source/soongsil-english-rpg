@@ -601,6 +601,18 @@ class GameEngine {
     } else {
       // Inside Classroom (room_701: 노가다 채집장 / room_702: 보스 레이드)
       const cr = this.getCurrentClassroomData();
+      if (cr.acidRain) {
+        const arDist = Math.hypot(cr.acidRain.x * 32 - this.player.x, (cr.acidRain.y + 0.5) * 32 - this.player.y);
+        if (arDist < 72 && arDist < minDist) {
+          closest = {
+            type: 'acid_rain',
+            data: cr.acidRain,
+            name: cr.acidRain.name,
+            prompt: cr.acidRain.prompt
+          };
+          minDist = arDist;
+        }
+      }
       if (cr.teacherDesk) {
         const tdDist = Math.hypot(cr.teacherDesk.x * 32 - this.player.x, (cr.teacherDesk.y + 0.5) * 32 - this.player.y);
         if (tdDist < 64 && tdDist < minDist) {
@@ -702,6 +714,9 @@ class GameEngine {
       const cr = this.getCurrentClassroomData();
       if (Math.hypot(cr.exitDoor.x * 32 - x, cr.exitDoor.y * 32 - y) < 48) {
         return { type: 'exit' };
+      }
+      if (cr.acidRain && Math.hypot(cr.acidRain.x * 32 - x, (cr.acidRain.y + 0.5) * 32 - y) < 60) {
+        return { type: 'acid_rain', data: cr.acidRain, name: cr.acidRain.name };
       }
       if (cr.teacherDesk && Math.hypot(cr.teacherDesk.x * 32 - x, (cr.teacherDesk.y + 0.5) * 32 - y) < 48) {
         return { type: 'teacher_desk', data: cr.teacherDesk, name: cr.teacherDesk.name || '교탁(골드)' };
@@ -1313,6 +1328,128 @@ class GameEngine {
     this.ctx.fillRect(px + 8, py + 10, 10, 1); // pencil
   }
 
+  // 8-B. Render 1학년 3반: 영어 타자 컴퓨터실 & 산성비 방어 기지
+  renderAcidRainComputerLab(cr) {
+    const termX = 15 * 32;
+    const termY = 5 * 32;
+
+    // 1. Digital Cyber Floor Mat under Central Terminal
+    this.ctx.fillStyle = 'rgba(14, 165, 233, 0.12)';
+    this.ctx.fillRect(termX - 64, termY - 16, 128, 48);
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(termX - 64, termY - 16, 128, 48);
+
+    // 2. Central Acid Rain Mainframe Terminal (크고 웅장한 중앙 메인 단말기)
+    const px = termX - 32;
+    const py = termY - 24;
+
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px, py + 18, 64, 22);
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px + 2, py + 20, 60, 18);
+
+    const now = Date.now();
+    const blink = Math.sin(now / 220) > 0;
+
+    // Left Screen (Terminal matrix rain)
+    this.ctx.fillStyle = '#020617';
+    this.ctx.fillRect(px + 4, py, 26, 18);
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.font = 'bold 7px monospace';
+    this.ctx.fillText(blink ? '> RAIN' : '> WORD', px + 7, py + 12);
+
+    // Right Screen (Status radar)
+    this.ctx.fillStyle = '#020617';
+    this.ctx.fillRect(px + 34, py, 26, 18);
+    this.ctx.fillStyle = '#10b981';
+    this.ctx.font = 'bold 7px monospace';
+    this.ctx.fillText('TYPING', px + 36, py + 12);
+
+    // Keyboard & Glowing Mouse
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px + 14, py + 22, 22, 6);
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(px + 40, py + 23, 5, 4);
+
+    // Terminal Nameplate
+    this.drawSharpLabel(termX, termY - 32, '🖥️ 산성비 타자 컴퓨터 (방어전)', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#ffffff',
+      fontSize: 11.5,
+      paddingX: 10,
+      height: 22
+    });
+
+    // 3. Server Rack Cabinet (선생님 메인 서버 x: 8, y: 4)
+    if (cr.teacherDesk) {
+      const sx = cr.teacherDesk.x * 32;
+      const sy = cr.teacherDesk.y * 32;
+
+      this.ctx.fillStyle = '#020617';
+      this.ctx.fillRect(sx - 4, sy - 12, 40, 48);
+      this.ctx.strokeStyle = '#334155';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.strokeRect(sx - 4, sy - 12, 40, 48);
+
+      for (let s = 0; s < 4; s++) {
+        const slotY = sy - 8 + s * 10;
+        this.ctx.fillStyle = '#0f172a';
+        this.ctx.fillRect(sx, slotY, 32, 7);
+        this.ctx.fillStyle = ((now + s * 300) % 800 < 400) ? '#10b981' : '#3b82f6';
+        this.ctx.fillRect(sx + 4, slotY + 2, 3, 3);
+        this.ctx.fillStyle = ((now + s * 500) % 600 < 300) ? '#f59e0b' : '#64748b';
+        this.ctx.fillRect(sx + 9, slotY + 2, 3, 3);
+      }
+
+      this.drawSharpLabel(sx + 16, sy - 20, '🎛️ 메인 서버', {
+        bgColor: 'rgba(15, 23, 42, 0.9)',
+        borderColor: '#10b981',
+        textColor: '#a7f3d0',
+        fontSize: 10.5,
+        paddingX: 7,
+        height: 19
+      });
+    }
+
+    // 4. Computer Workstation Desks (학생 컴퓨터 책상들)
+    for (const d of (cr.desks || [])) {
+      this.drawHighResComputerDesk(d);
+    }
+  }
+
+  drawHighResComputerDesk(d) {
+    const px = d.x * 32;
+    const py = d.y * 32;
+
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px, py + 4, 32, 20);
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px + 2, py + 6, 28, 16);
+
+    // Desktop LCD Monitor
+    this.ctx.fillStyle = '#09090b';
+    this.ctx.fillRect(px + 6, py - 4, 20, 14);
+    this.ctx.fillStyle = '#0284c7';
+    this.ctx.fillRect(px + 8, py - 2, 16, 10);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 10, py + 1, 10, 1.5);
+    this.ctx.fillRect(px + 10, py + 4, 12, 1.5);
+
+    // Stand & Keyboard
+    this.ctx.fillStyle = '#475569';
+    this.ctx.fillRect(px + 14, py + 10, 4, 3);
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px + 7, py + 12, 14, 5);
+
+    // Tower PC Case
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px + 23, py + 6, 7, 16);
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(px + 26, py + 9, 2, 2);
+  }
+
   // 9. High-Res Student Lockers Row (개인 사물함)
   drawHighResLockers(startX, startY, count = 4) {
     for (let i = 0; i < count; i++) {
@@ -1888,6 +2025,875 @@ class GameEngine {
     });
   }
 
+
+  // 11-F. High-Res Boss: Midterm Exam Archdemon (1학년 2반 중간고사 대마왕)
+  drawHighResBossDemon(boss) {
+    const px = boss.x * 32 + 16;
+    const py = boss.y * 32 + 16;
+    const now = Date.now();
+    const bob = Math.sin(now / 260) * 4;
+    const wingFlap = Math.sin(now / 190) * 8;
+    const tailSway = Math.sin(now / 290) * 9;
+    const glowPulse = 0.7 + Math.sin(now / 220) * 0.3;
+
+    this.ctx.save();
+
+    // 1. Dark Violet & Crimson Cursed Magic Circle on Floor
+    this.ctx.strokeStyle = 'rgba(168, 85, 247, 0.85)';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 26, 62, 26, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(88, 28, 135, 0.28)';
+    this.ctx.fill();
+
+    // Inner Cursed Blood Ring
+    this.ctx.strokeStyle = 'rgba(239, 68, 68, 0.75)';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 26, 44, 18, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    // Inverted Demonic Pentagram lines
+    this.ctx.strokeStyle = 'rgba(220, 38, 38, 0.5)';
+    this.ctx.lineWidth = 1.5;
+    const starPts = 5;
+    const sRadX = 40, sRadY = 16;
+    this.ctx.beginPath();
+    for (let i = 0; i < starPts * 2 + 1; i++) {
+      const idx = (i * 2) % starPts;
+      const ang = (Math.PI * 2 * idx) / starPts - Math.PI / 2 + (now / 4000);
+      const sx = px + Math.cos(ang) * sRadX;
+      const sy = py + 26 + Math.sin(ang) * sRadY;
+      if (i === 0) this.ctx.moveTo(sx, sy);
+      else this.ctx.lineTo(sx, sy);
+    }
+    this.ctx.stroke();
+
+    // Cursed Exam Marks on Floor Glyphs (F, 0점, X)
+    this.ctx.fillStyle = `rgba(239, 68, 68, ${glowPulse})`;
+    this.ctx.font = 'bold 10px monospace';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('F', px - 46, py + 28);
+    this.ctx.fillText('0점', px + 46, py + 28);
+    this.ctx.fillText('X', px, py + 40);
+
+    const by = py + bob;
+
+    // 2. Barbed Demonic Tail
+    this.ctx.fillStyle = '#18181b';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 8, by + 12);
+    this.ctx.quadraticCurveTo(px + 34 + tailSway, by + 20, px + 44 + tailSway, by + 10);
+    this.ctx.lineTo(px + 40 + tailSway, by + 5);
+    this.ctx.quadraticCurveTo(px + 26 + tailSway * 0.7, by + 14, px + 6, by + 7);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Spade Barbed Tip on Tail
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 44 + tailSway, by + 10);
+    this.ctx.lineTo(px + 55 + tailSway, by + 7);
+    this.ctx.lineTo(px + 45 + tailSway, by + 1);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // 3. Giant Demonic Bat Wings (Left & Right)
+    // Left Wing
+    const lTipY = by - 38 + wingFlap;
+    this.ctx.fillStyle = 'rgba(59, 7, 100, 0.92)'; // Dark royal purple membrane
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 14, by - 14);
+    this.ctx.lineTo(px - 62, lTipY);
+    this.ctx.quadraticCurveTo(px - 48, lTipY + 24, px - 36, by + 6);
+    this.ctx.quadraticCurveTo(px - 24, by + 16, px - 12, by + 8);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Wing Bone Spines (Left)
+    this.ctx.strokeStyle = '#09090b';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 12, by - 12);
+    this.ctx.lineTo(px - 38, lTipY - 8);
+    this.ctx.lineTo(px - 62, lTipY);
+    this.ctx.stroke();
+
+    // Wing Claws / Spikes (Left)
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 38, lTipY - 8);
+    this.ctx.lineTo(px - 43, lTipY - 14);
+    this.ctx.lineTo(px - 35, lTipY - 8);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Right Wing
+    const rTipY = by - 38 - wingFlap;
+    this.ctx.fillStyle = 'rgba(59, 7, 100, 0.92)';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 14, by - 14);
+    this.ctx.lineTo(px + 62, rTipY);
+    this.ctx.quadraticCurveTo(px + 48, rTipY + 24, px + 36, by + 6);
+    this.ctx.quadraticCurveTo(px + 24, by + 16, px + 12, by + 8);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Wing Bone Spines (Right)
+    this.ctx.strokeStyle = '#09090b';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 12, by - 12);
+    this.ctx.lineTo(px + 38, rTipY - 8);
+    this.ctx.lineTo(px + 62, rTipY);
+    this.ctx.stroke();
+
+    // Wing Claws / Spikes (Right)
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 38, rTipY - 8);
+    this.ctx.lineTo(px + 43, rTipY - 14);
+    this.ctx.lineTo(px + 35, rTipY - 8);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // 4. Demon Lord Torso & Magma Plates
+    this.ctx.fillStyle = '#1e1b4b'; // Midnight Obsidian Torso
+    this.ctx.fillRect(px - 22, by - 26, 44, 38);
+    this.ctx.fillStyle = '#312e81';
+    this.ctx.fillRect(px - 18, by - 22, 36, 30);
+
+    // Glowing Crimson Magma Veins on Chest
+    this.ctx.strokeStyle = '#dc2626';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 14, by - 16);
+    this.ctx.lineTo(px, by - 4);
+    this.ctx.lineTo(px + 14, by - 16);
+    this.ctx.moveTo(px, by - 4);
+    this.ctx.lineTo(px, by + 6);
+    this.ctx.stroke();
+
+    // Pulsing Core Rune (Cursed Eye / F mark)
+    this.ctx.fillStyle = '#b91c1c';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 6, 8, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.font = 'bold 9px monospace';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('F', px, by - 3);
+
+    // Spiked Shoulder Pauldrons
+    this.ctx.fillStyle = '#581c87';
+    this.ctx.fillRect(px - 28, by - 28, 14, 14);
+    this.ctx.fillRect(px + 14, by - 28, 14, 14);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px - 26, by - 33, 4, 6);
+    this.ctx.fillRect(px + 22, by - 33, 4, 6);
+
+    // 5. Demon Lord Head & Towering Horns
+    // Head Base
+    this.ctx.fillStyle = '#09090b';
+    this.ctx.fillRect(px - 15, by - 46, 30, 24);
+
+    // Great Curved Obsidian Horns with Glowing Blood-Red Tips
+    // Left Horn
+    this.ctx.fillStyle = '#18181b';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 11, by - 44);
+    this.ctx.quadraticCurveTo(px - 32, by - 56, px - 28, by - 70);
+    this.ctx.quadraticCurveTo(px - 20, by - 58, px - 5, by - 46);
+    this.ctx.closePath();
+    this.ctx.fill();
+    // Left Horn Glowing Tip
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 27, by - 64);
+    this.ctx.lineTo(px - 28, by - 70);
+    this.ctx.lineTo(px - 22, by - 64);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Right Horn
+    this.ctx.fillStyle = '#18181b';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 11, by - 44);
+    this.ctx.quadraticCurveTo(px + 32, by - 56, px + 28, by - 70);
+    this.ctx.quadraticCurveTo(px + 20, by - 58, px + 5, by - 46);
+    this.ctx.closePath();
+    this.ctx.fill();
+    // Right Horn Glowing Tip
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 27, by - 64);
+    this.ctx.lineTo(px + 28, by - 70);
+    this.ctx.lineTo(px + 22, by - 64);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Glowing Yellow-Red Slit Eyes
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px - 10, by - 38, 7, 5);
+    this.ctx.fillRect(px + 3, by - 38, 7, 5);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px - 8, by - 37, 3, 3);
+    this.ctx.fillRect(px + 5, by - 37, 3, 3);
+
+    // Sinister Fanged Grin
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.fillRect(px - 8, by - 29, 16, 4);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px - 6, by - 29, 3, 2);
+    this.ctx.fillRect(px - 1, by - 29, 3, 2);
+    this.ctx.fillRect(px + 4, by - 29, 3, 2);
+
+    // 6. Right Hand: The Cursed Blood-Red Scoring Spear (피빛 채점창 / 채점펜)
+    const spearX = px + 36;
+    const spearY = by - 18;
+    this.ctx.fillStyle = '#0f172a'; // Obsidian shaft
+    this.ctx.fillRect(spearX - 2, spearY - 42, 4, 70);
+    // Gold Band
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(spearX - 3, spearY - 26, 6, 4);
+    // Oversized Red Fountain Pen Nib (채점펜촉)
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.beginPath();
+    this.ctx.moveTo(spearX - 5, spearY - 26);
+    this.ctx.lineTo(spearX, spearY - 48); // Sharp Nib Tip
+    this.ctx.lineTo(spearX + 5, spearY - 26);
+    this.ctx.closePath();
+    this.ctx.fill();
+    // Nib Center Slit & Ink Drop
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(spearX - 0.5, spearY - 44, 1, 10);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.arc(spearX, spearY - 51, 2.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 7. Left Hand: Burning Midterm Exam Paper (불타는 0점 시험지)
+    const paperX = px - 36;
+    const paperY = by - 12;
+    this.ctx.save();
+    this.ctx.translate(paperX, paperY);
+    this.ctx.rotate(-0.18 + Math.sin(now / 350) * 0.08);
+    // Parchment Sheet
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.fillRect(-12, -18, 24, 32);
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(-12, -18, 24, 32);
+    // Test lines
+    this.ctx.fillStyle = '#64748b';
+    this.ctx.fillRect(-9, -13, 18, 2);
+    this.ctx.fillRect(-9, -8, 18, 2);
+    this.ctx.fillRect(-9, -3, 18, 2);
+    this.ctx.fillRect(-9, 2, 18, 2);
+    // Huge Red "0점" & Big Red "X"
+    this.ctx.strokeStyle = '#ef4444';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(-8, -14);
+    this.ctx.lineTo(8, 10);
+    this.ctx.moveTo(8, -14);
+    this.ctx.lineTo(-8, 10);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.font = 'bold 8px monospace';
+    this.ctx.fillText('0점', -8, 11);
+    this.ctx.restore();
+
+    // 8. Orbiting Cursed Exam Sheets (시험지의 망령들)
+    for (let i = 0; i < 3; i++) {
+      const orbAng = (now / 700) + (i * (Math.PI * 2 / 3));
+      const orbX = px + Math.cos(orbAng) * 48;
+      const orbY = by - 8 + Math.sin(orbAng) * 20;
+      this.ctx.save();
+      this.ctx.translate(orbX, orbY);
+      this.ctx.rotate(orbAng * 0.5);
+      this.ctx.fillStyle = 'rgba(254, 240, 138, 0.9)';
+      this.ctx.fillRect(-6, -8, 12, 16);
+      this.ctx.fillStyle = '#dc2626';
+      this.ctx.font = 'bold 8px monospace';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(i % 2 === 0 ? 'F' : 'X', 0, 3);
+      this.ctx.restore();
+    }
+
+    this.ctx.restore();
+
+    // 9. Boss Nameplate (교사 설정 및 레이드 상태 표시)
+    const bCfg = window.BOSS_CONFIG || boss;
+    const isRaidActive = !!(bCfg && bCfg.active);
+    const labelText = isRaidActive
+      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
+      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+
+    this.drawSharpLabel(px, py - 78, labelText, {
+      bgColor: isRaidActive ? 'rgba(76, 5, 25, 0.96)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#f43f5e' : '#a855f7',
+      textColor: isRaidActive ? '#fef08a' : '#f5d0fe',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+  }
+
+  // 11-H. High-Res Boss: Speaking/Writing/Listening Cerberus (수행평가 3두마수 케르베로스)
+  drawHighResBossCerberus(boss) {
+    const px = boss.x * 32 + 16;
+    const py = boss.y * 32 + 16;
+    const now = Date.now();
+    const bob = Math.sin(now / 240) * 3;
+    const tailWag = Math.sin(now / 150) * 8;
+    const breathL = Math.sin(now / 200) * 2;
+    const breathR = Math.cos(now / 200) * 2;
+
+    this.ctx.save();
+
+    // 1. Fiery Lava & Evaluation Ring on Floor
+    this.ctx.strokeStyle = 'rgba(234, 88, 12, 0.85)';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 26, 60, 24, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(194, 65, 12, 0.25)';
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#fdba74';
+    this.ctx.font = 'bold 9px monospace';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('SPEAK', px - 38, py + 28);
+    this.ctx.fillText('WRITE', px, py + 38);
+    this.ctx.fillText('LISTEN', px + 38, py + 28);
+
+    const by = py + bob;
+
+    // 2. Cerberus Hound Body
+    this.ctx.fillStyle = '#1c1917';
+    this.ctx.fillRect(px - 28, by - 16, 56, 34);
+    this.ctx.fillStyle = '#44403c';
+    this.ctx.fillRect(px - 24, by - 12, 48, 26);
+
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px - 32, by - 14, 64, 5);
+    this.ctx.fillStyle = '#f59e0b';
+    for (let sp = 0; sp < 6; sp++) {
+      this.ctx.fillRect(px - 28 + sp * 10, by - 17, 3, 3);
+    }
+
+    // 3. Tail
+    this.ctx.strokeStyle = '#292524';
+    this.ctx.lineWidth = 4;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 24, by + 8);
+    this.ctx.quadraticCurveTo(px + 40 + tailWag, by + 12, px + 44 + tailWag, by - 4);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 44 + tailWag, by - 4, 5, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 44 + tailWag, by - 4, 2.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 4. Head 1 (Left): Speaking Head (말하기 머리 - 파란 헤드셋 & 마이크)
+    const h1X = px - 22;
+    const h1Y = by - 26 + breathL;
+    this.ctx.fillStyle = '#292524';
+    this.ctx.fillRect(h1X - 9, h1Y - 12, 18, 20);
+    this.ctx.fillStyle = '#1c1917';
+    this.ctx.beginPath();
+    this.ctx.moveTo(h1X - 9, h1Y - 12);
+    this.ctx.lineTo(h1X - 14, h1Y - 20);
+    this.ctx.lineTo(h1X - 4, h1Y - 12);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(h1X - 6, h1Y - 6, 4, 4);
+    this.ctx.fillRect(h1X + 2, h1Y - 6, 4, 4);
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.beginPath();
+    this.ctx.arc(h1X, h1Y - 6, 12, Math.PI, 0);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(h1X - 14, h1Y - 8, 4, 8);
+    this.ctx.fillRect(h1X + 10, h1Y - 8, 4, 8);
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(h1X - 12, h1Y);
+    this.ctx.lineTo(h1X - 4, h1Y + 7);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.beginPath();
+    this.ctx.arc(h1X - 4, h1Y + 7, 2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 5. Head 2 (Center): Writing Head (쓰기 머리 - 황금 만년필 문 머리)
+    const h2X = px;
+    const h2Y = by - 32;
+    this.ctx.fillStyle = '#44403c';
+    this.ctx.fillRect(h2X - 11, h2Y - 14, 22, 22);
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.beginPath();
+    this.ctx.moveTo(h2X - 9, h2Y - 14);
+    this.ctx.lineTo(h2X - 5, h2Y - 24);
+    this.ctx.lineTo(h2X, h2Y - 15);
+    this.ctx.lineTo(h2X + 5, h2Y - 24);
+    this.ctx.lineTo(h2X + 9, h2Y - 14);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(h2X - 7, h2Y - 6, 5, 4);
+    this.ctx.fillRect(h2X + 2, h2Y - 6, 5, 4);
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(h2X - 16, h2Y + 4, 32, 4);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(h2X - 18, h2Y + 3, 5, 6);
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(h2X + 8, h2Y + 4, 4, 4);
+
+    // 6. Head 3 (Right): Listening Head (듣기 머리 - 쫑긋 솟은 귀 & 음파)
+    const h3X = px + 22;
+    const h3Y = by - 26 + breathR;
+    this.ctx.fillStyle = '#292524';
+    this.ctx.fillRect(h3X - 9, h3Y - 12, 18, 20);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.moveTo(h3X + 9, h3Y - 12);
+    this.ctx.lineTo(h3X + 16, h3Y - 24);
+    this.ctx.lineTo(h3X + 3, h3Y - 12);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(h3X - 6, h3Y - 6, 4, 4);
+    this.ctx.fillRect(h3X + 2, h3Y - 6, 4, 4);
+    this.ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.arc(h3X + 16, h3Y - 20, 6, -Math.PI / 3, Math.PI / 3);
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.arc(h3X + 16, h3Y - 20, 10, -Math.PI / 3, Math.PI / 3);
+    this.ctx.stroke();
+
+    // 7. Paws
+    this.ctx.fillStyle = '#1c1917';
+    this.ctx.fillRect(px - 26, by + 16, 14, 12);
+    this.ctx.fillRect(px + 12, by + 16, 14, 12);
+    this.ctx.fillStyle = '#ea580c';
+    this.ctx.fillRect(px - 24, by + 25, 10, 3);
+    this.ctx.fillRect(px + 14, by + 25, 10, 3);
+
+    this.ctx.restore();
+
+    const bCfg = window.BOSS_CONFIG || boss;
+    const isRaidActive = !!(bCfg && bCfg.active);
+    const labelText = isRaidActive
+      ? \`🔥 \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
+      : \`⏳ [이벤트 대기중] \${bCfg.name || boss.name}\`;
+
+    this.drawSharpLabel(px, py - 66, labelText, {
+      bgColor: isRaidActive ? 'rgba(124, 45, 18, 0.96)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#ea580c' : '#fdba74',
+      textColor: isRaidActive ? '#ffedd5' : '#fed7aa',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+  }
+
+  // 11-I. High-Res Boss: Final Exam Oblivion God (기말고사 파멸신)
+  drawHighResBossFinalGod(boss) {
+    const px = boss.x * 32 + 16;
+    const py = boss.y * 32 + 16;
+    const now = Date.now();
+    const hover = Math.sin(now / 280) * 4;
+    const wingFloat = Math.sin(now / 210) * 6;
+    const scytheGlow = 0.6 + Math.sin(now / 160) * 0.4;
+
+    this.ctx.save();
+
+    // 1. OMR Answer Sheet Grid on Floor
+    this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeRect(px - 54, py + 12, 108, 28);
+    this.ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    this.ctx.fillRect(px - 54, py + 12, 108, 28);
+
+    for (let r = 0; r < 5; r++) {
+      const bx = px - 40 + r * 20;
+      this.ctx.fillStyle = (r === 2 || r === 4) ? '#0284c7' : '#000000';
+      this.ctx.beginPath();
+      this.ctx.ellipse(bx, py + 26, 6, 4, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.strokeStyle = '#38bdf8';
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
+    }
+
+    const by = py + hover;
+
+    // 2. Wings made of Floating OMR Test Cards
+    this.ctx.save();
+    this.ctx.translate(px - 28, by - 12 + wingFloat);
+    this.ctx.rotate(-0.25);
+    for (let c = 0; c < 3; c++) {
+      this.ctx.fillStyle = '#f8fafc';
+      this.ctx.fillRect(-22 - c * 8, -12 + c * 8, 20, 26);
+      this.ctx.strokeStyle = '#dc2626';
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeRect(-22 - c * 8, -12 + c * 8, 20, 26);
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(-18 - c * 8, -8 + c * 8, 4, 3);
+      this.ctx.fillRect(-12 - c * 8, -8 + c * 8, 4, 3);
+      this.ctx.fillRect(-18 - c * 8, -2 + c * 8, 4, 3);
+    }
+    this.ctx.restore();
+
+    this.ctx.save();
+    this.ctx.translate(px + 28, by - 12 - wingFloat);
+    this.ctx.rotate(0.25);
+    for (let c = 0; c < 3; c++) {
+      this.ctx.fillStyle = '#f8fafc';
+      this.ctx.fillRect(8 + c * 8, -12 + c * 8, 20, 26);
+      this.ctx.strokeStyle = '#dc2626';
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeRect(8 + c * 8, -12 + c * 8, 20, 26);
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(12 + c * 8, -8 + c * 8, 4, 3);
+      this.ctx.fillRect(18 + c * 8, -8 + c * 8, 4, 3);
+      this.ctx.fillRect(12 + c * 8, -2 + c * 8, 4, 3);
+    }
+    this.ctx.restore();
+
+    // 3. Ethereal Grim Reaper Robes
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px, by - 36);
+    this.ctx.lineTo(px - 22, by + 18);
+    this.ctx.lineTo(px + 22, by + 18);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#0284c7';
+    for (let t = -3; t <= 3; t++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(px + t * 6 - 3, by + 18);
+      this.ctx.lineTo(px + t * 6, by + 26 + Math.sin(now / 180 + t) * 3);
+      this.ctx.lineTo(px + t * 6 + 3, by + 18);
+      this.ctx.fill();
+    }
+
+    // 4. Skull Hood & Spectral Glowing Eyes
+    this.ctx.fillStyle = '#020617';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 26, 13, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#38bdf8';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.beginPath();
+    this.ctx.arc(px - 5, by - 26, 3, 0, Math.PI * 2);
+    this.ctx.arc(px + 5, by - 26, 3, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px - 6, by - 27, 2, 2);
+    this.ctx.fillRect(px + 4, by - 27, 2, 2);
+
+    // 5. Giant Computerized Sign Pen Scythe (컴싸 사신 낫)
+    const scytheX = px + 28;
+    const scytheY = by - 8;
+    this.ctx.fillStyle = '#09090b';
+    this.ctx.fillRect(scytheX - 3, scytheY - 48, 6, 76);
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.font = 'bold 7px sans-serif';
+    this.ctx.fillText('OMR', scytheX - 7, scytheY - 14);
+    this.ctx.fillStyle = '#94a3b8';
+    this.ctx.fillRect(scytheX - 4, scytheY - 48, 8, 4);
+
+    this.ctx.strokeStyle = \`rgba(56, 189, 248, \${scytheGlow})\`;
+    this.ctx.lineWidth = 4;
+    this.ctx.beginPath();
+    this.ctx.moveTo(scytheX, scytheY - 48);
+    this.ctx.quadraticCurveTo(scytheX - 36, scytheY - 64, scytheX - 52, scytheY - 32);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = '#ffffff';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(scytheX, scytheY - 48);
+    this.ctx.quadraticCurveTo(scytheX - 34, scytheY - 62, scytheX - 50, scytheY - 32);
+    this.ctx.stroke();
+
+    this.ctx.restore();
+
+    const bCfg = window.BOSS_CONFIG || boss;
+    const isRaidActive = !!(bCfg && bCfg.active);
+    const labelText = isRaidActive
+      ? \`🔥 \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
+      : \`⏳ [이벤트 대기중] \${bCfg.name || boss.name}\`;
+
+    this.drawSharpLabel(px, py - 72, labelText, {
+      bgColor: isRaidActive ? 'rgba(15, 23, 42, 0.98)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#38bdf8' : '#94a3b8',
+      textColor: isRaidActive ? '#e0f2fe' : '#cbd5e1',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+  }
+
+  // 11-J. High-Res Boss: Sloth Titan of Summer Vacation (방학 직전 나태의 거인)
+  drawHighResBossSlothTitan(boss) {
+    const px = boss.x * 32 + 16;
+    const py = boss.y * 32 + 16;
+    const now = Date.now();
+    const breath = Math.sin(now / 320) * 3;
+    const zFloat = (now / 400) % 30;
+
+    this.ctx.save();
+
+    // 1. Water Ripple Pool
+    this.ctx.strokeStyle = 'rgba(14, 165, 233, 0.8)';
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 24, 58, 22, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+    this.ctx.fill();
+
+    const by = py + breath;
+
+    // 2. Giant Tube
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 12;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, by + 10, 42, 16, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = '#ef4444';
+    this.ctx.lineWidth = 12;
+    this.ctx.setLineDash([16, 16]);
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, by + 10, 42, 16, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.setLineDash([]);
+
+    // 3. Lazy Giant Sloth Torso
+    this.ctx.fillStyle = '#67e8f9';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, by - 6, 26, 22, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 4. Soft Plush Neck Pillow
+    this.ctx.strokeStyle = '#fde047';
+    this.ctx.lineWidth = 9;
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 20, 14, 0.2, Math.PI - 0.2);
+    this.ctx.stroke();
+
+    // 5. Sleepy Sloth Head
+    this.ctx.fillStyle = '#a5f3fc';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 26, 14, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = '#0f172a';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 9, by - 27);
+    this.ctx.lineTo(px - 3, by - 27);
+    this.ctx.moveTo(px + 3, by - 27);
+    this.ctx.lineTo(px + 9, by - 27);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 6, by - 19 + Math.sin(now / 150) * 1.5, 2.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 6. Left Hand: Smartphone
+    const phoneX = px - 28;
+    const phoneY = by - 2;
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(phoneX - 6, phoneY - 12, 12, 22);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(phoneX - 4, phoneY - 10, 8, 18);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.beginPath();
+    this.ctx.moveTo(phoneX - 2, phoneY - 4);
+    this.ctx.lineTo(phoneX + 2, phoneY - 1);
+    this.ctx.lineTo(phoneX - 2, phoneY + 2);
+    this.ctx.fill();
+
+    // 7. Right Hand: Ice Cream Bar
+    const iceX = px + 28;
+    const iceY = by - 2;
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(iceX - 2, iceY + 2, 4, 10);
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(iceX - 6, iceY - 10, 12, 14);
+
+    // 8. Floating Zzz
+    this.ctx.fillStyle = 'rgba(167, 139, 250, 0.85)';
+    this.ctx.font = 'bold 12px sans-serif';
+    this.ctx.fillText('Z', px + 16, by - 36 - zFloat);
+    this.ctx.font = 'bold 9px sans-serif';
+    this.ctx.fillText('z', px + 22, by - 44 - zFloat);
+    this.ctx.font = 'bold 7px sans-serif';
+    this.ctx.fillText('z', px + 26, by - 50 - zFloat);
+
+    this.ctx.restore();
+
+    const bCfg = window.BOSS_CONFIG || boss;
+    const isRaidActive = !!(bCfg && bCfg.active);
+    const labelText = isRaidActive
+      ? \`🔥 \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
+      : \`⏳ [이벤트 대기중] \${bCfg.name || boss.name}\`;
+
+    this.drawSharpLabel(px, py - 66, labelText, {
+      bgColor: isRaidActive ? 'rgba(8, 47, 73, 0.96)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#38bdf8' : '#f59e0b',
+      textColor: isRaidActive ? '#e0f2fe' : '#fef08a',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+  }
+
+  // 11-K. High-Res Boss: Sacred White Tiger of Soongsil (숭실 백호 성수)
+  drawHighResBossWhiteTiger(boss) {
+    const px = boss.x * 32 + 16;
+    const py = boss.y * 32 + 16;
+    const now = Date.now();
+    const breathe = Math.sin(now / 260) * 3;
+    const tailWhip = Math.sin(now / 180) * 7;
+    const sparkPulse = 0.7 + Math.sin(now / 140) * 0.3;
+
+    this.ctx.save();
+
+    // 1. Sacred Azure Lightning Circle
+    this.ctx.strokeStyle = \`rgba(56, 189, 248, \${sparkPulse})\`;
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, py + 26, 62, 25, 0, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = 'rgba(2, 132, 199, 0.2)';
+    this.ctx.fill();
+
+    for (let l = 0; l < 4; l++) {
+      const lAng = (now / 600) + (l * Math.PI / 2);
+      const lx = px + Math.cos(lAng) * 48;
+      const ly = py + 26 + Math.sin(lAng) * 18;
+      this.ctx.fillStyle = (l % 2 === 0) ? '#f59e0b' : '#facc15';
+      this.ctx.beginPath();
+      this.ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    const by = py + breathe;
+
+    // 2. Powerful White Tiger Tail
+    this.ctx.strokeStyle = '#f8fafc';
+    this.ctx.lineWidth = 5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 22, by + 8);
+    this.ctx.quadraticCurveTo(px + 44 + tailWhip, by + 14, px + 48 + tailWhip, by - 6);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // 3. Pure White Muscular Tiger Body
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px, by - 4, 30, 20, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#0284c7';
+    for (let s = -2; s <= 2; s++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(px + s * 9 - 2, by - 20);
+      this.ctx.lineTo(px + s * 9, by - 6);
+      this.ctx.lineTo(px + s * 9 + 2, by - 20);
+      this.ctx.fill();
+    }
+
+    // 4. Regal White Tiger Head
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.beginPath();
+    this.ctx.arc(px, by - 26, 17, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px - 14, by - 36);
+    this.ctx.lineTo(px - 19, by - 46);
+    this.ctx.lineTo(px - 6, by - 39);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 14, by - 36);
+    this.ctx.lineTo(px + 19, by - 46);
+    this.ctx.lineTo(px + 6, by - 39);
+    this.ctx.fill();
+
+    // Golden Royal Seal on Forehead
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.font = 'bold 10px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('王', px, by - 31);
+
+    this.ctx.fillStyle = '#0284c7';
+    this.ctx.fillRect(px - 9, by - 28, 5, 4);
+    this.ctx.fillRect(px + 4, by - 28, 5, 4);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px - 8, by - 29, 2, 2);
+    this.ctx.fillRect(px + 5, by - 29, 2, 2);
+
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px - 2, by - 21, 4, 3);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px - 4, by - 18, 2, 4);
+    this.ctx.fillRect(px + 2, by - 18, 2, 4);
+
+    // 5. Fore Paws
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.fillRect(px - 22, by + 10, 14, 16);
+    this.ctx.fillRect(px + 8, by + 10, 14, 16);
+    this.ctx.fillStyle = '#0284c7';
+    this.ctx.fillRect(px - 20, by + 22, 10, 3);
+    this.ctx.fillRect(px + 10, by + 22, 10, 3);
+
+    this.ctx.restore();
+
+    const bCfg = window.BOSS_CONFIG || boss;
+    const isRaidActive = !!(bCfg && bCfg.active);
+    const labelText = isRaidActive
+      ? \`✨ \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
+      : \`⏳ [성스러운 대기] \${bCfg.name || boss.name}\`;
+
+    this.drawSharpLabel(px, py - 68, labelText, {
+      bgColor: isRaidActive ? 'rgba(2, 44, 84, 0.96)' : 'rgba(30, 41, 59, 0.94)',
+      borderColor: isRaidActive ? '#38bdf8' : '#fbbf24',
+      textColor: isRaidActive ? '#ffffff' : '#fef08a',
+      fontSize: 13,
+      paddingX: 12,
+      height: 24
+    });
+  }`;
+
+
   // 12. High-Res Ginkgo Tree in Ornate Ceramic Planter
   drawHighResGinkgoPot(obj) {
     const px = obj.x * 32 + 16;
@@ -2280,10 +3286,23 @@ class GameEngine {
         const bName = ((bCfg && bCfg.name) || cr.boss.name || '').toLowerCase();
         if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
           this.drawHighResBossDragon(cr.boss);
+        } else if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
+          this.drawHighResBossDemon(cr.boss);
+        } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
+          this.drawHighResBossCerberus(cr.boss);
+        } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
+          this.drawHighResBossFinalGod(cr.boss);
+        } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+          this.drawHighResBossSlothTitan(cr.boss);
+        } else if (bName.includes('백호') || bName.includes('성수') || bName.includes('tiger')) {
+          this.drawHighResBossWhiteTiger(cr.boss);
         } else {
           this.drawHighResBossGolem(cr.boss);
         }
       }
+    } else if (this.player.room === 'room_703') {
+      // === 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어 기지) ===
+      this.renderAcidRainComputerLab(cr);
     } else {
       // === 1학년 1반: 시즌1 기초 재료 노가다 채집장 연출 ===
       if (cr.teacherDesk) {

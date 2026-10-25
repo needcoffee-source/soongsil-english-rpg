@@ -2203,3 +2203,29 @@ body, html {
   border-radius: 6px;
 }
 
+/* ========================================================
+   ACID RAIN TYPING GAME (1학년 3반 컴퓨터실 산성비 게임)
+   ======================================================== */
+.acid-rain-card {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.35);
+  animation: acidGlow 3s infinite alternate ease-in-out;
+}
+
+@keyframes acidGlow {
+  0% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.25); }
+  100% { box-shadow: 0 0 45px rgba(56, 189, 248, 0.45); }
+}
+
+#acid-rain-input:focus {
+  border-color: #67e8f9 !important;
+  box-shadow: 0 0 15px rgba(103, 232, 249, 0.45) !important;
+}
+
+@media (max-width: 640px) {
+  .acid-rain-card {
+    width: 98% !important;
+  }
+}
+
+

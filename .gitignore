@@ -5,3 +5,7 @@ cloudflared.exe
 .DS_Store
 1학년 자료/
 *자료/
+*.txt
+extract_*.js
+scan_lessons.js
+build_grade1_questions.js

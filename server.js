@@ -195,7 +195,12 @@ const ALL_GAME_ITEMS = {
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' } }
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' } },
+  'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
+  'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
+  'item_ice_potion': { name: '시원한 아이스 물약', icon: '🧊', meta: { type: 'consumable', slot: 'consumable', heal: 50, effect: '나태의 거인 전리품 · 체력 +50 대량 회복' } },
+  'equip_tiger_amulet': { name: '숭실 백호 수호 부적', icon: '🐯', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '숭실 백호 성수 전리품 · 공격력 +35, 방어력 +25, 체력 +100' } }
 };
 
 // Simple Korean/English Bad Words Filter

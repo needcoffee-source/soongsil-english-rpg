@@ -33,7 +33,14 @@ const ALL_GAME_ITEMS = {
   // 4. Bronze Equipment (Boss Rare Drops)
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' } }
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 70 }, effect: '방어력 +22, 체력 +70' } },
+
+  // 5. Legendary Season Boss Artifacts & Rewards
+  'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
+  'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
+  'item_ice_potion': { name: '시원한 아이스 물약', icon: '🧊', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 50, effect: '나태의 거인 전리품 · 체력 +50 대량 회복' } },
+  'equip_tiger_amulet': { name: '숭실 백호 수호 부적', icon: '🐯', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '숭실 백호 성수 전리품 · 공격력 +35, 방어력 +25, 체력 +100' } }
 };
 
 window.BOSS_CONFIG = {
@@ -257,6 +264,14 @@ class MainApp {
       target.type === 'ginkgo' ||
       target.type === 'forsythia'
     ) {
+      if (target.name && target.name.includes('전광판')) {
+        alert('🖥️ [컴퓨터실 전광판]\n\n"1학년 3반 영어 타자 훈련실!\n중앙의 산성비 타자 컴퓨터 앞에서 SPACE를 누르면 하늘에서 떨어지는 영단어 방어전이 시작됩니다.\n\n정확한 타이핑으로 방화벽을 지키고 골드와 경험치를 획득하세요!"');
+        return;
+      }
+      if (target.name && target.name.includes('서버')) {
+        alert('🎛️ [컴퓨터실 메인 서버]\n\n"숭실 영어 타자 훈련 시스템 네트워크가 정상 가동 중입니다. (PING 1ms / 안정적)"');
+        return;
+      }
       this.quizManager.triggerQuiz(target.name, target.type, target.data);
     } else if (target.type === 'board') {
       alert('📋 [복도 게시판]\n\n"숭실중학교 학생 공지사항이 게시되어 있습니다."');
@@ -275,6 +290,10 @@ class MainApp {
       this.handleSecretLocker();
     } else if (target.type === 'field_monster') {
       this.startFieldMonsterBattle(target.data);
+    } else if (target.type === 'acid_rain') {
+      if (window.AcidRain) {
+        window.AcidRain.open();
+      }
     }
   }
 
@@ -1002,12 +1021,6 @@ class MainApp {
       });
     }
 
-    const btnGmBossEvent = document.getElementById('btn-gm-boss-event');
-    if (btnGmBossEvent) {
-      btnGmBossEvent.addEventListener('click', () => {
-        this.openTeacherTab('tab-boss-raid');
-      });
-    }
 
     const btnTeacher = document.getElementById('btn-teacher');
     if (btnTeacher) {
@@ -1694,6 +1707,35 @@ class MainApp {
         }
       }
 
+      // 5. 케르베로스 전용 드랍
+      if (bName.includes('케르베로스') || bName.includes('cerberus')) {
+        this.addItem('item_eval_paper', 'A+ 만점 수행평가지', 1, '📜', { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' });
+        rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
+      }
+
+      // 6. 기말고사 파멸신 전용 드랍
+      if (bName.includes('파멸신') || bName.includes('기말고사')) {
+        if (Math.random() < 0.5) {
+          this.addItem('equip_laurel_crown', '종강의 황금 월계관', 1, '👑', { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '방어력 +25, 체력 +80' });
+          rewardItemsList.push('👑 종강의 황금 월계관 (대박 드랍!)');
+        } else {
+          this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '공격력 +45, 방어력 +10' });
+          rewardItemsList.push('🖊️ 컴싸 마법봉 (희귀 무기!)');
+        }
+      }
+
+      // 7. 나태의 거인 전용 드랍
+      if (bName.includes('나태') || bName.includes('거인')) {
+        this.addItem('item_ice_potion', '시원한 아이스 물약', 2, '🧊', { type: 'consumable', slot: 'consumable', heal: 50, effect: '체력 +50 대량 회복' });
+        rewardItemsList.push('🧊 시원한 아이스 물약 x2');
+      }
+
+      // 8. 숭실 백호 성수 전용 드랍
+      if (bName.includes('백호') || bName.includes('성수')) {
+        this.addItem('equip_tiger_amulet', '숭실 백호 수호 부적', 1, '🐯', { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '공격력 +35, 방어력 +25, 체력 +100' });
+        rewardItemsList.push('🐯 숭실 백호 수호 부적 (전설 보물!)');
+      }
+
       const dropText = rewardItemsList.length > 0 ? `\n🎁 획득 아이템:\n• ${rewardItemsList.join('\n• ')}` : '';
       const mvpText = data.mvp ? `\n\n👑 최고 기여(MVP): ${data.mvp.name} (누적 데미지 ${data.mvp.damage})` : '';
 
@@ -2331,14 +2373,55 @@ class MainApp {
           goldEl.value = 120;
           expEl.value = 250;
         } else if (val === 'demon') {
-          nameEl.value = '👹 중간고사 대마왕';
+          nameEl.value = '😈 중간고사 대마왕';
           hpEl.value = 999999;
           atkEl.value = 150;
           defEl.value = 50;
           goldEl.value = 0;
           expEl.value = 0;
+        } else if (val === 'cerberus') {
+          nameEl.value = '🐕 수행평가 3두마수 케르베로스';
+          hpEl.value = 6000;
+          atkEl.value = 35;
+          defEl.value = 15;
+          goldEl.value = 200;
+          expEl.value = 400;
+        } else if (val === 'final_god') {
+          nameEl.value = '💀 기말고사 파멸신';
+          hpEl.value = 9000;
+          atkEl.value = 45;
+          defEl.value = 20;
+          goldEl.value = 350;
+          expEl.value = 700;
+        } else if (val === 'sloth_titan') {
+          nameEl.value = '🦥 방학 직전 나태의 거인';
+          hpEl.value = 12000;
+          atkEl.value = 55;
+          defEl.value = 25;
+          goldEl.value = 500;
+          expEl.value = 1000;
+        } else if (val === 'white_tiger') {
+          nameEl.value = '🐯 숭실 백호 성수';
+          hpEl.value = 15000;
+          atkEl.value = 70;
+          defEl.value = 30;
+          goldEl.value = 800;
+          expEl.value = 1500;
+        }
+
+        if (window.BOSS_CONFIG) {
+          window.BOSS_CONFIG.name = nameEl.value;
+          window.BOSS_CONFIG.maxHp = parseInt(hpEl.value) || 1500;
+          window.BOSS_CONFIG.currentHp = parseInt(hpEl.value) || 1500;
         }
       });
+
+      const nameEl = document.getElementById('admin-boss-name');
+      if (nameEl) {
+        nameEl.addEventListener('input', () => {
+          if (window.BOSS_CONFIG) window.BOSS_CONFIG.name = nameEl.value;
+        });
+      }
     }
 
     // 보스레이드 이벤트 시작 버튼
