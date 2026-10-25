@@ -541,16 +541,16 @@ io.on('connection', (socket) => {
   socket.on('teacher_start_boss_raid', (opts = {}) => {
     bossRaidEvent = {
       active: true,
-      name: opts.name || '👾 고목 골렘',
+      name: opts.name || '👾 가죽 골렘',
       level: parseInt(opts.level) || 10,
       mode: opts.mode || 'coop',
       unitFilter: opts.unitFilter || 'ALL',
-      maxHp: Math.max(50, parseInt(opts.maxHp) || 3000),
-      currentHp: Math.max(50, parseInt(opts.maxHp) || 3000),
-      atk: Math.max(1, parseInt(opts.atk) || 18),
-      def: Math.max(0, parseInt(opts.def) || 5),
-      rewardGold: Math.max(0, parseInt(opts.rewardGold) || 100),
-      rewardExp: Math.max(0, parseInt(opts.rewardExp) || 200),
+      maxHp: Math.max(50, parseInt(opts.maxHp) || 2000),
+      currentHp: Math.max(50, parseInt(opts.maxHp) || 2000),
+      atk: Math.max(1, parseInt(opts.atk) || 17),
+      def: Math.max(0, parseInt(opts.def) || 8),
+      rewardGold: Math.max(0, parseInt(opts.rewardGold) || 50),
+      rewardExp: Math.max(0, parseInt(opts.rewardExp) || 100),
       participants: {}
     };
 

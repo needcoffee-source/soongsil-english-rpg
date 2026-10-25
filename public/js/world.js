@@ -243,9 +243,9 @@ const WORLD_DATA = {
       name: "🐯 숭실 백호 성수",
       prompt: "보스 레이드",
       level: 40,
-      maxHp: 999999,
-      atk: 150,
-      def: 50
+      maxHp: 12000,
+      atk: 55,
+      def: 25
     },
     basketballMonsters: [
       {

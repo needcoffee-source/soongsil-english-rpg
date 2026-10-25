@@ -710,7 +710,26 @@ class GameEngine {
       if (cr.boss) {
         const bossDist = Math.hypot(cr.boss.x * 32 - this.player.x, cr.boss.y * 32 - this.player.y);
         if (bossDist < 96) {
-          closest = { type: 'boss_raid', data: cr.boss, name: cr.boss.name, prompt: cr.boss.prompt };
+          const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+          const isClearedGolem = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedFirstBoss) ||
+                                 (typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
+          const bossObj = (isClearedGolem && !isRaidActive && this.player.room === 'room_702')
+            ? {
+                id: "boss_s1_bronzedragon",
+                type: "boss_raid",
+                x: cr.boss.x,
+                y: cr.boss.y,
+                name: "🐉 숭실 청동 드래곤",
+                prompt: "보스 레이드 (숭실 청동 드래곤)",
+                level: 20,
+                maxHp: 5000,
+                atk: 28,
+                def: 10,
+                rewardGold: 120,
+                rewardExp: 250
+              }
+            : cr.boss;
+          closest = { type: 'boss_raid', data: bossObj, name: bossObj.name, prompt: bossObj.prompt || '보스 레이드' };
           minDist = bossDist;
         }
       }
@@ -808,7 +827,26 @@ class GameEngine {
         }
       }
       if (cr.boss && Math.hypot(cr.boss.x * 32 - x, cr.boss.y * 32 - y) < 76) {
-        return { type: 'boss_raid', data: cr.boss, name: cr.boss.name };
+        const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+        const isClearedGolem = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedFirstBoss) ||
+                               (typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
+        const bossObj = (isClearedGolem && !isRaidActive && this.player.room === 'room_702')
+          ? {
+              id: "boss_s1_bronzedragon",
+              type: "boss_raid",
+              x: cr.boss.x,
+              y: cr.boss.y,
+              name: "🐉 숭실 청동 드래곤",
+              prompt: "보스 레이드 (숭실 청동 드래곤)",
+              level: 20,
+              maxHp: 5000,
+              atk: 28,
+              def: 10,
+              rewardGold: 120,
+              rewardExp: 250
+            }
+          : cr.boss;
+        return { type: 'boss_raid', data: bossObj, name: bossObj.name };
       }
       if (cr.craftTable && Math.hypot(cr.craftTable.x * 32 - x, cr.craftTable.y * 32 - y) < 48) {
         return { type: 'craft', data: cr.craftTable, name: cr.craftTable.name };
@@ -1886,11 +1924,13 @@ class GameEngine {
     this.ctx.restore();
 
     // Boss Nameplate (교사 이벤트 시작 여부에 따른 상태 표시)
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '👾 가죽 골렘');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 2000) : (boss.maxHp || 2000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [1차 관문 보스] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 58, labelText, {
       bgColor: isRaidActive ? 'rgba(127, 29, 29, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2171,11 +2211,13 @@ class GameEngine {
     this.ctx.restore();
 
     // Boss Nameplate (청동 & 청록 녹청 하이테크 네임플레이트)
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🐉 숭실 청동 드래곤');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 5000) : (boss.maxHp || 5000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [2차 관문 보스] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 66, labelText, {
       bgColor: isRaidActive ? 'rgba(69, 26, 3, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2488,11 +2530,13 @@ class GameEngine {
     this.ctx.restore();
 
     // 9. Boss Nameplate (교사 설정 및 레이드 상태 표시)
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '😈 중간고사 대마왕');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 4000) : (boss.maxHp || 4000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [시즌 이벤트 보스] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 78, labelText, {
       bgColor: isRaidActive ? 'rgba(76, 5, 25, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2654,11 +2698,13 @@ class GameEngine {
 
     this.ctx.restore();
 
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🐕 수행평가 3두마수 케르베로스');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 6000) : (boss.maxHp || 6000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [축구장 보스] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 66, labelText, {
       bgColor: isRaidActive ? 'rgba(124, 45, 18, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2797,11 +2843,13 @@ class GameEngine {
 
     this.ctx.restore();
 
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '💀 기말고사 파멸신');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 8000) : (boss.maxHp || 8000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [최종보스] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 72, labelText, {
       bgColor: isRaidActive ? 'rgba(15, 23, 42, 0.98)' : 'rgba(30, 41, 59, 0.94)',
@@ -2916,11 +2964,13 @@ class GameEngine {
 
     this.ctx.restore();
 
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🦥 방학 직전 나태의 거인');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 10000) : (boss.maxHp || 10000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
+      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [축구장 보스] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 66, labelText, {
       bgColor: isRaidActive ? 'rgba(8, 47, 73, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -3043,11 +3093,13 @@ class GameEngine {
 
     this.ctx.restore();
 
-    const bCfg = window.BOSS_CONFIG || boss;
-    const isRaidActive = !!(bCfg && bCfg.active);
+    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🐯 숭실 백호 성수');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 12000) : (boss.maxHp || 12000);
+    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `✨ ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
-      : `⏳ [성스러운 대기] ${bCfg.name || boss.name}`;
+      ? `✨ ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [성스러운 대기] ${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 90, labelText, {
       bgColor: isRaidActive ? 'rgba(2, 44, 84, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -3450,22 +3502,30 @@ class GameEngine {
       this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
 
       if (cr.boss) {
-        const bCfg = window.BOSS_CONFIG || cr.boss;
-        const bName = ((bCfg && bCfg.name) || cr.boss.name || '').toLowerCase();
+        const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+        const isClearedGolem = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedFirstBoss) ||
+                               (typeof localStorage !== 'undefined' && localStorage.getItem('soongsil_first_boss_cleared_global') === 'true');
+        const bName = isRaidActive
+          ? ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase())
+          : (isClearedGolem ? 'dragon' : (cr.boss.name || '').toLowerCase());
+        const effectiveBoss = (isClearedGolem && !isRaidActive)
+          ? { ...cr.boss, name: '🐉 숭실 청동 드래곤', maxHp: 5000, atk: 28, def: 10 }
+          : cr.boss;
+
         if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
-          this.drawHighResBossDragon(cr.boss);
+          this.drawHighResBossDragon(effectiveBoss);
         } else if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
-          this.drawHighResBossDemon(cr.boss);
+          this.drawHighResBossDemon(effectiveBoss);
         } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
-          this.drawHighResBossCerberus(cr.boss);
+          this.drawHighResBossCerberus(effectiveBoss);
         } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
-          this.drawHighResBossFinalGod(cr.boss);
+          this.drawHighResBossFinalGod(effectiveBoss);
         } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
-          this.drawHighResBossSlothTitan(cr.boss);
+          this.drawHighResBossSlothTitan(effectiveBoss);
         } else if (bName.includes('백호') || bName.includes('성수') || bName.includes('tiger')) {
-          this.drawHighResBossWhiteTiger(cr.boss);
+          this.drawHighResBossWhiteTiger(effectiveBoss);
         } else {
-          this.drawHighResBossGolem(cr.boss);
+          this.drawHighResBossGolem(effectiveBoss);
         }
       }
     } else if (this.player.room === 'room_703') {
