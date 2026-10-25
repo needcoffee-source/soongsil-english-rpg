@@ -2495,8 +2495,8 @@ class GameEngine {
     const bCfg = window.BOSS_CONFIG || boss;
     const isRaidActive = !!(bCfg && bCfg.active);
     const labelText = isRaidActive
-      ? \`🔥 \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
-      : \`⏳ [이벤트 대기중] \${bCfg.name || boss.name}\`;
+      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
+      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
 
     this.drawSharpLabel(px, py - 66, labelText, {
       bgColor: isRaidActive ? 'rgba(124, 45, 18, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2619,7 +2619,7 @@ class GameEngine {
     this.ctx.fillStyle = '#94a3b8';
     this.ctx.fillRect(scytheX - 4, scytheY - 48, 8, 4);
 
-    this.ctx.strokeStyle = \`rgba(56, 189, 248, \${scytheGlow})\`;
+    this.ctx.strokeStyle = `rgba(56, 189, 248, ${scytheGlow})`;
     this.ctx.lineWidth = 4;
     this.ctx.beginPath();
     this.ctx.moveTo(scytheX, scytheY - 48);
@@ -2638,8 +2638,8 @@ class GameEngine {
     const bCfg = window.BOSS_CONFIG || boss;
     const isRaidActive = !!(bCfg && bCfg.active);
     const labelText = isRaidActive
-      ? \`🔥 \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
-      : \`⏳ [이벤트 대기중] \${bCfg.name || boss.name}\`;
+      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
+      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
 
     this.drawSharpLabel(px, py - 72, labelText, {
       bgColor: isRaidActive ? 'rgba(15, 23, 42, 0.98)' : 'rgba(30, 41, 59, 0.94)',
@@ -2757,8 +2757,8 @@ class GameEngine {
     const bCfg = window.BOSS_CONFIG || boss;
     const isRaidActive = !!(bCfg && bCfg.active);
     const labelText = isRaidActive
-      ? \`🔥 \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
-      : \`⏳ [이벤트 대기중] \${bCfg.name || boss.name}\`;
+      ? `🔥 ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
+      : `⏳ [이벤트 대기중] ${bCfg.name || boss.name}`;
 
     this.drawSharpLabel(px, py - 66, labelText, {
       bgColor: isRaidActive ? 'rgba(8, 47, 73, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2782,7 +2782,7 @@ class GameEngine {
     this.ctx.save();
 
     // 1. Sacred Azure Lightning Circle
-    this.ctx.strokeStyle = \`rgba(56, 189, 248, \${sparkPulse})\`;
+    this.ctx.strokeStyle = `rgba(56, 189, 248, ${sparkPulse})`;
     this.ctx.lineWidth = 3.5;
     this.ctx.beginPath();
     this.ctx.ellipse(px, py + 26, 62, 25, 0, 0, Math.PI * 2);
@@ -2880,8 +2880,8 @@ class GameEngine {
     const bCfg = window.BOSS_CONFIG || boss;
     const isRaidActive = !!(bCfg && bCfg.active);
     const labelText = isRaidActive
-      ? \`✨ \${bCfg.name || boss.name} (HP \${bCfg.currentHp ?? bCfg.maxHp}/\${bCfg.maxHp})\`
-      : \`⏳ [성스러운 대기] \${bCfg.name || boss.name}\`;
+      ? `✨ ${bCfg.name || boss.name} (HP ${bCfg.currentHp ?? bCfg.maxHp}/${bCfg.maxHp})`
+      : `⏳ [성스러운 대기] ${bCfg.name || boss.name}`;
 
     this.drawSharpLabel(px, py - 68, labelText, {
       bgColor: isRaidActive ? 'rgba(2, 44, 84, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -2891,7 +2891,7 @@ class GameEngine {
       paddingX: 12,
       height: 24
     });
-  }`;
+  }
 
 
   // 12. High-Res Ginkgo Tree in Ornate Ceramic Planter

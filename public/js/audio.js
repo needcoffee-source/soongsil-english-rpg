@@ -277,6 +277,10 @@ class AudioManager {
   /**
    * Crafting Complete / Level Up Fanfare (Triumphant 8-Bit Melody)
    */
+  playLevelUp() {
+    this.playFanfare();
+  }
+
   playFanfare() {
     if (this.muted) return;
     this.init();

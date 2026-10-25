@@ -346,7 +346,10 @@ class AcidRainGame {
       this.level = newLevel;
       this.spawnInterval = Math.max(900, this.spawnInterval * 0.92);
       this.baseSpeed *= 1.05;
-      if (window.AudioManager) window.AudioManager.playLevelUp();
+      if (window.AudioManager) {
+        if (typeof window.AudioManager.playLevelUp === 'function') window.AudioManager.playLevelUp();
+        else if (typeof window.AudioManager.playFanfare === 'function') window.AudioManager.playFanfare();
+      }
     }
 
     const cH = this.canvas.height || 380;
