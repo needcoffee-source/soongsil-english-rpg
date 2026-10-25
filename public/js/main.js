@@ -41,6 +41,7 @@ const ALL_GAME_ITEMS = {
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
 
   // 5. Legendary Season Boss Artifacts & Rewards
+  'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
@@ -65,6 +66,7 @@ const ITEM_SELL_PRICES = {
   'item_boss_leather': 15, // 질긴 보스의 가죽
   'item_bronze_heart': 30, // 청동 드래곤의 심장
   'item_dragon_heart': 30, // 용의 심장
+  'item_perfect_exam': 50, // 💯 백점만점 시험지 (매점 매각 시 50G)
   'item_eval_paper': 25, // A+ 만점 수행평가지
 
   // 3. 1티어 나무 장비 (제작비 15G의 20% = 3G 환급)
@@ -90,7 +92,7 @@ const ITEM_SELL_PRICES = {
   'equip_tiger_amulet': 25
 };
 
-// 호칭 교환소 3대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자)
+// 호칭 교환소 4대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자, 백점만점 시험지 -> 시험의 제왕)
 const TITLE_DEFINITIONS = [
   {
     id: 'title_wood_king',
@@ -116,6 +118,15 @@ const TITLE_DEFINITIONS = [
     desc: '꾸준한 퀴즈와 근면한 상거래로 황금 50냥을 당당히 보유한 자산가!',
     costType: 'gold',
     costAmount: 50
+  },
+  {
+    id: 'title_exam_lord',
+    name: '📚 시험의 제왕',
+    desc: '중간고사 대마왕을 격파하고 백점만점 시험지를 획득한 숭실 최고의 지성!',
+    costType: 'item',
+    costItem: 'item_perfect_exam',
+    costItemName: '💯 백점만점 시험지',
+    costAmount: 1
   }
 ];
 
@@ -1752,8 +1763,9 @@ class MainApp {
 
     const isModalOpen = !this.modalBossRaid.classList.contains('hidden');
     const isInBossRoom = this.engine && this.engine.player && this.engine.player.room === 'room_702';
+    const isInPlayground = this.engine && this.engine.player && this.engine.player.room === 'playground';
 
-    if (isModalOpen || isInBossRoom) {
+    if (isModalOpen || isInBossRoom || isInPlayground) {
       this.addGold(data.rewardGold || 100);
       this.addExp(data.rewardExp || 200);
 
@@ -1840,7 +1852,23 @@ class MainApp {
         }
       }
 
-      // 5. 케르베로스 전용 드랍
+      // 5. 중간고사 대마왕 전용 드랍 (주황물약 3개, 💯 백점만점 시험지, 청동검/청동투구/청동갑옷 전원 100% 드랍)
+      if (bName.includes('대마왕') || bName.includes('demon') || bName.includes('중간고사')) {
+        this.addItem('item_orange_potion', '주황 물약', 3, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
+        rewardItemsList.push('🧪 주황 물약 x3');
+
+        this.addItem('item_perfect_exam', '💯 백점만점 시험지', 1, '💯', { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' });
+        rewardItemsList.push('💯 백점만점 시험지 (호칭 교환소에서 📚 시험의 제왕 교환!)');
+
+        this.addItem('equip_bronze_sword', '청동검', 1, '⚔️', { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' });
+        this.addItem('equip_bronze_helmet', '청동투구', 1, '🪖', { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' });
+        this.addItem('equip_bronze_armor', '청동갑옷', 1, '🛡️', { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' });
+        rewardItemsList.push('⚔️ 청동검 (3티어 종결 무기 완제품!)');
+        rewardItemsList.push('🪖 청동투구 (3티어 종결 투구 완제품!)');
+        rewardItemsList.push('🛡️ 청동갑옷 (3티어 종결 갑옷 완제품!)');
+      }
+
+      // 6. 케르베로스 전용 드랍
       if (bName.includes('케르베로스') || bName.includes('cerberus')) {
         this.addItem('item_eval_paper', 'A+ 만점 수행평가지', 1, '📜', { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' });
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');

@@ -204,6 +204,7 @@ const ALL_GAME_ITEMS = {
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
+  'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
