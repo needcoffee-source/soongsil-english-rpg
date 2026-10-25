@@ -2200,7 +2200,7 @@ class MainApp {
   }
 
   // =========================================================================
-  // TEACHER ADMIN CONTROLS (보스레이드 이벤트 / 채팅 / 공지 / 문제 / 경제)
+  // TEACHER ADMIN CONTROLS (보스레이드 이벤트 / 돌발 퀴즈 / 학생 관리 / 채팅 / 공지 / 문제 관리)
   // =========================================================================
   initTeacherAdmin() {
     const chatLogContainer = document.getElementById('admin-chat-logs');
@@ -2413,30 +2413,6 @@ class MainApp {
         alert('저장에 실패했습니다.');
       }
     });
-
-    const btnSaveEconomy = document.getElementById('btn-save-economy');
-    if (btnSaveEconomy) {
-      btnSaveEconomy.addEventListener('click', () => {
-        const minG = Math.max(0, parseInt(document.getElementById('admin-eco-min-gold').value) || 1);
-        const maxG = Math.max(minG, parseInt(document.getElementById('admin-eco-max-gold').value) || 3);
-        const dropRate = Math.max(1, Math.min(100, parseFloat(document.getElementById('admin-eco-drop-rate').value) || 20));
-        const baseExp = Math.max(1, parseInt(document.getElementById('admin-eco-exp').value) || 5);
-
-        window.ECONOMY_CONFIG.minGold = minG;
-        window.ECONOMY_CONFIG.maxGold = maxG;
-        window.ECONOMY_CONFIG.itemDropRatePercent = dropRate;
-        window.ECONOMY_CONFIG.spotDropRates = {
-          gather_wood: dropRate,
-          gather_herb: dropRate,
-          gather_forsythia: dropRate,
-          gather_ginkgo: dropRate,
-          board: dropRate
-        };
-        window.ECONOMY_CONFIG.baseExp = baseExp;
-
-        alert(`🎲 [경제/드랍율 설정 적용 완료]\n• 골드 보상: ${minG}G ~ ${maxG}G\n• 기본 드랍 확률: ${dropRate}%\n• 기본 경험치: +${baseExp} EXP`);
-      });
-    }
 
     // 학생 누적 백업 JSON 파일 복원 (업로드)
     const btnRestore = document.getElementById('btn-trigger-restore-progress');

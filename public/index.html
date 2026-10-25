@@ -675,7 +675,6 @@
           <button class="tab-btn" data-tab="tab-chat">💬 실시간 채팅</button>
           <button class="tab-btn" data-tab="tab-broadcast">📢 전체 공지</button>
           <button class="tab-btn" data-tab="tab-quiz-manage">📝 문제 관리</button>
-          <button class="tab-btn" data-tab="tab-economy">🎲 경제/드랍율</button>
         </div>
 
         <div class="tab-pane active" id="tab-boss-raid">
@@ -1035,30 +1034,6 @@
             <button id="btn-save-new-quiz" class="btn-primary" style="width:100%; padding:10px; font-weight:800; background:linear-gradient(135deg,#0284c7,#0369a1); margin-top:6px; cursor:pointer;">
               💾 퀴즈 데이터베이스 저장
             </button>
-          </div>
-        </div>
-
-        <div class="tab-pane hidden" id="tab-economy">
-          <div class="quiz-manage-box">
-            <h4>🎲 1년 장기 운영용 경제 & 확률형 드랍 밸런스 조정</h4>
-            <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">퀴즈 정답 시 지급되는 최소 골드와 아이템 드랍 확률(%)을 즉시 조정할 수 있습니다.</p>
-            <div class="input-row">
-              <label style="flex:1; font-size:12px; color:#fde047;">최소 골드 (G)
-                <input type="number" id="admin-eco-min-gold" value="1" min="0" max="100">
-              </label>
-              <label style="flex:1; font-size:12px; color:#fde047;">최대 골드 (G)
-                <input type="number" id="admin-eco-max-gold" value="3" min="1" max="500">
-              </label>
-            </div>
-            <div class="input-row">
-              <label style="flex:1; font-size:12px; color:#60a5fa;">기본 아이템 드랍 확률 (%)
-                <input type="number" id="admin-eco-drop-rate" value="15" min="1" max="100" step="1">
-              </label>
-              <label style="flex:1; font-size:12px; color:#34d399;">기본 경험치 (EXP)
-                <input type="number" id="admin-eco-exp" value="5" min="1" max="200">
-              </label>
-            </div>
-            <button id="btn-save-economy" class="btn-primary">경제/드랍율 설정 즉시 적용 ✅</button>
           </div>
         </div>
       </div>
