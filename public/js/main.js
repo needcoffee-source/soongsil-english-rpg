@@ -504,31 +504,64 @@ class MainApp {
       });
     }
 
-    // 학생 마지막 학번 및 세이브 데이터 자동 완성 (새로고침 대응)
+    // 학생 마지막 학번 및 세이브 데이터 자동 완성 (2달 장기 프로젝트: 서버 + 로컬 동기화)
+    const studentIdInput = document.getElementById('input-student-id');
+    const syncBadge = document.getElementById('student-id-sync-badge');
+
+    const syncStudentIdUI = async (sId) => {
+      sId = (sId || '').trim();
+      if (!sId || sId === '교사' || sId.length < 2) {
+        if (syncBadge) syncBadge.innerHTML = '';
+        return;
+      }
+      if (syncBadge) {
+        syncBadge.innerHTML = `<span style="color:#94a3b8;">🔍 서버 연동 상태 확인 중...</span>`;
+      }
+      const saved = await this.getBestProgress(sId);
+      if (saved) {
+        if (saved.name) {
+          const nicknameInput = document.getElementById('input-nickname');
+          if (nicknameInput) nicknameInput.value = saved.name;
+        }
+        if (saved.hairColor && hairGroup) {
+          selectedHair = saved.hairColor;
+          hairGroup.querySelectorAll('.btn-custom-pill').forEach(b => {
+            b.classList.toggle('active', b.dataset.hair === selectedHair);
+          });
+        }
+        if (saved.outfitColor && outfitGroup) {
+          selectedOutfit = saved.outfitColor;
+          outfitGroup.querySelectorAll('.btn-custom-pill').forEach(b => {
+            b.classList.toggle('active', b.dataset.outfit === selectedOutfit);
+          });
+        }
+        updatePreview();
+        if (syncBadge) {
+          const saveDateStr = saved.updatedAt ? new Date(saved.updatedAt).toLocaleDateString() : '최근';
+          syncBadge.innerHTML = `<span style="color:#4ade80; font-weight:700;">✨ [2달 누적 세이브 확인] Lv.${saved.level || 1} ${saved.name || ''} · ${saved.gold || 0}G (${saveDateStr})</span>`;
+        }
+      } else {
+        if (syncBadge) {
+          syncBadge.innerHTML = `<span style="color:#60a5fa;">🌱 신규 모험가입니다. (이름을 입력하면 서버에 자동 저장됩니다)</span>`;
+        }
+      }
+    };
+
+    if (studentIdInput) {
+      studentIdInput.addEventListener('blur', () => syncStudentIdUI(studentIdInput.value));
+      studentIdInput.addEventListener('input', () => {
+        const val = studentIdInput.value.trim();
+        if (val.length >= 4) {
+          syncStudentIdUI(val);
+        }
+      });
+    }
+
     try {
       const lastStudentId = localStorage.getItem('soongsil_last_student_id');
       if (lastStudentId) {
-        const studentIdInput = document.getElementById('input-student-id');
         if (studentIdInput) studentIdInput.value = lastStudentId;
-        const saved = this.loadProgress(lastStudentId);
-        if (saved) {
-          if (saved.name) {
-            const nicknameInput = document.getElementById('input-nickname');
-            if (nicknameInput) nicknameInput.value = saved.name;
-          }
-          if (saved.hairColor && hairGroup) {
-            selectedHair = saved.hairColor;
-            hairGroup.querySelectorAll('.btn-custom-pill').forEach(b => {
-              b.classList.toggle('active', b.dataset.hair === selectedHair);
-            });
-          }
-          if (saved.outfitColor && outfitGroup) {
-            selectedOutfit = saved.outfitColor;
-            outfitGroup.querySelectorAll('.btn-custom-pill').forEach(b => {
-              b.classList.toggle('active', b.dataset.outfit === selectedOutfit);
-            });
-          }
-        }
+        syncStudentIdUI(lastStudentId);
       }
     } catch (e) {
       console.warn('LocalStorage access warning:', e);
@@ -537,7 +570,7 @@ class MainApp {
     // 초기 캐릭터 실시간 미리보기 렌더링
     updatePreview();
 
-    document.getElementById('btn-start-game').addEventListener('click', () => {
+    document.getElementById('btn-start-game').addEventListener('click', async () => {
       const isTeacher = checkIsTeacher && checkIsTeacher.checked;
       let name = document.getElementById('input-nickname').value.trim();
       const studentId = document.getElementById('input-student-id').value.trim();
@@ -596,8 +629,8 @@ class MainApp {
         const gmPanel = document.getElementById('gm-panel');
         if (gmPanel) gmPanel.classList.add('hidden');
 
-        // 학생 세이브 데이터 복구 (새로고침 시 아이템/레벨/골드 유지)
-        const saved = this.loadProgress(studentId);
+        // 학생 세이브 데이터 복구 (2달 장기 누적: 서버 & 로컬 이중 동기화)
+        const saved = await this.getBestProgress(studentId);
         if (saved) {
           name = saved.name || name;
           this.playerData.level = saved.level || 1;
@@ -614,7 +647,7 @@ class MainApp {
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true') || localStorage.getItem('soongsil_dragon_cleared_global') === 'true');
-          console.log(`[Storage] 학생(${studentId}) 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
+          console.log(`[Storage] 학생(${studentId}) 2달 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
@@ -642,6 +675,9 @@ class MainApp {
       this.recalcCombatStats();
       this.updateExpBar();
 
+      // 시작 시점 프로필 즉시 영구 저장 동기화
+      this.saveProgress();
+
       this.quizManager.loadQuestions(grade);
       this.craftingManager.loadRecipes(grade);
 
@@ -649,6 +685,43 @@ class MainApp {
       this.modalLogin.classList.add('hidden');
       this.startLoop();
       this.initAutoHpRegen();
+
+      // 45초 주기 자동 저장 & 브라우저 닫기/새로고침 시 비콘 백업
+      if (!this.autoSaveInterval) {
+        this.autoSaveInterval = setInterval(() => this.saveProgress(), 45000);
+      }
+      if (!window.__soongsilBeforeUnloadBound) {
+        window.__soongsilBeforeUnloadBound = true;
+        window.addEventListener('beforeunload', () => {
+          if (this.playerData && !this.playerData.isTeacher && this.playerData.studentId && this.playerData.studentId !== '교사') {
+            const saveData = {
+              name: this.playerData.name,
+              studentId: this.playerData.studentId,
+              grade: this.playerData.grade,
+              level: this.playerData.level,
+              exp: this.playerData.exp,
+              gold: this.playerData.gold,
+              baseHp: this.playerData.baseHp,
+              baseAtk: this.playerData.baseAtk,
+              baseDef: this.playerData.baseDef,
+              inventory: this.playerData.inventory,
+              equipment: this.playerData.equipment,
+              hairColor: this.playerData.hairColor,
+              outfitColor: this.playerData.outfitColor,
+              hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
+              hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
+              hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
+              updatedAt: Date.now()
+            };
+            try {
+              localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
+              if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/save-progress', JSON.stringify({ studentId: saveData.studentId, progress: saveData }));
+              }
+            } catch (e) {}
+          }
+        });
+      }
     });
 
     // Sound Toggle Button
@@ -2247,16 +2320,57 @@ class MainApp {
       });
     }
 
-    document.getElementById('btn-send-broadcast').addEventListener('click', () => {
-      const input = document.getElementById('input-broadcast');
-      const msg = input.value.trim();
-      if (!msg) return;
-      if (this.networkManager.socket) {
-        this.networkManager.socket.emit('teacher_broadcast', { message: msg });
-        alert(`전교생에게 공지사항이 전송되었습니다:\n"${msg}"`);
-        input.value = '';
-      }
-    });
+    const btnSendBroadcast = document.getElementById('btn-send-broadcast');
+    if (btnSendBroadcast) {
+      btnSendBroadcast.addEventListener('click', () => {
+        const input = document.getElementById('input-broadcast');
+        const msg = input.value.trim();
+        const isSummon = document.getElementById('check-broadcast-summon') && document.getElementById('check-broadcast-summon').checked;
+
+        if (!msg && !isSummon) {
+          alert('전송할 공지 내용을 입력해 주세요.');
+          return;
+        }
+
+        if (this.networkManager && this.networkManager.socket) {
+          if (isSummon) {
+            this.networkManager.socket.emit('teacher_summon_all_to_me', {
+              floor: this.engine.player.floor,
+              room: this.engine.player.room,
+              x: this.engine.player.x,
+              y: this.engine.player.y,
+              message: msg || '선생님께서 여러분을 현재 위치로 소환하셨습니다!'
+            });
+            alert(`📢 전교생에게 공지 전송과 함께 현재 교사 위치(${this.engine.player.floor}층 ${this.engine.player.roomName})로 전원 소환을 완료했습니다!`);
+          } else {
+            this.networkManager.socket.emit('teacher_broadcast', { message: msg });
+            alert(`📢 전교생에게 공지사항이 전송되었습니다:\n"${msg}"`);
+          }
+          input.value = '';
+        }
+      });
+    }
+
+    const btnSummonNow = document.getElementById('btn-summon-all-now');
+    if (btnSummonNow) {
+      btnSummonNow.addEventListener('click', () => {
+        const roomName = this.engine.player.roomName || '현재 교실';
+        const floor = this.engine.player.floor || 7;
+        if (!confirm(`🌀 현재 위치 [${floor}층 ${roomName}]로 접속 중인 모든 학생을 즉시 소환하시겠습니까?`)) {
+          return;
+        }
+        if (this.networkManager && this.networkManager.socket) {
+          this.networkManager.socket.emit('teacher_summon_all_to_me', {
+            floor: this.engine.player.floor,
+            room: this.engine.player.room,
+            x: this.engine.player.x,
+            y: this.engine.player.y,
+            message: '🌀 선생님께서 여러분을 현재 위치로 긴급 소환하셨습니다!'
+          });
+          alert(`🌀 모든 학생을 현재 위치 [${floor}층 ${roomName}]로 소환했습니다!`);
+        }
+      });
+    }
 
     document.getElementById('btn-save-new-quiz').addEventListener('click', async () => {
       const grade = document.getElementById('admin-q-grade').value;
@@ -2628,7 +2742,7 @@ class MainApp {
   }
 
   // =========================================================================
-  // PERSISTENCE (새로고침 방지: LocalStorage 자동 저장 및 복원)
+  // PERSISTENCE (2달 장기 프로젝트: LocalStorage + 서버 영구 저장 이중화)
   // =========================================================================
   saveProgress() {
     if (!this.playerData || this.playerData.isTeacher) return;
@@ -2655,8 +2769,25 @@ class MainApp {
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
+      this.syncProgressToServer(saveData);
     } catch (e) {
       console.warn('LocalStorage save failed:', e);
+    }
+  }
+
+  async syncProgressToServer(saveData) {
+    if (!saveData || !saveData.studentId || saveData.studentId === '교사') return;
+    try {
+      await fetch('/api/save-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: saveData.studentId,
+          progress: saveData
+        })
+      });
+    } catch (err) {
+      console.warn('[Sync] Server progress sync failed:', err);
     }
   }
 
@@ -2667,6 +2798,52 @@ class MainApp {
       if (raw) return JSON.parse(raw);
     } catch (e) {
       console.warn('LocalStorage load failed:', e);
+    }
+    return null;
+  }
+
+  async fetchProgressFromServer(studentId) {
+    if (!studentId || studentId === '교사') return null;
+    try {
+      const res = await fetch(`/api/load-progress?studentId=${encodeURIComponent(studentId)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.progress) {
+          return data.progress;
+        }
+      }
+    } catch (e) {
+      console.warn('[Storage] Server progress fetch failed:', e);
+    }
+    return null;
+  }
+
+  async getBestProgress(studentId) {
+    if (!studentId || studentId === '교사') return null;
+    const local = this.loadProgress(studentId);
+    let server = null;
+    try {
+      server = await this.fetchProgressFromServer(studentId);
+    } catch (e) {}
+
+    if (server && local) {
+      const serverTime = server.updatedAt || 0;
+      const localTime = local.updatedAt || 0;
+      if (serverTime >= localTime) {
+        try { localStorage.setItem('soongsil_save_' + studentId, JSON.stringify(server)); } catch (e) {}
+        return server;
+      } else {
+        this.syncProgressToServer(local);
+        return local;
+      }
+    }
+    if (server) {
+      try { localStorage.setItem('soongsil_save_' + studentId, JSON.stringify(server)); } catch (e) {}
+      return server;
+    }
+    if (local) {
+      this.syncProgressToServer(local);
+      return local;
     }
     return null;
   }

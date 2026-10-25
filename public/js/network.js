@@ -160,6 +160,18 @@ class NetworkManager {
       }
     });
 
+    this.socket.on('teacher_summon_all', ({ floor, room, x, y, teacherName }) => {
+      if (this.engine && !this.engine.player.isTeacher) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 24 + Math.random() * 48;
+        const targetX = Math.round((x !== undefined ? x : 15 * 32) + Math.cos(angle) * radius);
+        const targetY = Math.round((y !== undefined ? y : 10 * 32) + Math.sin(angle) * radius);
+
+        this.engine.teleportTo(floor, room, targetX, targetY);
+        this.addSystemChat(`🌀 ${teacherName || '선생님'}의 위치로 전원 소환되었습니다!`);
+      }
+    });
+
     this.socket.on('boss_raid_cleared', (data) => {
       if (window.MainApp && window.MainApp.onBossRaidCleared) {
         window.MainApp.onBossRaidCleared(data);

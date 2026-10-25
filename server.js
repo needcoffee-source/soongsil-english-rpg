@@ -12,7 +12,8 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
+app.use(express.text({ type: ['text/plain', 'text/*'], limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Data files
@@ -61,6 +62,59 @@ app.post('/api/admin/questions', (req, res) => {
 
   fs.writeFileSync(targetPath, JSON.stringify(questions, null, 2), 'utf8');
   res.json({ success: true, question: questionData });
+});
+
+// ========================================================
+// PERSISTENT STUDENT PROGRESS STORAGE (2-Month Curriculum)
+// ========================================================
+const PROGRESS_FILE = path.join(DATA_DIR, 'students_progress.json');
+if (!fs.existsSync(PROGRESS_FILE)) {
+  fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}), 'utf8');
+}
+
+function getStudentsProgress() {
+  try {
+    return JSON.parse(fs.readFileSync(PROGRESS_FILE, 'utf8'));
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveStudentsProgress(allData) {
+  try {
+    fs.writeFileSync(PROGRESS_FILE, JSON.stringify(allData, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Progress Save Error]', e);
+  }
+}
+
+app.get('/api/load-progress', (req, res) => {
+  const studentId = (req.query.studentId || '').trim();
+  if (!studentId) return res.status(400).json({ error: 'Missing studentId' });
+  const all = getStudentsProgress();
+  res.json({ success: true, progress: all[studentId] || null });
+});
+
+app.post('/api/save-progress', (req, res) => {
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch(e) {}
+  }
+  const { studentId, progress } = body || {};
+  if (!studentId || !progress) return res.status(400).json({ error: 'Invalid data' });
+  const all = getStudentsProgress();
+  all[studentId] = {
+    ...progress,
+    updatedAt: progress.updatedAt || Date.now()
+  };
+  saveStudentsProgress(all);
+  res.json({ success: true });
+});
+
+app.get('/api/admin/export-progress', (req, res) => {
+  res.setHeader('Content-Disposition', 'attachment; filename=students_progress_backup.json');
+  res.setHeader('Content-Type', 'application/json');
+  res.send(fs.readFileSync(PROGRESS_FILE, 'utf8'));
 });
 
 // Game State
@@ -389,6 +443,25 @@ io.on('connection', (socket) => {
 
   socket.on('teacher_broadcast', ({ message }) => {
     io.emit('teacher_announcement_popup', { message });
+  });
+
+  socket.on('teacher_summon_all_to_me', ({ floor, room, x, y, message }) => {
+    const p = players[socket.id];
+    if (!p || !p.isTeacher) return;
+
+    const teacherPos = {
+      floor: floor || p.floor || 7,
+      room: room || p.room || 'hallway',
+      x: x !== undefined ? x : p.x,
+      y: y !== undefined ? y : p.y,
+      teacherName: p.name || '선생님'
+    };
+
+    io.emit('teacher_summon_all', teacherPos);
+
+    if (message) {
+      io.emit('teacher_announcement_popup', { message });
+    }
   });
 
   // Boss Raid Event Controls (Teacher)

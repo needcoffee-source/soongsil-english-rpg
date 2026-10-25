@@ -184,6 +184,7 @@
         <div class="input-group">
           <label for="input-student-id">학번 (5자리)</label>
           <input type="text" id="input-student-id" placeholder="예: 10101" maxlength="5">
+          <div id="student-id-sync-badge" style="font-size:11px; margin-top:4px; min-height:16px;"></div>
         </div>
         <div class="input-group">
           <label for="input-nickname">이름</label>
@@ -863,7 +864,12 @@
           <div class="quiz-manage-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <h4 style="margin:0;">👥 접속 중인 학생 실시간 관리</h4>
-              <span id="admin-student-count-badge" style="font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px; background:#1e3a8a; color:#93c5fd;">접속자 0명</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="2달간 누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
+                  📥 2달 누적 데이터 전체 백업
+                </a>
+                <span id="admin-student-count-badge" style="font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px; background:#1e3a8a; color:#93c5fd;">접속자 0명</span>
+              </div>
             </div>
             <p style="font-size:12px; color:#cbd5e1; margin-bottom:10px;">수업을 방해하는 학생의 채팅을 금지하거나 서버에서 즉시 강제 퇴장(강퇴)시킬 수 있습니다.</p>
             <div id="admin-student-list" style="max-height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
@@ -953,14 +959,14 @@
           <div class="broadcast-box">
             <div class="broadcast-header-row">
               <label for="input-broadcast" style="font-size:15px; font-weight:800; color:#f8fafc; display:flex; align-items:center; gap:6px;">
-                📢 전교생 실시간 긴급 공지사항
+                📢 전교생 실시간 긴급 공지사항 & 전원 소환
               </label>
               <span style="font-size:12px; color:#94a3b8;">전체 접속 중인 학생 화면 중앙에 즉시 팝업 배너로 전송됩니다</span>
             </div>
             
             <textarea id="input-broadcast" rows="3" class="broadcast-textarea" placeholder="학생들에게 전달할 공지사항을 입력하세요... (예: 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!)"></textarea>
 
-            <div class="broadcast-footer-row">
+            <div class="broadcast-footer-row" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
               <div class="preset-pill-group">
                 <span style="font-size:12px; color:#94a3b8; font-weight:700;">빠른 문구:</span>
                 <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='📢 지금 모두 1학년 2반으로 집결하세요! 보스전이 시작됩니다!'">2반 집결</button>
@@ -968,9 +974,20 @@
                 <button type="button" class="btn-preset-pill" onclick="document.getElementById('input-broadcast').value='🎉 오늘 영어 RPG 수업 퀘스트 모두 수고 많았습니다!'">수고 인사</button>
               </div>
 
-              <button id="btn-send-broadcast" class="btn-primary" style="padding:10px 24px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #2563eb, #3b82f6); box-shadow:0 4px 12px rgba(37,99,235,0.4); cursor:pointer;">
-                🚀 긴급 공지 전송
-              </button>
+              <div style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:#fde047; cursor:pointer; background:#27272a; border:1px solid #d97706; padding:6px 12px; border-radius:8px;">
+                  <input type="checkbox" id="check-broadcast-summon" style="width:16px; height:16px; accent-color:#f59e0b; cursor:pointer;">
+                  🌀 교사 위치로 전원 소환
+                </label>
+
+                <button id="btn-summon-all-now" type="button" class="btn-secondary" style="background:#78350f; border:1.5px solid #d97706; color:#fef08a; padding:9px 15px; font-size:13px; font-weight:800; cursor:pointer;" title="공지 없이 지금 즉시 교사 위치로 전원 소환">
+                  🌀 즉시 전원 소환
+                </button>
+
+                <button id="btn-send-broadcast" class="btn-primary" style="padding:10px 22px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #2563eb, #3b82f6); box-shadow:0 4px 12px rgba(37,99,235,0.4); cursor:pointer;">
+                  🚀 공지 전송
+                </button>
+              </div>
             </div>
           </div>
         </div>

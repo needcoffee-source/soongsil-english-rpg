@@ -452,13 +452,26 @@ class GameEngine {
   }
 
   // Teacher Instant Teleport (순간이동)
-  teleportTo(floor, room) {
+  teleportTo(floor, room, customX = null, customY = null) {
     this.triggerFadeWarp(() => {
       this.player.floor = parseInt(floor) || 7;
       if (this.player.isTeacher) {
         this.player.speed = this.player.isDashing ? 7.6 : 4.0; // 교사 기본 이동속도 4.0 유지 (Shift 시 7.6)
       }
-      if (room === 'playground_soccer') {
+      if (customX !== null && customY !== null) {
+        this.player.room = room || 'hallway';
+        this.player.x = customX;
+        this.player.y = customY;
+        if (room === 'playground') {
+          this.player.roomName = '숭실 운동장';
+        } else if (room === 'hallway') {
+          this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
+        } else {
+          const fData = WORLD_DATA.floors[this.player.floor];
+          const rData = fData && fData.rooms ? fData.rooms.find(r => r.id === this.player.room) : null;
+          this.player.roomName = rData ? rData.name : '교실 내부';
+        }
+      } else if (room === 'playground_soccer') {
         this.player.room = 'playground';
         this.player.roomName = '숭실 운동장 (축구장)';
         this.player.x = 31 * 32; // 천연잔디 축구장 센터서클
