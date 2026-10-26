@@ -593,15 +593,19 @@ class MainApp {
 
     // Check Milestone Celebrations
     if (prevCount < 100 && newCount >= 100) {
-      alert("🎉 [식물존 1단계 성장 달성! (1/3)]\n\n모두가 정성껏 물을 준 덕분에 누적 물주기 100회를 돌파했습니다! 💧\n식물이 파릇파릇하고 건강한 [🌿 1단계 무럭무럭 식물]로 자라났습니다!");
+      alert("🎉 [식물존 1단계 성장 달성! (1/3)]\n\n모두가 정성껏 물을 준 덕분에 식물이 [🌿 1단계 무럭무럭 식물]로 자라났습니다! 🌱✨");
     } else if (prevCount < 1000 && newCount >= 1000) {
-      alert("🎉 [식물존 2단계 성장 달성! (2/3)]\n\n누적 물주기 1,000회를 돌파했습니다! 💧\n식물이 거대하고 울창한 [🌳 2단계 거대 생명수]로 크게 성장했습니다!");
+      alert("🎉 [식물존 2단계 성장 달성! (2/3)]\n\n식물이 거대하고 울창한 [🌳 2단계 거대 생명수]로 크게 성장했습니다! 🌲✨");
     } else if (prevCount < 3000 && newCount >= 3000) {
-      alert("🌟 [식물존 최종 3단계 만개 달성! (3/3)]\n\n누적 물주기 3,000회를 돌파했습니다! 💧\n식물이 황금빛 꽃을 활짝 피운 [🌸 3단계 숭실 생명의 만개목]으로 최종 진화했습니다! ✨");
+      alert("🌟 [식물존 최종 3단계 만개 달성! (3/3)]\n\n식물이 황금빛 꽃을 활짝 피운 [🌸 3단계 숭실 생명의 만개목]으로 최종 진화했습니다! 🌸✨");
     } else {
       const nextG = this.engine ? this.engine.getNextPlantWaterGoal() : { target: 100 };
       const targetText = nextG.max ? "만개 완료!" : nextG.target + "회";
-      this.showToast("💧 식물에 맑은 물을 주었습니다! (누적: " + newCount + "회 / 다음 성장: " + targetText + ")", "success");
+      if (this.playerData && this.playerData.isTeacher) {
+        this.showToast("💧 [교사 확인] 물주기 완료! (누적: " + newCount + "회 / 다음: " + targetText + ")", "info");
+      } else {
+        this.showToast("💧 식물에 정성껏 맑은 물을 주었습니다! 촉촉하게 자라납니다. 🌱", "success");
+      }
     }
   }
 

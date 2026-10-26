@@ -596,7 +596,7 @@ class GameEngine {
                 closest = {
                   type: obj.type,
                   data: obj,
-                  name: `${goal.name} (${prog})`,
+                  name: (this.player && this.player.isTeacher) ? `${goal.name} (${prog})` : goal.name,
                   prompt: '물 주기 (SPACE) 💧'
                 };
               } else {
@@ -6498,6 +6498,7 @@ class GameEngine {
     this.ctx.save();
     const cx = px + 16;
     const cy = py + 12;
+    const isTeacher = !!(this.player && this.player.isTeacher);
 
     // =========================================================================
     // STAGE 0: 0 ~ 99 WATER (아기 새싹 화분)
@@ -6552,7 +6553,8 @@ class GameEngine {
       this.ctx.fill();
 
       // Badge
-      this.drawSharpLabel(cx, py - 18, `🌱 아기 새싹 (${waterCount}/100 💧)`, {
+      const bText0 = isTeacher ? `🌱 아기 새싹 (${waterCount}/100 💧)` : '🌱 아기 새싹';
+      this.drawSharpLabel(cx, py - 18, bText0, {
         bgColor: 'rgba(15, 23, 42, 0.94)',
         borderColor: '#4ade80',
         textColor: '#bbf7d0',
@@ -6609,7 +6611,8 @@ class GameEngine {
       this.ctx.fill();
 
       // Badge
-      this.drawSharpLabel(cx, py - 20, `🌿 무럭무럭 식물 (${waterCount}/1,000 💧)`, {
+      const bText1 = isTeacher ? `🌿 무럭무럭 식물 (${waterCount}/1,000 💧)` : '🌿 무럭무럭 식물';
+      this.drawSharpLabel(cx, py - 20, bText1, {
         bgColor: 'rgba(6, 78, 59, 0.94)',
         borderColor: '#34d399',
         textColor: '#ecfdf5',
@@ -6683,7 +6686,8 @@ class GameEngine {
       this.ctx.stroke();
 
       // Badge
-      this.drawSharpLabel(cx, py - 26, `🌳 거대 생명수 (${waterCount}/3,000 💧)`, {
+      const bText2 = isTeacher ? `🌳 거대 생명수 (${waterCount}/3,000 💧)` : '🌳 거대 생명수';
+      this.drawSharpLabel(cx, py - 26, bText2, {
         bgColor: 'rgba(6, 78, 59, 0.95)',
         borderColor: '#10b981',
         textColor: '#a7f3d0',
@@ -6790,7 +6794,8 @@ class GameEngine {
       this.ctx.fillRect(cx + 14 + Math.cos(now / 300) * 8, cy - 28 - ((sp1 + 5) % 10), 2, 2);
 
       // Grand Badge
-      this.drawSharpLabel(cx, py - 32, `🌸 숭실 생명의 만개목 (3,000회 만개! ✨)`, {
+      const bText3 = isTeacher ? `🌸 숭실 생명의 만개목 (3,000회 만개! ✨)` : '🌸 숭실 생명의 만개목';
+      this.drawSharpLabel(cx, py - 32, bText3, {
         bgColor: 'rgba(88, 28, 135, 0.95)',
         borderColor: '#f43f5e',
         textColor: '#fef08a',

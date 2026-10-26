@@ -440,11 +440,11 @@ io.on('connection', (socket) => {
 
     // Milestones check
     if (prevCount < 100 && plantWaterCount >= 100) {
-      io.emit('chat_message', { system: true, message: '🌱 [식물존 1단계 성장 달성!] 1학년 복도 식물존이 100회 물주기를 달성하여 건강한 1단계로 자라났습니다! 🌿' });
+      io.emit('chat_message', { system: true, message: '🌱 [식물존 1단계 성장] 1학년 복도 식물존이 정성 어린 보살핌으로 건강한 1단계로 자라났습니다! 🌿' });
     } else if (prevCount < 1000 && plantWaterCount >= 1000) {
-      io.emit('chat_message', { system: true, message: '🌳 [식물존 2단계 성장 달성!] 1학년 복도 식물존이 1,000회 물주기를 달성하여 거대한 2단계 대형 식물로 성장했습니다! 🌲' });
+      io.emit('chat_message', { system: true, message: '🌳 [식물존 2단계 성장] 1학년 복도 식물존이 울창하고 거대한 2단계 대형 식물로 성장했습니다! 🌲' });
     } else if (prevCount < 3000 && plantWaterCount >= 3000) {
-      io.emit('chat_message', { system: true, message: '🌸 [식물존 최종 3단계 만개 달성!] 1학년 복도 식물존이 3,000회 물주기를 달성하여 아름다운 꽃이 만개한 생명의 나무가 되었습니다! ✨' });
+      io.emit('chat_message', { system: true, message: '🌸 [식물존 최종 성장] 1학년 복도 식물존에 아름다운 꽃이 활짝 만개했습니다! ✨' });
     }
   });
 
