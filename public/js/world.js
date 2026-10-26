@@ -24,7 +24,7 @@ const WORLD_DATA = {
       elevator: { x: 56, y: 3 },
       interactive: [
         { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
-        { id: "mirror_hallway", type: "mirror", x: 55, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
+        { id: "mirror_hallway", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 14, name: "장비 제작대", prompt: "장비 제작하기" },
         { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" },
         { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 16, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
@@ -45,14 +45,6 @@ const WORLD_DATA = {
           y: 5,
           avatar: "teacher",
           dialogue: "안녕! 1학년 2반 담임 한강우 선생님이란다. 👨‍🏫\n\n👾 [보스 레이드 도전 안내]\n이 2반 문으로 들어가면 1차 관문 보스 '가죽 골렘' 혹은 2차 졸업 보스인 '숭실 청동 드래곤'이 기다리고 있단다!\n\n⚔️ [선생님의 레이드 조언]\n1. 1반에서 나무 장비를 제작하고 1차 관문인 가죽 골렘을 먼저 쓰러뜨리렴! 가죽 골렘을 토벌하면 지상 운동장 엘리베이터가 즉시 개방된단다.\n2. 운동장(농구/풋살장)에서 2티어 가죽 풀세트를 맞춘 뒤 2차 보스인 청동 드래곤에게 도전해보렴!"
-        },
-        {
-          id: "npc_teacher_yesook",
-          name: "오예숙 선생님",
-          x: 31,
-          y: 5,
-          avatar: "teacher",
-          dialogue: "안녕! 1학년 3반 담임 오예숙 선생님이란다. 👩‍🏫\n\n이 3반 문으로 들어가면 컴퓨터실에서 [산성비 영어 타자 방어전]을 할 수 있단다!\n\n어서 3반으로 들어가서 영단어 타자 실력을 뽐내보렴!"
         },
         {
           id: "npc_teacher_sangdae",
@@ -192,7 +184,7 @@ const WORLD_DATA = {
         x: 11,
         y: 5,
         avatar: "teacher",
-        dialogue: "안녕! 1학년 3반 영어 컴퓨터실에 온 걸 환영한다! 👩‍🏫\n\n이곳은 하늘에서 떨어지는 영어 단어를 타이핑으로 막아내는 [산성비 방어 훈련장]이란다.\n\n단어를 정확하게 타이핑하면 타자 속도도 빨라지고 1학년 영어 교과서 핵심 어휘도 쏙쏙 외워진단다!\n\n초급(1~4단원), 중급(5~6단원), 고급(전범위) 난이도가 준비되어 있으니 자유롭게 자리에 앉아 산성비 게임을 시작해보렴!"
+        dialogue: "안녕! 1학년 3반 담임 오예숙 선생님이란다. 👩‍🏫\n\n이곳은 하늘에서 떨어지는 영어 단어를 타이핑으로 막아내는 [산성비 영어 타자 방어전] 훈련장이란다!\n\n단어를 빠르고 정확하게 타이핑하면 타자 속도도 빨라지고 1학년 영어 교과서 핵심 어휘도 쏙쏙 외워진단다!\n\n초급(1~4단원), 중급(5~6단원), 고급(전범위) 난이도가 준비되어 있으니 자유롭게 자리에 앉아 산성비 게임을 시작해보렴!\n\n✨ [선생님의 특별 보너스]\n산성비 게임에서 3,000점 이상 고득점을 돌파하면 교목의 귀한 [🍂 황금 은행잎]을 1~3개 선물로 준단다!"
       }
     ]
   },

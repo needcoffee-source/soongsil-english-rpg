@@ -12,7 +12,10 @@ const WORLD_DATA = vm.runInContext('(typeof WORLD_DATA !== "undefined" ? WORLD_D
 console.log('1. Verifying WORLD_DATA definitions...');
 const hallwayMirror = WORLD_DATA.floors[7].interactive.find(i => i.type === 'mirror');
 if (!hallwayMirror) throw new Error('Hallway mirror not found in floors[7].interactive');
-console.log(' - Hallway mirror:', hallwayMirror);
+if (hallwayMirror.x !== 56 || hallwayMirror.y !== 16) {
+  throw new Error(`Mirror position unexpected: expected (56, 16), got (${hallwayMirror.x}, ${hallwayMirror.y})`);
+}
+console.log(' - Hallway mirror (at 56, 16):', hallwayMirror);
 
 const pgLostBox = WORLD_DATA.playground.lostBox;
 if (!pgLostBox) throw new Error('Playground lost box not found in playground.lostBox');

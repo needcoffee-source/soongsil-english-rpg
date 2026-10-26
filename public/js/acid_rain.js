@@ -571,19 +571,28 @@ class AcidRainGame {
   gameOver() {
     this.stop();
 
-    // Reward Calculation
-    let rewardGold = Math.min(250, Math.floor(this.score / 25) + this.wordsCleared * 2);
-    let rewardExp = Math.min(400, Math.floor(this.score / 15) + this.wordsCleared * 4);
+    // Reward Calculation (골드 상한 1/3 하향: 최대 80G, 경험치 채집 수준 조정: 최대 70 EXP)
+    let rewardGold = Math.min(70, Math.floor(this.score / 70) + Math.floor(this.wordsCleared * 0.8));
+    let rewardExp = Math.min(60, Math.floor(this.score / 60) + this.wordsCleared);
+    let bonusGinkgo = 0;
 
+    // 3,000점 돌파 시: 골드/EXP 보너스 + 황금 은행잎 1~3개 랜덤 고정 지급!
     if (this.score >= 3000) {
-      rewardGold += 50;
-      rewardExp += 80;
+      rewardGold = Math.min(80, rewardGold + 10);
+      rewardExp = Math.min(70, rewardExp + 10);
+      bonusGinkgo = Math.floor(Math.random() * 3) + 1; // 1~3개 랜덤 고정 지급
     }
 
     // Grant rewards to MainApp
     if (window.MainApp) {
       if (rewardGold > 0) window.MainApp.addGold(rewardGold);
       if (rewardExp > 0) window.MainApp.addExp(rewardExp);
+      if (bonusGinkgo > 0) {
+        window.MainApp.addItem('item_ginkgo', '황금 은행잎', bonusGinkgo, '🍂', {
+          type: 'material',
+          effect: '포션 및 부활 주문서 고급 제작 재료'
+        });
+      }
     }
 
     // Show Game Over Overlay
@@ -599,6 +608,9 @@ class AcidRainGame {
           titleEl.style.color = '#38bdf8';
         }
         if (iconEl) iconEl.innerText = '🏆';
+        if (bonusGinkgo > 0 && window.AudioManager) {
+          window.AudioManager.playFanfare();
+        }
       } else {
         if (titleEl) {
           titleEl.innerText = '💥 방어 실패 (Defense Failed)';
@@ -617,7 +629,13 @@ class AcidRainGame {
       if (resCombo) resCombo.innerText = this.maxCombo;
 
       const resReward = document.getElementById('ar-res-reward');
-      if (resReward) resReward.innerText = `🪙 +${rewardGold}G, 🌟 +${rewardExp} EXP`;
+      if (resReward) {
+        let rewardText = `🪙 +${rewardGold}G, 🌟 +${rewardExp} EXP`;
+        if (bonusGinkgo > 0) {
+          rewardText += `\n🍂 황금 은행잎 x${bonusGinkgo}개 획득! (3,000점 돌파 보너스)`;
+        }
+        resReward.innerText = rewardText;
+      }
     }
   }
 
