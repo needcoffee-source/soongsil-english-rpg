@@ -213,6 +213,10 @@ class AcidRainGame {
     if (this.modal) {
       this.modal.classList.add('hidden');
     }
+    const overlayOver = document.getElementById('ar-overlay-gameover');
+    if (overlayOver) overlayOver.classList.add('hidden');
+    const overlayStart = document.getElementById('ar-overlay-start');
+    if (overlayStart) overlayStart.classList.add('hidden');
   }
 
   resetStats() {

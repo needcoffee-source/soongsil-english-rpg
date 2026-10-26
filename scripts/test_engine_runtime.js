@@ -105,4 +105,10 @@ engine.update();
 engine.render();
 console.log('✅ Room 702 update & render succeeded without error!');
 
+console.log('--- Testing Classroom 703 (Acid Rain Computer Lab) Update & Render ---');
+engine.player.room = 'room_703';
+engine.update();
+engine.render();
+console.log('✅ Room 703 update & render succeeded without error!');
+
 console.log('\n🎉 ALL ROOMS PASSED RUNTIME SIMULATION PERFECTLY!');

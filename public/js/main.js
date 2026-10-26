@@ -281,6 +281,8 @@ class MainApp {
 
     window.addEventListener('keydown', (e) => {
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+      const arModal = document.getElementById('modal-acid-rain');
+      if (arModal && !arModal.classList.contains('hidden')) return;
 
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.engine.setDirectionInput('up', true);
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', true);
@@ -319,7 +321,7 @@ class MainApp {
 
     this.engine.onLocationChangeCallback = (loc) => {
       this.hudLocation.innerText = loc.roomName;
-      this.floorTag.innerText = '시즌1';
+      this.floorTag.innerText = '시즌 1 (v1.28)';
       this.networkManager.changeLocation(loc);
     };
 

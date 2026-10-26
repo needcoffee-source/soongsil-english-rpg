@@ -342,6 +342,7 @@ class GameEngine {
       if (tileY >= cr.exitDoor.y + 1) return true; // bottom wall
       if (tileY <= 3) return true; // front blackboard & wall
       if (cr.teacherDesk && tileX === cr.teacherDesk.x && tileY === cr.teacherDesk.y) return true;
+      if (cr.acidRain && Math.abs(tileX - cr.acidRain.x) <= 1 && tileY === cr.acidRain.y) return true;
 
       for (const d of (cr.desks || [])) {
         if (tileX === d.x && tileY === d.y) return true;
@@ -676,8 +677,37 @@ class GameEngine {
         }
       }
     } else {
-      // Inside Classroom (room_701: 노가다 채집장 / room_702: 보스 레이드)
+      // Inside Classroom (room_701: 노가다 채집장 / room_702: 보스 레이드 / room_703: 컴퓨터실 산성비)
       const cr = this.getCurrentClassroomData();
+      if (cr.npcs) {
+        for (const npc of cr.npcs) {
+          const nDist = Math.hypot(npc.x * 32 - this.player.x, npc.y * 32 - this.player.y);
+          if (nDist < 64 && nDist < minDist) {
+            closest = {
+              type: 'npc',
+              data: npc,
+              name: npc.name,
+              prompt: `대화하기 (${npc.name})`
+            };
+            minDist = nDist;
+          }
+        }
+      }
+      if (this.player.room === 'room_703') {
+        for (let i = 0; i < (cr.desks || []).length; i++) {
+          const d = cr.desks[i];
+          const dist = Math.hypot(d.x * 32 - this.player.x, (d.y + 0.5) * 32 - this.player.y);
+          if (dist < 48 && dist < minDist) {
+            closest = {
+              type: 'acid_rain',
+              data: { id: `pc_seat_${i+1}`, name: `🖥️ 컴퓨터 좌석 (${i+1}번석)` },
+              name: `🖥️ 컴퓨터 좌석 (${i+1}번석)`,
+              prompt: '산성비 타자 연습'
+            };
+            minDist = dist;
+          }
+        }
+      }
       if (cr.acidRain) {
         const arDist = Math.hypot(cr.acidRain.x * 32 - this.player.x, (cr.acidRain.y + 0.5) * 32 - this.player.y);
         if (arDist < 72 && arDist < minDist) {
@@ -842,6 +872,23 @@ class GameEngine {
       const cr = this.getCurrentClassroomData();
       if (Math.hypot(cr.exitDoor.x * 32 - x, cr.exitDoor.y * 32 - y) < 48) {
         return { type: 'exit' };
+      }
+      for (const npc of (cr.npcs || [])) {
+        if (Math.hypot(npc.x * 32 - x, npc.y * 32 - y) < 48) {
+          return { type: 'npc', data: npc, name: npc.name };
+        }
+      }
+      if (this.player.room === 'room_703') {
+        for (let i = 0; i < (cr.desks || []).length; i++) {
+          const d = cr.desks[i];
+          if (Math.hypot(d.x * 32 - x, (d.y + 0.5) * 32 - y) < 48) {
+            return {
+              type: 'acid_rain',
+              data: { id: `pc_seat_${i+1}`, name: `🖥️ 컴퓨터 좌석 (${i+1}번석)` },
+              name: `🖥️ 컴퓨터 좌석 (${i+1}번석)`
+            };
+          }
+        }
       }
       if (cr.acidRain && Math.hypot(cr.acidRain.x * 32 - x, (cr.acidRain.y + 0.5) * 32 - y) < 60) {
         return { type: 'acid_rain', data: cr.acidRain, name: cr.acidRain.name };
@@ -3667,6 +3714,36 @@ class GameEngine {
             this.drawHighResGinkgoPot(spot);
           }
         }
+      }
+    }
+
+    // 8-C. Classroom NPCs (e.g. 1학년 3반 컴퓨터실 김영훈 선생님)
+    if (cr.npcs && cr.npcs.length > 0) {
+      for (const npc of cr.npcs) {
+        const px = npc.x * 32;
+        const py = npc.y * 32;
+
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.beginPath();
+        this.ctx.ellipse(px + 16, py + 26, 12, 6, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        const isTeacherNpc = (npc.avatar === 'teacher' || npc.name.includes('선생님'));
+        this.ctx.fillStyle = isTeacherNpc ? '#1e3a8a' : '#047857';
+        this.ctx.beginPath();
+        this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillRect(px + 8, py + 18, 16, 14);
+
+        const labelIcon = isTeacherNpc ? '👨‍🏫' : '💬';
+        this.drawSharpLabel(px + 16, py + 38, `${labelIcon} ${npc.name}`, {
+          bgColor: isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)',
+          borderColor: isTeacherNpc ? '#60a5fa' : '#34d399',
+          textColor: '#fef08a',
+          fontSize: 12,
+          paddingX: 8,
+          height: 20
+        });
       }
     }
 
