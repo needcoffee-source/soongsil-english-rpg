@@ -6894,7 +6894,7 @@ class GameEngine {
     // 1. Shimmering Golden Aura on Floor
     this.ctx.fillStyle = `rgba(245, 158, 11, ${0.25 + 0.2 * pulse})`;
     this.ctx.beginPath();
-    this.ctx.ellipse(px + 16, py + 24, 16 + pulse * 2, 6, 0, Math.PI * 2);
+    this.ctx.ellipse(px + 16, py + 24, 16 + pulse * 2, 6, 0, 0, Math.PI * 2);
     this.ctx.fill();
 
     // 2. Leather-bound vintage developer notebook (slightly tilted on ground)

@@ -4864,9 +4864,27 @@ class MainApp {
   }
 
   startLoop() {
+    // 한 프레임에서 오류가 나도 게임 루프가 멈추지 않도록 보호 (검은 화면/캐릭터 사라짐 방지)
+    let lastErrLog = 0;
     const loop = () => {
-      this.engine.update();
-      this.engine.render();
+      try {
+        this.engine.update();
+      } catch (err) {
+        if (Date.now() - lastErrLog > 3000) { lastErrLog = Date.now(); console.error('[Loop] update error:', err); }
+      }
+      try {
+        this.engine.render();
+      } catch (err) {
+        if (Date.now() - lastErrLog > 3000) { lastErrLog = Date.now(); console.error('[Loop] render error:', err); }
+        // 렌더 도중 중단되어 쌓인 save()/transform 상태 초기화
+        try {
+          const c = this.engine.ctx;
+          if (c) {
+            for (let i = 0; i < 20; i++) c.restore();
+            c.setTransform(1, 0, 0, 1, 0, 0);
+          }
+        } catch (_) { /* ignore */ }
+      }
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
