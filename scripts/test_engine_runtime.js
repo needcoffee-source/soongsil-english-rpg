@@ -112,4 +112,57 @@ engine.update();
 engine.render();
 console.log('✅ Room 703 update & render succeeded without error!');
 
-console.log('\n🎉 ALL ROOMS PASSED RUNTIME SIMULATION PERFECTLY!');
+console.log('--- Testing Classroom 704 (Teacher Lee Ji-hong) Update & Render ---');
+engine.player.room = 'room_704';
+engine.update();
+engine.render();
+console.log('✅ Room 704 update & render succeeded without error!');
+
+console.log('--- Testing Classroom 705 (Teacher Jung Kyung-sook) Update & Render ---');
+engine.player.room = 'room_705';
+engine.update();
+engine.render();
+console.log('✅ Room 705 update & render succeeded without error!');
+
+console.log('--- Testing Classroom 706 (Empty Classroom) Update & Render ---');
+engine.player.room = 'room_706';
+engine.update();
+engine.render();
+console.log('✅ Room 706 update & render succeeded without error!');
+
+console.log('--- Testing Locked Doors in Hallway ---');
+engine.player.room = 'hallway';
+engine.player.floor = 7;
+// Test door proximity for room 704 (doorX: 37, doorY: 5)
+engine.player.x = 37 * 32;
+engine.player.y = 6 * 32;
+engine.update();
+if (!engine.activeInteractable || engine.activeInteractable.type !== 'locked_door') {
+  throw new Error('Expected activeInteractable to be locked_door at Class 4 door!');
+}
+console.log('✅ Class 4 door interactable detected:', engine.activeInteractable.name);
+
+// Test student stepping on locked door (doorX: 37, doorY: 5)
+engine.player.x = 37 * 32;
+engine.player.y = 5 * 32;
+let lockedCallbackCalled = false;
+engine.onLockedDoorCallback = (r) => {
+  lockedCallbackCalled = true;
+};
+engine.checkWarps();
+if (!lockedCallbackCalled) {
+  throw new Error('Expected onLockedDoorCallback when stepping on locked door!');
+}
+if (engine.player.room !== 'hallway') {
+  throw new Error('Student should be blocked from entering locked room!');
+}
+console.log('✅ Student blocked from entering Class 4 door!');
+
+// Test teacher stepping on locked door
+engine.player.isTeacher = true;
+engine.player.x = 37 * 32;
+engine.player.y = 5 * 32;
+engine.checkWarps();
+console.log('✅ Teacher allowed through door into:', engine.player.room);
+
+console.log('\n🎉 ALL ROOMS & LOCKED DOORS PASSED RUNTIME SIMULATION PERFECTLY!');

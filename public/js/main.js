@@ -377,6 +377,10 @@ class MainApp {
       this.handleInteraction(target);
     };
 
+    this.engine.onLockedDoorCallback = (room) => {
+      this.handleLockedDoor(room);
+    };
+
     window.addEventListener('resize', () => this.engine.resize());
   }
 
@@ -449,6 +453,8 @@ class MainApp {
       this.handleMirrorInteraction();
     } else if (target.type === 'lost_box') {
       this.handleLostBoxInteraction();
+    } else if (target.type === 'locked_door') {
+      this.handleLockedDoor(target.data);
     }
   }
 
@@ -528,6 +534,20 @@ class MainApp {
   }
 
   // 📦 운동장 비밀 분실물 상자 (최초 1회 50골드, 30경험치, 주홍물약 2개, 빨간물약 2개)
+  handleLockedDoor(room) {
+    if (!room) return;
+    const msg = room.lockMessage || "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽";
+    if (this.playerData && this.playerData.isTeacher) {
+      if (confirm(`🚪 [${room.name}]\n\n"${msg}"\n\n(교사 권한으로 교실 내부에 입장하시겠습니까?)`)) {
+        this.engine.triggerFadeWarp(() => {
+          this.engine.warpToRoom(room.id, room.name, room.targetX * 32, room.targetY * 32);
+        });
+      }
+    } else {
+      alert(`🚪 [${room.name}]\n\n"${msg}"`);
+    }
+  }
+
   handleLostBoxInteraction() {
     const studentId = this.playerData.studentId || 'default';
     const boxKey = 'soongsil_lost_box_' + studentId;
@@ -3390,7 +3410,7 @@ class MainApp {
       list.forEach(std => {
         const opt = document.createElement('option');
         opt.value = std.id;
-        const loc = std.room === 'hallway' ? '복도' : (std.room === 'room_701' ? '1반' : (std.room === 'room_702' ? '2반' : (std.room === 'room_703' ? '3반' : std.room)));
+        const loc = std.room === 'hallway' ? '복도' : (std.room === 'room_701' ? '1반' : (std.room === 'room_702' ? '2반' : (std.room === 'room_703' ? '3반' : (std.room === 'room_704' ? '4반' : (std.room === 'room_705' ? '5반' : (std.room === 'room_706' ? '6반' : std.room))))));
         opt.innerText = `👤 [${std.studentId}] ${std.name} (${loc})`;
         grantTargetSelect.appendChild(opt);
       });
@@ -3419,7 +3439,7 @@ class MainApp {
       row.style.border = '1px solid #27272a';
       row.style.borderRadius = '6px';
 
-      const locName = std.room === 'hallway' ? '1학년 복도' : (std.room === 'room_701' ? '1학년 1반' : (std.room === 'room_702' ? '1학년 2반' : (std.room === 'room_703' ? '1학년 3반' : std.room)));
+      const locName = std.room === 'hallway' ? '1학년 복도' : (std.room === 'room_701' ? '1학년 1반' : (std.room === 'room_702' ? '1학년 2반' : (std.room === 'room_703' ? '1학년 3반' : (std.room === 'room_704' ? '1학년 4반' : (std.room === 'room_705' ? '1학년 5반' : (std.room === 'room_706' ? '1학년 6반' : std.room))))));
       const muteStatus = std.isMuted
         ? '<span style="color:#ef4444; font-size:11px; font-weight:bold; margin-left:6px;">[채팅금지중]</span>'
         : '<span style="color:#22c55e; font-size:11px; margin-left:6px;">[정상]</span>';

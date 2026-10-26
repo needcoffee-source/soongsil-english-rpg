@@ -19,7 +19,10 @@ const WORLD_DATA = {
       rooms: [
         { id: "room_701", name: "1학년 1반", doorX: 10, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },
-        { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 }
+        { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 },
+        { id: "room_704", name: "1학년 4반", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" },
+        { id: "room_705", name: "1학년 5반", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" },
+        { id: "room_706", name: "1학년 6반", doorX: 49, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" }
       ],
       elevator: { x: 56, y: 3 },
       interactive: [
@@ -187,6 +190,66 @@ const WORLD_DATA = {
         dialogue: "안녕! 1학년 3반 담임 오예숙 선생님이란다. 👩‍🏫\n\n이곳은 하늘에서 떨어지는 영어 단어를 타이핑으로 막아내는 [산성비 영어 타자 방어전] 훈련장이란다!\n\n단어를 빠르고 정확하게 타이핑하면 타자 속도도 빨라지고 1학년 영어 교과서 핵심 어휘도 쏙쏙 외워진단다!\n\n초급(1~4단원), 중급(5~6단원), 고급(전범위) 난이도가 준비되어 있으니 자유롭게 자리에 앉아 산성비 게임을 시작해보렴!\n\n✨ [선생님의 특별 보너스]\n산성비 게임에서 고득점을 돌파하면 귀한 선물을 준단다!"
       }
     ]
+  },
+
+  // 1학년 4반: 스포츠 시간 출입제한 (담임: 이지홍 선생님)
+  classroom_704: {
+    name: "1학년 4반",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "교실 칠판",
+      prompt: "칠판 확인"
+    },
+    desks: [],
+    npcs: [
+      {
+        id: "npc_teacher_jihong",
+        name: "이지홍 선생님",
+        x: 15,
+        y: 8,
+        avatar: "teacher",
+        dialogue: "안녕! 1학년 4반 담임 이지홍 선생님이란다. 👨‍🏫\n\n지금은 스포츠(체육) 시간이라 교실 수업이 없단다!\n타반 학생은 출입금지이니 어서 지상 운동장으로 가보렴! ⚽"
+      }
+    ]
+  },
+
+  // 1학년 5반: 스포츠 시간 출입제한 (담임: 정경숙 선생님)
+  classroom_705: {
+    name: "1학년 5반",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "교실 칠판",
+      prompt: "칠판 확인"
+    },
+    desks: [],
+    npcs: [
+      {
+        id: "npc_teacher_kyungsook",
+        name: "정경숙 선생님",
+        x: 15,
+        y: 8,
+        avatar: "teacher",
+        dialogue: "안녕! 1학년 5반 담임 정경숙 선생님이란다. 👩‍🏫\n\n지금은 스포츠(체육) 시간이라 교실 수업이 없단다!\n타반 학생은 출입금지이니 어서 지상 운동장으로 가보렴! ⚽"
+      }
+    ]
+  },
+
+  // 1학년 6반: 스포츠 시간 출입제한 (NPC 없음)
+  classroom_706: {
+    name: "1학년 6반",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "교실 칠판",
+      prompt: "칠판 확인"
+    },
+    desks: [],
+    npcs: []
   },
 
   classroom: {

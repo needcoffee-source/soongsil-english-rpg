@@ -353,6 +353,15 @@ class GameEngine {
   }
 
   getCurrentClassroomData() {
+    if (this.player.room === 'room_706' && WORLD_DATA.classroom_706) {
+      return WORLD_DATA.classroom_706;
+    }
+    if (this.player.room === 'room_705' && WORLD_DATA.classroom_705) {
+      return WORLD_DATA.classroom_705;
+    }
+    if (this.player.room === 'room_704' && WORLD_DATA.classroom_704) {
+      return WORLD_DATA.classroom_704;
+    }
     if (this.player.room === 'room_703' && WORLD_DATA.classroom_703) {
       return WORLD_DATA.classroom_703;
     }
@@ -378,6 +387,25 @@ class GameEngine {
       // 1. Enter classroom through door
       for (const r of floorData.rooms) {
         if (r.doorX === tileX && r.doorY === tileY) {
+          if (r.locked) {
+            if (this.player.isTeacher) {
+              this.triggerFadeWarp(() => {
+                this.warpToRoom(r.id, r.name, r.targetX * 32, r.targetY * 32);
+              });
+              return;
+            } else {
+              this.player.y = (r.doorY + 1.2) * 32;
+              if (!this._lastLockedDoorNotice || Date.now() - this._lastLockedDoorNotice > 1500) {
+                this._lastLockedDoorNotice = Date.now();
+                if (this.onLockedDoorCallback) {
+                  this.onLockedDoorCallback(r);
+                } else {
+                  alert("🚪 [" + r.name + "]\n\n\"" + (r.lockMessage || "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽") + "\"");
+                }
+              }
+              return;
+            }
+          }
           this.triggerFadeWarp(() => {
             this.warpToRoom(r.id, r.name, r.targetX * 32, r.targetY * 32);
           });
@@ -565,6 +593,23 @@ class GameEngine {
                 prompt: `조작법 배우기 (${m.name})`
               };
               minDist = dist;
+            }
+          }
+        }
+        // Locked Classroom Doors in Hallway
+        if (floorData.rooms) {
+          for (const r of floorData.rooms) {
+            if (r.locked) {
+              const dDist = Math.hypot(r.doorX * 32 - this.player.x, (r.doorY + 0.5) * 32 - this.player.y);
+              if (dDist < 54 && dDist < minDist) {
+                closest = {
+                  type: 'locked_door',
+                  data: r,
+                  name: `🚪 ${r.name}`,
+                  prompt: `문 열기 (${r.name})`
+                };
+                minDist = dDist;
+              }
             }
           }
         }
@@ -820,6 +865,16 @@ class GameEngine {
             name: status.name,
             prompt: status.prompt
           };
+        }
+        for (const r of (floorData.rooms || [])) {
+          if (r.locked && Math.hypot(r.doorX * 32 - x, (r.doorY + 0.5) * 32 - y) < 48) {
+            return {
+              type: 'locked_door',
+              data: r,
+              name: `🚪 ${r.name}`,
+              prompt: `문 열기 (${r.name})`
+            };
+          }
         }
       }
     } else if (this.player.room === 'playground') {
@@ -1329,10 +1384,11 @@ class GameEngine {
     this.ctx.fillRect(px + 28, py + 34, 1, 14);
 
     // Class Nameplate Plaque mounted above door
-    this.drawSharpLabel(px + 16, py + 4, `🚪 ${r.name}`, {
-      bgColor: '#1e1b4b',
-      borderColor: '#f59e0b',
-      textColor: '#fef08a',
+    const doorTitle = r.locked ? `🚪 ${r.name} 🔒` : `🚪 ${r.name}`;
+    this.drawSharpLabel(px + 16, py + 4, doorTitle, {
+      bgColor: r.locked ? '#450a0a' : '#1e1b4b',
+      borderColor: r.locked ? '#f87171' : '#f59e0b',
+      textColor: r.locked ? '#fecaca' : '#fef08a',
       fontSize: 13,
       paddingX: 11,
       height: 22
