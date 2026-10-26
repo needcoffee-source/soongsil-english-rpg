@@ -3568,7 +3568,8 @@ class MainApp {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               studentId: sId,
-              progress: updatedProgress
+              progress: updatedProgress,
+              fromAdmin: true
             })
           });
           const data = await res.json();
@@ -4080,7 +4081,9 @@ class MainApp {
   }
 
   onAdminProgressSynced(updatedProgress) {
-    if (!this.playerData || this.playerData.studentId !== updatedProgress.studentId) return;
+    if (!this.playerData || !updatedProgress) return;
+    const incomingStudentId = updatedProgress.studentId || this.playerData.studentId;
+    if (this.playerData.studentId && incomingStudentId !== this.playerData.studentId) return;
     this.playerData.level = updatedProgress.level || this.playerData.level;
     this.playerData.gold = updatedProgress.gold !== undefined ? updatedProgress.gold : this.playerData.gold;
     this.playerData.exp = updatedProgress.exp !== undefined ? updatedProgress.exp : this.playerData.exp;
