@@ -222,7 +222,53 @@ class MainApp {
     this.initControls();
     this.initModals();
     this.initTeacherAdmin();
+    this.initServerStatusMonitor();
     this.recalcCombatStats();
+  }
+
+  setServerStatus(isOnline) {
+    this.isServerOnline = isOnline;
+    const box = document.getElementById('login-server-box');
+    const dot = document.getElementById('login-server-dot');
+    const title = document.getElementById('login-server-title');
+    const badge = document.getElementById('login-server-badge');
+    if (!box || !dot || !title || !badge) return;
+
+    if (isOnline) {
+      box.style.borderColor = '#22c55e';
+      box.style.background = 'rgba(34, 197, 94, 0.1)';
+      dot.style.background = '#22c55e';
+      dot.style.boxShadow = '0 0 8px #22c55e';
+      title.style.color = '#4ade80';
+      badge.style.color = '#22c55e';
+      badge.style.borderColor = '#22c55e';
+      badge.style.background = 'rgba(34, 197, 94, 0.2)';
+      badge.innerText = '접속 가능';
+    } else {
+      box.style.borderColor = '#ef4444';
+      box.style.background = 'rgba(239, 68, 68, 0.1)';
+      dot.style.background = '#ef4444';
+      dot.style.boxShadow = '0 0 8px #ef4444';
+      title.style.color = '#f87171';
+      badge.style.color = '#ef4444';
+      badge.style.borderColor = '#ef4444';
+      badge.style.background = 'rgba(239, 68, 68, 0.2)';
+      badge.innerText = '접속 불가';
+    }
+  }
+
+  initServerStatusMonitor() {
+    this.isServerOnline = true;
+    const checkHealth = async () => {
+      try {
+        const res = await fetch('/api/admin/all-students-progress', { method: 'GET', cache: 'no-store' });
+        this.setServerStatus(res.ok);
+      } catch (e) {
+        this.setServerStatus(false);
+      }
+    };
+    checkHealth();
+    setInterval(checkHealth, 6000);
   }
 
   initControls() {
@@ -824,6 +870,11 @@ class MainApp {
       let name = document.getElementById('input-nickname').value.trim();
       const studentId = document.getElementById('input-student-id').value.trim();
       const grade = parseInt(document.querySelector('input[name="server-grade"]:checked').value) || 1;
+
+      if (!this.isServerOnline && !isTeacher) {
+        const proceed = confirm('⚠️ 현재 서버 응답이 지연되거나 오프라인 상태입니다.\n\n계속 입장하시겠습니까?');
+        if (!proceed) return;
+      }
 
       if (!isTeacher) {
         if (!studentId) {

@@ -39,6 +39,9 @@ class NetworkManager {
 
     this.socket.on('connect', () => {
       console.log('[Network] Connected to server! Socket ID:', this.socket.id);
+      if (window.MainApp && typeof window.MainApp.setServerStatus === 'function') {
+        window.MainApp.setServerStatus(true);
+      }
       if (this.engine && this.engine.player) {
         userData.floor = this.engine.player.floor;
         userData.room = this.engine.player.room;
@@ -47,6 +50,19 @@ class NetworkManager {
         userData.direction = this.engine.player.direction;
       }
       this.socket.emit('player_join', userData);
+    });
+
+    this.socket.on('disconnect', () => {
+      console.warn('[Network] Disconnected from server');
+      if (window.MainApp && typeof window.MainApp.setServerStatus === 'function') {
+        window.MainApp.setServerStatus(false);
+      }
+    });
+
+    this.socket.on('connect_error', () => {
+      if (window.MainApp && typeof window.MainApp.setServerStatus === 'function') {
+        window.MainApp.setServerStatus(false);
+      }
     });
 
     this.socket.on('init_self', (selfData) => {
