@@ -313,7 +313,7 @@ class MainApp {
       const hasShoes = !!this.engine.player.hasRunningShoes;
 
       if (!hasShoes && !isTeacher) {
-        alert('👟 [달리기 잠김]\n\n특별한 신발을 얻어야 달릴 수 있습니다!\n(현재는 기본 속도로 걷습니다. 호칭&이벤트 교환소에서 신발을 교환해 보세요!)');
+        // 신발 미착용 시 아무 알림 없이 조용히 무시 (사용자 요청)
         return;
       }
 
