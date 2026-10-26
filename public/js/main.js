@@ -444,7 +444,7 @@ class MainApp {
 
     this.engine.onLocationChangeCallback = (loc) => {
       this.hudLocation.innerText = loc.roomName;
-      this.floorTag.innerText = '시즌 1 (v1.28)';
+      this.floorTag.innerText = '시즌 1 (v2.0)';
       this.networkManager.changeLocation(loc);
     };
 
@@ -1317,6 +1317,7 @@ class MainApp {
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
           this.playerData.hasCheckedMirror = !!(saved.hasCheckedMirror || (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true'));
           this.playerData.hasOpenedLostBox = !!(saved.hasOpenedLostBox || (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote = !!(saved.hasReadDevNote || (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true'));
           this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
@@ -1328,6 +1329,7 @@ class MainApp {
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
           this.playerData.hasCheckedMirror = (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true');
           this.playerData.hasOpenedLostBox = (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true');
+          this.playerData.hasReadDevNote = (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true');
           this.playerData.hasClearedFirstBoss = !!(studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true');
           this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
           this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
@@ -1408,6 +1410,7 @@ class MainApp {
               hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
               hasCheckedMirror: !!this.playerData.hasCheckedMirror,
               hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
+        hasReadDevNote: !!this.playerData.hasReadDevNote,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
               updatedAt: Date.now()
@@ -3451,9 +3454,16 @@ class MainApp {
       document.getElementById('admin-edit-student-exp').value = s.exp || 0;
       document.getElementById('admin-edit-gift').checked = !!s.hasReceivedSoongsilGift;
       document.getElementById('admin-edit-locker').checked = !!s.hasOpenedSecretLocker;
+      const lostBoxEl = document.getElementById('admin-edit-lostbox');
+      if (lostBoxEl) lostBoxEl.checked = !!s.hasOpenedLostBox;
+      const mirrorEl = document.getElementById('admin-edit-mirror');
+      if (mirrorEl) mirrorEl.checked = !!s.hasCheckedMirror;
+      const devNoteEl = document.getElementById('admin-edit-devnote');
+      if (devNoteEl) devNoteEl.checked = !!s.hasReadDevNote;
       const golemEl = document.getElementById('admin-edit-golem');
       if (golemEl) golemEl.checked = !!s.hasClearedFirstBoss;
-      document.getElementById('admin-edit-dragon').checked = !!s.hasClearedDragonRaid;
+      const dragonEl = document.getElementById('admin-edit-dragon');
+      if (dragonEl) dragonEl.checked = !!s.hasClearedDragonRaid;
       const cerberusEl = document.getElementById('admin-edit-cerberus');
       if (cerberusEl) cerberusEl.checked = !!s.hasClearedCerberusRaid;
     };
@@ -3522,9 +3532,16 @@ class MainApp {
         const newExp = Math.max(0, parseInt(document.getElementById('admin-edit-student-exp').value) || 0);
         const newGift = document.getElementById('admin-edit-gift').checked;
         const newLocker = document.getElementById('admin-edit-locker').checked;
+        const lostBoxEl = document.getElementById('admin-edit-lostbox');
+        const newLostBox = lostBoxEl ? lostBoxEl.checked : !!prev.hasOpenedLostBox;
+        const mirrorEl = document.getElementById('admin-edit-mirror');
+        const newMirror = mirrorEl ? mirrorEl.checked : !!prev.hasCheckedMirror;
+        const devNoteEl = document.getElementById('admin-edit-devnote');
+        const newDevNote = devNoteEl ? devNoteEl.checked : !!prev.hasReadDevNote;
         const golemEl = document.getElementById('admin-edit-golem');
         const newGolem = golemEl ? golemEl.checked : !!prev.hasClearedFirstBoss;
-        const newDragon = document.getElementById('admin-edit-dragon').checked;
+        const dragonEl = document.getElementById('admin-edit-dragon');
+        const newDragon = dragonEl ? dragonEl.checked : !!prev.hasClearedDragonRaid;
         const cerberusEl = document.getElementById('admin-edit-cerberus');
         const newCerberus = cerberusEl ? cerberusEl.checked : !!prev.hasClearedCerberusRaid;
 
@@ -3536,6 +3553,9 @@ class MainApp {
           exp: newExp,
           hasReceivedSoongsilGift: newGift,
           hasOpenedSecretLocker: newLocker,
+          hasOpenedLostBox: newLostBox,
+          hasCheckedMirror: newMirror,
+          hasReadDevNote: newDevNote,
           hasClearedFirstBoss: newGolem,
           hasClearedDragonRaid: newDragon,
           hasClearedCerberusRaid: newCerberus,
@@ -3986,7 +4006,7 @@ class MainApp {
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
@@ -4049,6 +4069,7 @@ class MainApp {
       localStorage.removeItem('soongsil_secret_locker_' + studentId);
       localStorage.removeItem('soongsil_mirror_' + studentId);
       localStorage.removeItem('soongsil_lost_box_' + studentId);
+      localStorage.removeItem('soongsil_dev_note_1_' + studentId);
       localStorage.removeItem('soongsil_first_boss_cleared_' + studentId);
       localStorage.removeItem('soongsil_dragon_cleared_' + studentId);
       localStorage.removeItem('soongsil_cerberus_cleared_' + studentId);
@@ -4068,9 +4089,22 @@ class MainApp {
     this.playerData.hasOpenedSecretLocker = !!updatedProgress.hasOpenedSecretLocker;
     this.playerData.hasCheckedMirror = !!updatedProgress.hasCheckedMirror;
     this.playerData.hasOpenedLostBox = !!updatedProgress.hasOpenedLostBox;
+    this.playerData.hasReadDevNote = !!updatedProgress.hasReadDevNote;
     this.playerData.hasClearedFirstBoss = !!updatedProgress.hasClearedFirstBoss;
     this.playerData.hasClearedDragonRaid = !!updatedProgress.hasClearedDragonRaid;
     this.playerData.hasClearedCerberusRaid = !!updatedProgress.hasClearedCerberusRaid;
+
+    const sId = this.playerData.studentId;
+    if (sId) {
+      if (this.playerData.hasReceivedSoongsilGift) localStorage.setItem('soongsil_gift_' + sId, 'true'); else localStorage.removeItem('soongsil_gift_' + sId);
+      if (this.playerData.hasOpenedSecretLocker) localStorage.setItem('soongsil_secret_locker_' + sId, 'true'); else localStorage.removeItem('soongsil_secret_locker_' + sId);
+      if (this.playerData.hasCheckedMirror) localStorage.setItem('soongsil_mirror_' + sId, 'true'); else localStorage.removeItem('soongsil_mirror_' + sId);
+      if (this.playerData.hasOpenedLostBox) localStorage.setItem('soongsil_lost_box_' + sId, 'true'); else localStorage.removeItem('soongsil_lost_box_' + sId);
+      if (this.playerData.hasReadDevNote) localStorage.setItem('soongsil_dev_note_1_' + sId, 'true'); else localStorage.removeItem('soongsil_dev_note_1_' + sId);
+      if (this.playerData.hasClearedFirstBoss) localStorage.setItem('soongsil_first_boss_cleared_' + sId, 'true'); else localStorage.removeItem('soongsil_first_boss_cleared_' + sId);
+      if (this.playerData.hasClearedDragonRaid) localStorage.setItem('soongsil_dragon_cleared_' + sId, 'true'); else localStorage.removeItem('soongsil_dragon_cleared_' + sId);
+      if (this.playerData.hasClearedCerberusRaid) localStorage.setItem('soongsil_cerberus_cleared_' + sId, 'true'); else localStorage.removeItem('soongsil_cerberus_cleared_' + sId);
+    }
     try {
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(updatedProgress));
     } catch (e) {}
@@ -4690,7 +4724,7 @@ class MainApp {
         </div>
         ${!hasShoes ? `
           <div style="font-size: 11.5px; margin-top: 6px; color: ${canAffordShoes ? '#4ade80' : '#f87171'}; font-weight: 700;">
-            필요: 💯 시험지 1개 또는 📜 수행평가지 1개 <span style="font-weight:400; color:#94a3b8;">(보유: 시험지 ${examCount}개, 수행평가지 ${evalCount}개)</span>
+            필요: 💯 백점만점 시험지 1개 또는 📜 A+ 만점 수행평가지 1개 <span style="font-weight:400; color:#94a3b8;">(보유: 백점만점 시험지 ${examCount}개, A+ 만점 수행평가지 ${evalCount}개)</span>
           </div>
         ` : ''}
       </div>

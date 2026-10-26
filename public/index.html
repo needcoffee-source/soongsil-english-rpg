@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=52">
+  <link rel="stylesheet" href="css/style.css?v=53">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
       <div id="canvas-header-bar">
         <span class="school-tag">🏫 숭실중학교</span>
         <span id="hud-location" class="location-tag">1학년 복도</span>
-        <span id="current-floor-tag" class="floor-pill">시즌 1 (v1.28)</span>
+        <span id="current-floor-tag" class="floor-pill">시즌 1 (v2.0)</span>
         <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
           <button id="btn-toggle-sound" class="btn-sound-toggle" title="8비트 소리 켜기/끄기">🔊</button>
           <button id="btn-toggle-fullscreen" class="btn-sound-toggle" title="전체화면 (상단 탭/주소창 숨기기)">⛶</button>
@@ -215,7 +215,7 @@
   <div id="modal-login" class="modal-overlay">
     <div class="modal-card login-card">
       <div class="modal-header">
-        <h2>🏫 숭실중학교 영어 오픈월드 RPG <span style="font-size:12px; background:#0284c7; color:#fff; padding:3px 9px; border-radius:12px; vertical-align:middle; font-weight:700;">시즌 1 (v1.28)</span></h2>
+        <h2>🏫 숭실중학교 영어 오픈월드 RPG <span style="font-size:12px; background:#0284c7; color:#fff; padding:3px 9px; border-radius:12px; vertical-align:middle; font-weight:700;">시즌 1 (v2.0)</span></h2>
       </div>
       <div class="modal-body">
         <!-- Teacher Notice Banner (교사 로그인 모드 시 표시) -->
@@ -552,7 +552,7 @@
     <div class="modal-card quiz-card boss-raid-card">
       <div class="modal-header boss-raid-header">
         <div>
-          <span class="quiz-unit-badge" style="background:#dc2626; color:#fff;">⚔️ 1학년 2반 시즌 1 (v1.28) 보스 레이드</span>
+          <span class="quiz-unit-badge" style="background:#dc2626; color:#fff;">⚔️ 1학년 2반 시즌 1 (v2.0) 보스 레이드</span>
           <h3 id="boss-raid-title">👾 망각의 고목 골렘 (Lv.10)</h3>
         </div>
         <button class="btn-modal-close" id="btn-close-boss-x">✕</button>
@@ -906,7 +906,7 @@
         <div class="tab-pane active" id="tab-boss-raid">
           <div class="quiz-manage-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <h4 style="margin:0;">👾 시즌 1 (v1.28) 보스레이드 이벤트 컨트롤러</h4>
+              <h4 style="margin:0;">👾 시즌 1 (v2.0) 보스레이드 이벤트 컨트롤러</h4>
               <span id="admin-boss-status-badge" style="font-size:12px; font-weight:800; padding:4px 10px; border-radius:999px; background:#334155; color:#cbd5e1;">⏳ 대기중 (비활성)</span>
             </div>
             <div class="input-row">
@@ -1286,23 +1286,46 @@
                 </label>
               </div>
 
-              <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:#cbd5e1;">
-                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                  <input type="checkbox" id="admin-edit-gift"> 🎁 교장선생님 선물 수령
-                </label>
-                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                  <input type="checkbox" id="admin-edit-locker"> 🗝️ 7층 비밀 사물함 발견
-                </label>
-                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                  <input type="checkbox" id="admin-edit-golem"> 👾 1차 가죽 골렘 클리어
-                </label>
-                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                  <input type="checkbox" id="admin-edit-dragon"> 🐉 2차 청동 드래곤 클리어
-                </label>
-                <label style="display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
-                  <input type="checkbox" id="admin-edit-cerberus"> 🐕 3차 케르베로스 클리어
-                </label>
-              </div>
+                            <details style="margin-top:10px; background:rgba(15, 23, 42, 0.6); border:1px solid #334155; border-radius:8px; padding:10px 14px;">
+                <summary style="font-size:12.5px; font-weight:bold; color:#93c5fd; cursor:pointer; user-select:none; display:flex; align-items:center; gap:6px;">
+                  <span>⚙️ 고급 설정 / 수동 복구 (이스터에그 & 퀘스트)</span>
+                  <span style="font-size:11px; font-weight:normal; color:#64748b; margin-left:auto;">(클릭하여 펼치기/접기)</span>
+                </summary>
+                <div style="margin-top:12px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; font-size:12px; color:#cbd5e1;">
+                  <!-- 메인 퀘스트 & 보스 토벌 -->
+                  <div style="background:rgba(30, 41, 59, 0.8); border:1px solid #475569; border-radius:6px; padding:8px 10px;">
+                    <div style="font-weight:bold; color:#fde047; margin-bottom:6px; font-size:11px;">🏆 메인 퀘스트 & 보스 토벌</div>
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:5px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-gift"> 🎁 교장선생님 선물 수령
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:5px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-golem"> 👾 1차 가죽 골렘 클리어
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:5px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-dragon"> 🐉 2차 청동 드래곤 클리어
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-cerberus"> 🐕 3차 케르베로스 클리어
+                    </label>
+                  </div>
+                  <!-- 탐험 & 학교 이스터에그 -->
+                  <div style="background:rgba(30, 41, 59, 0.8); border:1px solid #475569; border-radius:6px; padding:8px 10px;">
+                    <div style="font-weight:bold; color:#a7f3d0; margin-bottom:6px; font-size:11px;">🔍 탐험 & 학교 이스터에그</div>
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:5px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-locker"> 🗝️ 7층 비밀 사물함 발견
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:5px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-lostbox"> 📦 운동장 분실물 상자 발견
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; margin-bottom:5px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-mirror"> 🪞 복도 전신거울 단정한 용모
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                      <input type="checkbox" id="admin-edit-devnote"> 📜 떨어진 개발자 노트 1편
+                    </label>
+                  </div>
+                </div>
+              </details>
 
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:8px;">
                 <button type="button" id="btn-delete-student-progress" class="btn-secondary" style="background:#7f1d1d; border:1px solid #ef4444; color:#fecaca; padding:8px 14px; font-size:12px; font-weight:bold; cursor:pointer;">
@@ -1325,11 +1348,11 @@
 
   <!-- Game Scripts -->
   <script src="js/world.js?v=46"></script>
-  <script src="js/engine.js?v=52"></script>
+  <script src="js/engine.js?v=53"></script>
   <script src="js/quiz.js?v=46"></script>
   <script src="js/crafting.js?v=46"></script>
   <script src="js/network.js?v=46"></script>
   <script src="js/acid_rain.js?v=46"></script>
-  <script src="js/main.js?v=52"></script>
+  <script src="js/main.js?v=53"></script>
 </body>
 </html>
