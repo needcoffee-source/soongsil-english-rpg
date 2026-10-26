@@ -5860,100 +5860,138 @@ class GameEngine {
     this.ctx.restore();
   }
 
-  // High-Res Hallway Full-length Mirror (복도 전신 거울 이스터에그)
+  // High-Res Hallway Full-length Mirror (복도 전신 거울 이스터에그 - 왼쪽 복도를 바라보는 각도)
   drawHighResMirror(px, py) {
     this.ctx.save();
-    // Shadow under the mirror stand
+
+    // 1. Shadow under the mirror stand (slanted towards bottom-left)
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     this.ctx.beginPath();
-    this.ctx.ellipse(px + 16, py + 29, 18, 6, 0, 0, Math.PI * 2);
+    this.ctx.ellipse(px + 14, py + 29, 17, 6, -0.15, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Wooden stand legs
-    this.ctx.fillStyle = '#5c3a21'; // rich mahogany / walnut wood
-    this.ctx.fillRect(px + 3, py + 22, 4, 8);
-    this.ctx.fillRect(px + 25, py + 22, 4, 8);
-    // Base horizontal support
+    // 2. Wooden Easel / Pivot Stand (왼쪽을 향해 기울어진 이젤 거울 지지대)
+    // 뒷면 대각 지지대 다리 (오른쪽 바닥으로 뻗어나감)
+    this.ctx.strokeStyle = '#38200f';
+    this.ctx.lineWidth = 3.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 17, py + 4);
+    this.ctx.lineTo(px + 28, py + 29);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = '#5c3a21';
+    this.ctx.lineWidth = 2.2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 17, py + 4);
+    this.ctx.lineTo(px + 28, py + 29);
+    this.ctx.stroke();
+
+    // 바닥 수평 발 지지대
     this.ctx.fillStyle = '#422a16';
-    this.ctx.fillRect(px + 1, py + 27, 30, 3);
+    this.ctx.fillRect(px + 3, py + 27, 27, 3.5);
+    this.ctx.fillStyle = '#5c3a21';
+    this.ctx.fillRect(px + 3, py + 27, 27, 1.2);
 
-    // Mirror outer frame (tall rectangle with rounded corners)
-    const fx = px + 5;
-    const fy = py - 18;
-    const fw = 22;
-    const fh = 43;
+    // 수직 사이드 지지 기둥
+    this.ctx.fillStyle = '#5c3a21';
+    this.ctx.fillRect(px + 15, py - 6, 4, 34);
+    this.ctx.strokeStyle = '#38200f';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(px + 15, py - 6, 4, 34);
 
-    // Outer frame with metallic/wood bevel
+    // 3. Mirror Body (왼쪽 복도를 향해 3/4 각도로 회전된 전신 거울)
+    // 거울 원목 프레임 외곽 (왼쪽으로 비스듬히 기울어진 원목 테두리)
+    const fx = px + 4;
+    const fy = py - 20;
+    const fw = 18;
+    const fh = 45;
+
+    // 목재 프레임 백보드 (두께감 표현)
+    this.ctx.fillStyle = '#4a2c11';
+    this.ctx.beginPath();
+    this.ctx.roundRect(fx + 3, fy - 1, fw - 1, fh, [4, 6, 4, 2]);
+    this.ctx.fill();
+
+    // 메인 목재 프레임 (마호가니 브라운)
     this.ctx.fillStyle = '#8b5a2b';
     this.ctx.beginPath();
-    this.ctx.roundRect(fx, fy, fw, fh, 5);
+    this.ctx.roundRect(fx, fy, fw, fh, [5, 4, 3, 5]);
     this.ctx.fill();
-    this.ctx.strokeStyle = '#4a2c11';
+    this.ctx.strokeStyle = '#3e1f08';
     this.ctx.lineWidth = 1.5;
     this.ctx.stroke();
 
-    // Inner gold/brass trim
+    // 골드/황동 안쪽 몰딩 라인
     this.ctx.strokeStyle = '#d4af37';
     this.ctx.lineWidth = 1;
-    this.ctx.strokeRect(fx + 2, fy + 2, fw - 4, fh - 4);
+    this.ctx.strokeRect(fx + 2, fy + 2, fw - 5, fh - 4);
 
-    // Mirror glass (reflective light cyan/blue gradient)
+    // 4. Mirror Glass Surface (왼쪽을 바라보는 반사 유리)
     const glassX = fx + 3;
     const glassY = fy + 3;
-    const glassW = fw - 6;
+    const glassW = fw - 7;
     const glassH = fh - 6;
 
     const grad = this.ctx.createLinearGradient(glassX, glassY, glassX + glassW, glassY + glassH);
     grad.addColorStop(0, '#e0f2fe');
-    grad.addColorStop(0.3, '#bae6fd');
-    grad.addColorStop(0.6, '#7dd3fc');
+    grad.addColorStop(0.25, '#bae6fd');
+    grad.addColorStop(0.65, '#38bdf8');
     grad.addColorStop(1, '#e0f2fe');
 
     this.ctx.fillStyle = grad;
     this.ctx.fillRect(glassX, glassY, glassW, glassH);
 
-    // Diagonal glassy highlight sheen lines
+    // 유리 반사 광택 (왼쪽에서 들어오는 복도 빛을 반사하는 대각선 셰인)
     if (this.ctx.clip) {
       this.ctx.save();
       this.ctx.beginPath();
       this.ctx.rect(glassX, glassY, glassW, glassH);
       this.ctx.clip();
 
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
       this.ctx.beginPath();
-      this.ctx.moveTo(glassX - 5, glassY + 14);
-      this.ctx.lineTo(glassX + 10, glassY - 2);
-      this.ctx.lineTo(glassX + 15, glassY - 2);
-      this.ctx.lineTo(glassX, glassY + 18);
+      this.ctx.moveTo(glassX - 4, glassY + 10);
+      this.ctx.lineTo(glassX + 8, glassY - 2);
+      this.ctx.lineTo(glassX + 12, glassY - 2);
+      this.ctx.lineTo(glassX, glassY + 15);
       this.ctx.closePath();
       this.ctx.fill();
 
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
       this.ctx.beginPath();
-      this.ctx.moveTo(glassX + 2, glassY + 28);
-      this.ctx.lineTo(glassX + 16, glassY + 12);
-      this.ctx.lineTo(glassX + 19, glassY + 12);
-      this.ctx.lineTo(glassX + 5, glassY + 30);
+      this.ctx.moveTo(glassX - 2, glassY + 24);
+      this.ctx.lineTo(glassX + 10, glassY + 10);
+      this.ctx.lineTo(glassX + 13, glassY + 10);
+      this.ctx.lineTo(glassX + 2, glassY + 27);
       this.ctx.closePath();
       this.ctx.fill();
 
       this.ctx.restore();
     } else {
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-      this.ctx.fillRect(glassX + 2, glassY + 2, 3, glassH - 4);
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      this.ctx.fillRect(glassX + 1, glassY + 2, 2.5, glassH - 4);
     }
 
-    // Sparkle star at top right
-    const pulse = Math.sin(Date.now() / 300) * 0.3 + 0.7;
+    // 황동 피벗 회전 노브 (프레임과 지지대 연결 축)
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 17, py + 3, 3, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#b45309';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    // 5. Sparkle glint on the reflective left edge
+    const pulse = Math.sin(Date.now() / 280) * 0.35 + 0.65;
     this.ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`;
-    const sx = glassX + glassW - 3;
-    const sy = glassY + 4;
+    const sx = glassX + 2;
+    const sy = glassY + 3;
     this.ctx.beginPath();
     this.ctx.arc(sx, sy, 1.8, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // Floating name label
-    this.drawSharpLabel(px + 16, py - 32, '🪞 복도 전신 거울', {
+    // 6. Floating Name Label
+    this.drawSharpLabel(px + 14, py - 34, '🪞 복도 전신 거울', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: 'rgba(56, 189, 248, 0.85)',
       textColor: '#e0f2fe',
