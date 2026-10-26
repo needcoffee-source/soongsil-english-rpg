@@ -434,6 +434,23 @@ class NetworkManager {
       this.socket.emit('teacher_set_plant_water', { count });
     }
   }
+
+  requestAcidRainSeat(studentData, callback) {
+    if (!this.socket || !this.socket.connected) {
+      if (callback) callback({ allowed: true, seatIndex: 0 });
+      return;
+    }
+    this.socket.emit('request_acid_rain_seat', studentData, (res) => {
+      if (callback) callback(res);
+    });
+  }
+
+  leaveAcidRainSeat() {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('leave_acid_rain_seat');
+    }
+  }
+
 }
 
 window.NetworkManager = NetworkManager;

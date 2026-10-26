@@ -15,7 +15,6 @@ const ALL_GAME_ITEMS = {
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_golem_core': { name: '고목의 핵', icon: '🟢', count: 9999, meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
-  'item_dragon_heart': { name: '용의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '드래곤 보스 전리품 · 최상위 제작 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
@@ -46,8 +45,7 @@ const ALL_GAME_ITEMS = {
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
-  'item_ice_potion': { name: '시원한 아이스 물약', icon: '🧊', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 50, effect: '나태의 거인 전리품 · 체력 +50 대량 회복' } },
-  'equip_tiger_amulet': { name: '숭실 백호 수호 부적', icon: '🐯', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '숭실 백호 성수 전리품 · 공격력 +35, 방어력 +25, 체력 +100' } }
+
 };
 
 window.ALL_GAME_ITEMS = ALL_GAME_ITEMS;
@@ -66,8 +64,8 @@ const ITEM_SELL_PRICES = {
   'item_golem_core': 10, // 고목의 핵
   'item_boss_leather': 15, // 질긴 보스의 가죽
   'item_bronze_heart': 30, // 청동 드래곤의 심장
-  'item_dragon_heart': 30, // 용의 심장
-  'item_perfect_exam': 50, // 💯 백점만점 시험지 (매점 매각 시 50G)
+  'equip_shoes_samdidas': 20,
+    'item_perfect_exam': 50, // 💯 백점만점 시험지 (매점 매각 시 50G)
   'item_eval_paper': 25, // A+ 만점 수행평가지
 
   // 3. 1티어 나무 장비 (제작비 15G의 20% = 3G 환급)
@@ -90,8 +88,7 @@ const ITEM_SELL_PRICES = {
   // 6. 최상위 엔드 레이드 전리품
   'equip_laurel_crown': 20,
   'equip_omr_wand': 20,
-  'equip_tiger_amulet': 25,
-  'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
+    'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
 };
 
 // 호칭 교환소 4대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자, 백점만점 시험지 -> 시험의 제왕)
@@ -117,9 +114,9 @@ const TITLE_DEFINITIONS = [
   {
     id: 'title_soongsil_rich',
     name: '🪙 숭실 부자',
-    desc: '꾸준한 퀴즈와 근면한 상거래로 황금 50냥을 당당히 보유한 자산가!',
+    desc: '꾸준한 퀴즈와 근면한 상거래로 황금 200골드를 당당히 보유한 자산가!',
     costType: 'gold',
-    costAmount: 50
+    costAmount: 200
   },
   {
     id: 'title_exam_lord',
@@ -296,6 +293,93 @@ class MainApp {
     const btnA = document.getElementById('btn-action-a');
     const btnB = document.getElementById('btn-action-b');
 
+    // Dashing state and cooldown management (3s sprint duration, 5s cooldown)
+    this.dashState = {
+      isDashing: false,
+      startTime: 0,
+      durationMs: 3000,
+      cooldownMs: 5000,
+      cooldownEndTime: 0,
+      animInterval: null,
+      durationTimeout: null
+    };
+
+    this.startDash = () => {
+      if (!this.engine || !this.engine.player) return;
+      const isTeacher = !!this.engine.player.isTeacher;
+      const hasShoes = !!this.engine.player.hasRunningShoes;
+
+      if (!hasShoes && !isTeacher) {
+        alert('👟 [달리기 잠김]\n\n특별한 신발을 얻어야 달릴 수 있습니다!\n(현재는 기본 속도로 걷습니다. 호칭&이벤트 교환소에서 신발을 교환해 보세요!)');
+        return;
+      }
+
+      const now = Date.now();
+      if (!isTeacher && now < this.dashState.cooldownEndTime) {
+        const remainingSec = ((this.dashState.cooldownEndTime - now) / 1000).toFixed(1);
+        this.showToast(`⏳ [숨고르기] 달리기 쿨타임 중입니다... (${remainingSec}초)`, 'warning');
+        return;
+      }
+
+      if (this.dashState.isDashing) return;
+
+      this.dashState.isDashing = true;
+      this.dashState.startTime = now;
+      this.engine.setDashing(true);
+
+      if (!isTeacher) {
+        clearTimeout(this.dashState.durationTimeout);
+        this.dashState.durationTimeout = setTimeout(() => {
+          if (this.dashState.isDashing) {
+            this.stopDash(true);
+          }
+        }, this.dashState.durationMs);
+      }
+    };
+
+    this.stopDash = (fromTimeout = false) => {
+      if (!this.engine || !this.engine.player) return;
+      if (!this.dashState.isDashing) return;
+
+      this.dashState.isDashing = false;
+      clearTimeout(this.dashState.durationTimeout);
+      this.engine.setDashing(false);
+
+      if (!this.engine.player.isTeacher) {
+        this.triggerDashCooldown(this.dashState.cooldownMs);
+      }
+    };
+
+    this.triggerDashCooldown = (cooldownMs) => {
+      this.dashState.cooldownEndTime = Date.now() + cooldownMs;
+      const overlay = document.getElementById('btn-b-cooldown-overlay');
+      const dial = document.getElementById('btn-b-clock-dial');
+      const hand = document.getElementById('btn-b-clock-hand');
+      const secText = document.getElementById('btn-b-cooldown-sec');
+      const btnBEl = document.getElementById('btn-action-b');
+
+      if (!overlay || !secText) return;
+      overlay.classList.remove('hidden');
+      if (btnBEl) btnBEl.style.cursor = 'not-allowed';
+
+      clearInterval(this.dashState.animInterval);
+      this.dashState.animInterval = setInterval(() => {
+        const remaining = Math.max(0, this.dashState.cooldownEndTime - Date.now());
+        const progress = 1 - (remaining / cooldownMs);
+        const deg = Math.floor(progress * 360);
+
+        if (dial) dial.style.setProperty('--cd-pct', `${deg}deg`);
+        if (hand) hand.style.setProperty('--cd-deg', `${deg}deg`);
+        secText.innerText = `${(remaining / 1000).toFixed(1)}s`;
+
+        if (remaining <= 0) {
+          clearInterval(this.dashState.animInterval);
+          overlay.classList.add('hidden');
+          if (btnBEl) btnBEl.style.cursor = 'pointer';
+        }
+      }, 40);
+    };
+
     btnA.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       if (window.AudioManager) window.AudioManager.playSelect();
@@ -308,23 +392,15 @@ class MainApp {
 
     btnB.addEventListener('pointerdown', (e) => {
       e.preventDefault();
-      if (!this.engine.player.hasRunningShoes && !this.engine.player.isTeacher) {
-        alert('👟 [달리기 잠김]\n\n특별한 신발을 얻어야 달릴 수 있습니다!\n(현재는 기본 속도로 걷습니다. 추후 제작소에서 신발을 제작해 보세요!)');
-        return;
-      }
-      this.engine.setDashing(true);
+      this.startDash();
     });
     btnB.addEventListener('pointerup', (e) => {
       e.preventDefault();
-      if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
-        this.engine.setDashing(false);
-      }
+      this.stopDash();
     });
     btnB.addEventListener('pointercancel', (e) => {
       e.preventDefault();
-      if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
-        this.engine.setDashing(false);
-      }
+      this.stopDash();
     });
 
     window.addEventListener('keydown', (e) => {
@@ -337,9 +413,7 @@ class MainApp {
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', true);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', true);
       if (e.key === 'Shift' || e.key === 'b' || e.key === 'B') {
-        if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
-          this.engine.setDashing(true);
-        }
+        this.startDash();
       }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
@@ -357,9 +431,7 @@ class MainApp {
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', false);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', false);
       if (e.key === 'Shift' || e.key === 'b' || e.key === 'B') {
-        if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
-          this.engine.setDashing(false);
-        }
+        this.stopDash();
       }
     });
 
@@ -444,9 +516,26 @@ class MainApp {
     } else if (target.type === 'field_monster') {
       this.startFieldMonsterBattle(target.data);
     } else if (target.type === 'acid_rain') {
-      if (window.AcidRain) {
-        window.AcidRain.open();
+      if (!this.networkManager) {
+        if (window.AcidRain) window.AcidRain.open();
+        return;
       }
+      this.networkManager.requestAcidRainSeat(
+        {
+          studentId: this.playerData.studentId,
+          name: this.playerData.name,
+          isTeacher: !!this.playerData.isTeacher
+        },
+        (res) => {
+          if (!res || !res.allowed) {
+            alert(res && res.message ? res.message : '🖥️ [컴퓨터실 이용 안내]\n\n현재 1학년 3반 컴퓨터실의 모든 좌석(4석)에서 친구들이 산성비 타자 연습을 진행 중입니다!\n\n다른 친구가 게임을 마칠 때까지 잠시만 기다려주세요!');
+            return;
+          }
+          if (window.AcidRain) {
+            window.AcidRain.open();
+          }
+        }
+      );
     } else if (target.type === 'water_purifier') {
       this.handleWaterPurifier();
     } else if (target.type === 'mirror') {
@@ -1200,6 +1289,18 @@ class MainApp {
           this.playerData.baseAtk = saved.baseAtk || 10;
           this.playerData.baseDef = saved.baseDef || 2;
           this.playerData.inventory = Array.isArray(saved.inventory) ? saved.inventory : [];
+
+        // Filter out deleted items (용의 심장, 아이스 물약, 백호 수호 부적)
+        const DELETED_IDS = ['item_dragon_heart', 'item_ice_potion', 'equip_tiger_amulet'];
+        this.playerData.inventory = (this.playerData.inventory || []).filter(i => !DELETED_IDS.includes(i.item));
+        if (this.playerData.equipment) {
+          for (const sKey of Object.keys(this.playerData.equipment)) {
+            if (this.playerData.equipment[sKey] && DELETED_IDS.includes(this.playerData.equipment[sKey].item)) {
+              this.playerData.equipment[sKey] = null;
+            }
+          }
+        }
+
           this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, accessory: null };
           if (saved.hairColor) selectedHair = saved.hairColor;
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
@@ -1617,19 +1718,7 @@ class MainApp {
   }
 
   recalcCombatStats() {
-    this.syncGearVisual();
-    if (this.playerData.isTeacher) {
-      this.playerData.atk = 9999;
-      this.playerData.def = 9999;
-      this.playerData.maxHp = 9999;
-      this.playerData.hp = 9999;
-      if (this.hudAtk) this.hudAtk.innerText = 9999;
-      if (this.hudDef) this.hudDef.innerText = 9999;
-      this.updateHpBar();
-      return;
-    }
-
-    const lvBonus = Math.max(0, (this.playerData.level || 1) - 1);
+    this.engine.player.hasRunningShoes = !!(this.playerData.equipment && this.playerData.equipment.shoes) || !!this.playerData.isTeacher;
     let bonusAtk = 0;
     let bonusDef = 0;
     let bonusHp = 0;
@@ -1772,6 +1861,11 @@ class MainApp {
       effect: invItem.effect || ''
     };
 
+    if (slot === 'shoes') {
+      this.engine.player.hasRunningShoes = true;
+      this.updateDashButtonUI();
+    }
+
     const prevMaxHp = this.playerData.maxHp;
     this.recalcCombatStats();
     if (this.playerData.maxHp > prevMaxHp) {
@@ -1785,6 +1879,10 @@ class MainApp {
   unequipSlot(slotKey) {
     if (!this.playerData.equipment[slotKey]) return;
     this.playerData.equipment[slotKey] = null;
+    if (slotKey === 'shoes') {
+      this.engine.player.hasRunningShoes = false;
+      this.updateDashButtonUI();
+    }
     this.recalcCombatStats();
     this.saveProgress();
     if (!this.modalInventory.classList.contains('hidden')) {
@@ -1982,6 +2080,7 @@ class MainApp {
       { key: 'helmet', title: '🪖 투구', emptyIcon: '🪖' },
       { key: 'armor', title: '🛡️ 갑옷', emptyIcon: '🛡️' },
       { key: 'weapon', title: '🗡️ 무기', emptyIcon: '🗡️' },
+      { key: 'shoes', title: '👟 신발', emptyIcon: '👟' },
       { key: 'accessory', title: '💍 장신구', emptyIcon: '💍' }
     ];
 
@@ -2321,14 +2420,14 @@ class MainApp {
 
       // 8. 나태의 거인 전용 드랍
       if (bName.includes('나태') || bName.includes('거인')) {
-        this.addItem('item_ice_potion', '시원한 아이스 물약', 2, '🧊', { type: 'consumable', slot: 'consumable', heal: 50, effect: '체력 +50 대량 회복' });
-        rewardItemsList.push('🧊 시원한 아이스 물약 x2');
+        this.addItem('item_orange_potion', '주홍 물약', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 즉시 회복' });
+      rewardItemsList.push('🧪 주홍 물약 x2');
       }
 
       // 9. 숭실 백호 성수 전용 드랍
       if (bName.includes('백호') || bName.includes('성수')) {
-        this.addItem('equip_tiger_amulet', '숭실 백호 수호 부적', 1, '🐯', { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '공격력 +35, 방어력 +25, 체력 +100' });
-        rewardItemsList.push('🐯 숭실 백호 수호 부적 (전설 보물!)');
+        this.addGold(100);
+      rewardItemsList.push('🪙 특별 토벌 상금 +100G');
       }
 
       const dropText = rewardItemsList.length > 0 ? `\n🎁 획득 아이템:\n• ${rewardItemsList.join('\n• ')}` : '';
@@ -4474,6 +4573,75 @@ class MainApp {
 
     const titles = this.TITLE_DEFINITIONS || [];
     const ownedTitles = this.playerData.titles || [];
+
+    
+    // [특별 이벤트] 숭실 삼디다스 실내화 교환 카드
+    const hasShoes = (this.playerData.inventory || []).some(i => i.item === 'equip_shoes_samdidas') ||
+                    (this.playerData.equipment && this.playerData.equipment.shoes && this.playerData.equipment.shoes.item === 'equip_shoes_samdidas');
+    const examItem = (this.playerData.inventory || []).find(i => i.item === 'item_perfect_exam');
+    const examCount = examItem ? examItem.count : 0;
+    const evalItem = (this.playerData.inventory || []).find(i => i.item === 'item_eval_paper');
+    const evalCount = evalItem ? evalItem.count : 0;
+
+    const eventCard = document.createElement('div');
+    eventCard.className = 'title-card';
+    eventCard.style.borderColor = hasShoes ? '#22c55e' : '#38bdf8';
+    eventCard.style.background = 'linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%)';
+    eventCard.innerHTML = `
+      <div class="title-card-header">
+        <b style="color:#67e8f9; font-size:14px;">👟 숭실 삼디다스 실내화 (이벤트 교환)</b>
+        <span style="font-size:11px; font-weight:700; color:${hasShoes ? '#4ade80' : '#f59e0b'};">
+          ${hasShoes ? '보유/장착중' : '교환 가능'}
+        </span>
+      </div>
+      <p style="color:#cbd5e1; font-size:12px; margin:4px 0 6px;">
+        1티어 입문 신발! 착용 시 달리기 질주(Shift)가 가능합니다. (이동속도 27% 증가)
+      </p>
+      <div style="font-size:11.5px; color:#94a3b8; margin-bottom:6px;">
+        교환 조건: <b>💯 백점만점 시험지 1개</b> 또는 <b>📜 A+ 만점 수행평가지 1개</b>
+        <br><span style="color:#fef08a;">(보유: 시험지 ${examCount}개 / 수행평가지 ${evalCount}개)</span>
+      </div>
+    `;
+
+    const btnExchangeEvent = document.createElement('button');
+    btnExchangeEvent.className = 'btn-title-action';
+    if (hasShoes) {
+      btnExchangeEvent.innerText = '보유중';
+      btnExchangeEvent.disabled = true;
+      btnExchangeEvent.style.opacity = '0.6';
+    } else if (examCount >= 1 || evalCount >= 1) {
+      btnExchangeEvent.innerText = examCount >= 1 ? '💯 시험지로 교환' : '📜 수행평가지로 교환';
+      btnExchangeEvent.style.background = '#2563eb';
+      btnExchangeEvent.style.color = '#fff';
+      btnExchangeEvent.addEventListener('click', () => {
+        const useExam = (examCount >= 1);
+        const costItemId = useExam ? 'item_perfect_exam' : 'item_eval_paper';
+        const costItemName = useExam ? '💯 백점만점 시험지' : '📜 A+ 만점 수행평가지';
+        
+        if (confirm(`👟 [${costItemName}] 1개를 소모하여 [👟 숭실 삼디다스 실내화]를 교환하시겠습니까?`)) {
+          this.removeItem(costItemId, 1);
+          this.addItem('equip_shoes_samdidas', '👟 숭실 삼디다스 실내화', 1, '👟', {
+            type: 'equipment',
+            slot: 'shoes',
+            stats: { atk: 2, def: 2, hp: 10 },
+            effect: '1티어 실내화 · 달리기 질주(Shift) 가능 (속도 27% 증가)'
+          });
+          this.equipItem('equip_shoes_samdidas');
+          this.updateDashButtonUI();
+          if (window.AudioManager && window.AudioManager.playFanfare) {
+            window.AudioManager.playFanfare();
+          }
+          alert('🎉 [이벤트 신발 교환 완료!]\n\n[👟 숭실 삼디다스 실내화]를 획득하여 장착했습니다!\n이제 Shift 키를 누르면 경쾌하게 달릴 수 있습니다! 🏃💨');
+          this.renderTitleExchangeModal();
+        }
+      });
+    } else {
+      btnExchangeEvent.innerText = '재료 부족';
+      btnExchangeEvent.disabled = true;
+      btnExchangeEvent.style.opacity = '0.5';
+    }
+    eventCard.appendChild(btnExchangeEvent);
+    listContainer.appendChild(eventCard);
 
     titles.forEach(t => {
       const isOwned = ownedTitles.includes(t.name);

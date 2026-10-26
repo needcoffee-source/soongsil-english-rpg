@@ -279,8 +279,8 @@ const ALL_GAME_ITEMS = {
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_golem_core': { name: '고목의 핵', icon: '🟢', meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
-  'item_dragon_heart': { name: '용의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '드래곤 보스 전리품 · 최상위 제작 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
+  'equip_shoes_samdidas': { name: '👟 숭실 삼디다스 실내화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '1티어 실내화 · 달리기 질주(Shift) 가능 (속도 27% 증가)' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
@@ -305,8 +305,7 @@ const ALL_GAME_ITEMS = {
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
-  'item_ice_potion': { name: '시원한 아이스 물약', icon: '🧊', meta: { type: 'consumable', slot: 'consumable', heal: 50, effect: '나태의 거인 전리품 · 체력 +50 대량 회복' } },
-  'equip_tiger_amulet': { name: '숭실 백호 수호 부적', icon: '🐯', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 35, def: 25, hp: 100 }, effect: '숭실 백호 성수 전리품 · 공격력 +35, 방어력 +25, 체력 +100' } }
+
 };
 
 // Simple Korean/English Bad Words Filter
@@ -835,7 +834,80 @@ io.on('connection', (socket) => {
   });
 
   // Disconnect
+  
+  // ========================================================
+  // 1학년 3반 컴퓨터실 산성비 4석 동시 플레이 제한 (Active Seats)
+  // ========================================================
+  const activeAcidRainPlayers = new Map(); // socket.id -> { studentId, name, seatIndex, joinedAt }
+
+  function broadcastAcidRainSeats() {
+    const list = Array.from(activeAcidRainPlayers.values());
+    io.emit('acid_rain_seats_update', {
+      activeCount: list.length,
+      maxSeats: 4,
+      players: list.map(p => ({ name: p.name, seatIndex: p.seatIndex }))
+    });
+  }
+
+  socket.on('request_acid_rain_seat', (data = {}, callback) => {
+    const isTeacher = socket.isTeacher || (data && data.isTeacher);
+    const studentId = data.studentId || (socket.player && socket.player.studentId) || 'unknown';
+    const name = data.name || (socket.player && socket.player.name) || '학생';
+
+    if (activeAcidRainPlayers.has(socket.id)) {
+      if (typeof callback === 'function') {
+        callback({ allowed: true, seatIndex: activeAcidRainPlayers.get(socket.id).seatIndex });
+      }
+      return;
+    }
+
+    if (!isTeacher && activeAcidRainPlayers.size >= 4) {
+      if (typeof callback === 'function') {
+        callback({
+          allowed: false,
+          message: '🖥️ [컴퓨터실 이용 안내]\n\n현재 1학년 3반 컴퓨터실의 모든 좌석(4석)에서 친구들이 산성비 타자 연습을 진행 중입니다!\n\n다른 친구가 게임을 마칠 때까지 잠시만 기다려주세요!'
+        });
+      }
+      return;
+    }
+
+    const usedSeats = new Set(Array.from(activeAcidRainPlayers.values()).map(p => p.seatIndex));
+    let freeSeat = 0;
+    for (let i = 0; i < 4; i++) {
+      if (!usedSeats.has(i)) {
+        freeSeat = i;
+        break;
+      }
+    }
+
+    activeAcidRainPlayers.set(socket.id, {
+      studentId,
+      name,
+      seatIndex: freeSeat,
+      joinedAt: Date.now()
+    });
+
+    if (typeof callback === 'function') {
+      callback({ allowed: true, seatIndex: freeSeat });
+    }
+
+    broadcastAcidRainSeats();
+  });
+
+  socket.on('leave_acid_rain_seat', () => {
+    if (activeAcidRainPlayers.has(socket.id)) {
+      activeAcidRainPlayers.delete(socket.id);
+      broadcastAcidRainSeats();
+    }
+  });
+
+
   socket.on('disconnect', () => {
+    if (activeAcidRainPlayers.has(socket.id)) {
+      activeAcidRainPlayers.delete(socket.id);
+      broadcastAcidRainSeats();
+    }
+
     const player = players[socket.id];
     if (player) {
       const room = `server_${player.grade}_f${player.floor}_${player.room}`;

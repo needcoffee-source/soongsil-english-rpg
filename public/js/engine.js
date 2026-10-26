@@ -149,7 +149,7 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    this.player.speed = isDashing ? 7.6 : 3.8;
+    this.player.speed = isDashing ? 4.85 : 3.8; // 1티어 신발: 기본 3.8 -> 달리기 4.85 (약 27% 경쾌한 속도 증가)
   }
 
   // ========================================================
@@ -5491,7 +5491,7 @@ class GameEngine {
     this.ctx.fillRect(canopyX + 10, canopyY + canopyH, 6, sh - canopyH);
     this.ctx.fillRect(canopyX + canopyW - 16, canopyY + canopyH, 6, sh - canopyH);
 
-    this.drawSharpLabel(sx + sw / 2, sy + sh + 24, '🏫 숭실 야외 스탠드 관람석', {
+    this.drawSharpLabel(sx + sw / 2, sy - 18, '🏫 숭실 야외 스탠드 관람석', {
       bgColor: 'rgba(15, 23, 42, 0.95)',
       borderColor: '#fbbf24',
       textColor: '#fef08a',

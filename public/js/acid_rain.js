@@ -274,6 +274,9 @@ class AcidRainGame {
 
   close() {
     this.stop();
+    if (window.NetworkManager && window.NetworkManager.leaveAcidRainSeat) {
+      window.NetworkManager.leaveAcidRainSeat();
+    }
     if (this.modal) {
       this.modal.classList.add('hidden');
     }
