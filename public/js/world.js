@@ -240,9 +240,7 @@ const WORLD_DATA = {
       id: "lost_found_box",
       type: "lost_box",
       x: 4,
-      y: 6,
-      name: "📦 낡은 철제 분실물 상자",
-      prompt: "비밀 상자 열기 (SPACE)"
+      y: 6
     },
     basketballMonsters: [
       {

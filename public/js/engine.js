@@ -604,14 +604,6 @@ class GameEngine {
             minDist = tDist;
           }
         }
-        // 2-D. Secret Lost & Found Box (스탠드 구석 비밀 분실물 상자)
-        if (pg.lostBox) {
-          const lDist = Math.hypot(pg.lostBox.x * 32 - this.player.x, (pg.lostBox.y + 0.5) * 32 - this.player.y);
-          if (lDist < 64 && lDist < minDist) {
-            closest = { type: 'lost_box', name: pg.lostBox.name || '📦 낡은 철제 분실물 상자', prompt: pg.lostBox.prompt || '비밀 상자 열기 (SPACE)' };
-            minDist = lDist;
-          }
-        }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -845,8 +837,15 @@ class GameEngine {
         if (pg.titleExchange && Math.hypot(pg.titleExchange.x * 32 - x, (pg.titleExchange.y + 0.5) * 32 - y) < 56) {
           return { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
         }
-        if (pg.lostBox && Math.hypot(pg.lostBox.x * 32 - x, (pg.lostBox.y + 0.5) * 32 - y) < 56) {
-          return { type: 'lost_box', name: pg.lostBox.name || '📦 낡은 철제 분실물 상자', prompt: pg.lostBox.prompt || '비밀 상자 열기 (SPACE)' };
+        if (pg.lostBox) {
+          const boxCenterX = pg.lostBox.x * 32 + 16;
+          const boxCenterY = pg.lostBox.y * 32 + 16;
+          if (Math.hypot(boxCenterX - x, boxCenterY - y) < 36) {
+            const distToPlayer = Math.hypot(boxCenterX - this.player.x, boxCenterY - this.player.y);
+            if (distToPlayer < 72) {
+              return { type: 'lost_box', name: '낡은 철제 분실물 상자' };
+            }
+          }
         }
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -965,6 +964,22 @@ class GameEngine {
           this.onInteractCallback({ type: 'secret_locker', name: '1학년 2반 구석 사물함' });
         }
         return;
+      }
+    }
+
+    // 숭실 운동장 스탠드 구석 비밀 분실물 상자 이스터에그 (UI 프롬프트 버튼 없이 비밀 상호작용)
+    if (this.player.room === 'playground') {
+      const lostBox = WORLD_DATA.playground && WORLD_DATA.playground.lostBox;
+      if (lostBox) {
+        const boxCenterX = lostBox.x * 32 + 16;
+        const boxCenterY = lostBox.y * 32 + 16;
+        const distToBox = Math.hypot(boxCenterX - this.player.x, boxCenterY - this.player.y);
+        if (distToBox < 56) {
+          if (this.onInteractCallback) {
+            this.onInteractCallback({ type: 'lost_box', name: '낡은 철제 분실물 상자' });
+          }
+          return;
+        }
       }
     }
 
@@ -6039,16 +6054,6 @@ class GameEngine {
       this.ctx.arc(bx + 6, by + 4, 1.5, 0, Math.PI * 2);
       this.ctx.fill();
     }
-
-    // Floating label
-    this.drawSharpLabel(px + 16, py - 14, '📦 낡은 철제 분실물 상자', {
-      bgColor: 'rgba(15, 23, 42, 0.94)',
-      borderColor: 'rgba(245, 158, 11, 0.85)',
-      textColor: '#fef08a',
-      fontSize: 11.5,
-      paddingX: 8,
-      height: 20
-    });
 
     this.ctx.restore();
   }
