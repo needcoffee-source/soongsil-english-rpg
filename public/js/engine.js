@@ -837,28 +837,20 @@ class GameEngine {
         }
       }
       if (cr.boss) {
-        const bossDist = Math.hypot(cr.boss.x * 32 - this.player.x, cr.boss.y * 32 - this.player.y);
-        if (bossDist < 96) {
-          const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-          const isClearedGolem = this.isStudentClearedGolem();
-          const bossObj = (isClearedGolem && !isRaidActive && this.player.room === 'room_702')
-            ? {
-                id: "boss_s1_bronzedragon",
-                type: "boss_raid",
-                x: cr.boss.x,
-                y: cr.boss.y,
-                name: "🐉 숭실 청동 드래곤",
-                prompt: "보스 레이드 (숭실 청동 드래곤)",
-                level: 20,
-                maxHp: 5000,
-                atk: 50,
-                def: 20,
-                rewardGold: 120,
-                rewardExp: 250
-              }
-            : cr.boss;
-          closest = { type: 'boss_raid', data: bossObj, name: bossObj.name, prompt: bossObj.prompt || '보스 레이드' };
-          minDist = bossDist;
+        const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+        if (isRaidActive) {
+          const bossDist = Math.hypot(cr.boss.x * 32 - this.player.x, cr.boss.y * 32 - this.player.y);
+          if (bossDist < 96) {
+            const bossObj = {
+              ...cr.boss,
+              name: window.BOSS_CONFIG.name || cr.boss.name,
+              maxHp: window.BOSS_CONFIG.maxHp || cr.boss.maxHp,
+              atk: window.BOSS_CONFIG.atk || cr.boss.atk,
+              def: window.BOSS_CONFIG.def || cr.boss.def
+            };
+            closest = { type: 'boss_raid', data: bossObj, name: bossObj.name, prompt: bossObj.prompt || '보스 레이드' };
+            minDist = bossDist;
+          }
         }
       }
       if (cr.craftTable) {
@@ -1007,26 +999,18 @@ class GameEngine {
           return { type: spot.type, data: spot, name: spot.name };
         }
       }
-      if (cr.boss && Math.hypot(cr.boss.x * 32 - x, cr.boss.y * 32 - y) < 76) {
+      if (cr.boss) {
         const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-        const isClearedGolem = this.isStudentClearedGolem();
-        const bossObj = (isClearedGolem && !isRaidActive && this.player.room === 'room_702')
-          ? {
-              id: "boss_s1_bronzedragon",
-              type: "boss_raid",
-              x: cr.boss.x,
-              y: cr.boss.y,
-              name: "🐉 숭실 청동 드래곤",
-              prompt: "보스 레이드 (숭실 청동 드래곤)",
-              level: 20,
-              maxHp: 5000,
-              atk: 50,
-              def: 20,
-              rewardGold: 120,
-              rewardExp: 250
-            }
-          : cr.boss;
-        return { type: 'boss_raid', data: bossObj, name: bossObj.name };
+        if (isRaidActive && Math.hypot(cr.boss.x * 32 - x, cr.boss.y * 32 - y) < 76) {
+          const bossObj = {
+            ...cr.boss,
+            name: window.BOSS_CONFIG.name || cr.boss.name,
+            maxHp: window.BOSS_CONFIG.maxHp || cr.boss.maxHp,
+            atk: window.BOSS_CONFIG.atk || cr.boss.atk,
+            def: window.BOSS_CONFIG.def || cr.boss.def
+          };
+          return { type: 'boss_raid', data: bossObj, name: bossObj.name };
+        }
       }
       if (cr.craftTable && Math.hypot(cr.craftTable.x * 32 - x, cr.craftTable.y * 32 - y) < 48) {
         return { type: 'craft', data: cr.craftTable, name: cr.craftTable.name };
@@ -3751,6 +3735,8 @@ class GameEngine {
           this.drawHighResClubBoard(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'plant_zone') {
           this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera', this.getPlantStage(), this.plantWaterCount);
+        } else if (obj.type === 'dev_note') {
+          this.drawHighResDevNote(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -3785,37 +3771,43 @@ class GameEngine {
     this.drawHighResLockers(22, 17, 5);
 
     if (isBossRoom) {
-      // === 1학년 2반: 시즌1 보스 레이드 전용 연출 ===
-      // Red Raid Carpet Runner from Door to Boss
-      this.ctx.fillStyle = 'rgba(153, 27, 27, 0.45)';
-      this.ctx.fillRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
-      this.ctx.strokeStyle = '#f59e0b';
-      this.ctx.lineWidth = 2;
-      this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
+      const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+      if (isRaidActive) {
+        // === 1학년 2반: 시즌1 보스 레이드 전용 연출 (진행 중) ===
+        // Red Raid Carpet Runner from Door to Boss
+        this.ctx.fillStyle = 'rgba(153, 27, 27, 0.45)';
+        this.ctx.fillRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
+        this.ctx.strokeStyle = '#f59e0b';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
 
-      if (cr.boss) {
-        const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-        const isClearedGolem = this.isStudentClearedGolem();
-        const bName = isRaidActive
-          ? ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase())
-          : (isClearedGolem ? 'dragon' : (cr.boss.name || '').toLowerCase());
-        const effectiveBoss = (isClearedGolem && !isRaidActive)
-          ? { ...cr.boss, name: '🐉 숭실 청동 드래곤', maxHp: 5000, atk: 50, def: 20 }
-          : cr.boss;
+        if (cr.boss) {
+          const bName = ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase());
+          const effectiveBoss = {
+            ...cr.boss,
+            name: window.BOSS_CONFIG.name || cr.boss.name,
+            maxHp: window.BOSS_CONFIG.maxHp || cr.boss.maxHp,
+            atk: window.BOSS_CONFIG.atk || cr.boss.atk,
+            def: window.BOSS_CONFIG.def || cr.boss.def
+          };
 
-        if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
-          this.drawHighResBossDragon(effectiveBoss);
-        } else if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
-          this.drawHighResBossDemon(effectiveBoss);
-        } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
-          this.drawHighResBossCerberus(effectiveBoss);
-        } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
-          this.drawHighResBossFinalGod(effectiveBoss);
-        } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
-          this.drawHighResBossSlothTitan(effectiveBoss);
-        } else {
-          this.drawHighResBossGolem(effectiveBoss);
+          if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
+            this.drawHighResBossDragon(effectiveBoss);
+          } else if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
+            this.drawHighResBossDemon(effectiveBoss);
+          } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
+            this.drawHighResBossCerberus(effectiveBoss);
+          } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
+            this.drawHighResBossFinalGod(effectiveBoss);
+          } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+            this.drawHighResBossSlothTitan(effectiveBoss);
+          } else {
+            this.drawHighResBossGolem(effectiveBoss);
+          }
         }
+      } else {
+        // 교사가 레이드 종료 버튼을 누르면 보스가 사라지고 대기 상태로 전환
+        this.drawPeacefulBossChamber(cr);
       }
     } else if (this.player.room === 'room_703') {
       // === 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어 기지) ===
@@ -6807,6 +6799,153 @@ class GameEngine {
 
     this.ctx.restore();
   }
-}
 
-window.GameEngine = GameEngine;
+  // Peaceful Standby Chamber when boss raid is inactive
+  drawPeacefulBossChamber(cr) {
+    this.ctx.save();
+    const bx = 15 * 32;
+    const by = 8 * 32;
+
+    const time = Date.now() / 1000;
+    const pulse = 0.5 + 0.5 * Math.sin(time * 2);
+
+    // Soft pulsing standby rune circle
+    this.ctx.strokeStyle = `rgba(59, 130, 246, ${0.35 + 0.25 * pulse})`;
+    this.ctx.lineWidth = 2.5;
+    this.ctx.setLineDash([8, 6]);
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 16, by + 16, 52, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.setLineDash([]);
+
+    // Outer faint rune ring
+    this.ctx.strokeStyle = 'rgba(99, 102, 241, 0.25)';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 16, by + 16, 68, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    // Central stand-by pedestal
+    this.ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(bx + 16, by + 24, 38, 14, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#475569';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // Standby crystal
+    const floatY = Math.sin(time * 3) * 3;
+    this.ctx.fillStyle = `rgba(147, 197, 253, ${0.7 + 0.3 * pulse})`;
+    this.ctx.beginPath();
+    this.ctx.moveTo(bx + 16, by + 4 + floatY);
+    this.ctx.lineTo(bx + 24, by + 16 + floatY);
+    this.ctx.lineTo(bx + 16, by + 28 + floatY);
+    this.ctx.lineTo(bx + 8, by + 16 + floatY);
+    this.ctx.closePath();
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#93c5fd';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // Floating Standby Text
+    this.ctx.textAlign = 'center';
+    this.ctx.font = 'bold 13px sans-serif';
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.shadowColor = 'rgba(0,0,0,0.85)';
+    this.ctx.shadowBlur = 6;
+    this.ctx.fillText('⚔️ [보스 레이드 대기실]', bx + 16, by - 36);
+
+    this.ctx.font = '11px sans-serif';
+    this.ctx.fillStyle = '#94a3b8';
+    this.ctx.fillText('현재 출현한 보스가 없습니다', bx + 16, by - 18);
+    this.ctx.fillText('(교사의 레이드 소환 대기 중)', bx + 16, by - 4);
+
+    this.ctx.restore();
+  }
+
+  // High-Res Hallway Fallen Developer Note (떨어진 개발자노트 제1편 - 정수기와 거울 사이)
+  drawHighResDevNote(px, py) {
+    this.ctx.save();
+    const time = Date.now() / 1000;
+    const pulse = 0.5 + 0.5 * Math.sin(time * 3);
+    const floatY = Math.sin(time * 2.5) * 2;
+
+    // 1. Shimmering Golden Aura on Floor
+    this.ctx.fillStyle = `rgba(245, 158, 11, ${0.25 + 0.2 * pulse})`;
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 26, 16 + pulse * 2, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. Leather-bound vintage developer notebook (slightly tilted)
+    this.ctx.translate(px + 16, py + 16 + floatY);
+    this.ctx.rotate(-0.08);
+
+    // Book Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.fillRect(-12, -4, 25, 18);
+
+    // Leather Cover (Navy / Midnight Blue)
+    this.ctx.fillStyle = '#1e1b4b';
+    this.ctx.fillRect(-14, -10, 28, 20);
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.strokeRect(-14, -10, 28, 20);
+
+    // Golden Spine & Corners
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.fillRect(-14, -10, 4, 20);
+    this.ctx.fillRect(11, -10, 3, 3);
+    this.ctx.fillRect(11, 7, 3, 3);
+
+    // Parchment Pages (Cream / Antique White)
+    this.ctx.fillStyle = '#fef3c7';
+    this.ctx.fillRect(-10, -8, 22, 16);
+
+    // Handwritten Code / Note Lines
+    this.ctx.fillStyle = '#92400e';
+    this.ctx.fillRect(-8, -5, 12, 1.2);
+    this.ctx.fillRect(-8, -2, 16, 1.2);
+    this.ctx.fillRect(-8, 1, 14, 1.2);
+    this.ctx.fillRect(-8, 4, 10, 1.2);
+
+    // Red Bookmark Ribbon hanging out
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, 7);
+    this.ctx.lineTo(3, 14);
+    this.ctx.lineTo(0, 13);
+    this.ctx.lineTo(-3, 14);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Reset transform for sparkles and text
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // 3. Magical Sparkles (floating around the book)
+    const sp1X = px + 16 + Math.cos(time * 2) * 14;
+    const sp1Y = py + 10 + Math.sin(time * 2) * 8;
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.beginPath();
+    this.ctx.arc(sp1X, sp1Y, 1.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    const sp2X = px + 16 + Math.sin(time * 2.7) * 12;
+    const sp2Y = py + 16 + Math.cos(time * 2.7) * 9;
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.beginPath();
+    this.ctx.arc(sp2X, sp2Y, 1.2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 4. Subtle Floating Label
+    this.ctx.font = 'bold 9px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillStyle = '#fef08a';
+    this.ctx.shadowColor = 'rgba(0,0,0,0.85)';
+    this.ctx.shadowBlur = 4;
+    this.ctx.fillText('📜 개발자노트', px + 16, py - 4 + floatY);
+
+    this.ctx.restore();
+  }
+
+}

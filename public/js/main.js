@@ -336,7 +336,7 @@ class MainApp {
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', true);
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', true);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', true);
-      if (e.key === 'Shift') {
+      if (e.key === 'Shift' || e.key === 'b' || e.key === 'B') {
         if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
           this.engine.setDashing(true);
         }
@@ -356,7 +356,7 @@ class MainApp {
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', false);
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', false);
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.engine.setDirectionInput('right', false);
-      if (e.key === 'Shift') {
+      if (e.key === 'Shift' || e.key === 'b' || e.key === 'B') {
         if (this.engine.player.hasRunningShoes || this.engine.player.isTeacher) {
           this.engine.setDashing(false);
         }
@@ -459,6 +459,8 @@ class MainApp {
       this.handleClubBoardInteraction();
     } else if (target.type === 'plant_zone') {
       this.handlePlantZoneInteraction(target);
+    } else if (target.type === 'dev_note') {
+      this.handleDevNoteInteraction();
     }
   }
 
@@ -576,6 +578,32 @@ class MainApp {
         return; // cancelled
       }
     }
+
+    // 10분 쿨타임 검사 (학생 대상, 현실시간 기준 10분 = 600,000ms)
+    const now = Date.now();
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const waterCooldownKey = 'soongsil_plant_water_time_' + studentId;
+    const cooldownMs = 10 * 60 * 1000;
+
+    if (!this.playerData || !this.playerData.isTeacher) {
+      let lastWaterTime = 0;
+      try {
+        lastWaterTime = parseInt(localStorage.getItem(waterCooldownKey) || '0', 10);
+      } catch (e) {}
+
+      if (now - lastWaterTime < cooldownMs) {
+        const remainingMs = cooldownMs - (now - lastWaterTime);
+        const remMin = Math.floor(remainingMs / 60000);
+        const remSec = Math.ceil((remainingMs % 60000) / 1000);
+        const timeStr = remMin > 0 ? (remMin + '분 ' + remSec + '초') : (remSec + '초');
+        this.showToast('💧 화분의 흙이 아직 촉촉합니다! (' + timeStr + ' 뒤에 다시 물을 줄 수 있습니다.)', 'warning');
+        return;
+      }
+    }
+
+    try {
+      localStorage.setItem(waterCooldownKey, String(now));
+    } catch (e) {}
 
     // Normal student watering interaction (+1)
     const prevCount = curCount;
@@ -1239,6 +1267,7 @@ class MainApp {
 
       this.networkManager.connect(this.playerData);
       this.modalLogin.classList.add('hidden');
+      this.updateDashButtonUI();
       this.startLoop();
       this.initAutoHpRegen();
 
@@ -4593,6 +4622,81 @@ class MainApp {
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
+  }
+
+  updateDashButtonUI() {
+    const btnB = document.getElementById('btn-action-b');
+    if (!btnB) return;
+    const canDash = this.engine && this.engine.player && (this.engine.player.hasRunningShoes || this.engine.player.isTeacher);
+    if (canDash) {
+      btnB.classList.remove('btn-b-locked');
+      btnB.title = '달리기 (Shift 또는 B를 누른 채 이동)';
+      const sub = btnB.querySelector('.btn-sub');
+      if (sub) sub.textContent = '달리기 (Shift)';
+    } else {
+      btnB.classList.add('btn-b-locked');
+      btnB.title = '특별한 신발을 얻어야 달릴 수 있습니다';
+      const sub = btnB.querySelector('.btn-sub');
+      if (sub) sub.textContent = '🔒 달리기 (신발 필요)';
+    }
+  }
+
+  // 📜 복도 떨어진 개발자노트 이스터에그 (제1편)
+  handleDevNoteInteraction() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const noteKey = 'soongsil_dev_note_1_' + studentId;
+    let alreadyRead = false;
+    try {
+      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+    } catch (e) {}
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const noteStory =
+      "📜 [떨어진 개발자노트 — 제1편: 교무실의 불이 꺼지지 않던 밤]\n\n" +
+      "\"밤 11시 42분. 모두가 퇴근하고 칠흑같이 어두워진 교무실,\n" +
+      "오직 모니터 푸른 불빛 하나만이 낡은 책상을 비추고 있었다.\n" +
+      "책상 위에는 차갑게 식어버린 믹스커피 종이컵, 그리고 끝없이 이어지는 자바스크립트 코드와 타일 좌표들...\n\n" +
+      "'선생님, 영어 단어 외우는 거 너무 지루하고 딱딱해요...'\n" +
+      "낮에 교실 복도 뒤편에서 무심코 들려왔던 제자의 한마디가 가슴 한구석을 쿵 하고 울렸다.\n\n" +
+      "'어떻게 하면 우리 숭실 아이들이 책상에 억지로 묶여있지 않고,\n" +
+      "모험을 떠나는 용사가 되어 신나게 웃으며 영어를 배울 수 있을까?'\n\n" +
+      "그 질문 하나가 머릿속을 떠나지 않아 밤낮을 잊은 채 키보드를 두드리기 시작했다.\n" +
+      "복도 타일 한 장, 교실 문 하나, 몬스터의 스탯과 보상 테이블까지...\n" +
+      "마우스를 쥔 손가락 끝마디가 뻐근하고 눈이 시려왔지만,\n" +
+      "내일 아침 교실 문을 열며 눈을 반짝일 아이들의 얼굴을 떠올리면 피로 따윈 아무것도 아니었다.\n\n" +
+      "'얘들아, 이 세상은 너희를 위한 모험의 무대란다.\n" +
+      "어려운 영어도, 거대한 보스도 결코 너희를 꺾을 수 없어.\n" +
+      "너희가 쓰러질 때마다 언제든 다시 일어설 수 있도록 내가 이 세계를 든든하게 지켜줄게.'\n\n" +
+      "— 숭실의 밤을 지새우며, 개발자 갓준철 올림 —\n" +
+      "(※ 빛바랜 양피지 귀퉁이에 적힌 글귀... 제2편으로 이어집니다.)\"";
+
+    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+      try {
+        localStorage.setItem(noteKey, 'true');
+      } catch (e) {}
+
+      this.addGold(50);
+      this.addExp(50);
+      this.saveProgress();
+
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+
+      alert(
+        noteStory + "\n\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "🎁 [개발자노트 제1편 감상 보너스]\n" +
+        "• 갓준철 선생님의 뜨거운 열정이 가슴 깊이 전해집니다!\n" +
+        "• 🪙 골드 +50G 획득!\n" +
+        "• 🌟 경험치 +50 EXP 획득!"
+      );
+    } else {
+      alert(noteStory);
+    }
   }
 }
 

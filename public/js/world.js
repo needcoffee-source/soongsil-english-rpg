@@ -33,7 +33,8 @@ const WORLD_DATA = {
         { id: "board_club", type: "club_board", x: 27, y: 17, name: "🎸 동아리 홍보 게시판", prompt: "동아리 공지 확인 (SPACE)" },
         { id: "plant_hallway_1", type: "plant_zone", subType: "monstera", x: 33, y: 17, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" },
         { id: "plant_hallway_2", type: "plant_zone", subType: "areca", x: 38, y: 17, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" },
-        { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+        { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" },
+        { id: "note_developer_hallway", type: "dev_note", x: 50, y: 17, name: "📜 떨어진 개발자노트 (제1편)", prompt: "개발자노트 읽기 (SPACE)" }
       ],
       npcs: [
         {
