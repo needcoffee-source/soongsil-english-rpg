@@ -619,46 +619,5 @@
       "heal": 0,
       "effect": "쓰러진 친구를 50% 체력으로 부활"
     }
-  },
-  {
-    "id": "recipe_shoes_samdidas",
-    "name": "숭실 삼디다스 실내화 (Running Slippers)",
-    "category": "equipment",
-    "description": "[신발] 만점 시험지로 제작 가능한 1티어 실내화입니다. 착용 시 달리기 질주(Shift)가 가능합니다.",
-    "icon": "👟",
-    "gradeLevel": 1,
-    "requiredGold": 10,
-    "requiredItems": [
-      {
-        "item": "item_perfect_exam",
-        "name": "💯 백점만점 시험지",
-        "count": 1
-      }
-    ],
-    "unscramble": {
-      "korean": "나는 빠른 실내화를 신고 달릴 수 있다.",
-      "words": [
-        "I",
-        "can",
-        "run",
-        "wearing",
-        "fast",
-        "slippers."
-      ],
-      "correct": "I can run wearing fast slippers."
-    },
-    "result": {
-      "item": "equip_shoes_samdidas",
-      "name": "👟 숭실 삼디다스 실내화",
-      "icon": "👟",
-      "type": "equipment",
-      "slot": "shoes",
-      "stats": {
-        "atk": 2,
-        "def": 2,
-        "hp": 10
-      },
-      "effect": "1티어 실내화 · 달리기 질주(Shift) 가능 (속도 27% 증가)"
-    }
   }
 ]

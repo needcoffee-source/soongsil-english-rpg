@@ -167,7 +167,10 @@ app.post('/api/save-progress', (req, res) => {
     if (progress.gold !== undefined) activeStudent.gold = progress.gold;
     if (progress.exp !== undefined) activeStudent.exp = progress.exp;
     if (progress.name) activeStudent.name = progress.name;
-    io.to(activeStudent.id).emit('student_progress_sync_from_admin', all[studentId]);
+    // 관리자(교사)의 직접 수정일 때만 학생에게 알림 동기화 전송 (학생 자신의 저장은 알림 미전송)
+    if (body.fromAdmin) {
+      io.to(activeStudent.id).emit('student_progress_sync_from_admin', all[studentId]);
+    }
     broadcastStudentList();
   }
 

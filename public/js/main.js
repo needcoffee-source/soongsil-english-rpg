@@ -4071,7 +4071,9 @@ class MainApp {
     this.playerData.hasClearedFirstBoss = !!updatedProgress.hasClearedFirstBoss;
     this.playerData.hasClearedDragonRaid = !!updatedProgress.hasClearedDragonRaid;
     this.playerData.hasClearedCerberusRaid = !!updatedProgress.hasClearedCerberusRaid;
-    this.saveProgress(true);
+    try {
+      localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(updatedProgress));
+    } catch (e) {}
     this.recalcCombatStats();
     this.updateExpBar();
     this.updatePlayerNameDisplay();
@@ -4655,45 +4657,59 @@ class MainApp {
     const ownedTitles = this.playerData.titles || [];
 
     
-    // [특별 이벤트] 숭실 삼디다스 실내화 교환 카드
-    const hasShoes = (this.playerData.inventory || []).some(i => i.item === 'equip_shoes_samdidas') ||
+    // [특별 이벤트] 숭실 삼디다스 실내화 교환 카드 (호칭 카드와 100% 동일한 좌우 정렬 UI 구조)
+    const hasShoes = (this.playerData.inventory || []).some(i => i && i.item === 'equip_shoes_samdidas') ||
                     (this.playerData.equipment && this.playerData.equipment.shoes && this.playerData.equipment.shoes.item === 'equip_shoes_samdidas');
-    const examItem = (this.playerData.inventory || []).find(i => i.item === 'item_perfect_exam');
+    const examItem = (this.playerData.inventory || []).find(i => i && i.item === 'item_perfect_exam');
     const examCount = examItem ? examItem.count : 0;
-    const evalItem = (this.playerData.inventory || []).find(i => i.item === 'item_eval_paper');
+    const evalItem = (this.playerData.inventory || []).find(i => i && i.item === 'item_eval_paper');
     const evalCount = evalItem ? evalItem.count : 0;
+    const canAffordShoes = !hasShoes && (examCount >= 1 || evalCount >= 1);
 
     const eventCard = document.createElement('div');
-    eventCard.className = 'title-card';
-    eventCard.style.borderColor = hasShoes ? '#22c55e' : '#38bdf8';
-    eventCard.style.background = 'linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%)';
+    eventCard.style.cssText = `
+      background: ${hasShoes ? 'rgba(30, 41, 59, 0.7)' : '#1e293b'};
+      border: 2px solid ${hasShoes ? '#10b981' : '#334155'};
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    `;
+
     eventCard.innerHTML = `
-      <div class="title-card-header">
-        <b style="color:#67e8f9; font-size:14px;">👟 숭실 삼디다스 실내화 (이벤트 교환)</b>
-        <span style="font-size:11px; font-weight:700; color:${hasShoes ? '#4ade80' : '#f59e0b'};">
-          ${hasShoes ? '보유/장착중' : '교환 가능'}
-        </span>
+      <div style="flex: 1;">
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span style="font-size: 16px; font-weight: 900; color: #fef08a;">👟 숭실 삼디다스 실내화</span>
+          ${hasShoes ? '<span style="font-size:11px; font-weight:800; background:#059669; color:#fff; padding:2px 8px; border-radius:12px;">보유/착용 중</span>' : '<span style="font-size:11px; font-weight:800; background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px;">이벤트 장비</span>'}
+        </div>
+        <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">
+          1티어 입문 신발! 착용 시 달리기 질주(Shift)가 가능합니다. (이동속도 27% 증가)
+        </div>
+        ${!hasShoes ? `
+          <div style="font-size: 11.5px; margin-top: 6px; color: ${canAffordShoes ? '#4ade80' : '#f87171'}; font-weight: 700;">
+            필요: 💯 시험지 1개 또는 📜 수행평가지 1개 <span style="font-weight:400; color:#94a3b8;">(보유: 시험지 ${examCount}개, 수행평가지 ${evalCount}개)</span>
+          </div>
+        ` : ''}
       </div>
-      <p style="color:#cbd5e1; font-size:12px; margin:4px 0 6px;">
-        1티어 입문 신발! 착용 시 달리기 질주(Shift)가 가능합니다. (이동속도 27% 증가)
-      </p>
-      <div style="font-size:11.5px; color:#94a3b8; margin-bottom:6px;">
-        교환 조건: <b>💯 백점만점 시험지 1개</b> 또는 <b>📜 A+ 만점 수행평가지 1개</b>
-        <br><span style="color:#fef08a;">(보유: 시험지 ${examCount}개 / 수행평가지 ${evalCount}개)</span>
+      <div style="flex-shrink: 0;">
+        ${hasShoes ? `
+          <button class="btn-primary" disabled style="font-size: 12px; padding: 7px 16px; font-weight:800; background:#334155; border-color:#475569; color:#64748b; cursor:default;">
+            보유 중
+          </button>
+        ` : `
+          <button class="btn-exchange-shoes btn-primary" ${!canAffordShoes ? 'disabled' : ''} style="font-size: 12px; padding: 7px 16px; font-weight:800; ${!canAffordShoes ? 'background:#334155; border-color:#475569; color:#64748b; cursor:not-allowed;' : 'background:#d97706; border-color:#b45309; cursor:pointer;'}">
+            교환하기
+          </button>
+        `}
       </div>
     `;
 
-    const btnExchangeEvent = document.createElement('button');
-    btnExchangeEvent.className = 'btn-title-action';
-    if (hasShoes) {
-      btnExchangeEvent.innerText = '보유중';
-      btnExchangeEvent.disabled = true;
-      btnExchangeEvent.style.opacity = '0.6';
-    } else if (examCount >= 1 || evalCount >= 1) {
-      btnExchangeEvent.innerText = examCount >= 1 ? '💯 시험지로 교환' : '📜 수행평가지로 교환';
-      btnExchangeEvent.style.background = '#2563eb';
-      btnExchangeEvent.style.color = '#fff';
-      btnExchangeEvent.addEventListener('click', () => {
+    const btnExchangeShoes = eventCard.querySelector('.btn-exchange-shoes');
+    if (btnExchangeShoes && canAffordShoes) {
+      btnExchangeShoes.addEventListener('click', () => {
         const useExam = (examCount >= 1);
         const costItemId = useExam ? 'item_perfect_exam' : 'item_eval_paper';
         const costItemName = useExam ? '💯 백점만점 시험지' : '📜 A+ 만점 수행평가지';
@@ -4715,12 +4731,7 @@ class MainApp {
           this.renderTitleExchangeModal();
         }
       });
-    } else {
-      btnExchangeEvent.innerText = '재료 부족';
-      btnExchangeEvent.disabled = true;
-      btnExchangeEvent.style.opacity = '0.5';
     }
-    eventCard.appendChild(btnExchangeEvent);
     listContainer.appendChild(eventCard);
 
     titles.forEach(t => {
