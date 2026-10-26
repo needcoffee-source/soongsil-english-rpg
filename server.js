@@ -27,7 +27,12 @@ const schoolFloors = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'school_floo
 // Grade Question Pool (No cumulative mixing across grades)
 function getQuestionsForGrade(grade) {
   const g = [1, 2, 3].includes(grade) ? grade : 1;
-  return JSON.parse(fs.readFileSync(path.join(DATA_DIR, `questions_grade${g}.json`), 'utf8'));
+  const list = JSON.parse(fs.readFileSync(path.join(DATA_DIR, `questions_grade${g}.json`), 'utf8'));
+  if (!list || list.length === 0) {
+    // 2·3학년 문항 미구현 시 검증된 1학년 문항 풀(295문항)을 안전하게 fallback 제공
+    return JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'questions_grade1.json'), 'utf8'));
+  }
+  return list;
 }
 
 // REST APIs
