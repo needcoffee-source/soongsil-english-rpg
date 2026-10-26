@@ -85,6 +85,10 @@ class GameEngine {
     this.onLocationChangeCallback = null;
     this.onInteractCallback = null;
 
+    this.plantWaterCount = 0;
+    try {
+      this.plantWaterCount = parseInt(localStorage.getItem('soongsil_plant_water_count') || '0', 10);
+    } catch(e) {}
     this.initTouchAndMouse();
   }
 
@@ -293,6 +297,29 @@ class GameEngine {
       return WORLD_DATA.PLAYGROUND_HEIGHT || 28;
     }
     return WORLD_DATA.MAP_HEIGHT || 20;
+  }
+
+  setPlantWaterCount(count) {
+    this.plantWaterCount = Math.max(0, count || 0);
+    try {
+      localStorage.setItem('soongsil_plant_water_count', this.plantWaterCount.toString());
+    } catch(e) {}
+  }
+
+  getPlantStage() {
+    const count = this.plantWaterCount || 0;
+    if (count >= 3000) return 3;
+    if (count >= 1000) return 2;
+    if (count >= 100) return 1;
+    return 0;
+  }
+
+  getNextPlantWaterGoal() {
+    const count = this.plantWaterCount || 0;
+    if (count < 100) return { current: count, target: 100, stage: 0, nextStage: 1, name: '🌱 아기 새싹' };
+    if (count < 1000) return { current: count, target: 1000, stage: 1, nextStage: 2, name: '🌿 무럭무럭 식물' };
+    if (count < 3000) return { current: count, target: 3000, stage: 2, nextStage: 3, name: '🌳 거대 생명수' };
+    return { current: count, target: 3000, stage: 3, nextStage: 3, name: '🌸 생명의 만개목', max: true };
   }
 
   checkCollision(x, y) {
@@ -563,7 +590,18 @@ class GameEngine {
           for (const obj of floorData.interactive) {
             const dist = Math.hypot(obj.x * 32 - this.player.x, obj.y * 32 - this.player.y);
             if (dist < minDist) {
-              closest = { type: obj.type, data: obj, name: obj.name, prompt: obj.prompt };
+              if (obj.type === 'plant_zone') {
+                const goal = this.getNextPlantWaterGoal();
+                const prog = goal.max ? '만개 완료!' : `${goal.current}/${goal.target}💧`;
+                closest = {
+                  type: obj.type,
+                  data: obj,
+                  name: `${goal.name} (${prog})`,
+                  prompt: '물 주기 (SPACE) 💧'
+                };
+              } else {
+                closest = { type: obj.type, data: obj, name: obj.name, prompt: obj.prompt };
+              }
               minDist = dist;
             }
           }
@@ -3712,7 +3750,7 @@ class GameEngine {
         } else if (obj.type === 'club_board') {
           this.drawHighResClubBoard(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'plant_zone') {
-          this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera');
+          this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera', this.getPlantStage(), this.plantWaterCount);
         }
       }
     }
@@ -6456,135 +6494,314 @@ class GameEngine {
   // ========================================================
   // HIGH-RES HALLWAY PLANTERS (복도 공기정화 식물 & 대형 관엽식물)
   // ========================================================
-  drawHighResHallwayPlant(px, py, subType) {
+  drawHighResHallwayPlant(px, py, subType, stage = 0, waterCount = 0) {
     this.ctx.save();
+    const cx = px + 16;
+    const cy = py + 12;
 
-    // Floor Shadow
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-    this.ctx.beginPath();
-    this.ctx.ellipse(px + 16, py + 26, 17, 7, 0, 0, Math.PI * 2);
-    this.ctx.fill();
+    // =========================================================================
+    // STAGE 0: 0 ~ 99 WATER (아기 새싹 화분)
+    // =========================================================================
+    if (stage === 0) {
+      // Floor Shadow
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx, cy + 18, 12, 5, 0, 0, Math.PI * 2);
+      this.ctx.fill();
 
-    // Modern Ceramic Planter Pot
-    const potX = px + 4;
-    const potY = py + 8;
-    const potW = 24;
-    const potH = 19;
+      // Cute Little White Ceramic Pot
+      const potW = 18;
+      const potH = 14;
+      const potX = cx - 9;
+      const potY = cy + 4;
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.beginPath();
+      this.ctx.roundRect(potX, potY, potW, potH, [1, 1, 3, 3]);
+      this.ctx.fill();
+      this.ctx.strokeStyle = '#cbd5e1';
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
 
-    // Outer Pot Surface (Ceramic white / slate gradient)
-    const potGrad = this.ctx.createLinearGradient(potX, potY, potX + potW, potY);
-    if (subType === 'areca') {
-      potGrad.addColorStop(0, '#1e293b');
-      potGrad.addColorStop(0.5, '#334155');
-      potGrad.addColorStop(1, '#0f172a');
-    } else {
-      potGrad.addColorStop(0, '#f1f5f9');
+      // Soil
+      this.ctx.fillStyle = '#5c2c10';
+      this.ctx.fillRect(potX + 2, potY + 1, potW - 4, 3);
+
+      // Baby Sprout Stem
+      this.ctx.strokeStyle = '#22c55e';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx, potY + 2);
+      this.ctx.quadraticCurveTo(cx, cy - 2, cx, cy - 6);
+      this.ctx.stroke();
+
+      // Two Tender Twin Sprout Leaves
+      this.ctx.fillStyle = '#4ade80';
+      // Left leaf
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx - 5, cy - 6, 5, 3, -0.5, 0, Math.PI * 2);
+      this.ctx.fill();
+      // Right leaf
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx + 5, cy - 6, 5, 3, 0.5, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Morning Dewdrop
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.beginPath();
+      this.ctx.arc(cx - 3, cy - 8, 1.5, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Badge
+      this.drawSharpLabel(cx, py - 18, `🌱 아기 새싹 (${waterCount}/100 💧)`, {
+        bgColor: 'rgba(15, 23, 42, 0.94)',
+        borderColor: '#4ade80',
+        textColor: '#bbf7d0',
+        fontSize: 11,
+        paddingX: 7,
+        height: 19
+      });
+    }
+
+    // =========================================================================
+    // STAGE 1: 100 ~ 999 WATER (1차 성장 - 무럭무럭 관엽식물)
+    // =========================================================================
+    else if (stage === 1) {
+      // Floor Shadow
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx, cy + 18, 16, 6, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Modern Ceramic Planter Pot
+      const potW = 24;
+      const potH = 17;
+      const potX = cx - 12;
+      const potY = cy + 2;
+      const potGrad = this.ctx.createLinearGradient(potX, potY, potX + potW, potY);
+      potGrad.addColorStop(0, '#e2e8f0');
       potGrad.addColorStop(0.5, '#ffffff');
       potGrad.addColorStop(1, '#cbd5e1');
-    }
-    this.ctx.fillStyle = potGrad;
-    this.ctx.beginPath();
-    this.ctx.roundRect(potX, potY, potW, potH, [1, 1, 4, 4]);
-    this.ctx.fill();
-
-    // Pot Rim Trim
-    this.ctx.fillStyle = (subType === 'areca') ? '#475569' : '#94a3b8';
-    this.ctx.fillRect(potX - 1, potY - 1, potW + 2, 3);
-
-    // Pot Soil
-    this.ctx.fillStyle = '#451a03';
-    this.ctx.fillRect(potX + 2, potY + 1, potW - 4, 3);
-
-    // Leaves Rendering
-    const cx = px + 16;
-    const cy = py + 6;
-
-    if (subType === 'areca') {
-      // Tall Arching Bamboo / Palm Fronds
-      this.ctx.strokeStyle = '#047857';
-      this.ctx.lineWidth = 1.8;
-      // Stems
+      this.ctx.fillStyle = potGrad;
       this.ctx.beginPath();
-      this.ctx.moveTo(cx, cy + 2);
-      this.ctx.quadraticCurveTo(cx - 10, cy - 10, cx - 14, cy - 20);
-      this.ctx.moveTo(cx, cy + 2);
-      this.ctx.quadraticCurveTo(cx, cy - 14, cx, cy - 24);
-      this.ctx.moveTo(cx, cy + 2);
-      this.ctx.quadraticCurveTo(cx + 10, cy - 10, cx + 15, cy - 18);
-      this.ctx.stroke();
-
-      // Leaflets (bright emerald / lime)
-      this.ctx.fillStyle = '#10b981';
-      for (let i = 0; i < 4; i++) {
-        // Left frond leaves
-        this.ctx.beginPath();
-        this.ctx.ellipse(cx - 7 - i * 2, cy - 8 - i * 3, 5, 2, -0.4, 0, Math.PI * 2);
-        this.ctx.fill();
-        // Center frond leaves
-        this.ctx.beginPath();
-        this.ctx.ellipse(cx + (i % 2 === 0 ? -3 : 3), cy - 10 - i * 3, 5, 2, (i % 2 === 0 ? -0.8 : 0.8), 0, Math.PI * 2);
-        this.ctx.fill();
-        // Right frond leaves
-        this.ctx.beginPath();
-        this.ctx.ellipse(cx + 7 + i * 2, cy - 7 - i * 3, 5, 2, 0.4, 0, Math.PI * 2);
-        this.ctx.fill();
-      }
-      this.ctx.fillStyle = '#34d399';
-      this.ctx.beginPath();
-      this.ctx.arc(cx, cy - 23, 3, 0, Math.PI * 2);
+      this.ctx.roundRect(potX, potY, potW, potH, [1, 1, 4, 4]);
       this.ctx.fill();
-    } else {
-      // Broad Tropical Monstera Leaves
-      // Background deeper leaves
+      this.ctx.fillStyle = '#94a3b8';
+      this.ctx.fillRect(potX - 1, potY - 1, potW + 2, 3);
+      this.ctx.fillStyle = '#451a03';
+      this.ctx.fillRect(potX + 2, potY + 1, potW - 4, 3);
+
+      // Lush Bushy Leaves
       this.ctx.fillStyle = '#065f46';
       this.ctx.beginPath();
-      this.ctx.ellipse(cx - 10, cy - 8, 10, 6, -0.5, 0, Math.PI * 2);
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.ellipse(cx + 10, cy - 7, 10, 6, 0.5, 0, Math.PI * 2);
+      this.ctx.ellipse(cx - 10, cy - 6, 9, 6, -0.4, 0, Math.PI * 2);
+      this.ctx.ellipse(cx + 10, cy - 5, 9, 6, 0.4, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Foreground lush green leaves
-      this.ctx.fillStyle = '#047857';
+      this.ctx.fillStyle = '#059669';
       this.ctx.beginPath();
-      this.ctx.ellipse(cx, cy - 12, 11, 8, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(cx, cy - 10, 11, 7, 0, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Bright leaf highlights & slits
       this.ctx.fillStyle = '#10b981';
       this.ctx.beginPath();
-      this.ctx.ellipse(cx - 7, cy - 11, 7, 5, -0.3, 0, Math.PI * 2);
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.ellipse(cx + 7, cy - 10, 7, 5, 0.3, 0, Math.PI * 2);
+      this.ctx.ellipse(cx - 6, cy - 9, 7, 4, -0.2, 0, Math.PI * 2);
+      this.ctx.ellipse(cx + 6, cy - 8, 7, 4, 0.2, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Leaf Vein detail
-      this.ctx.strokeStyle = '#34d399';
-      this.ctx.lineWidth = 1;
-      this.ctx.beginPath();
-      this.ctx.moveTo(cx, cy - 4);
-      this.ctx.lineTo(cx, cy - 18);
-      this.ctx.moveTo(cx - 1, cy - 10);
-      this.ctx.lineTo(cx - 9, cy - 12);
-      this.ctx.moveTo(cx + 1, cy - 9);
-      this.ctx.lineTo(cx + 9, cy - 11);
-      this.ctx.stroke();
+      // Badge
+      this.drawSharpLabel(cx, py - 20, `🌿 무럭무럭 식물 (${waterCount}/1,000 💧)`, {
+        bgColor: 'rgba(6, 78, 59, 0.94)',
+        borderColor: '#34d399',
+        textColor: '#ecfdf5',
+        fontSize: 11.5,
+        paddingX: 8,
+        height: 20
+      });
     }
 
-    // Badge Label
-    const plantLabel = (subType === 'areca') ? '🪴 복도 관엽식물' : '🪴 공기정화 식물';
-    this.drawSharpLabel(px + 16, py - 20, plantLabel, {
-      bgColor: 'rgba(6, 78, 59, 0.94)',
-      borderColor: '#34d399',
-      textColor: '#ecfdf5',
-      fontSize: 11.5,
-      paddingX: 8,
-      height: 20
-    });
+    // =========================================================================
+    // STAGE 2: 1000 ~ 2999 WATER (2차 성장 - 거대 대형 생명수)
+    // =========================================================================
+    else if (stage === 2) {
+      // Floor Shadow
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx, cy + 18, 22, 8, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Slate Ornate Planter with Bronze Rim
+      const potW = 28;
+      const potH = 20;
+      const potX = cx - 14;
+      const potY = cy;
+      this.ctx.fillStyle = '#1e293b';
+      this.ctx.beginPath();
+      this.ctx.roundRect(potX, potY, potW, potH, [2, 2, 5, 5]);
+      this.ctx.fill();
+      this.ctx.fillStyle = '#d97706';
+      this.ctx.fillRect(potX - 2, potY - 1, potW + 4, 3);
+      this.ctx.fillStyle = '#3f1c07';
+      this.ctx.fillRect(potX + 2, potY + 1, potW - 4, 3);
+
+      // Strong Wooden Trunk & Branches
+      this.ctx.strokeStyle = '#78350f';
+      this.ctx.lineWidth = 4;
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx, cy + 2);
+      this.ctx.lineTo(cx, cy - 8);
+      this.ctx.stroke();
+
+      // Broad Grand Canopy (reaching up)
+      this.ctx.fillStyle = '#064e3b';
+      this.ctx.beginPath();
+      this.ctx.arc(cx - 12, cy - 12, 12, 0, Math.PI * 2);
+      this.ctx.arc(cx + 12, cy - 11, 12, 0, Math.PI * 2);
+      this.ctx.arc(cx, cy - 16, 14, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.fillStyle = '#047857';
+      this.ctx.beginPath();
+      this.ctx.arc(cx - 7, cy - 14, 10, 0, Math.PI * 2);
+      this.ctx.arc(cx + 7, cy - 13, 10, 0, Math.PI * 2);
+      this.ctx.arc(cx, cy - 20, 11, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.fillStyle = '#10b981';
+      this.ctx.beginPath();
+      this.ctx.arc(cx - 4, cy - 16, 6, 0, Math.PI * 2);
+      this.ctx.arc(cx + 5, cy - 15, 6, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Hanging Vine Strands
+      this.ctx.strokeStyle = '#34d399';
+      this.ctx.lineWidth = 1.2;
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx - 10, cy - 8);
+      this.ctx.lineTo(cx - 10, cy - 2);
+      this.ctx.moveTo(cx + 11, cy - 7);
+      this.ctx.lineTo(cx + 11, cy - 1);
+      this.ctx.stroke();
+
+      // Badge
+      this.drawSharpLabel(cx, py - 26, `🌳 거대 생명수 (${waterCount}/3,000 💧)`, {
+        bgColor: 'rgba(6, 78, 59, 0.95)',
+        borderColor: '#10b981',
+        textColor: '#a7f3d0',
+        fontSize: 12,
+        paddingX: 9,
+        height: 21
+      });
+    }
+
+    // =========================================================================
+    // STAGE 3: 3000+ WATER (3차 최종 성장 - 숭실 생명의 만개목 🌸)
+    // =========================================================================
+    else {
+      const now = Date.now();
+      const pulse = Math.sin(now / 350) * 3;
+
+      // Magical Pulsing Radial Aura
+      const auraGrad = this.ctx.createRadialGradient(cx, cy - 14, 6, cx, cy - 14, 34 + pulse);
+      auraGrad.addColorStop(0, 'rgba(251, 113, 133, 0.45)');
+      auraGrad.addColorStop(0.5, 'rgba(253, 224, 71, 0.25)');
+      auraGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+      this.ctx.fillStyle = auraGrad;
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy - 14, 34 + pulse, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Floor Shadow
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx, cy + 18, 25, 9, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Imperial Gold Rim Royal Pot
+      const potW = 32;
+      const potH = 22;
+      const potX = cx - 16;
+      const potY = cy;
+      this.ctx.fillStyle = '#312e81'; // Royal indigo pot
+      this.ctx.beginPath();
+      this.ctx.roundRect(potX, potY, potW, potH, [3, 3, 6, 6]);
+      this.ctx.fill();
+      this.ctx.fillStyle = '#f59e0b'; // Gold rim
+      this.ctx.fillRect(potX - 2, potY - 2, potW + 4, 4);
+      this.ctx.fillStyle = '#fb7185'; // Ruby jewel
+      this.ctx.beginPath();
+      this.ctx.arc(cx, potY + 8, 3, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Sacred Golden Trunk
+      this.ctx.strokeStyle = '#92400e';
+      this.ctx.lineWidth = 5;
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx, cy + 2);
+      this.ctx.lineTo(cx, cy - 10);
+      this.ctx.stroke();
+
+      // Majestic Flowering Canopy
+      this.ctx.fillStyle = '#065f46';
+      this.ctx.beginPath();
+      this.ctx.arc(cx - 14, cy - 14, 13, 0, Math.PI * 2);
+      this.ctx.arc(cx + 14, cy - 13, 13, 0, Math.PI * 2);
+      this.ctx.arc(cx, cy - 19, 16, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.fillStyle = '#10b981';
+      this.ctx.beginPath();
+      this.ctx.arc(cx - 8, cy - 16, 11, 0, Math.PI * 2);
+      this.ctx.arc(cx + 8, cy - 15, 11, 0, Math.PI * 2);
+      this.ctx.arc(cx, cy - 22, 13, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Blooming Flowers (🌸 Pink & Gold Cherry / Lotus Blossoms)
+      const flowers = [
+        { x: cx - 14, y: cy - 16, r: 4 },
+        { x: cx + 13, y: cy - 15, r: 4 },
+        { x: cx, y: cy - 28, r: 5 },
+        { x: cx - 6, y: cy - 23, r: 4 },
+        { x: cx + 6, y: cy - 22, r: 4 },
+        { x: cx - 8, y: cy - 8, r: 3.5 },
+        { x: cx + 8, y: cy - 7, r: 3.5 }
+      ];
+
+      for (const f of flowers) {
+        // Petals
+        this.ctx.fillStyle = '#f43f5e';
+        this.ctx.beginPath();
+        this.ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillStyle = '#fbcfe8';
+        this.ctx.beginPath();
+        this.ctx.arc(f.x, f.y, f.r * 0.6, 0, Math.PI * 2);
+        this.ctx.fill();
+        // Golden Stamen Center
+        this.ctx.fillStyle = '#fef08a';
+        this.ctx.beginPath();
+        this.ctx.arc(f.x, f.y, 1.2, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+
+      // Floating Magic Sparkles
+      const sp1 = (now / 200) % 20;
+      this.ctx.fillStyle = '#fef08a';
+      this.ctx.fillRect(cx - 16 + Math.sin(now / 300) * 8, cy - 30 - (sp1 % 10), 2, 2);
+      this.ctx.fillRect(cx + 14 + Math.cos(now / 300) * 8, cy - 28 - ((sp1 + 5) % 10), 2, 2);
+
+      // Grand Badge
+      this.drawSharpLabel(cx, py - 32, `🌸 숭실 생명의 만개목 (3,000회 만개! ✨)`, {
+        bgColor: 'rgba(88, 28, 135, 0.95)',
+        borderColor: '#f43f5e',
+        textColor: '#fef08a',
+        fontSize: 12.5,
+        paddingX: 10,
+        height: 22
+      });
+    }
 
     this.ctx.restore();
   }
-
 }
+
 window.GameEngine = GameEngine;

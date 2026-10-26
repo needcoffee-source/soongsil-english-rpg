@@ -263,6 +263,16 @@ class NetworkManager {
       }
     });
 
+    // Plant Water Count Synchronization
+    this.socket.on('plant_water_sync', (data) => {
+      if (this.engine && this.engine.setPlantWaterCount) {
+        this.engine.setPlantWaterCount(data.waterCount);
+      }
+      if (window.MainApp && window.MainApp.onPlantWaterSynced) {
+        window.MainApp.onPlantWaterSynced(data);
+      }
+    });
+
     // Real-Time Leaderboard TOP 5
     this.socket.on('leaderboard_data', (data) => {
       if (window.MainApp && window.MainApp.onLeaderboardData) {
@@ -411,6 +421,18 @@ class NetworkManager {
   closeTradeModal() {
     this.modalTrade.classList.add('hidden');
     this.activeTradePartnerId = null;
+  }
+
+  waterPlant(amt = 1) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('water_plant', amt);
+    }
+  }
+
+  setPlantWaterCountTeacher(count) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('teacher_set_plant_water', { count });
+    }
   }
 }
 

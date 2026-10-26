@@ -31,8 +31,8 @@ const WORLD_DATA = {
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 14, name: "장비 제작대", prompt: "장비 제작하기" },
         { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" },
         { id: "board_club", type: "club_board", x: 27, y: 15, name: "🎸 동아리 홍보 게시판", prompt: "동아리 공지 확인 (SPACE)" },
-        { id: "plant_hallway_1", type: "plant_zone", subType: "monstera", x: 33, y: 15, name: "🪴 복도 공기정화 식물", prompt: "피톤치드 마시기 (SPACE)" },
-        { id: "plant_hallway_2", type: "plant_zone", subType: "areca", x: 38, y: 15, name: "🪴 복도 대형 관엽식물", prompt: "피톤치드 마시기 (SPACE)" },
+        { id: "plant_hallway_1", type: "plant_zone", subType: "monstera", x: 33, y: 15, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" },
+        { id: "plant_hallway_2", type: "plant_zone", subType: "areca", x: 38, y: 15, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" },
         { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 16, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
       npcs: [

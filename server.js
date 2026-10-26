@@ -69,6 +69,23 @@ app.post('/api/admin/questions', (req, res) => {
 // ========================================================
 const PROGRESS_FILE = path.join(DATA_DIR, 'students_progress.json');
 const DELETED_FILE = path.join(DATA_DIR, 'deleted_students.json');
+const PLANT_FILE = path.join(DATA_DIR, 'plant_progress.json');
+
+let plantWaterCount = 0;
+if (fs.existsSync(PLANT_FILE)) {
+  try {
+    const pData = JSON.parse(fs.readFileSync(PLANT_FILE, 'utf8'));
+    plantWaterCount = pData.waterCount || 0;
+  } catch (e) {}
+}
+
+function savePlantProgress() {
+  try {
+    fs.writeFileSync(PLANT_FILE, JSON.stringify({ waterCount: plantWaterCount }, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Plant Progress Save Error]', e);
+  }
+}
 
 if (!fs.existsSync(PROGRESS_FILE)) {
   fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}), 'utf8');
@@ -370,6 +387,7 @@ io.on('connection', (socket) => {
     // Send initial self data & current Boss Raid state
     socket.emit('init_self', players[socket.id]);
     socket.emit('boss_raid_state', bossRaidEvent);
+    socket.emit('plant_water_sync', { waterCount: plantWaterCount });
 
     // Broadcast new player to room
     socket.to(currentRoom).emit('player_joined', players[socket.id]);
@@ -410,6 +428,32 @@ io.on('connection', (socket) => {
     player.gear = sanitizeGear(gear);
     const currentRoom = `server_${player.grade}_f${player.floor}_${player.room}`;
     socket.to(currentRoom).emit('player_gear_updated', { id: socket.id, gear: player.gear });
+  });
+
+  // Plant Watering System (100, 1000, 3000 Milestone Growth)
+  socket.on('water_plant', (amt) => {
+    const increment = (typeof amt === 'number' && amt > 0 && amt <= 100) ? Math.floor(amt) : 1;
+    const prevCount = plantWaterCount;
+    plantWaterCount += increment;
+    savePlantProgress();
+    io.emit('plant_water_sync', { waterCount: plantWaterCount, added: increment });
+
+    // Milestones check
+    if (prevCount < 100 && plantWaterCount >= 100) {
+      io.emit('chat_message', { system: true, message: '🌱 [식물존 1단계 성장 달성!] 1학년 복도 식물존이 100회 물주기를 달성하여 건강한 1단계로 자라났습니다! 🌿' });
+    } else if (prevCount < 1000 && plantWaterCount >= 1000) {
+      io.emit('chat_message', { system: true, message: '🌳 [식물존 2단계 성장 달성!] 1학년 복도 식물존이 1,000회 물주기를 달성하여 거대한 2단계 대형 식물로 성장했습니다! 🌲' });
+    } else if (prevCount < 3000 && plantWaterCount >= 3000) {
+      io.emit('chat_message', { system: true, message: '🌸 [식물존 최종 3단계 만개 달성!] 1학년 복도 식물존이 3,000회 물주기를 달성하여 아름다운 꽃이 만개한 생명의 나무가 되었습니다! ✨' });
+    }
+  });
+
+  socket.on('teacher_set_plant_water', ({ count }) => {
+    if (typeof count === 'number' && count >= 0) {
+      plantWaterCount = Math.floor(count);
+      savePlantProgress();
+      io.emit('plant_water_sync', { waterCount: plantWaterCount });
+    }
   });
 
   // Equipped title sync (호칭 착용 동기화)

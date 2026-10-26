@@ -165,4 +165,39 @@ engine.player.y = 5 * 32;
 engine.checkWarps();
 console.log('✅ Teacher allowed through door into:', engine.player.room);
 
-console.log('\n🎉 ALL ROOMS & LOCKED DOORS PASSED RUNTIME SIMULATION PERFECTLY!');
+console.log('--- Testing Plant Zone Dynamic 3-Stage Growth & Watering ---');
+engine.fade.active = false;
+engine.player.room = 'hallway';
+engine.player.floor = 7;
+engine.player.x = 33 * 32;
+engine.player.y = 15 * 32;
+
+// Stage 0: 0 waters
+engine.setPlantWaterCount(0);
+engine.update();
+engine.render();
+if (engine.getPlantStage() !== 0) throw new Error('Expected Stage 0 at 0 waters');
+console.log('✅ Stage 0 verified: prompt =', engine.activeInteractable.name);
+
+// Stage 1: 100 waters
+engine.setPlantWaterCount(100);
+engine.update();
+engine.render();
+if (engine.getPlantStage() !== 1) throw new Error('Expected Stage 1 at 100 waters');
+console.log('✅ Stage 1 verified (1st growth): prompt =', engine.activeInteractable.name);
+
+// Stage 2: 1000 waters
+engine.setPlantWaterCount(1000);
+engine.update();
+engine.render();
+if (engine.getPlantStage() !== 2) throw new Error('Expected Stage 2 at 1000 waters');
+console.log('✅ Stage 2 verified (2nd growth): prompt =', engine.activeInteractable.name);
+
+// Stage 3: 3000 waters
+engine.setPlantWaterCount(3000);
+engine.update();
+engine.render();
+if (engine.getPlantStage() !== 3) throw new Error('Expected Stage 3 at 3000 waters');
+console.log('✅ Stage 3 verified (3rd growth - blooming): prompt =', engine.activeInteractable.name);
+
+console.log('\n🎉 ALL ROOMS, LOCKED DOORS & PLANT GROWTH STAGES PASSED RUNTIME SIMULATION PERFECTLY!');

@@ -543,15 +543,65 @@ class MainApp {
   }
 
   handlePlantZoneInteraction(target) {
-    const isInjured = this.playerData && this.playerData.hp < this.playerData.maxHp;
-    if (isInjured) {
-      const healAmt = Math.min(10, this.playerData.maxHp - this.playerData.hp);
-      this.playerData.hp += healAmt;
-      this.updatePlayerStatsUI();
-      if (this.audio) this.audio.playHeal();
-      alert("🪴 [복도 공기정화 식물존]\n\n\"초록빛 싱그러운 관엽식물이 가득합니다.\"\n\n🍃 깊게 숨을 들이쉬니 향긋한 피톤치드 향이 퍼지며 체력이 회복되었습니다!\n(+ " + healAmt + " HP 회복! 현재 HP: " + this.playerData.hp + "/" + this.playerData.maxHp + ")");
+    const curCount = (this.engine && this.engine.plantWaterCount) || 0;
+    const curGoal = this.engine ? this.engine.getNextPlantWaterGoal() : { current: curCount, target: 100, stage: 0, name: '🌱 아기 새싹' };
+
+    // Teacher shortcut for rapid testing of all 3 growth stages
+    if (this.playerData && this.playerData.isTeacher) {
+      const input = prompt(
+        "💧 [교사 권한: 식물존 물주기 & 성장 관리]\n\n" +
+        "현재 누적 물주기: " + curCount + "회 (" + curGoal.name + ")\n\n" +
+        "• 원하는 물주기 횟수를 입력하여 즉시 특정 성장 단계로 변경할 수 있습니다.\n" +
+        "  - 0 ~ 99: 0단계 아기 새싹\n" +
+        "  - 100 ~ 999: 1단계 무럭무럭 식물 (1차 성장)\n" +
+        "  - 1000 ~ 2999: 2단계 거대 생명수 (2차 성장)\n" +
+        "  - 3000 이상: 3단계 최종 만개목 (3차 만개 성장)\n\n" +
+        "• 일반 물주기(+1회)를 하려면 빈칸으로 [확인]을 누르세요:",
+        curCount
+      );
+
+      if (input !== null) {
+        const trimmed = input.trim();
+        if (trimmed !== '' && !isNaN(Number(trimmed))) {
+          const setCount = Math.max(0, parseInt(trimmed, 10));
+          if (this.engine) this.engine.setPlantWaterCount(setCount);
+          if (this.networkManager && this.networkManager.setPlantWaterCountTeacher) {
+            this.networkManager.setPlantWaterCountTeacher(setCount);
+          }
+          const newG = this.engine ? this.engine.getNextPlantWaterGoal() : { name: '' };
+          this.showToast("💧 식물존 물주기가 " + setCount + "회 (" + newG.name + ")로 설정되었습니다!", "success");
+          return;
+        }
+      } else {
+        return; // cancelled
+      }
+    }
+
+    // Normal student watering interaction (+1)
+    const prevCount = curCount;
+    const newCount = prevCount + 1;
+    if (this.engine) {
+      this.engine.setPlantWaterCount(newCount);
+    }
+    if (this.networkManager && this.networkManager.waterPlant) {
+      this.networkManager.waterPlant(1);
+    }
+
+    if (this.audio && this.audio.playSelect) {
+      this.audio.playSelect();
+    }
+
+    // Check Milestone Celebrations
+    if (prevCount < 100 && newCount >= 100) {
+      alert("🎉 [식물존 1단계 성장 달성! (1/3)]\n\n모두가 정성껏 물을 준 덕분에 누적 물주기 100회를 돌파했습니다! 💧\n식물이 파릇파릇하고 건강한 [🌿 1단계 무럭무럭 식물]로 자라났습니다!");
+    } else if (prevCount < 1000 && newCount >= 1000) {
+      alert("🎉 [식물존 2단계 성장 달성! (2/3)]\n\n누적 물주기 1,000회를 돌파했습니다! 💧\n식물이 거대하고 울창한 [🌳 2단계 거대 생명수]로 크게 성장했습니다!");
+    } else if (prevCount < 3000 && newCount >= 3000) {
+      alert("🌟 [식물존 최종 3단계 만개 달성! (3/3)]\n\n누적 물주기 3,000회를 돌파했습니다! 💧\n식물이 황금빛 꽃을 활짝 피운 [🌸 3단계 숭실 생명의 만개목]으로 최종 진화했습니다! ✨");
     } else {
-      alert("🪴 [복도 공기정화 식물존]\n\n\"초록빛 싱그러운 관엽식물이 공기를 맑게 정화해주고 있습니다.\"\n\n🍃 깊게 숨을 들이쉬니 머리가 맑아지고 상쾌한 기분이 듭니다! ✨");
+      const nextG = this.engine ? this.engine.getNextPlantWaterGoal() : { target: 100 };
+      const targetText = nextG.max ? "만개 완료!" : nextG.target + "회";
+      this.showToast("💧 식물에 맑은 물을 주었습니다! (누적: " + newCount + "회 / 다음 성장: " + targetText + ")", "success");
     }
   }
 
