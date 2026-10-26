@@ -4682,11 +4682,11 @@ class MainApp {
     eventCard.innerHTML = `
       <div style="flex: 1;">
         <div style="display:flex; align-items:center; gap: 8px;">
-          <span style="font-size: 16px; font-weight: 900; color: #fef08a;">👟 숭실 삼디다스 실내화</span>
+          <span style="font-size: 16px; font-weight: 900; color: #fef08a;">👟 삼디다스 실내화</span>
           ${hasShoes ? '<span style="font-size:11px; font-weight:800; background:#059669; color:#fff; padding:2px 8px; border-radius:12px;">보유/착용 중</span>' : '<span style="font-size:11px; font-weight:800; background:#0284c7; color:#fff; padding:2px 8px; border-radius:12px;">이벤트 장비</span>'}
         </div>
         <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">
-          1티어 입문 신발! 착용 시 달리기 질주(Shift)가 가능합니다. (이동속도 27% 증가)
+          누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화.<br>뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다.<br><span style="color:#67e8f9; font-weight:bold;">[특수 효과] Shift 키를 누르면 3초간 약한 질주(속도 15% 증가)가 가능합니다.</span>
         </div>
         ${!hasShoes ? `
           <div style="font-size: 11.5px; margin-top: 6px; color: ${canAffordShoes ? '#4ade80' : '#f87171'}; font-weight: 700;">
@@ -4714,20 +4714,20 @@ class MainApp {
         const costItemId = useExam ? 'item_perfect_exam' : 'item_eval_paper';
         const costItemName = useExam ? '💯 백점만점 시험지' : '📜 A+ 만점 수행평가지';
         
-        if (confirm(`👟 [${costItemName}] 1개를 소모하여 [👟 숭실 삼디다스 실내화]를 교환하시겠습니까?`)) {
+        if (confirm(`👟 [${costItemName}] 1개를 소모하여 [👟 삼디다스 실내화]를 교환하시겠습니까?`)) {
           this.removeItem(costItemId, 1);
-          this.addItem('equip_shoes_samdidas', '👟 숭실 삼디다스 실내화', 1, '👟', {
+          this.addItem('equip_shoes_samdidas', '👟 삼디다스 실내화', 1, '👟', {
             type: 'equipment',
             slot: 'shoes',
             stats: { atk: 2, def: 2, hp: 10 },
-            effect: '1티어 실내화 · 달리기 질주(Shift) 가능 (속도 27% 증가)'
+            effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 3초간 약한 질주가 가능합니다.'
           });
           this.equipItem('equip_shoes_samdidas');
           this.updateDashButtonUI();
           if (window.AudioManager && window.AudioManager.playFanfare) {
             window.AudioManager.playFanfare();
           }
-          alert('🎉 [이벤트 신발 교환 완료!]\n\n[👟 숭실 삼디다스 실내화]를 획득하여 장착했습니다!\n이제 Shift 키를 누르면 경쾌하게 달릴 수 있습니다! 🏃💨');
+          alert('🎉 [이벤트 신발 교환 완료!]\n\n[👟 삼디다스 실내화]를 획득하여 장착했습니다!\n이제 Shift 키를 누르면 가볍게 질주할 수 있습니다! 🏃💨');
           this.renderTitleExchangeModal();
         }
       });

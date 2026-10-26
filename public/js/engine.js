@@ -149,7 +149,7 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    this.player.speed = isDashing ? 4.85 : 3.8; // 1티어 신발: 기본 3.8 -> 달리기 4.85 (약 27% 경쾌한 속도 증가)
+    this.player.speed = isDashing ? 4.37 : 3.8; // 1티어 신발: 기본 3.8 -> 달리기 4.37 (약 15% 질주 속도 증가)
   }
 
   // ========================================================
