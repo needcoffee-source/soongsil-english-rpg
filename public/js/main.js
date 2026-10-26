@@ -34,7 +34,7 @@ const ALL_GAME_ITEMS = {
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
-  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 5, def: 5, hp: 20 }, effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20' } },
+  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
@@ -507,8 +507,8 @@ class MainApp {
             type: 'equipment',
             slot: 'accessory',
             isQuestItem: true,
-            stats: { atk: 5, def: 5, hp: 20 },
-            effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20'
+            stats: { atk: 0, def: 0, hp: 0 },
+            effect: '🛗 중앙 엘리베이터 가동 인가증'
           });
           const equipNow = confirm(
             '🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?'
@@ -925,8 +925,8 @@ class MainApp {
             type: 'equipment',
             slot: 'accessory',
             isQuestItem: true,
-            stats: { atk: 5, def: 5, hp: 20 },
-            effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20'
+            stats: { atk: 0, def: 0, hp: 0 },
+            effect: '🛗 중앙 엘리베이터 가동 인가증'
           });
         }
       }
@@ -1321,10 +1321,16 @@ class MainApp {
     let bonusHp = 0;
 
     Object.values(this.playerData.equipment).forEach(eq => {
-      if (eq && eq.stats) {
-        bonusAtk += (eq.stats.atk || 0);
-        bonusDef += (eq.stats.def || 0);
-        bonusHp += (eq.stats.hp || 0);
+      if (eq) {
+        if (eq.item && window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[eq.item]?.meta?.stats) {
+          eq.stats = window.ALL_GAME_ITEMS[eq.item].meta.stats;
+          eq.effect = window.ALL_GAME_ITEMS[eq.item].meta.effect;
+        }
+        if (eq.stats) {
+          bonusAtk += (eq.stats.atk || 0);
+          bonusDef += (eq.stats.def || 0);
+          bonusHp += (eq.stats.hp || 0);
+        }
       }
     });
 
@@ -1899,8 +1905,8 @@ class MainApp {
             type: 'equipment',
             slot: 'accessory',
             isQuestItem: true,
-            stats: { atk: 5, def: 5, hp: 20 },
-            effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20'
+            stats: { atk: 0, def: 0, hp: 0 },
+            effect: '🛗 중앙 엘리베이터 가동 인가증'
           });
           rewardItemsList.push('🪪 엘리베이터 작동권 (중앙 엘리베이터 가동 필수 장비!)');
         }
