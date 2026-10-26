@@ -791,24 +791,42 @@ class MainApp {
     const checkIsTeacher = document.getElementById('check-is-teacher');
     const teacherPwdField = document.getElementById('teacher-pwd-field');
     const studentCustomBox = document.getElementById('student-customization-box');
+    const groupStudentId = document.getElementById('group-student-id');
+    const groupStudentNickname = document.getElementById('group-student-nickname');
+    const teacherNoticeBanner = document.getElementById('teacher-notice-banner');
+    const teacherPwdInput = document.getElementById('input-teacher-pwd');
+
     if (checkIsTeacher && teacherPwdField) {
       checkIsTeacher.addEventListener('change', () => {
-        const nickInput = document.getElementById('input-nickname');
         if (checkIsTeacher.checked) {
           teacherPwdField.classList.remove('hidden');
+          if (teacherNoticeBanner) teacherNoticeBanner.classList.remove('hidden');
+          if (groupStudentId) groupStudentId.style.display = 'none';
+          if (groupStudentNickname) groupStudentNickname.style.display = 'none';
           if (studentCustomBox) studentCustomBox.style.display = 'none';
-          if (nickInput && (!nickInput.value.trim() || nickInput.value.trim() === '교사')) {
-            nickInput.value = '갓준철';
+          if (teacherPwdInput) {
+            teacherPwdInput.focus();
+            teacherPwdInput.select();
           }
         } else {
           teacherPwdField.classList.add('hidden');
-          if (studentCustomBox) studentCustomBox.style.display = 'flex';
-          if (nickInput && nickInput.value.trim() === '갓준철') {
-            nickInput.value = '';
-          }
+          if (teacherNoticeBanner) teacherNoticeBanner.classList.add('hidden');
+          if (groupStudentId) groupStudentId.style.display = 'block';
+          if (groupStudentNickname) groupStudentNickname.style.display = 'block';
+          if (studentCustomBox) studentCustomBox.style.display = 'block';
         }
       });
     }
+
+    // Enter 키로 즉시 게임 시작
+    const handleLoginEnter = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const startBtn = document.getElementById('btn-start-game');
+        if (startBtn) startBtn.click();
+      }
+    };
+    if (teacherPwdInput) teacherPwdInput.addEventListener('keydown', handleLoginEnter);
 
     // 캐릭터 커스터마이징 (머리색 3종, 옷 색상 3종 & 실시간 미리보기)
     let selectedHair = 'black';
@@ -914,6 +932,12 @@ class MainApp {
           syncStudentIdUI(val);
         }
       });
+      studentIdInput.addEventListener('keydown', handleLoginEnter);
+    }
+
+    const nicknameInput = document.getElementById('input-nickname');
+    if (nicknameInput) {
+      nicknameInput.addEventListener('keydown', handleLoginEnter);
     }
 
     try {
@@ -965,9 +989,12 @@ class MainApp {
         requestFullscreenSafe();
       }
 
-      const isTeacher = checkIsTeacher && checkIsTeacher.checked;
+      const pwdInput = document.getElementById('input-teacher-pwd');
+      const enteredPwd = (pwdInput ? pwdInput.value : '').trim();
+      // 교사 체크박스가 활성화되었거나, 교사 암호 입력칸에 암호(03220322)가 입력된 경우 교사 접속 판정
+      const isTeacher = (checkIsTeacher && checkIsTeacher.checked) || (enteredPwd === '03220322');
       let name = document.getElementById('input-nickname').value.trim();
-      const studentId = document.getElementById('input-student-id').value.trim();
+      let studentId = document.getElementById('input-student-id').value.trim();
       const grade = parseInt(document.querySelector('input[name="server-grade"]:checked').value) || 1;
 
       if (!this.isServerOnline && !isTeacher) {
@@ -975,30 +1002,22 @@ class MainApp {
         if (!proceed) return;
       }
 
-      if (!isTeacher) {
-        if (!studentId) {
-          alert('학번을 입력해 주세요! (예: 10101)');
-          document.getElementById('input-student-id').focus();
-          return;
-        }
-        if (!name) {
-          alert('이름을 입력해 주세요! (예: 홍길동)');
-          document.getElementById('input-nickname').focus();
-          return;
-        }
-      }
-
       if (isTeacher) {
-        const pwd = (document.getElementById('input-teacher-pwd').value || '').trim();
-        if (pwd !== '03220322') {
+        if (enteredPwd !== '03220322') {
           alert('🔒 교사 인증 암호가 일치하지 않습니다.');
+          if (pwdInput) {
+            pwdInput.focus();
+            pwdInput.select();
+          }
           return;
         }
 
-        // 교사 계정 이름은 '갓준철' / 공·방·체 9999 통일
-        name = (name && name !== '교사') ? name : '갓준철';
+        // 교사 계정 접속: 학번과 이름을 완전히 무시하고 마스터 프로필('교사', '갓준철') 적용
+        name = '갓준철';
+        studentId = '교사';
+
         this.playerData.isTeacher = true;
-        this.playerData.teacherPwd = pwd;
+        this.playerData.teacherPwd = enteredPwd;
         this.playerData.baseHp = 9999;
         this.playerData.hp = 9999;
         this.playerData.maxHp = 9999;
@@ -1022,6 +1041,17 @@ class MainApp {
         const gmPanel = document.getElementById('gm-panel');
         if (gmPanel) gmPanel.classList.remove('hidden');
       } else {
+        // 일반 학생 접속: 학번 및 이름 필수 검증
+        if (!studentId) {
+          alert('학번을 입력해 주세요! (예: 10101)');
+          document.getElementById('input-student-id').focus();
+          return;
+        }
+        if (!name) {
+          alert('이름을 입력해 주세요! (예: 홍길동)');
+          document.getElementById('input-nickname').focus();
+          return;
+        }
         this.playerData.isTeacher = false;
         this.playerData.teacherPwd = '';
         this.engine.player.isTeacher = false;
@@ -1104,8 +1134,10 @@ class MainApp {
       this.recalcCombatStats();
       this.updateExpBar();
 
-      // 시작 시점 프로필 즉시 영구 저장 동기화
-      this.saveProgress();
+      // 시작 시점 프로필 즉시 영구 저장 동기화 (일반 학생만 저장)
+      if (!isTeacher) {
+        this.saveProgress();
+      }
 
       this.quizManager.loadQuestions(grade);
       this.craftingManager.loadRecipes(grade);

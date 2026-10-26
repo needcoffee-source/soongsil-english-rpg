@@ -210,12 +210,17 @@
         <h2>🏫 숭실중학교 영어 오픈월드 RPG <span style="font-size:12px; background:#0284c7; color:#fff; padding:3px 9px; border-radius:12px; vertical-align:middle; font-weight:700;">시즌 1 (v1.28)</span></h2>
       </div>
       <div class="modal-body">
-        <div class="input-group">
+        <!-- Teacher Notice Banner (교사 로그인 모드 시 표시) -->
+        <div id="teacher-notice-banner" class="hidden" style="background:rgba(2, 132, 199, 0.15); border:1.5px solid #0284c7; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:12px; color:#e0f2fe; line-height:1.5;">
+          👨‍🏫 <strong>교사(관리자) 모드 활성화</strong><br>
+          <span style="color:#93c5fd;">학번과 이름 입력이 불필요합니다. (인증 암호 입력 후 즉시 관리자 계정 접속)</span>
+        </div>
+        <div class="input-group" id="group-student-id">
           <label for="input-student-id">학번 (5자리)</label>
           <input type="text" id="input-student-id" placeholder="예: 10101" maxlength="5">
           <div id="student-id-sync-badge" style="font-size:11px; margin-top:4px; min-height:16px;"></div>
         </div>
-        <div class="input-group">
+        <div class="input-group" id="group-student-nickname">
           <label for="input-nickname">이름</label>
           <input type="text" id="input-nickname" placeholder="예: 홍길동" maxlength="10">
         </div>
@@ -1305,12 +1310,12 @@
   <script src="js/dialog.js?v=6"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=33"></script>
-  <script src="js/engine.js?v=33"></script>
-  <script src="js/quiz.js?v=33"></script>
-  <script src="js/crafting.js?v=33"></script>
-  <script src="js/network.js?v=33"></script>
-  <script src="js/acid_rain.js?v=33"></script>
-  <script src="js/main.js?v=33"></script>
+  <script src="js/world.js?v=34"></script>
+  <script src="js/engine.js?v=34"></script>
+  <script src="js/quiz.js?v=34"></script>
+  <script src="js/crafting.js?v=34"></script>
+  <script src="js/network.js?v=34"></script>
+  <script src="js/acid_rain.js?v=34"></script>
+  <script src="js/main.js?v=34"></script>
 </body>
 </html>
