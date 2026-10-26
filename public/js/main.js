@@ -179,6 +179,8 @@ class MainApp {
       },
       hasReceivedSoongsilGift: false,
       hasOpenedSecretLocker: false,
+      hasCheckedMirror: false,
+      hasOpenedLostBox: false,
       hasClearedDragonRaid: false,
       hasClearedCerberusRaid: false,
       titles: [],
@@ -443,6 +445,10 @@ class MainApp {
       }
     } else if (target.type === 'water_purifier') {
       this.handleWaterPurifier();
+    } else if (target.type === 'mirror') {
+      this.handleMirrorInteraction();
+    } else if (target.type === 'lost_box') {
+      this.handleLostBoxInteraction();
     }
   }
 
@@ -474,6 +480,99 @@ class MainApp {
     }
 
     this.showToast(`🚰 시원한 정수기 냉수를 마셨습니다! HP +${actualHealed} 회복 (${this.playerData.hp}/${this.playerData.maxHp}) [쿨타임: 1분 30초]`, 'success');
+  }
+
+  // 🪞 복도 전신 거울 이스터에그 (최초 1회 골드 20, 경험치 20)
+  handleMirrorInteraction() {
+    const studentId = this.playerData.studentId || 'default';
+    const mirrorKey = 'soongsil_mirror_' + studentId;
+    const alreadyChecked = !!(this.playerData.hasCheckedMirror || (studentId && localStorage.getItem(mirrorKey) === 'true'));
+
+    if (alreadyChecked && !this.playerData.isTeacher) {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      const mirrorPhrases = [
+        `"✨ 흠... 오늘따라 교복 핏과 헤어스타일이 완벽한걸? 거울을 보며 찡긋 윙크를 지어봅니다."`,
+        `"🌟 '공부도, 퀴즈 배틀도 1등! 숭실 최고의 모험가가 바로 나야!' 거울 속 나와 하이파이브를 나눕니다."`,
+        `"😎 '티끌 하나 없는 완벽한 옷매무새!' 거울을 보고 나니 자신감이 200% 충전됩니다."`,
+        `"🍀 '오늘 왠지 좋은 일만 가득 일어날 것 같아!' 거울에 비친 미소가 눈부시게 빛납니다."`,
+        `"💪 '어떤 어려운 영어 문제나 보스 레이드도 두렵지 않아!' 거울 속 나에게 당당하게 파이팅을 외칩니다."`
+      ];
+      const randomMsg = mirrorPhrases[Math.floor(Math.random() * mirrorPhrases.length)];
+      alert(`🪞 [복도 전신 거울]\n\n${randomMsg}`);
+      return;
+    }
+
+    // 최초 1회 보상: 20G, 20 EXP
+    this.playerData.hasCheckedMirror = true;
+    try {
+      localStorage.setItem(mirrorKey, 'true');
+    } catch (e) {}
+
+    this.addGold(20);
+    this.addExp(20);
+    this.saveProgress();
+
+    if (window.AudioManager) {
+      window.AudioManager.playFanfare();
+    }
+
+    alert(
+      `🪞 [복도 전신 거울 - 용모 단정 체크!]\n\n` +
+      `"거울 속에 비친 단정하고 늠름한 숭실중 1학년 학생의 모습!\n` +
+      `카라를 바로잡고 옷매무새를 가다듬으니 자신감이 샘솟습니다! ✨"\n\n` +
+      `🎁 [최초 1회 용모 단정 보너스]\n` +
+      `• 🪙 골드 +20G 획득!\n` +
+      `• 🌟 경험치 +20 EXP 획득!\n\n` +
+      `"오늘도 활기차고 당당하게 숭실 모험을 시작하자!"`
+    );
+  }
+
+  // 📦 운동장 비밀 분실물 상자 (최초 1회 50골드, 30경험치, 주홍물약 2개, 빨간물약 2개)
+  handleLostBoxInteraction() {
+    const studentId = this.playerData.studentId || 'default';
+    const boxKey = 'soongsil_lost_box_' + studentId;
+    const alreadyOpened = !!(this.playerData.hasOpenedLostBox || (studentId && localStorage.getItem(boxKey) === 'true'));
+
+    if (alreadyOpened && !this.playerData.isTeacher) {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      alert(
+        `📦 [낡은 철제 분실물 상자]\n\n` +
+        `"상자 안은 비어 있지만, 뚜껑 안쪽에 새겨진 선배의 따뜻한 글귀가 은은하게 남아있습니다.\n\n` +
+        `'포기하지 않고 끝까지 달리는 자에게 승리의 영광이 있으리라! 🏃‍♂️'"`
+      );
+      return;
+    }
+
+    // 최초 1회 보상: 50G, 30 EXP, 주홍물약 x2, 빨간물약 x2
+    this.playerData.hasOpenedLostBox = true;
+    try {
+      localStorage.setItem(boxKey, 'true');
+    } catch (e) {}
+
+    this.addGold(50);
+    this.addExp(30);
+    this.addItem('item_orange_potion', '주홍 물약', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
+    this.addItem('item_red_potion', '빨간 물약', 2, '🍷', { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' });
+    this.saveProgress();
+
+    if (window.AudioManager) {
+      window.AudioManager.playFanfare();
+    }
+
+    alert(
+      `📦 [스탠드 구석 비밀 분실물 상자 발견!]\n\n` +
+      `"관람석 스탠드 구석, 덤불 사이에 조심스레 숨겨져 있던 낡은 철제 분실물 상자의 자물쇠를 풀었습니다!\n` +
+      `안에는 누군가 남겨둔 따뜻한 응원의 손편지와 비상 물품들이 가지런히 놓여 있습니다."\n\n` +
+      `📜 [선배의 비밀 쪽지]:\n` +
+      `'숭실 운동장에서 땀 흘리며 달리는 후배들아!\n` +
+      `지치고 힘들 때 이 비상 물약과 용돈을 쓰고 힘내라! - 숭실 졸업생 선배가'\n\n` +
+      `🎁 [최초 1회 보상 획득!]\n` +
+      `• 🪙 골드 +50G 획득!\n` +
+      `• 🌟 경험치 +30 EXP 획득!\n` +
+      `• 🧪 주홍 물약 x2개 획득! (HP +25 회복)\n` +
+      `• 🍷 빨간 물약 x2개 획득! (HP +10 회복)\n\n` +
+      `(우측 상단 가방(🎒)을 열어 획득한 물약을 확인할 수 있습니다.)`
+    );
   }
 
   hasItem(itemId) {
@@ -953,6 +1052,8 @@ class MainApp {
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
+          this.playerData.hasCheckedMirror = !!(saved.hasCheckedMirror || (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true'));
+          this.playerData.hasOpenedLostBox = !!(saved.hasOpenedLostBox || (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true'));
           this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
@@ -962,6 +1063,8 @@ class MainApp {
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
+          this.playerData.hasCheckedMirror = (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true');
+          this.playerData.hasOpenedLostBox = (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true');
           this.playerData.hasClearedFirstBoss = !!(studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true');
           this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
           this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
@@ -1036,6 +1139,8 @@ class MainApp {
               outfitColor: this.playerData.outfitColor,
               hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
               hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
+              hasCheckedMirror: !!this.playerData.hasCheckedMirror,
+              hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
               updatedAt: Date.now()
@@ -3533,6 +3638,8 @@ class MainApp {
         outfitColor: this.playerData.outfitColor,
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
+        hasCheckedMirror: !!this.playerData.hasCheckedMirror,
+        hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
         hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
@@ -3544,7 +3651,7 @@ class MainApp {
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
@@ -3605,6 +3712,8 @@ class MainApp {
       localStorage.removeItem('soongsil_save_' + studentId);
       localStorage.removeItem('soongsil_gift_' + studentId);
       localStorage.removeItem('soongsil_secret_locker_' + studentId);
+      localStorage.removeItem('soongsil_mirror_' + studentId);
+      localStorage.removeItem('soongsil_lost_box_' + studentId);
       localStorage.removeItem('soongsil_first_boss_cleared_' + studentId);
       localStorage.removeItem('soongsil_dragon_cleared_' + studentId);
       localStorage.removeItem('soongsil_cerberus_cleared_' + studentId);
@@ -3622,6 +3731,8 @@ class MainApp {
     this.playerData.name = updatedProgress.name || this.playerData.name;
     this.playerData.hasReceivedSoongsilGift = !!updatedProgress.hasReceivedSoongsilGift;
     this.playerData.hasOpenedSecretLocker = !!updatedProgress.hasOpenedSecretLocker;
+    this.playerData.hasCheckedMirror = !!updatedProgress.hasCheckedMirror;
+    this.playerData.hasOpenedLostBox = !!updatedProgress.hasOpenedLostBox;
     this.playerData.hasClearedFirstBoss = !!updatedProgress.hasClearedFirstBoss;
     this.playerData.hasClearedDragonRaid = !!updatedProgress.hasClearedDragonRaid;
     this.playerData.hasClearedCerberusRaid = !!updatedProgress.hasClearedCerberusRaid;

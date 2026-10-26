@@ -604,6 +604,14 @@ class GameEngine {
             minDist = tDist;
           }
         }
+        // 2-D. Secret Lost & Found Box (스탠드 구석 비밀 분실물 상자)
+        if (pg.lostBox) {
+          const lDist = Math.hypot(pg.lostBox.x * 32 - this.player.x, (pg.lostBox.y + 0.5) * 32 - this.player.y);
+          if (lDist < 64 && lDist < minDist) {
+            closest = { type: 'lost_box', name: pg.lostBox.name || '📦 낡은 철제 분실물 상자', prompt: pg.lostBox.prompt || '비밀 상자 열기 (SPACE)' };
+            minDist = lDist;
+          }
+        }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -836,6 +844,9 @@ class GameEngine {
         }
         if (pg.titleExchange && Math.hypot(pg.titleExchange.x * 32 - x, (pg.titleExchange.y + 0.5) * 32 - y) < 56) {
           return { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
+        }
+        if (pg.lostBox && Math.hypot(pg.lostBox.x * 32 - x, (pg.lostBox.y + 0.5) * 32 - y) < 56) {
+          return { type: 'lost_box', name: pg.lostBox.name || '📦 낡은 철제 분실물 상자', prompt: pg.lostBox.prompt || '비밀 상자 열기 (SPACE)' };
         }
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -3625,6 +3636,8 @@ class GameEngine {
           this.drawHighResForsythiaPot(obj);
         } else if (obj.type === 'water_purifier') {
           this.drawHighResWaterPurifier(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'mirror') {
+          this.drawHighResMirror(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -3840,6 +3853,10 @@ class GameEngine {
     // 5-B. Title Exchange (호칭 교환소 - 관람석 스탠드 중앙: x: 30, y: 15)
     const pgTitle = (WORLD_DATA.playground && WORLD_DATA.playground.titleExchange) || { x: 30, y: 15 };
     this.drawHighResTitleExchange(pgTitle.x * 32, pgTitle.y * 32);
+
+    // 5-C. Secret Lost & Found Box (스탠드 서쪽 구석 비밀 분실물 상자: x: 4, y: 6)
+    const pgLostBox = (WORLD_DATA.playground && WORLD_DATA.playground.lostBox) || { x: 4, y: 6 };
+    this.drawHighResLostBox(pgLostBox.x * 32, pgLostBox.y * 32);
 
     // ========================================================
     // 6. BOTTOM: SOCCER FIELD (축구장 & 우레탄 트랙)
@@ -5820,6 +5837,214 @@ class GameEngine {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#38bdf8',
       textColor: '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res Hallway Full-length Mirror (복도 전신 거울 이스터에그)
+  drawHighResMirror(px, py) {
+    this.ctx.save();
+    // Shadow under the mirror stand
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 29, 18, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Wooden stand legs
+    this.ctx.fillStyle = '#5c3a21'; // rich mahogany / walnut wood
+    this.ctx.fillRect(px + 3, py + 22, 4, 8);
+    this.ctx.fillRect(px + 25, py + 22, 4, 8);
+    // Base horizontal support
+    this.ctx.fillStyle = '#422a16';
+    this.ctx.fillRect(px + 1, py + 27, 30, 3);
+
+    // Mirror outer frame (tall rectangle with rounded corners)
+    const fx = px + 5;
+    const fy = py - 18;
+    const fw = 22;
+    const fh = 43;
+
+    // Outer frame with metallic/wood bevel
+    this.ctx.fillStyle = '#8b5a2b';
+    this.ctx.beginPath();
+    this.ctx.roundRect(fx, fy, fw, fh, 5);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#4a2c11';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // Inner gold/brass trim
+    this.ctx.strokeStyle = '#d4af37';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(fx + 2, fy + 2, fw - 4, fh - 4);
+
+    // Mirror glass (reflective light cyan/blue gradient)
+    const glassX = fx + 3;
+    const glassY = fy + 3;
+    const glassW = fw - 6;
+    const glassH = fh - 6;
+
+    const grad = this.ctx.createLinearGradient(glassX, glassY, glassX + glassW, glassY + glassH);
+    grad.addColorStop(0, '#e0f2fe');
+    grad.addColorStop(0.3, '#bae6fd');
+    grad.addColorStop(0.6, '#7dd3fc');
+    grad.addColorStop(1, '#e0f2fe');
+
+    this.ctx.fillStyle = grad;
+    this.ctx.fillRect(glassX, glassY, glassW, glassH);
+
+    // Diagonal glassy highlight sheen lines
+    if (this.ctx.clip) {
+      this.ctx.save();
+      this.ctx.beginPath();
+      this.ctx.rect(glassX, glassY, glassW, glassH);
+      this.ctx.clip();
+
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      this.ctx.beginPath();
+      this.ctx.moveTo(glassX - 5, glassY + 14);
+      this.ctx.lineTo(glassX + 10, glassY - 2);
+      this.ctx.lineTo(glassX + 15, glassY - 2);
+      this.ctx.lineTo(glassX, glassY + 18);
+      this.ctx.closePath();
+      this.ctx.fill();
+
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      this.ctx.beginPath();
+      this.ctx.moveTo(glassX + 2, glassY + 28);
+      this.ctx.lineTo(glassX + 16, glassY + 12);
+      this.ctx.lineTo(glassX + 19, glassY + 12);
+      this.ctx.lineTo(glassX + 5, glassY + 30);
+      this.ctx.closePath();
+      this.ctx.fill();
+
+      this.ctx.restore();
+    } else {
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      this.ctx.fillRect(glassX + 2, glassY + 2, 3, glassH - 4);
+    }
+
+    // Sparkle star at top right
+    const pulse = Math.sin(Date.now() / 300) * 0.3 + 0.7;
+    this.ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`;
+    const sx = glassX + glassW - 3;
+    const sy = glassY + 4;
+    this.ctx.beginPath();
+    this.ctx.arc(sx, sy, 1.8, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Floating name label
+    this.drawSharpLabel(px + 16, py - 32, '🪞 복도 전신 거울', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: 'rgba(56, 189, 248, 0.85)',
+      textColor: '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res Secret Lost & Found Box (운동장 스탠드 구석 비밀 분실물 상자)
+  drawHighResLostBox(px, py) {
+    this.ctx.save();
+
+    // Natural grass patch / clovers around the box
+    this.ctx.fillStyle = '#166534';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 8, py + 22, 6, 3, 0, 0, Math.PI * 2);
+    this.ctx.ellipse(px + 26, py + 20, 7, 4, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Shadow underneath box
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 22, 17, 7, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    const bx = px + 2;
+    const by = py + 2;
+    const bw = 28;
+    const bh = 19;
+
+    // Main steel chest body (military olive-drab weathered iron)
+    const boxGrad = this.ctx.createLinearGradient(bx, by, bx, by + bh);
+    boxGrad.addColorStop(0, '#475569');
+    boxGrad.addColorStop(0.5, '#334155');
+    boxGrad.addColorStop(1, '#1e293b');
+
+    this.ctx.fillStyle = boxGrad;
+    this.ctx.beginPath();
+    this.ctx.roundRect(bx, by, bw, bh, 3);
+    this.ctx.fill();
+
+    // Heavy iron edge bevel / reinforcement brackets
+    this.ctx.strokeStyle = '#0f172a';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // Chest lid seam
+    const lidH = 7;
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+    this.ctx.fillRect(bx + 1, by + 1, bw - 2, lidH);
+    this.ctx.strokeStyle = '#0f172a';
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.moveTo(bx, by + lidH);
+    this.ctx.lineTo(bx + bw, by + lidH);
+    this.ctx.stroke();
+
+    // Steel corner brackets & rivets
+    this.ctx.fillStyle = '#64748b';
+    this.ctx.fillRect(bx, by, 4, lidH);
+    this.ctx.fillRect(bx + bw - 4, by, 4, lidH);
+    this.ctx.fillRect(bx, by + bh - 6, 4, 6);
+    this.ctx.fillRect(bx + bw - 4, by + bh - 6, 4, 6);
+
+    // Rivet dots
+    this.ctx.fillStyle = '#cbd5e1';
+    [bx + 2, bx + bw - 2].forEach(rx => {
+      this.ctx.fillRect(rx - 0.5, by + 2, 1, 1);
+      this.ctx.fillRect(rx - 0.5, by + bh - 3, 1, 1);
+    });
+
+    // Antique Brass latch & keyhole / padlock
+    const lockX = bx + bw / 2 - 4;
+    const lockY = by + lidH - 2;
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.beginPath();
+    this.ctx.roundRect(lockX, lockY, 8, 8, 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#78350f';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    // Keyhole
+    this.ctx.fillStyle = '#1c1917';
+    this.ctx.beginPath();
+    this.ctx.arc(lockX + 4, lockY + 3, 1.2, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillRect(lockX + 3.5, lockY + 3.5, 1, 2.5);
+
+    // Mysterious glint / pulse
+    const shimmer = Math.sin(Date.now() / 250);
+    if (shimmer > 0.4) {
+      this.ctx.fillStyle = 'rgba(251, 191, 36, 0.8)';
+      this.ctx.beginPath();
+      this.ctx.arc(bx + 6, by + 4, 1.5, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    // Floating label
+    this.drawSharpLabel(px + 16, py - 14, '📦 낡은 철제 분실물 상자', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: 'rgba(245, 158, 11, 0.85)',
+      textColor: '#fef08a',
       fontSize: 11.5,
       paddingX: 8,
       height: 20

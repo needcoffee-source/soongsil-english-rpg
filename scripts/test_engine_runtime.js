@@ -18,6 +18,7 @@ const mockCtx = {
   strokeRect: () => {},
   stroke: () => {},
   fill: () => {},
+  clip: () => {},
   moveTo: () => {},
   lineTo: () => {},
   quadraticCurveTo: () => {},

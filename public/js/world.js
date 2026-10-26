@@ -24,6 +24,7 @@ const WORLD_DATA = {
       elevator: { x: 56, y: 3 },
       interactive: [
         { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
+        { id: "mirror_hallway", type: "mirror", x: 38, y: 5, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 14, name: "장비 제작대", prompt: "장비 제작하기" },
         { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" },
         { id: "water_purifier_hallway", type: "water_purifier", x: 43, y: 16, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
@@ -234,6 +235,14 @@ const WORLD_DATA = {
       y: 15,
       name: "🏅 호칭 교환소",
       prompt: "호칭 교환소 이용하기"
+    },
+    lostBox: {
+      id: "lost_found_box",
+      type: "lost_box",
+      x: 4,
+      y: 6,
+      name: "📦 낡은 철제 분실물 상자",
+      prompt: "비밀 상자 열기 (SPACE)"
     },
     basketballMonsters: [
       {
