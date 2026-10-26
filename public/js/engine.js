@@ -6869,16 +6869,16 @@ class GameEngine {
     this.ctx.save();
     const time = Date.now() / 1000;
     const pulse = 0.5 + 0.5 * Math.sin(time * 3);
-    const floatY = Math.sin(time * 2.5) * 2;
 
     // 1. Shimmering Golden Aura on Floor
     this.ctx.fillStyle = `rgba(245, 158, 11, ${0.25 + 0.2 * pulse})`;
     this.ctx.beginPath();
-    this.ctx.ellipse(px + 16, py + 26, 16 + pulse * 2, 6, 0, 0, Math.PI * 2);
+    this.ctx.ellipse(px + 16, py + 24, 16 + pulse * 2, 6, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // 2. Leather-bound vintage developer notebook (slightly tilted)
-    this.ctx.translate(px + 16, py + 16 + floatY);
+    // 2. Leather-bound vintage developer notebook (slightly tilted on ground)
+    this.ctx.save();
+    this.ctx.translate(px + 16, py + 14);
     this.ctx.rotate(-0.08);
 
     // Book Shadow
@@ -6918,32 +6918,32 @@ class GameEngine {
     this.ctx.lineTo(-3, 14);
     this.ctx.closePath();
     this.ctx.fill();
+    this.ctx.restore();
 
-    // Reset transform for sparkles and text
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    // 3. Magical Sparkles (floating around the book)
+    // 3. Magical Sparkles (fixed to world coordinates)
     const sp1X = px + 16 + Math.cos(time * 2) * 14;
-    const sp1Y = py + 10 + Math.sin(time * 2) * 8;
+    const sp1Y = py + 12 + Math.sin(time * 2) * 8;
     this.ctx.fillStyle = '#fef08a';
     this.ctx.beginPath();
     this.ctx.arc(sp1X, sp1Y, 1.5, 0, Math.PI * 2);
     this.ctx.fill();
 
     const sp2X = px + 16 + Math.sin(time * 2.7) * 12;
-    const sp2Y = py + 16 + Math.cos(time * 2.7) * 9;
+    const sp2Y = py + 14 + Math.cos(time * 2.7) * 9;
     this.ctx.fillStyle = '#fde047';
     this.ctx.beginPath();
     this.ctx.arc(sp2X, sp2Y, 1.2, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // 4. Subtle Floating Label
-    this.ctx.font = 'bold 9px sans-serif';
-    this.ctx.textAlign = 'center';
-    this.ctx.fillStyle = '#fef08a';
-    this.ctx.shadowColor = 'rgba(0,0,0,0.85)';
-    this.ctx.shadowBlur = 4;
-    this.ctx.fillText('📜 개발자노트', px + 16, py - 4 + floatY);
+    // 4. Sharp Badge Label (aligned to camera & world coordinates)
+    this.drawSharpLabel(px + 16, py - 18, '📜 떨어진 개발자노트 (제1편)', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
+      fontSize: 11,
+      paddingX: 7,
+      height: 19
+    });
 
     this.ctx.restore();
   }

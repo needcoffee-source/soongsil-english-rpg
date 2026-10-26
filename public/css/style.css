@@ -1440,6 +1440,18 @@ body, html {
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, #27272a 100%);
 }
 
+.equip-slot-card.locked {
+  background: rgba(24, 24, 27, 0.65);
+  border: 2px dashed #4b5563;
+  opacity: 0.82;
+  transition: all 0.2s ease;
+}
+
+.equip-slot-card.locked:hover {
+  border-color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+}
+
 .equip-slot-header {
   font-size: 12px;
   font-weight: 800;

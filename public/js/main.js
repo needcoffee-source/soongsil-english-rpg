@@ -173,8 +173,10 @@ class MainApp {
         armor: null,
         weapon: null,
         shoes: null,
-        accessory: null
+        accessory: null,
+        accessory2: null
       },
+      isAccessory2Unlocked: false,
       hasReceivedSoongsilGift: false,
       hasOpenedSecretLocker: false,
       hasCheckedMirror: false,
@@ -1290,10 +1292,14 @@ class MainApp {
           this.playerData.baseAtk = saved.baseAtk || 10;
           this.playerData.baseDef = saved.baseDef || 2;
           this.playerData.inventory = Array.isArray(saved.inventory) ? saved.inventory : [];
-          this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, shoes: null, accessory: null };
+          this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, shoes: null, accessory: null, accessory2: null };
           if (!('shoes' in this.playerData.equipment)) {
             this.playerData.equipment.shoes = null;
           }
+          if (!('accessory2' in this.playerData.equipment)) {
+            this.playerData.equipment.accessory2 = null;
+          }
+          this.playerData.isAccessory2Unlocked = !!saved.isAccessory2Unlocked;
 
           // Filter out deleted items (용의 심장, 아이스 물약, 백호 수호 부적)
           const DELETED_IDS = ['item_dragon_heart', 'item_ice_potion', 'equip_tiger_amulet'];
@@ -1395,6 +1401,7 @@ class MainApp {
               baseDef: this.playerData.baseDef,
               inventory: this.playerData.inventory,
               equipment: this.playerData.equipment,
+              isAccessory2Unlocked: this.playerData.isAccessory2Unlocked,
               hairColor: this.playerData.hairColor,
               outfitColor: this.playerData.outfitColor,
               hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
@@ -1867,10 +1874,28 @@ class MainApp {
     const invItem = this.playerData.inventory.find(i => i.item === itemId);
     if (!invItem) return;
 
-    const slot = invItem.slot || 'weapon';
-    if (this.playerData.equipment[slot] && this.playerData.equipment[slot].item === itemId) {
-      this.unequipSlot(slot);
-      return;
+    let slot = invItem.slot || 'weapon';
+    if (slot === 'accessory') {
+      if (this.playerData.equipment.accessory && this.playerData.equipment.accessory.item === itemId) {
+        this.unequipSlot('accessory');
+        return;
+      }
+      if (this.playerData.equipment.accessory2 && this.playerData.equipment.accessory2.item === itemId) {
+        this.unequipSlot('accessory2');
+        return;
+      }
+      if (!this.playerData.equipment.accessory) {
+        slot = 'accessory';
+      } else if (this.playerData.isAccessory2Unlocked && !this.playerData.equipment.accessory2) {
+        slot = 'accessory2';
+      } else {
+        slot = 'accessory';
+      }
+    } else {
+      if (this.playerData.equipment[slot] && this.playerData.equipment[slot].item === itemId) {
+        this.unequipSlot(slot);
+        return;
+      }
     }
 
     this.playerData.equipment[slot] = {
@@ -2097,17 +2122,51 @@ class MainApp {
     const container = document.getElementById('equip-slots-container');
     container.innerHTML = '';
 
+    const isAcc2Unlocked = !!this.playerData.isAccessory2Unlocked;
+
     const slotDefinitions = [
       { key: 'helmet', title: '🪖 투구', emptyIcon: '🪖' },
       { key: 'armor', title: '🛡️ 갑옷', emptyIcon: '🛡️' },
       { key: 'weapon', title: '🗡️ 무기', emptyIcon: '🗡️' },
       { key: 'shoes', title: '👟 신발', emptyIcon: '👟' },
-      { key: 'accessory', title: '💍 장신구', emptyIcon: '💍' }
+      { key: 'accessory', title: '💍 장신구 1', emptyIcon: '💍' },
+      { 
+        key: 'accessory2', 
+        title: '💍 장신구 2', 
+        emptyIcon: isAcc2Unlocked ? '💍' : '🔒',
+        isLocked: !isAcc2Unlocked,
+        lockMsg: '추후 퀘스트로 해금 예정'
+      }
     ];
 
     slotDefinitions.forEach(sDef => {
-      const equipped = this.playerData.equipment[sDef.key];
       const card = document.createElement('div');
+
+      if (sDef.isLocked) {
+        card.className = 'equip-slot-card locked';
+        card.style.cursor = 'pointer';
+        card.innerHTML = `
+          <div class="equip-slot-header">
+            <span>${sDef.title}</span>
+            <span style="color:#f87171; font-size:11px; font-weight:800; background:rgba(239,68,68,0.15); padding:2px 6px; border-radius:4px; border:1px solid rgba(239,68,68,0.3);">🔒 잠김</span>
+          </div>
+          <div class="equip-slot-body">
+            <span class="equip-slot-icon" style="opacity:0.35;">🔒</span>
+            <div class="equip-slot-info">
+              <span class="equip-slot-name" style="color:#94a3b8; font-size:14px;">잠긴 슬롯</span>
+              <span class="equip-slot-effect" style="color:#f87171; font-size:11.5px;">🔒 ${sDef.lockMsg}</span>
+            </div>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
+          alert('🔒 장신구 2번 슬롯은 현재 잠겨 있습니다.\n추후 퀘스트를 클리어하면 해금되어 착용할 수 있습니다!');
+        });
+        container.appendChild(card);
+        return;
+      }
+
+      const equipped = this.playerData.equipment && this.playerData.equipment[sDef.key];
       card.className = 'equip-slot-card' + (equipped ? ' equipped' : '');
 
       if (equipped) {
