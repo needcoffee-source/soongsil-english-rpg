@@ -34,6 +34,7 @@ const ALL_GAME_ITEMS = {
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
+  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 5, def: 5, hp: 20 }, effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
@@ -89,7 +90,8 @@ const ITEM_SELL_PRICES = {
   // 6. 최상위 엔드 레이드 전리품
   'equip_laurel_crown': 20,
   'equip_omr_wand': 20,
-  'equip_tiger_amulet': 25
+  'equip_tiger_amulet': 25,
+  'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
 };
 
 // 호칭 교환소 4대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자, 백점만점 시험지 -> 시험의 제왕)
@@ -336,10 +338,10 @@ class MainApp {
       // 1학년 복도 담임 이상대 선생님 (중앙 엘리베이터 안내 NPC)
       if (npc.id === 'npc_teacher_sangdae' || (npc.name && npc.name.includes('이상대'))) {
         if (!this.isElevatorUnlocked()) {
-          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 비로소 엘리베이터 점검이 완료되어 운동장으로 내려갈 수 있단다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 가죽 골렘 레이드를 준비해보렴!"`);
+          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 비로소 [🪪 엘리베이터 작동권]을 얻어 운동장으로 내려갈 수 있단다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 가죽 골렘 레이드를 준비해보렴!"`);
           return;
         } else {
-          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 1차 관문 보스 [가죽 골렘]을 멋지게 토벌했구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터 점검이 모두 완료되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n이 중앙 엘리베이터를 타고 지상 운동장으로 내려가려면 통행료 10G(골드)가 소모된단다.\n\n운동장 농구장과 풋살장에서 거친 몬스터들을 물리쳐 농구가죽과 풋살가죽을 모으면 2티어 가죽 장비를 제작할 수 있단다!\n\n골드가 충분히 모이고 모든 준비를 마쳤다면 엘리베이터 앞에서 SPACE를 눌러보렴."`);
+          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 1차 관문 보스 [가죽 골렘]을 멋지게 토벌하고 [🪪 엘리베이터 작동권]을 얻었구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터를 다시 가동할 수 있게 되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n인벤토리(I) 장신구 슬롯에 [🪪 엘리베이터 작동권]을 장착한 후 통행료 10G(골드)를 지불하면 운동장으로 내려갈 수 있단다.\n\n운동장 농구장과 풋살장에서 거친 몬스터들을 물리쳐 농구가죽과 풋살가죽을 모으면 2티어 가죽 장비를 제작할 수 있단다!\n\n골드가 충분히 모이고 작동권을 착용했다면 엘리베이터 앞에서 SPACE를 눌러보렴."`);
           return;
         }
       }
@@ -426,6 +428,10 @@ class MainApp {
     this.showToast(`🚰 시원한 정수기 냉수를 마셨습니다! HP +${actualHealed} 회복 (${this.playerData.hp}/${this.playerData.maxHp}) [쿨타임: 1분 30초]`, 'success');
   }
 
+  hasItem(itemId) {
+    return (this.playerData.inventory || []).some(i => i.item === itemId && (i.count === undefined || i.count > 0));
+  }
+
   isElevatorUnlocked() {
     if (this.playerData.isTeacher) return true;
     if (this.playerData.hasClearedFirstBoss) return true;
@@ -435,6 +441,11 @@ class MainApp {
       return true;
     }
     return false;
+  }
+
+  isElevatorPassEquipped() {
+    if (this.playerData.isTeacher) return true;
+    return this.isItemEquipped('equip_elevator_pass');
   }
 
   isDragonCleared() {
@@ -462,8 +473,9 @@ class MainApp {
     }
 
     if (this.engine.player.room === 'playground') {
-      const goUp = confirm('🛗 [중앙 엘리베이터]\n\n1학년 복도로 다시 올라가시겠습니까?');
+      const goUp = confirm('🛗 [중앙 엘리베이터 탑승]\n\n1학년 복도로 올라가시겠습니까?');
       if (goUp) {
+        if (window.AudioManager) window.AudioManager.playSelect();
         this.engine.triggerFadeWarp(() => {
           this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
         });
@@ -472,12 +484,45 @@ class MainApp {
       // 1. 1차 관문 보스(가죽 골렘) 토벌 여부 검사 (토벌 전까지는 점검 중)
       if (!this.isElevatorUnlocked()) {
         alert(
-          '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 엘리베이터 점검이 완료되어 운동장으로 내려갈 수 있습니다!"'
+          '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌하고 [🪪 엘리베이터 작동권]을 획득해야 엘리베이터를 가동할 수 있습니다!"'
         );
         return;
       }
 
-      // 2. 1학년 복도 -> 운동장 (10G 소모)
+      // 2. 엘리베이터 작동권 장착 여부 검사
+      if (!this.isElevatorPassEquipped()) {
+        if (this.hasItem('equip_elevator_pass')) {
+          const equipNow = confirm(
+            '🛗 [엘리베이터 키 미인식]\n\n가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?'
+          );
+          if (equipNow) {
+            this.equipItem('equip_elevator_pass');
+            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+          } else {
+            return;
+          }
+        } else {
+          // 혹시 골렘은 잡았는데 작동권이 인벤토리에 없는 경우 (소급 자동 지급)
+          this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
+            type: 'equipment',
+            slot: 'accessory',
+            isQuestItem: true,
+            stats: { atk: 5, def: 5, hp: 20 },
+            effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20'
+          });
+          const equipNow = confirm(
+            '🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?'
+          );
+          if (equipNow) {
+            this.equipItem('equip_elevator_pass');
+            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+          } else {
+            return;
+          }
+        }
+      }
+
+      // 3. 1학년 복도 -> 운동장 (10G 소모)
       if (this.playerData.gold < 10) {
         alert(
           `❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)\n\n교탁(골드)이나 교실에서 퀴즈를 풀어 골드를 모아보세요!`
@@ -486,7 +531,7 @@ class MainApp {
       }
 
       const goDown = confirm(
-        `🛗 [중앙 엘리베이터 이용]\n\n10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`
+        `🛗 [중앙 엘리베이터 가동]\n\n10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`
       );
       if (goDown) {
         this.addGold(-10);
@@ -873,6 +918,17 @@ class MainApp {
         try {
           localStorage.setItem('soongsil_last_student_id', studentId);
         } catch (e) {}
+
+        // 골렘 클리어 학생 엘리베이터 작동권 소급 보장
+        if (this.playerData.hasClearedFirstBoss && !this.hasItem('equip_elevator_pass') && !this.isItemEquipped('equip_elevator_pass')) {
+          this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
+            type: 'equipment',
+            slot: 'accessory',
+            isQuestItem: true,
+            stats: { atk: 5, def: 5, hp: 20 },
+            effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20'
+          });
+        }
       }
 
       this.playerData.name = name;
@@ -1828,7 +1884,7 @@ class MainApp {
         rewardItemsList.push('🌼 성실의 개나리 반지');
       }
 
-      // 3. 가죽 골렘 전용 드랍 (엘리베이터 해금, 100% 질긴 보스의 가죽, 25% 나무장비 1종)
+      // 3. 가죽 골렘 전용 드랍 (엘리베이터 해금, 100% 작동권 지급, 100% 질긴 보스의 가죽, 25% 나무장비 1종)
       if (bName.includes('골렘') || bName.includes('golem')) {
         this.playerData.hasClearedFirstBoss = true;
         const studentId = this.playerData.studentId || '';
@@ -1836,6 +1892,18 @@ class MainApp {
           localStorage.setItem('soongsil_first_boss_cleared_' + studentId, 'true');
         }
         this.saveProgress(true);
+
+        // 100% 확정 엘리베이터 작동권 지급 (중복 미소지 시)
+        if (!this.hasItem('equip_elevator_pass') && !this.isItemEquipped('equip_elevator_pass')) {
+          this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
+            type: 'equipment',
+            slot: 'accessory',
+            isQuestItem: true,
+            stats: { atk: 5, def: 5, hp: 20 },
+            effect: '🛗 중앙 엘리베이터 가동 인가증 · 공격력 +5, 방어력 +5, 체력 +20'
+          });
+          rewardItemsList.push('🪪 엘리베이터 작동권 (중앙 엘리베이터 가동 필수 장비!)');
+        }
 
         // 확정 재료 가변 드랍 (1~2개 가죽 장비 제작 핵심)
         const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
@@ -1946,8 +2014,10 @@ class MainApp {
       const dropText = rewardItemsList.length > 0 ? `\n🎁 획득 아이템:\n• ${rewardItemsList.join('\n• ')}` : '';
       const mvpText = data.mvp ? `\n\n👑 최고 기여(MVP): ${data.mvp.name} (누적 데미지 ${data.mvp.damage})` : '';
 
-      const clearNotice = (bName.includes('드래곤') || bName.includes('dragon'))
-        ? '\n\n🎉 숭실 청동 드래곤을 토벌하여 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!'
+      const clearNotice = (bName.includes('골렘') || bName.includes('golem'))
+        ? '\n\n🎉 1차 관문 보스 가죽 골렘을 토벌하여 [🪪 엘리베이터 작동권]을 획득했습니다! 인벤토리(I) 장신구 슬롯에 작동권을 장착하면 중앙 엘리베이터를 가동할 수 있습니다!'
+        : ((bName.includes('드래곤') || bName.includes('dragon'))
+          ? '\n\n🎉 숭실 청동 드래곤을 토벌하여 3티어 청동 장비의 핵심 재료를 획득했습니다!'
         : ((bName.includes('케르베로스') || bName.includes('cerberus'))
           ? '\n\n🎉 [신규 구역 해금] 3두마수 케르베로스를 토벌하여 다음 미지의 모험 구역으로 향하는 길이 열렸습니다!'
           : '');
@@ -3895,8 +3965,8 @@ class MainApp {
       const def = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[invItem.item]) || {};
       const type = (def.meta && def.meta.type) || (invItem.item.startsWith('equip_') ? 'equipment' : 'material');
 
-      // 소비품(물약, 주문서 등)은 매점 매각 금지
-      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll')) {
+      // 소비품(물약, 주문서 등) 및 작동권/퀘스트 아이템은 매점 매각 금지
+      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item === 'equip_elevator_pass' || def.meta?.isQuestItem) {
         return false;
       }
 

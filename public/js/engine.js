@@ -543,11 +543,11 @@ class GameEngine {
         if (floorData.elevator) {
           const eDist = Math.hypot(floorData.elevator.x * 32 - this.player.x, (floorData.elevator.y + 1.5) * 32 - this.player.y);
           if (eDist < minDist) {
-            const isUnlocked = this.isStudentClearedGolem();
+            const status = this.getElevatorStatus();
             closest = {
               type: 'elevator',
-              name: isUnlocked ? '중앙 엘리베이터' : '중앙 엘리베이터 (점검 중)',
-              prompt: isUnlocked ? '운동장으로 이동 (10G)' : '점검 중'
+              name: status.name,
+              prompt: status.prompt
             };
             minDist = eDist;
           }
@@ -784,11 +784,11 @@ class GameEngine {
           if (Math.hypot(obj.x * 32 - x, obj.y * 32 - y) < 32) return { type: obj.type, data: obj };
         }
         if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, (floorData.elevator.y + 1.5) * 32 - y) < 48) {
-          const isUnlocked = this.isStudentClearedGolem();
+          const status = this.getElevatorStatus();
           return {
             type: 'elevator',
-            name: isUnlocked ? '중앙 엘리베이터' : '중앙 엘리베이터 (점검 중)',
-            prompt: isUnlocked ? '운동장으로 이동 (10G)' : '점검 중'
+            name: status.name,
+            prompt: status.prompt
           };
         }
       }
@@ -3321,12 +3321,66 @@ class GameEngine {
     return false;
   }
 
-  isElevatorUnderMaintenance() {
+  isElevatorPassEquipped() {
     const app = window.MainApp || window.app;
-    if (app && typeof app.isElevatorUnlocked === 'function') {
-      return !app.isElevatorUnlocked();
+    if (!app || !app.playerData) return false;
+    if (app.playerData.isTeacher) return true;
+    if (typeof app.isElevatorPassEquipped === 'function') {
+      return app.isElevatorPassEquipped();
     }
-    return !this.isStudentClearedGolem();
+    if (app.playerData.equipment) {
+      return Object.values(app.playerData.equipment).some(eq => eq && eq.item === 'equip_elevator_pass');
+    }
+    return false;
+  }
+
+  getElevatorStatus() {
+    const app = window.MainApp || window.app;
+    const isTeacher = app && app.playerData && app.playerData.isTeacher;
+    if (isTeacher) {
+      return {
+        state: 'ready',
+        name: '중앙 엘리베이터 (가동 중)',
+        prompt: '운동장으로 이동 (교사 무료)',
+        ledText: '[ 7F 가동 ]',
+        ledColor: '#38bdf8'
+      };
+    }
+
+    const hasCleared = this.isStudentClearedGolem();
+    if (!hasCleared) {
+      return {
+        state: 'maintenance',
+        name: '중앙 엘리베이터 (점검 중)',
+        prompt: '점검 중',
+        ledText: '[ 7F 점검 ]',
+        ledColor: '#ef4444'
+      };
+    }
+
+    // 골렘 토벌 완료 상태: 작동권 장착 여부 확인
+    const isEquipped = this.isElevatorPassEquipped();
+    if (isEquipped) {
+      return {
+        state: 'ready',
+        name: '중앙 엘리베이터 (가동 중)',
+        prompt: '운동장으로 이동 (10G)',
+        ledText: '[ 7F 가동 ]',
+        ledColor: '#10b981'
+      };
+    } else {
+      return {
+        state: 'need_pass',
+        name: '중앙 엘리베이터 (작동권 필요)',
+        prompt: '작동권 장착 필요',
+        ledText: '[ 키 필요 ]',
+        ledColor: '#f59e0b'
+      };
+    }
+  }
+
+  isElevatorUnderMaintenance() {
+    return this.getElevatorStatus().state === 'maintenance';
   }
 
   // 14. High-Res Stainless Steel Elevator with Floor LED Indicator
@@ -3337,26 +3391,31 @@ class GameEngine {
     const h = 44;
 
     const isHallway = (currentFloor === 7);
-    const isMaintenance = isHallway && this.isElevatorUnderMaintenance();
+    const status = isHallway ? this.getElevatorStatus() : {
+      state: 'ready',
+      ledText: '[ 1F ▲ ]',
+      ledColor: '#10b981',
+      name: '중앙 엘리베이터',
+      prompt: '1학년 복도로 올라가기'
+    };
 
     // Floor shadow
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     this.ctx.fillRect(px, py + h, w, 4);
 
-    // Outer Stainless Steel Frame
-    this.ctx.fillStyle = '#475569';
+    // Outer Stainless Steel Frame (If ready, nice subtle blue-steel tint)
+    this.ctx.fillStyle = status.state === 'ready' ? '#334155' : (status.state === 'need_pass' ? '#3e3a2f' : '#475569');
     this.ctx.fillRect(px, py, w, h);
-    this.ctx.fillStyle = '#94a3b8';
+    this.ctx.fillStyle = status.state === 'ready' ? '#94a3b8' : (status.state === 'need_pass' ? '#a39e82' : '#94a3b8');
     this.ctx.fillRect(px + 2, py + 2, w - 4, h - 2);
 
     // Digital Floor Indicator Panel (Black glass with LED)
     this.ctx.fillStyle = '#0f172a';
     this.ctx.fillRect(px + 8, py + 4, w - 16, 10);
-    this.ctx.fillStyle = isMaintenance ? '#ef4444' : '#10b981';
+    this.ctx.fillStyle = status.ledColor;
     this.ctx.font = 'bold 9px monospace';
     this.ctx.textAlign = 'center';
-    const ledText = isMaintenance ? `[ 7F 점검 ]` : (isHallway ? `[ 7F ▲▼ ]` : `[ 1F ▲ ]`);
-    this.ctx.fillText(ledText, px + w / 2, py + 12);
+    this.ctx.fillText(status.ledText, px + w / 2, py + 12);
 
     // Double Sliding Doors (Brushed Stainless Steel)
     this.ctx.fillStyle = '#cbd5e1';
@@ -3373,14 +3432,26 @@ class GameEngine {
     this.ctx.fillRect(px + w - 9, py + 18, 2, h - 22);
 
     // Call Button Plate on Right
-    this.ctx.fillStyle = '#f59e0b';
-    this.ctx.fillRect(px + w + 2, py + 20, 6, 12);
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px + w + 2, py + 18, 7, 16);
+    // Upper Indicator Lamp (Red if maintenance, Amber if need_pass, Green/Cyan if ready)
+    this.ctx.fillStyle = status.state === 'maintenance' ? '#ef4444' : (status.state === 'need_pass' ? '#f59e0b' : '#10b981');
+    this.ctx.fillRect(px + w + 3, py + 20, 5, 4);
+    // Lower Call Button
     this.ctx.fillStyle = '#fef08a';
-    this.ctx.fillRect(px + w + 3, py + 22, 4, 3);
-    this.ctx.fillRect(px + w + 3, py + 27, 4, 3);
+    this.ctx.fillRect(px + w + 3, py + 26, 5, 6);
+
+    // Ready Aura Light (가동 중일 때 문 위 은은한 에메랄드/청록 네온 바)
+    if (status.state === 'ready') {
+      this.ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
+      this.ctx.fillRect(px + 6, py + 14, w - 12, 2);
+    } else if (status.state === 'need_pass') {
+      this.ctx.fillStyle = 'rgba(245, 158, 11, 0.45)';
+      this.ctx.fillRect(px + 6, py + 14, w - 12, 2);
+    }
 
     // Label placed at TOP (py - 12)
-    if (isMaintenance) {
+    if (status.state === 'maintenance') {
       this.drawSharpLabel(px + w / 2, py - 12, '🛗 엘리베이터 (점검 중)', {
         bgColor: 'rgba(15, 23, 42, 0.94)',
         borderColor: '#ef4444',
@@ -3389,10 +3460,19 @@ class GameEngine {
         paddingX: 9,
         height: 20
       });
-    } else {
-      this.drawSharpLabel(px + w / 2, py - 12, '🛗 중앙 엘리베이터', {
+    } else if (status.state === 'need_pass') {
+      this.drawSharpLabel(px + w / 2, py - 12, '🛗 중앙 엘리베이터 (작동권 필요)', {
         bgColor: 'rgba(15, 23, 42, 0.94)',
-        borderColor: '#38bdf8',
+        borderColor: '#f59e0b',
+        textColor: '#fef08a',
+        fontSize: 11.5,
+        paddingX: 9,
+        height: 20
+      });
+    } else {
+      this.drawSharpLabel(px + w / 2, py - 12, isHallway ? '🛗 중앙 엘리베이터 (가동 중)' : '🛗 중앙 엘리베이터', {
+        bgColor: 'rgba(15, 23, 42, 0.94)',
+        borderColor: '#10b981',
         textColor: '#ffffff',
         fontSize: 11.5,
         paddingX: 9,
