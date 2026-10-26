@@ -3709,6 +3709,10 @@ class GameEngine {
           this.drawHighResWaterPurifier(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'mirror') {
           this.drawHighResMirror(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'club_board') {
+          this.drawHighResClubBoard(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'plant_zone') {
+          this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera');
         }
       }
     }
@@ -6347,6 +6351,240 @@ class GameEngine {
     this.ctx.restore();
   }
 
-}
+  // ========================================================
+  // HIGH-RES SCHOOL CLUB NOTICE BOARD (동아리 홍보 게시판)
+  // ========================================================
+  drawHighResClubBoard(px, py) {
+    this.ctx.save();
 
+    // Floor Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 24, py + 28, 28, 8, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    const bx = px - 4;
+    const by = py - 8;
+    const bw = 56;
+    const bh = 36;
+
+    // Wooden Frame Outer Trim
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.beginPath();
+    this.ctx.roundRect(bx - 3, by - 3, bw + 6, bh + 6, 4);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.beginPath();
+    this.ctx.roundRect(bx - 1, by - 1, bw + 2, bh + 2, 2);
+    this.ctx.fill();
+
+    // Cork Board Surface
+    const corkGrad = this.ctx.createLinearGradient(bx, by, bx, by + bh);
+    corkGrad.addColorStop(0, '#d97706');
+    corkGrad.addColorStop(1, '#b45309');
+    this.ctx.fillStyle = corkGrad;
+    this.ctx.fillRect(bx, by, bw, bh);
+
+    // Cork texture speckles
+    this.ctx.fillStyle = 'rgba(120, 53, 15, 0.4)';
+    this.ctx.fillRect(bx + 4, by + 6, 2, 2);
+    this.ctx.fillRect(bx + 18, by + 20, 2, 2);
+    this.ctx.fillRect(bx + 38, by + 8, 2, 2);
+    this.ctx.fillRect(bx + 46, by + 24, 2, 2);
+
+    // Pinned Club Flyer 1 (Top-Left: Band '소리마루')
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(bx + 4, by + 4, 22, 13);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(bx + 6, by + 7, 18, 2);
+    this.ctx.fillRect(bx + 6, by + 11, 12, 2);
+    // Pin (yellow pushpin)
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 15, by + 5, 2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Pinned Club Flyer 2 (Top-Right: Soccer/Futsal)
+    this.ctx.fillStyle = '#3b82f6';
+    this.ctx.fillRect(bx + 30, by + 4, 22, 13);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(bx + 32, by + 7, 18, 2);
+    this.ctx.fillRect(bx + 32, by + 11, 14, 2);
+    // Pin (red pushpin)
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 41, by + 5, 2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Pinned Club Flyer 3 (Bottom-Left: Coding & English RPG)
+    this.ctx.fillStyle = '#10b981';
+    this.ctx.fillRect(bx + 4, by + 19, 22, 13);
+    this.ctx.fillStyle = '#ecfdf5';
+    this.ctx.fillRect(bx + 6, by + 22, 18, 2);
+    this.ctx.fillRect(bx + 6, by + 26, 14, 2);
+    // Pin (blue pushpin)
+    this.ctx.fillStyle = '#60a5fa';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 15, by + 20, 2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Pinned Club Flyer 4 (Bottom-Right: Webtoon & Illustration)
+    this.ctx.fillStyle = '#a855f7';
+    this.ctx.fillRect(bx + 30, by + 19, 22, 13);
+    this.ctx.fillStyle = '#faf5ff';
+    this.ctx.fillRect(bx + 32, by + 22, 18, 2);
+    this.ctx.fillRect(bx + 32, by + 26, 10, 2);
+    // Pin (emerald pushpin)
+    this.ctx.fillStyle = '#34d399';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + 41, by + 20, 2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Sharp Badge Label
+    this.drawSharpLabel(px + 24, py - 20, '🎸 동아리 홍보 게시판', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // HIGH-RES HALLWAY PLANTERS (복도 공기정화 식물 & 대형 관엽식물)
+  // ========================================================
+  drawHighResHallwayPlant(px, py, subType) {
+    this.ctx.save();
+
+    // Floor Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 26, 17, 7, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Modern Ceramic Planter Pot
+    const potX = px + 4;
+    const potY = py + 8;
+    const potW = 24;
+    const potH = 19;
+
+    // Outer Pot Surface (Ceramic white / slate gradient)
+    const potGrad = this.ctx.createLinearGradient(potX, potY, potX + potW, potY);
+    if (subType === 'areca') {
+      potGrad.addColorStop(0, '#1e293b');
+      potGrad.addColorStop(0.5, '#334155');
+      potGrad.addColorStop(1, '#0f172a');
+    } else {
+      potGrad.addColorStop(0, '#f1f5f9');
+      potGrad.addColorStop(0.5, '#ffffff');
+      potGrad.addColorStop(1, '#cbd5e1');
+    }
+    this.ctx.fillStyle = potGrad;
+    this.ctx.beginPath();
+    this.ctx.roundRect(potX, potY, potW, potH, [1, 1, 4, 4]);
+    this.ctx.fill();
+
+    // Pot Rim Trim
+    this.ctx.fillStyle = (subType === 'areca') ? '#475569' : '#94a3b8';
+    this.ctx.fillRect(potX - 1, potY - 1, potW + 2, 3);
+
+    // Pot Soil
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(potX + 2, potY + 1, potW - 4, 3);
+
+    // Leaves Rendering
+    const cx = px + 16;
+    const cy = py + 6;
+
+    if (subType === 'areca') {
+      // Tall Arching Bamboo / Palm Fronds
+      this.ctx.strokeStyle = '#047857';
+      this.ctx.lineWidth = 1.8;
+      // Stems
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx, cy + 2);
+      this.ctx.quadraticCurveTo(cx - 10, cy - 10, cx - 14, cy - 20);
+      this.ctx.moveTo(cx, cy + 2);
+      this.ctx.quadraticCurveTo(cx, cy - 14, cx, cy - 24);
+      this.ctx.moveTo(cx, cy + 2);
+      this.ctx.quadraticCurveTo(cx + 10, cy - 10, cx + 15, cy - 18);
+      this.ctx.stroke();
+
+      // Leaflets (bright emerald / lime)
+      this.ctx.fillStyle = '#10b981';
+      for (let i = 0; i < 4; i++) {
+        // Left frond leaves
+        this.ctx.beginPath();
+        this.ctx.ellipse(cx - 7 - i * 2, cy - 8 - i * 3, 5, 2, -0.4, 0, Math.PI * 2);
+        this.ctx.fill();
+        // Center frond leaves
+        this.ctx.beginPath();
+        this.ctx.ellipse(cx + (i % 2 === 0 ? -3 : 3), cy - 10 - i * 3, 5, 2, (i % 2 === 0 ? -0.8 : 0.8), 0, Math.PI * 2);
+        this.ctx.fill();
+        // Right frond leaves
+        this.ctx.beginPath();
+        this.ctx.ellipse(cx + 7 + i * 2, cy - 7 - i * 3, 5, 2, 0.4, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+      this.ctx.fillStyle = '#34d399';
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy - 23, 3, 0, Math.PI * 2);
+      this.ctx.fill();
+    } else {
+      // Broad Tropical Monstera Leaves
+      // Background deeper leaves
+      this.ctx.fillStyle = '#065f46';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx - 10, cy - 8, 10, 6, -0.5, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx + 10, cy - 7, 10, 6, 0.5, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Foreground lush green leaves
+      this.ctx.fillStyle = '#047857';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx, cy - 12, 11, 8, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Bright leaf highlights & slits
+      this.ctx.fillStyle = '#10b981';
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx - 7, cy - 11, 7, 5, -0.3, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.ellipse(cx + 7, cy - 10, 7, 5, 0.3, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Leaf Vein detail
+      this.ctx.strokeStyle = '#34d399';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(cx, cy - 4);
+      this.ctx.lineTo(cx, cy - 18);
+      this.ctx.moveTo(cx - 1, cy - 10);
+      this.ctx.lineTo(cx - 9, cy - 12);
+      this.ctx.moveTo(cx + 1, cy - 9);
+      this.ctx.lineTo(cx + 9, cy - 11);
+      this.ctx.stroke();
+    }
+
+    // Badge Label
+    const plantLabel = (subType === 'areca') ? '🪴 복도 관엽식물' : '🪴 공기정화 식물';
+    this.drawSharpLabel(px + 16, py - 20, plantLabel, {
+      bgColor: 'rgba(6, 78, 59, 0.94)',
+      borderColor: '#34d399',
+      textColor: '#ecfdf5',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+}
 window.GameEngine = GameEngine;

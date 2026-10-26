@@ -455,6 +455,10 @@ class MainApp {
       this.handleLostBoxInteraction();
     } else if (target.type === 'locked_door') {
       this.handleLockedDoor(target.data);
+    } else if (target.type === 'club_board') {
+      this.handleClubBoardInteraction();
+    } else if (target.type === 'plant_zone') {
+      this.handlePlantZoneInteraction(target);
     }
   }
 
@@ -534,6 +538,23 @@ class MainApp {
   }
 
   // 📦 운동장 비밀 분실물 상자 (최초 1회 50골드, 30경험치, 주홍물약 2개, 빨간물약 2개)
+  handleClubBoardInteraction() {
+    alert("🎸 [숭실 동아리 홍보 게시판]\n\n\"2026학년도 1학년 동아리 신입 부원 대모집!\"\n\n🥁 [스쿨 밴드부 '소리마루']\n• 드럼, 전자기타, 베이스, 보컬 등 열정 가득한 1학년 대환영!\n\n⚽ [축구 & 풋살 동아리]\n• 점심시간 지상 운동장을 함께 누빌 미래의 숭실 에이스 모집!\n\n💻 [코딩 & 영어 RPG 개발부]\n• 게임 속 버그를 잡고 숭실 월드를 함께 만들어갈 모험가 환영!\n\n🎨 [웹툰 & 일러스트 창작부]\n• 나만의 개성 넘치는 캐릭터와 숭실 만화를 그릴 부원 모집!");
+  }
+
+  handlePlantZoneInteraction(target) {
+    const isInjured = this.playerData && this.playerData.hp < this.playerData.maxHp;
+    if (isInjured) {
+      const healAmt = Math.min(10, this.playerData.maxHp - this.playerData.hp);
+      this.playerData.hp += healAmt;
+      this.updatePlayerStatsUI();
+      if (this.audio) this.audio.playHeal();
+      alert("🪴 [복도 공기정화 식물존]\n\n\"초록빛 싱그러운 관엽식물이 가득합니다.\"\n\n🍃 깊게 숨을 들이쉬니 향긋한 피톤치드 향이 퍼지며 체력이 회복되었습니다!\n(+ " + healAmt + " HP 회복! 현재 HP: " + this.playerData.hp + "/" + this.playerData.maxHp + ")");
+    } else {
+      alert("🪴 [복도 공기정화 식물존]\n\n\"초록빛 싱그러운 관엽식물이 공기를 맑게 정화해주고 있습니다.\"\n\n🍃 깊게 숨을 들이쉬니 머리가 맑아지고 상쾌한 기분이 듭니다! ✨");
+    }
+  }
+
   handleLockedDoor(room) {
     if (!room) return;
     const msg = room.lockMessage || "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽";
