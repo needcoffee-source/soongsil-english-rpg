@@ -172,6 +172,7 @@ class MainApp {
         helmet: null,
         armor: null,
         weapon: null,
+        shoes: null,
         accessory: null
       },
       hasReceivedSoongsilGift: false,
@@ -1289,19 +1290,21 @@ class MainApp {
           this.playerData.baseAtk = saved.baseAtk || 10;
           this.playerData.baseDef = saved.baseDef || 2;
           this.playerData.inventory = Array.isArray(saved.inventory) ? saved.inventory : [];
+          this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, shoes: null, accessory: null };
+          if (!('shoes' in this.playerData.equipment)) {
+            this.playerData.equipment.shoes = null;
+          }
 
-        // Filter out deleted items (용의 심장, 아이스 물약, 백호 수호 부적)
-        const DELETED_IDS = ['item_dragon_heart', 'item_ice_potion', 'equip_tiger_amulet'];
-        this.playerData.inventory = (this.playerData.inventory || []).filter(i => !DELETED_IDS.includes(i.item));
-        if (this.playerData.equipment) {
-          for (const sKey of Object.keys(this.playerData.equipment)) {
-            if (this.playerData.equipment[sKey] && DELETED_IDS.includes(this.playerData.equipment[sKey].item)) {
-              this.playerData.equipment[sKey] = null;
+          // Filter out deleted items (용의 심장, 아이스 물약, 백호 수호 부적)
+          const DELETED_IDS = ['item_dragon_heart', 'item_ice_potion', 'equip_tiger_amulet'];
+          this.playerData.inventory = (this.playerData.inventory || []).filter(i => i && !DELETED_IDS.includes(i.item));
+          if (this.playerData.equipment) {
+            for (const sKey of Object.keys(this.playerData.equipment)) {
+              if (this.playerData.equipment[sKey] && DELETED_IDS.includes(this.playerData.equipment[sKey].item)) {
+                this.playerData.equipment[sKey] = null;
+              }
             }
           }
-        }
-
-          this.playerData.equipment = saved.equipment || { weapon: null, helmet: null, armor: null, accessory: null };
           if (saved.hairColor) selectedHair = saved.hairColor;
           if (saved.outfitColor) selectedOutfit = saved.outfitColor;
           this.playerData.hasReceivedSoongsilGift = !!(saved.hasReceivedSoongsilGift || (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true'));
@@ -1718,28 +1721,46 @@ class MainApp {
   }
 
   recalcCombatStats() {
-    this.engine.player.hasRunningShoes = !!(this.playerData.equipment && this.playerData.equipment.shoes) || !!this.playerData.isTeacher;
+    this.syncGearVisual();
+    if (this.playerData.isTeacher) {
+      this.playerData.atk = 9999;
+      this.playerData.def = 9999;
+      this.playerData.maxHp = 9999;
+      this.playerData.hp = 9999;
+      if (this.hudAtk) this.hudAtk.innerText = 9999;
+      if (this.hudDef) this.hudDef.innerText = 9999;
+      this.updateHpBar();
+      return;
+    }
+
+    if (this.engine && this.engine.player) {
+      this.engine.player.hasRunningShoes = !!(this.playerData.equipment && this.playerData.equipment.shoes) || !!this.playerData.isTeacher;
+    }
+
+    const lvBonus = Math.max(0, (this.playerData.level || 1) - 1);
     let bonusAtk = 0;
     let bonusDef = 0;
     let bonusHp = 0;
 
-    Object.values(this.playerData.equipment).forEach(eq => {
-      if (eq) {
-        if (eq.item && window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[eq.item]?.meta?.stats) {
-          eq.stats = window.ALL_GAME_ITEMS[eq.item].meta.stats;
-          eq.effect = window.ALL_GAME_ITEMS[eq.item].meta.effect;
+    if (this.playerData.equipment) {
+      Object.values(this.playerData.equipment).forEach(eq => {
+        if (eq) {
+          if (eq.item && window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[eq.item]?.meta?.stats) {
+            eq.stats = window.ALL_GAME_ITEMS[eq.item].meta.stats;
+            eq.effect = window.ALL_GAME_ITEMS[eq.item].meta.effect;
+          }
+          if (eq.stats) {
+            bonusAtk += (eq.stats.atk || 0);
+            bonusDef += (eq.stats.def || 0);
+            bonusHp += (eq.stats.hp || 0);
+          }
         }
-        if (eq.stats) {
-          bonusAtk += (eq.stats.atk || 0);
-          bonusDef += (eq.stats.def || 0);
-          bonusHp += (eq.stats.hp || 0);
-        }
-      }
-    });
+      });
+    }
 
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
     this.playerData.def = this.playerData.baseDef + lvBonus + bonusDef;
-    this.playerData.maxHp = this.playerData.baseHp + bonusHp; // 레벨업 시 HP 상승 삭제, 공방만 1씩 증가
+    this.playerData.maxHp = this.playerData.baseHp + bonusHp;
     if (this.playerData.hp > this.playerData.maxHp) {
       this.playerData.hp = this.playerData.maxHp;
     }
