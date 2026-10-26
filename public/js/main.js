@@ -2020,13 +2020,14 @@ class MainApp {
       const dropText = rewardItemsList.length > 0 ? `\n🎁 획득 아이템:\n• ${rewardItemsList.join('\n• ')}` : '';
       const mvpText = data.mvp ? `\n\n👑 최고 기여(MVP): ${data.mvp.name} (누적 데미지 ${data.mvp.damage})` : '';
 
-      const clearNotice = (bName.includes('골렘') || bName.includes('golem'))
-        ? '\n\n🎉 1차 관문 보스 가죽 골렘을 토벌하여 [🪪 엘리베이터 작동권]을 획득했습니다! 인벤토리(I) 장신구 슬롯에 작동권을 장착하면 중앙 엘리베이터를 가동할 수 있습니다!'
-        : ((bName.includes('드래곤') || bName.includes('dragon'))
-          ? '\n\n🎉 숭실 청동 드래곤을 토벌하여 3티어 청동 장비의 핵심 재료를 획득했습니다!'
-        : ((bName.includes('케르베로스') || bName.includes('cerberus'))
-          ? '\n\n🎉 [신규 구역 해금] 3두마수 케르베로스를 토벌하여 다음 미지의 모험 구역으로 향하는 길이 열렸습니다!'
-          : '');
+      let clearNotice = '';
+      if (bName.includes('골렘') || bName.includes('golem')) {
+        clearNotice = '\n\n🎉 1차 관문 보스 가죽 골렘을 토벌하여 [🪪 엘리베이터 작동권]을 획득했습니다! 인벤토리(I) 장신구 슬롯에 작동권을 장착하면 중앙 엘리베이터를 가동할 수 있습니다!';
+      } else if (bName.includes('드래곤') || bName.includes('dragon')) {
+        clearNotice = '\n\n🎉 숭실 청동 드래곤을 토벌하여 3티어 청동 장비의 핵심 재료를 획득했습니다!';
+      } else if (bName.includes('케르베로스') || bName.includes('cerberus')) {
+        clearNotice = '\n\n🎉 [신규 구역 해금] 3두마수 케르베로스를 토벌하여 다음 미지의 모험 구역으로 향하는 길이 열렸습니다!';
+      }
 
       alert(`🏆 [${data.bossName}] 협동 토벌 성공!\n\n🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}${clearNotice}`);
       this.modalBossRaid.classList.add('hidden');
