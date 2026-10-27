@@ -289,6 +289,9 @@ class GameEngine {
     if (this.player && this.player.room === 'hallway') {
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
+    if (this.player && this.player.room === 'room_career') {
+      return WORLD_DATA.CAREER_WIDTH || 60;
+    }
     return WORLD_DATA.MAP_WIDTH || 30;
   }
 
@@ -353,7 +356,7 @@ class GameEngine {
       if (tileY <= 4) {
         const floorData = WORLD_DATA.floors[this.player.floor];
         if (floorData) {
-          const isDoor = floorData.rooms.some(r => r.doorX === tileX && r.doorY === tileY);
+          const isDoor = floorData.rooms.some(r => (r.id === "room_career" ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2) : r.doorX === tileX) && r.doorY === tileY);
           if (!isDoor) return true;
         }
       }
@@ -380,6 +383,12 @@ class GameEngine {
   }
 
   getCurrentClassroomData() {
+    if (this.player.room === 'room_career' && WORLD_DATA.classroom_career) return WORLD_DATA.classroom_career;
+    if (this.player.room === 'room_501' && WORLD_DATA.classroom_501) return WORLD_DATA.classroom_501;
+    if (this.player.room === 'room_502' && WORLD_DATA.classroom_502) return WORLD_DATA.classroom_502;
+    if (this.player.room === 'room_503' && WORLD_DATA.classroom_503) return WORLD_DATA.classroom_503;
+    if (this.player.room === 'room_505' && WORLD_DATA.classroom_505) return WORLD_DATA.classroom_505;
+    if (this.player.room === 'room_506' && WORLD_DATA.classroom_506) return WORLD_DATA.classroom_506;
     if (this.player.room === 'room_706' && WORLD_DATA.classroom_706) {
       return WORLD_DATA.classroom_706;
     }
@@ -413,7 +422,8 @@ class GameEngine {
 
       // 1. Enter classroom through door
       for (const r of floorData.rooms) {
-        if (r.doorX === tileX && r.doorY === tileY) {
+        const isAtDoor = (r.id === "room_career") ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2 && r.doorY === tileY) : (r.doorX === tileX && r.doorY === tileY);
+        if (isAtDoor) {
           if (r.locked) {
             if (this.player.isTeacher) {
               this.triggerFadeWarp(() => {
@@ -1366,7 +1376,51 @@ class GameEngine {
 
   // 5. High-Res Classroom Sliding Door with Brass Plaque
   drawHighResDoor(r) {
+    const isCareer = (r.id === 'room_career');
     const px = r.doorX * 32;
+    if (isCareer) {
+      // 🌟 2배 확장된 대형 진로상담실 슬라이딩 도어 (약 96px 폭, 3타일 확장)
+      const py = 3 * 32 - 12;
+      const dw = 96; // 2배 너비
+      // 상단 황금 러너 트랙
+      this.ctx.fillStyle = '#f59e0b';
+      this.ctx.fillRect(px - 14, py + 8, dw + 28, 6);
+      this.ctx.fillStyle = '#fef08a';
+      this.ctx.fillRect(px - 14, py + 8, dw + 28, 1.5);
+
+      // 네이비 외곽 도어 프레임
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(px - 6, py + 14, dw + 12, 43);
+      this.ctx.fillStyle = '#1e3a8a';
+      this.ctx.fillRect(px - 4, py + 16, dw + 8, 40);
+
+      // 좌/우 2개의 대형 유리 패널
+      const panelW = 42;
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.fillRect(px, py + 19, panelW, 34);
+      this.ctx.fillRect(px + panelW + 4, py + 19, panelW, 34);
+
+      // 유리 반사광
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      this.ctx.fillRect(px + 5, py + 22, 6, 26);
+      this.ctx.fillRect(px + panelW + 9, py + 22, 6, 26);
+
+      // 황금 손잡이 쌍
+      this.ctx.fillStyle = '#fbbf24';
+      this.ctx.fillRect(px + panelW - 5, py + 28, 3, 16);
+      this.ctx.fillRect(px + panelW + 6, py + 28, 3, 16);
+
+      // 대형 명패
+      this.drawSharpLabel(px + dw / 2, py - 4, '🌟 진로상담실 (Career Center)', {
+        bgColor: 'rgba(30, 58, 138, 0.95)',
+        borderColor: '#fbbf24',
+        textColor: '#fef08a',
+        fontSize: 12.5,
+        paddingX: 14,
+        height: 22
+      });
+      return;
+    }
     const py = 3 * 32 - 12;
 
     // Sliding Door Overhead Runner Track
@@ -1418,10 +1472,10 @@ class GameEngine {
   }
 
   // 6. High-Res Classroom Blackboard with Aluminum Frame & School Motto
-  drawHighResBlackboard(cr) {
-    const bx = 8 * 32;
-    const by = 10;
+  drawHighResBlackboard(cr, centerTileX = 15) {
     const bw = 14 * 32;
+    const bx = Math.round((centerTileX * 32) - (bw / 2));
+    const by = 10;
     const bh = 2 * 32 + 6;
 
     // Outer Aluminum & Wood Trim
@@ -1447,44 +1501,48 @@ class GameEngine {
       height: 20
     });
 
-    // Crisp Chalk Writing on Blackboard
-    this.ctx.save();
-    this.ctx.font = '800 13.5px "Pretendard", "Malgun Gothic", sans-serif';
-    this.ctx.textAlign = 'left';
-    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
-    this.ctx.lineWidth = 2.5;
-    this.ctx.lineJoin = 'round';
+    // 5층 및 진로실은 칠판을 완전히 빈 칸으로 유지
+    const isEmptyRoom = (this.player.floor === 5 || this.player.room === 'room_career' || (cr && cr.teacherDesk === null));
+    if (!isEmptyRoom) {
+      // Crisp Chalk Writing on Blackboard for regular classrooms
+      this.ctx.save();
+      this.ctx.font = '800 13.5px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.textAlign = 'left';
+      this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+      this.ctx.lineWidth = 2.5;
+      this.ctx.lineJoin = 'round';
 
-    this.ctx.strokeText('Lesson 1: Nice to Meet You! ✨', bx + 16, by + 25);
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillText('Lesson 1: Nice to Meet You! ✨', bx + 16, by + 25);
+      this.ctx.strokeText('Lesson 1: Nice to Meet You! ✨', bx + 16, by + 25);
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillText('Lesson 1: Nice to Meet You! ✨', bx + 16, by + 25);
 
-    this.ctx.font = '700 11.5px "Pretendard", "Malgun Gothic", sans-serif';
-    this.ctx.strokeText('• Key Words: dream, wisdom, future, courage', bx + 18, by + 43);
-    this.ctx.fillStyle = '#fef08a';
-    this.ctx.fillText('• Key Words: dream, wisdom, future, courage', bx + 18, by + 43);
+      this.ctx.font = '700 11.5px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.strokeText('• Key Words: dream, wisdom, future, courage', bx + 18, by + 43);
+      this.ctx.fillStyle = '#fef08a';
+      this.ctx.fillText('• Key Words: dream, wisdom, future, courage', bx + 18, by + 43);
 
-    this.ctx.strokeText('• Today\'s Mission: English Word Quest & Crafting', bx + 18, by + 59);
-    this.ctx.fillStyle = '#bae6fd';
-    this.ctx.fillText('• Today\'s Mission: English Word Quest & Crafting', bx + 18, by + 59);
+      this.ctx.strokeText('• Today\'s Mission: English Word Quest & Crafting', bx + 18, by + 59);
+      this.ctx.fillStyle = '#bae6fd';
+      this.ctx.fillText('• Today\'s Mission: English Word Quest & Crafting', bx + 18, by + 59);
 
-    // Right Side: Neat Vocabulary Quiz Note Box
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-    this.ctx.lineWidth = 1.5;
-    this.ctx.strokeRect(bx + bw - 144, by + 13, 128, 46);
-    this.ctx.font = '800 11px "Pretendard", "Malgun Gothic", sans-serif';
-    this.ctx.textAlign = 'center';
-    this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-    this.ctx.lineWidth = 2.5;
-    this.ctx.strokeText('[ 칠판 퀴즈 풀기 ]', bx + bw - 80, by + 30);
-    this.ctx.fillStyle = '#fde047';
-    this.ctx.fillText('[ 칠판 퀴즈 풀기 ]', bx + bw - 80, by + 30);
+      // Right Side: Neat Vocabulary Quiz Note Box
+      this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.strokeRect(bx + bw - 144, by + 13, 128, 46);
+      this.ctx.font = '800 11px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+      this.ctx.lineWidth = 2.5;
+      this.ctx.strokeText('[ 칠판 퀴즈 풀기 ]', bx + bw - 80, by + 30);
+      this.ctx.fillStyle = '#fde047';
+      this.ctx.fillText('[ 칠판 퀴즈 풀기 ]', bx + bw - 80, by + 30);
 
-    this.ctx.font = '700 10.5px "Pretendard", "Malgun Gothic", sans-serif';
-    this.ctx.strokeText('골드 획득!', bx + bw - 80, by + 48);
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillText('골드 획득!', bx + bw - 80, by + 48);
-    this.ctx.restore();
+      this.ctx.font = '700 10.5px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.strokeText('골드 획득!', bx + bw - 80, by + 48);
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillText('골드 획득!', bx + bw - 80, by + 48);
+      this.ctx.restore();
+    }
 
     // Bottom Full-Length Aluminum Chalk Ledge
     this.ctx.fillStyle = '#475569';
@@ -3542,13 +3600,19 @@ class GameEngine {
     const h = 44;
 
     const isHallway = (currentFloor === 7);
-    const status = isHallway ? this.getElevatorStatus() : {
+    const status = (currentFloor === 5) ? {
+      state: 'ready',
+      ledText: '[ 7F ▲ ]',
+      ledColor: '#38bdf8',
+      name: '중앙 엘리베이터 (5층)',
+      prompt: '1학년 복도(7층)로 이동'
+    } : (isHallway ? this.getElevatorStatus() : {
       state: 'ready',
       ledText: '[ 1F ▲ ]',
       ledColor: '#10b981',
       name: '중앙 엘리베이터',
       prompt: '1학년 복도로 올라가기'
-    };
+    });
 
     // Floor shadow
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
@@ -3750,9 +3814,11 @@ class GameEngine {
     const isBossRoom = (this.player.room === 'room_702');
 
     // 1. Polished Wood Plank Flooring & Interior Walls
-    for (let tx = 0; tx < WORLD_DATA.MAP_WIDTH; tx++) {
-      for (let ty = 0; ty < WORLD_DATA.MAP_HEIGHT; ty++) {
-        if (ty <= 2 || tx === 0 || tx === WORLD_DATA.MAP_WIDTH - 1 || ty >= 18) {
+    const curW = this.getMapWidth();
+    const curH = this.getMapHeight();
+    for (let tx = 0; tx < curW; tx++) {
+      for (let ty = 0; ty < curH; ty++) {
+        if (ty <= 2 || tx === 0 || tx === curW - 1 || ty >= 18) {
           this.drawHighResWall(tx, ty, true);
         } else {
           this.drawHighResWoodPlankFloor(tx, ty);
@@ -3761,14 +3827,21 @@ class GameEngine {
     }
 
     // 2. High-Res Classroom Blackboard & School Motto
-    this.drawHighResBlackboard(cr);
+    const isCareerRoom = (this.player.room === 'room_career');
+    const centerTileX = isCareerRoom ? 30 : 15;
+    this.drawHighResBlackboard(cr, centerTileX);
 
     // 3. Wall Clock above Blackboard (Center Top)
-    this.drawHighResWallClock(15 * 32, 16);
+    this.drawHighResWallClock(centerTileX * 32, 16);
 
     // 4. Back Wall Student Lockers (Row of Lockers along Back Wall)
-    this.drawHighResLockers(3, 17, 5);
-    this.drawHighResLockers(22, 17, 5);
+    if (isCareerRoom) {
+      this.drawHighResLockers(4, 17, 6);
+      this.drawHighResLockers(50, 17, 6);
+    } else {
+      this.drawHighResLockers(3, 17, 5);
+      this.drawHighResLockers(22, 17, 5);
+    }
 
     if (isBossRoom) {
       const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
@@ -3812,6 +3885,8 @@ class GameEngine {
     } else if (this.player.room === 'room_703') {
       // === 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어 기지) ===
       this.renderAcidRainComputerLab(cr);
+    } else if (this.player.floor === 5 || this.player.room === 'room_career') {
+      // 5층 및 진로실: 파밍 없고 교탁 골드 파밍 없는 깨끗한 빈 공간 연출
     } else {
       // === 1학년 1반: 시즌1 기초 재료 노가다 채집장 연출 ===
       if (cr.teacherDesk) {

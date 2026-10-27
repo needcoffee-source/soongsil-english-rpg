@@ -8,12 +8,37 @@
 const WORLD_DATA = {
   TILE_SIZE: 32,
   MAP_WIDTH: 30,
-  HALLWAY_WIDTH: 60, // 1학년 복도 길이 2배 확장 (30타일 -> 60타일)
+  HALLWAY_WIDTH: 60,
+  CAREER_WIDTH: 60,
+  CAREER_HEIGHT: 20, // 1학년 복도 길이 2배 확장 (30타일 -> 60타일)
   PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
   PLAYGROUND_HEIGHT: 54, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
   MAP_HEIGHT: 20,
 
   floors: {
+    // 5층: 테스트 구역 (교실 제외한 순수 복도 공간)
+    5: {
+      name: "5층 복도 (진로 & 선배 구역)",
+      rooms: [
+        { id: "room_career", name: "🌟 진로상담실 (Career Center)", doorX: 13, doorY: 5, targetX: 30, targetY: 15, locked: false },
+        { id: "room_501", name: "2학년 1반", doorX: 25, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 1반 자율학습 시간입니다. (현재 준비 중 🚧)" },
+        { id: "room_502", name: "2학년 2반", doorX: 32, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 2반 수업 시간입니다. (현재 준비 중 🚧)" },
+        { id: "room_503", name: "2학년 3반", doorX: 39, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 3반 수업 시간입니다. (현재 준비 중 🚧)" },
+        { id: "room_505", name: "3학년 5반", doorX: 46, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "3학년 5반 선배들의 심화 입시 수업 중입니다. (현재 준비 중 🚧)" },
+        { id: "room_506", name: "3학년 6반", doorX: 51, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "3학년 6반 선배들의 심화 입시 수업 중입니다. (현재 준비 중 🚧)" }
+      ],
+      elevator: { x: 56, y: 3 },
+      interactive: [
+        { id: "board_leaderboard_5", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
+        { id: "mirror_hallway_5", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
+        { id: "water_purifier_hallway_5", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" },
+        { id: "board_club_5", type: "club_board", x: 27, y: 17, name: "🎸 동아리 홍보 게시판", prompt: "동아리 공지 확인 (SPACE)" },
+        { id: "plant_hallway_5_1", type: "plant_zone", subType: "monstera", x: 35, y: 17, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" },
+        { id: "plant_hallway_5_2", type: "plant_zone", subType: "areca", x: 38, y: 17, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" }
+      ],
+      npcs: []
+    },
+
     7: {
       name: "1학년 복도",
       rooms: [
@@ -66,6 +91,29 @@ const WORLD_DATA = {
   },
 
   // 1학년 1반
+  classroom_career: {
+    name: "🌟 진로상담실 (Career Center)",
+    exitDoor: { x: 30, y: 17 },
+    blackboard: {
+      x: 30,
+      y: 2,
+      name: "칠판",
+      prompt: ""
+    },
+    teacherDesk: null,
+    gatherSpots: [],
+    desks: [],
+    npcs: [],
+    interactive: []
+  },
+
+  // 5층 잠김 교실 (내부 비어있음)
+  classroom_501: { name: "2학년 1반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+  classroom_502: { name: "2학년 2반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+  classroom_503: { name: "2학년 3반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+  classroom_505: { name: "3학년 5반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+  classroom_506: { name: "3학년 6반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+
   classroom_701: {
     name: "1학년 1반",
     exitDoor: { x: 15, y: 17 },

@@ -444,7 +444,7 @@ class MainApp {
 
     this.engine.onLocationChangeCallback = (loc) => {
       this.hudLocation.innerText = loc.roomName;
-      this.floorTag.innerText = '시즌 1 (v2.0)';
+      this.floorTag.innerText = (loc.floor === 5) ? '5층 (테스트)' : '시즌 1 (v2.0)';
       this.networkManager.changeLocation(loc);
     };
 
@@ -816,6 +816,16 @@ class MainApp {
 
   handleElevatorInteraction() {
     if (this.playerData.isTeacher) {
+      if (this.engine.player.floor === 5) {
+        const choice = confirm('🛗 [교사 전용 프리패스 - 5층 엘리베이터]\n\n[확인]을 누르면 1학년 복도(7층)로 이동합니다.\n([취소]를 누르면 현재 5층에 머무릅니다)');
+        if (choice) {
+          this.engine.triggerFadeWarp(() => {
+            this.engine.player.floor = 7;
+            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
+          });
+        }
+        return;
+      }
       if (this.engine.player.room === 'playground') {
         const goUp = confirm('🛗 [교사 전용 프리패스]\n\n1학년 복도로 이동하시겠습니까?');
         if (goUp) {
