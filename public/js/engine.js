@@ -548,6 +548,11 @@ class GameEngine {
         this.player.roomName = '숭실 운동장 (농구장)';
         this.player.x = 74 * 32; // 우레탄 농구장 센터서클
         this.player.y = 16 * 32;
+      } else if (room === 'playground_futsal') {
+        this.player.room = 'playground';
+        this.player.roomName = '숭실 운동장 (풋살장)';
+        this.player.x = 74 * 32; // 인조잔디 풋살장 센터
+        this.player.y = 40 * 32;
       } else if (room === 'playground') {
         this.player.room = 'playground';
         this.player.roomName = '숭실 운동장';
@@ -558,6 +563,11 @@ class GameEngine {
         this.player.x = 15 * 32;
         this.player.y = 10 * 32;
         this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
+      } else if (room === 'room_career') {
+        this.player.room = 'room_career';
+        this.player.x = 30 * 32;
+        this.player.y = 15 * 32;
+        this.player.roomName = '🌟 진로실 (Career Center)';
       } else {
         this.player.room = room || 'room_701';
         this.player.x = 15 * 32;
