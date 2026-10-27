@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>숭실중학교 영어 오픈월드 RPG (Soongsil World)</title>
+  <title>숭실중학교 영어 RPG (Soongsil World)</title>
 
   <!-- Tablet & Mobile PWA Standalone Meta Tags (주소창/탭 숨김) -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=57">
+  <link rel="stylesheet" href="css/style.css?v=58">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -60,13 +60,13 @@
               <div class="rpg-speaker-info">
                 <span id="rpg-dialog-speaker" class="rpg-speaker-pill">안내</span>
               </div>
-              <button id="btn-close-rpg-dialog" class="rpg-dialog-close-btn" title="닫기 (Space/Enter/A)">✕</button>
+              <button id="btn-close-rpg-dialog" class="rpg-dialog-close-btn" title="닫기 (Space/Enter)">✕</button>
             </div>
             <div class="rpg-dialog-body">
               <p id="rpg-dialog-text" class="rpg-dialog-text"></p>
             </div>
             <div class="rpg-dialog-footer">
-              <span class="rpg-dialog-hint">스페이스바 / Enter / 우측 [A] 버튼을 눌러 넘기기</span>
+              <span class="rpg-dialog-hint">스페이스바 / Enter / 우측 [SPACE] 버튼으로 넘기기</span>
               <span class="rpg-dialog-indicator">▼</span>
             </div>
           </div>
@@ -140,7 +140,7 @@
         <div class="action-buttons-grid">
           <button id="btn-action-a" class="act-btn btn-a">
             <span class="btn-letter">SPACE</span>
-            <span class="btn-sub">조사 / 대화 / 진입</span>
+            <span class="btn-sub">조사 / 대화</span>
           </button>
           <button id="btn-action-b" class="act-btn btn-b btn-b-locked" title="특별한 신발을 얻어야 달릴 수 있습니다">
             <div id="btn-b-cooldown-overlay" class="btn-cooldown-overlay hidden">
@@ -152,7 +152,7 @@
               <span id="btn-b-cooldown-sec" class="btn-cooldown-sec">5.0s</span>
             </div>
             <span class="btn-letter">SHIFT</span>
-            <span class="btn-sub">🔒 달리기 (신발 필요)</span>
+            <span class="btn-sub">🔒 달리기 (잠김)</span>
           </button>
         </div>
       </section>
@@ -169,9 +169,9 @@
       <section class="side-card gm-card hidden" id="gm-panel">
         <div class="gm-title">👑 선생님 전용 마스터 기능 (갓준철 선생님)</div>
         <div class="gm-btn-grid">
-          <button class="gm-btn" id="btn-gm-noclip">⚡ 공간돌파(벽통과): OFF</button>
+          <button class="gm-btn" id="btn-gm-noclip">⚡ 공간돌파: OFF</button>
           <select class="gm-select" id="select-gm-warp">
-            <option value="">🚀 공간 즉시 이동 (순간이동)</option>
+            <option value="">🚀 공간 이동</option>
             <option value="7_hallway">7층 복도 (1학년)</option>
             <option value="7_room_701">1학년 1반</option>
             <option value="7_room_702">1학년 2반</option>
@@ -183,7 +183,7 @@
             <option value="0_playground_futsal">🥅 풋살장 (운동장)</option>
           </select>
           <button class="gm-btn teacher-admin-btn" id="btn-teacher">👩‍🏫 교사 실시간 관제탑</button>
-          <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" class="gm-btn" style="text-decoration:none; text-align:center; background:#14532d; color:#86efac; border:1px solid #22c55e; display:flex; align-items:center; justify-content:center; gap:4px; font-weight:700;" title="전체 아이템 획득경로 및 드랍테이블 엑셀 다운로드">📥 엑셀 드랍테이블 (.xlsx)</a>
+          <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" class="gm-btn gm-excel-btn" id="btn-download-excel" title="전체 아이템 획득경로 및 드랍테이블 엑셀 다운로드">📥 드랍테이블</a>
         </div>
       </section>
 
@@ -196,14 +196,14 @@
         
         <!-- Quick English Buttons -->
         <div id="quick-phrases" class="side-quick-phrases">
-          <button class="quick-btn" data-text="Hello!">"Hello!" 👋</button>
-          <button class="quick-btn" data-text="Help me!">"Help me!" 🆘</button>
-          <button class="quick-btn" data-text="Good job!">"Good job!" 👍</button>
-          <button class="quick-btn" data-text="Follow me!">"Follow me!" 🏃</button>
+          <button class="quick-btn" data-text="Hello!">Hello! 👋</button>
+          <button class="quick-btn" data-text="Help me!">Help me! 🆘</button>
+          <button class="quick-btn" data-text="Good job!">Good job! 👍</button>
+          <button class="quick-btn" data-text="Follow me!">Follow me! 🏃</button>
         </div>
 
         <div id="chat-input-row" class="side-chat-input-row">
-          <input type="text" id="chat-input" placeholder="메시지 입력 (비속어 필터)..." maxlength="60">
+          <input type="text" id="chat-input" placeholder="메시지 입력..." maxlength="60">
           <button id="btn-send-chat">전송</button>
         </div>
       </section>
@@ -217,7 +217,7 @@
   <div id="modal-login" class="modal-overlay">
     <div class="modal-card login-card">
       <div class="modal-header">
-        <h2>🏫 숭실중학교 영어 오픈월드 RPG <span style="font-size:12px; background:#0284c7; color:#fff; padding:3px 9px; border-radius:12px; vertical-align:middle; font-weight:700;">시즌 1 (v2.0)</span></h2>
+        <h2>🏫 숭실중학교 영어 RPG <span style="font-size:12px; background:#0284c7; color:#fff; padding:3px 9px; border-radius:12px; vertical-align:middle; font-weight:700;">시즌 1 (v2.0)</span></h2>
       </div>
       <div class="modal-body">
         <!-- Teacher Notice Banner (교사 로그인 모드 시 표시) -->
@@ -471,7 +471,7 @@
         </div>
 
         <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0;">
-          💡 받은 장비는 가방(B 버튼)에서 터치하여 착용할 수 있습니다.
+          💡 받은 장비는 우측 사이드바의 [🎒 가방] 메뉴에서 착용할 수 있습니다.
         </p>
       </div>
     </div>

@@ -945,7 +945,7 @@ class MainApp {
     if (window.AudioManager) window.AudioManager.playFanfare();
 
     alert(
-      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방(B)에 안전하게 보관되었습니다.)`
+      `🤫 [비밀의 철제 사물함 발견!]\n\n누군가 1학년 2반 구석 사물함에 깜빡 두고 간\n[${chosen.icon} ${chosen.name} x${count}개]를 찾았습니다!\n\n(가방에 안전하게 보관되었습니다.)`
     );
   }
 
@@ -1008,7 +1008,7 @@ class MainApp {
     if (window.AudioManager) window.AudioManager.playFanfare();
 
     alert(
-      `🎉 [숭실이의 입학 축하 선물 지급 완료!]\n\n숭실이가 준 [${chosenItem.icon} ${chosenItem.name}]을(를) 받았습니다!\n\n🎒 가방(B 버튼)을 열어 터치하면 즉시 장착하여 전투력(공격력/방어력)을 올릴 수 있어 멍!`
+      `🎉 [숭실이의 입학 축하 선물 지급 완료!]\n\n숭실이가 준 [${chosenItem.icon} ${chosenItem.name}]을(를) 받았습니다!\n\n🎒 가방을 열어 터치하면 즉시 장착하여 전투력(공격력/방어력)을 올릴 수 있어 멍!`
     );
   }
 
@@ -4954,14 +4954,14 @@ class MainApp {
     const canDash = this.engine && this.engine.player && (this.engine.player.hasRunningShoes || this.engine.player.isTeacher);
     if (canDash) {
       btnB.classList.remove('btn-b-locked');
-      btnB.title = '달리기 (Shift 또는 B를 누른 채 이동)';
+      btnB.title = '달리기 (Shift를 누른 채 이동)';
       const sub = btnB.querySelector('.btn-sub');
-      if (sub) sub.textContent = '달리기 (Shift)';
+      if (sub) sub.textContent = '달리기';
     } else {
       btnB.classList.add('btn-b-locked');
       btnB.title = '특별한 신발을 얻어야 달릴 수 있습니다';
       const sub = btnB.querySelector('.btn-sub');
-      if (sub) sub.textContent = '🔒 달리기 (신발 필요)';
+      if (sub) sub.textContent = '🔒 달리기 (잠김)';
     }
   }
 

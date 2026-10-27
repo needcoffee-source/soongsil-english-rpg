@@ -499,6 +499,23 @@ body, html {
   color: #fff;
 }
 
+.gm-excel-btn {
+  text-decoration: none;
+  text-align: center;
+  background: #065f46;
+  border-color: #10b981;
+  color: #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-weight: 700;
+}
+.gm-excel-btn:hover {
+  background: #047857;
+  color: #ecfdf5;
+}
+
 /* Teacher Login Toggle Box */
 .teacher-toggle-box {
   background: rgba(0, 0, 0, 0.25);
@@ -783,38 +800,46 @@ body, html {
 /* Student Character Customization Pills */
 .custom-pill-group {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 .btn-custom-pill {
   background: #0f172a;
   border: 1.5px solid #334155;
   color: #94a3b8;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  min-height: 32px;
   transition: all 0.15s ease;
+  user-select: none;
 }
 .btn-custom-pill:hover {
   border-color: #64748b;
   color: #f8fafc;
 }
+.btn-custom-pill:active {
+  transform: scale(0.96);
+}
 .btn-custom-pill.active {
-  background: rgba(59, 130, 246, 0.22);
-  border-color: #3b82f6;
-  color: #60a5fa;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.28);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
+  font-weight: 800;
 }
 .color-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
 }
 
 /* Quiz Modal */
