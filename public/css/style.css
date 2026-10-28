@@ -1850,14 +1850,59 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 4px;
+  padding-top: 6px;
   font-size: 11.5px;
   color: #64748b;
   border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  min-height: 32px;
 }
 
 .rpg-dialog-hint {
   color: #94a3b8;
+}
+
+.rpg-dialog-choices {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.btn-rpg-choice {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease-in-out;
+  outline: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.btn-rpg-confirm {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+}
+
+.btn-rpg-confirm:hover, .btn-rpg-confirm:active {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5);
+}
+
+.btn-rpg-cancel {
+  background: #334155;
+  color: #cbd5e1;
+  border: 1px solid #475569;
+}
+
+.btn-rpg-cancel:hover, .btn-rpg-cancel:active {
+  background: #475569;
+  color: #ffffff;
 }
 
 .rpg-dialog-indicator {

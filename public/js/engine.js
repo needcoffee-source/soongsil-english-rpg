@@ -494,7 +494,24 @@ class GameEngine {
         });
         return;
       }
-    } else if (this.player.room !== 'playground') {
+    } else if (this.player.room === 'playground') {
+      // ⚽ 축구장 한가운데(센터 서클: x: 31*32, y: 35*32) 진입 시 7층 복도로 강제 튕겨내기
+      const soccerCenterX = 31 * 32;
+      const soccerCenterY = 35 * 32;
+      const distToCenter = Math.hypot(this.player.x - soccerCenterX, this.player.y - soccerCenterY);
+      if (distToCenter < 96) {
+        if (!this.player.isTeacher) {
+          this.triggerFadeWarp(() => {
+            this.warpToFloor(7, 15 * 32, 10 * 32);
+            this.warpToRoom('hallway', '1학년 복도', 15 * 32, 10 * 32);
+            if (window.MainApp && window.MainApp.showToast) {
+              window.MainApp.showToast('💨 축구장 중앙의 정체불명 소용돌이에 휩쓸려 1학년 복도로 튕겨져 나왔습니다!', 'warning');
+            }
+          });
+          return;
+        }
+      }
+    } else {
       // Exit classroom when stepping on exit door area (Only inside classrooms)
       const cr = this.getCurrentClassroomData();
       const exit = (cr && cr.exitDoor) || WORLD_DATA.classroom.exitDoor;
@@ -4196,10 +4213,42 @@ class GameEngine {
     this.ctx.beginPath();
     this.ctx.arc(midX, midY, 100, 0, Math.PI * 2);
     this.ctx.stroke();
+
+    // 🌀 Mysterious Repulsion Vortex in Soccer Center (축구장 중앙 결계 소용돌이)
+    const vNow = Date.now();
+    const pulseR = 85 + Math.sin(vNow / 320) * 8;
+    const vGrad = this.ctx.createRadialGradient(midX, midY, 8, midX, midY, pulseR);
+    vGrad.addColorStop(0, 'rgba(147, 51, 234, 0.45)');
+    vGrad.addColorStop(0.65, 'rgba(59, 130, 246, 0.22)');
+    vGrad.addColorStop(1, 'rgba(30, 27, 75, 0)');
+    this.ctx.fillStyle = vGrad;
+    this.ctx.beginPath();
+    this.ctx.arc(midX, midY, pulseR, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Swirling energy arcs
+    this.ctx.strokeStyle = 'rgba(192, 132, 252, 0.65)';
+    this.ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      const startA = (vNow / 400) + (i * Math.PI * 2 / 3);
+      this.ctx.beginPath();
+      this.ctx.arc(midX, midY, 32 + i * 22, startA, startA + 1.2);
+      this.ctx.stroke();
+    }
+
     this.ctx.fillStyle = '#ffffff';
     this.ctx.beginPath();
     this.ctx.arc(midX, midY, 5, 0, Math.PI * 2);
     this.ctx.fill();
+
+    this.drawSharpLabel(midX, midY - 14, '🌀 축구장 결계 (진입 시 복도로 튕김)', {
+      bgColor: 'rgba(88, 28, 135, 0.95)',
+      borderColor: '#c084fc',
+      textColor: '#fef08a',
+      fontSize: 11.5,
+      paddingX: 10,
+      height: 20
+    });
 
     // Left Penalty Box (West 18-yard box)
     const penW = 8 * 32;

@@ -12,13 +12,13 @@ window.ECONOMY_CONFIG = {
   minGold: 1,
   maxGold: 3,
   baseExp: 5,
-  itemDropRatePercent: 15,
+  itemDropRatePercent: 25, // 기본 드랍률: 15% -> 25% (+10% 상향)
   dropAmount: 1,
   spotDropRates: {
-    gather_wood: 35, // 35%로 대폭 상향!
-    gather_herb: 25, // +5% 상향
-    gather_forsythia: 10,
-    gather_ginkgo: 7
+    gather_wood: 45, // 목재: 35% -> 45% (+10% 상향)
+    gather_herb: 35, // 허브: 25% -> 35% (+10% 상향)
+    gather_forsythia: 20, // 개나리: 10% -> 20% (+10% 상향)
+    gather_ginkgo: 17 // 교목 은행나무: 7% -> 17% (+10% 상향)
   }
 };
 
@@ -222,16 +222,16 @@ class QuizManager {
     }
 
     if (this.currentSourceType === 'gather_wood') {
-      return { item: 'item_wood', name: '단단한 목재', icon: '🪵', rate: cfg.spotDropRates.gather_wood || 20 };
+      return { item: 'item_wood', name: '단단한 목재', icon: '🪵', rate: cfg.spotDropRates.gather_wood || 45 };
     }
     if (this.currentSourceType === 'gather_herb') {
-      return { item: 'item_herb', name: '향긋한 허브', icon: '🌿', rate: cfg.spotDropRates.gather_herb || 25 };
+      return { item: 'item_herb', name: '향긋한 허브', icon: '🌿', rate: cfg.spotDropRates.gather_herb || 35 };
     }
     if (this.currentSourceType === 'gather_forsythia' || this.currentSourceType === 'forsythia') {
-      return { item: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', rate: cfg.spotDropRates.gather_forsythia || 10 };
+      return { item: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', rate: cfg.spotDropRates.gather_forsythia || 20 };
     }
     if (this.currentSourceType === 'gather_ginkgo' || this.currentSourceType === 'ginkgo') {
-      return { item: 'item_ginkgo', name: '황금 은행잎', icon: '🍂', rate: cfg.spotDropRates.gather_ginkgo || 7 };
+      return { item: 'item_ginkgo', name: '황금 은행잎', icon: '🍂', rate: cfg.spotDropRates.gather_ginkgo || 17 };
     }
 
     const randMat = BASIC_GRIND_POOL[Math.floor(Math.random() * BASIC_GRIND_POOL.length)];
@@ -239,7 +239,7 @@ class QuizManager {
       item: randMat.item,
       name: randMat.name,
       icon: randMat.icon,
-      rate: cfg.spotDropRates.board || cfg.itemDropRatePercent || 15
+      rate: cfg.spotDropRates.board || cfg.itemDropRatePercent || 25
     };
   }
 

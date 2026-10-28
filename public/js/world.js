@@ -140,7 +140,7 @@ const WORLD_DATA = {
         dropItem: "item_wood",
         dropName: "단단한 목재",
         dropIcon: "🪵",
-        dropRate: 20
+        dropRate: 45
       },
       {
         id: "spot_herb_1",
@@ -152,7 +152,7 @@ const WORLD_DATA = {
         dropItem: "item_herb",
         dropName: "향긋한 허브",
         dropIcon: "🌿",
-        dropRate: 25
+        dropRate: 35
       },
       {
         id: "spot_forsythia_1",
@@ -164,7 +164,7 @@ const WORLD_DATA = {
         dropItem: "item_forsythia",
         dropName: "노란 개나리 꽃잎",
         dropIcon: "🌼",
-        dropRate: 10
+        dropRate: 20
       },
       {
         id: "spot_ginkgo_1",
@@ -176,7 +176,7 @@ const WORLD_DATA = {
         dropItem: "item_ginkgo",
         dropName: "황금 은행잎",
         dropIcon: "🍂",
-        dropRate: 7
+        dropRate: 17
       }
     ],
     desks: [

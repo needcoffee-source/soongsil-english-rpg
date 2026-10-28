@@ -285,6 +285,9 @@ let bossRaidEvent = {
   participants: {}
 };
 
+// Global Defeated Field Monsters (농구장 & 풋살장 몬스터 글로벌 리스폰 동기화)
+const defeatedFieldMobs = {};
+
 // Master Item Catalog for Teacher Grant & Game Systems
 const ALL_GAME_ITEMS = {
   // 1. Materials
@@ -402,6 +405,7 @@ io.on('connection', (socket) => {
     socket.emit('init_self', players[socket.id]);
     socket.emit('boss_raid_state', bossRaidEvent);
     socket.emit('plant_water_sync', { waterCount: plantWaterCount });
+    socket.emit('field_monsters_state', defeatedFieldMobs);
 
     // Broadcast new player to room
     socket.to(currentRoom).emit('player_joined', players[socket.id]);
@@ -715,8 +719,16 @@ io.on('connection', (socket) => {
 // BOSS RAID SERVER MONITOR (3분 제한시간 및 파티 전멸 Wipe 실시간 감지)
 // ========================================================
 setInterval(() => {
-  if (!bossRaidEvent.active || bossRaidEvent.mode !== 'coop') return;
   const now = Date.now();
+
+  // 0. Field Monsters Expired Respawn Cleanup (농구장 & 풋살장 리스폰 완료 몬스터 제거)
+  for (const mId in defeatedFieldMobs) {
+    if (now >= defeatedFieldMobs[mId]) {
+      delete defeatedFieldMobs[mId];
+    }
+  }
+
+  if (!bossRaidEvent.active || bossRaidEvent.mode !== 'coop') return;
 
   // 1. 3분(180초) 타임오버 감지
   if (bossRaidEvent.expiresAt && now >= bossRaidEvent.expiresAt) {
@@ -904,6 +916,19 @@ setInterval(() => {
     if (currentRoom) {
       io.to(currentRoom).emit('player_status_updated', { id: socket.id, isFallen: false, name: p ? p.name : '학생' });
     }
+  });
+
+  socket.on('field_monster_defeat', ({ mobId, respawnSec }) => {
+    if (!mobId) return;
+    const respawnAt = Date.now() + (parseInt(respawnSec) || 15) * 1000;
+    defeatedFieldMobs[mobId] = respawnAt;
+    const killer = players[socket.id];
+    const killerName = killer ? killer.name : '동료';
+    io.emit('field_monster_defeated_sync', {
+      mobId,
+      respawnAt,
+      defeatedBy: killerName
+    });
   });
 
   // Disconnect

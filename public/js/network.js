@@ -251,6 +251,18 @@ class NetworkManager {
       }
     });
 
+    this.socket.on('field_monsters_state', (state) => {
+      if (window.MainApp && window.MainApp.onFieldMonstersState) {
+        window.MainApp.onFieldMonstersState(state);
+      }
+    });
+
+    this.socket.on('field_monster_defeated_sync', (data) => {
+      if (window.MainApp && window.MainApp.onFieldMonsterDefeatedSync) {
+        window.MainApp.onFieldMonsterDefeatedSync(data);
+      }
+    });
+
     this.socket.on('player_status_updated', (data) => {
       if (this.engine.otherPlayers[data.id]) {
         this.engine.otherPlayers[data.id].isFallen = data.isFallen;

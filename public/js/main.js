@@ -737,7 +737,18 @@ class MainApp {
     if (!room) return;
     const msg = room.lockMessage || "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽";
     if (this.playerData && this.playerData.isTeacher) {
-      if (confirm(`🚪 [${room.name}]\n\n"${msg}"\n\n(교사 권한으로 교실 내부에 입장하시겠습니까?)`)) {
+      if (window.RPGDialog) {
+        window.RPGDialog.confirm(
+          room.name,
+          `"${msg}"\n\n(교사 권한으로 교실 내부에 입장하시겠습니까?)`,
+          '🚪',
+          () => {
+            this.engine.triggerFadeWarp(() => {
+              this.engine.warpToRoom(room.id, room.name, room.targetX * 32, room.targetY * 32);
+            });
+          }
+        );
+      } else if (confirm(`🚪 [${room.name}]\n\n"${msg}"\n\n(교사 권한으로 교실 내부에 입장하시겠습니까?)`)) {
         this.engine.triggerFadeWarp(() => {
           this.engine.warpToRoom(room.id, room.name, room.targetX * 32, room.targetY * 32);
         });
@@ -819,29 +830,71 @@ class MainApp {
   }
 
   handleElevatorInteraction() {
+    // 1. Anti-spam & interaction debounce (prevents double triggers on mobile/spacebar)
+    if (this._elevatorCooldown && Date.now() - this._elevatorCooldown < 1500) {
+      return;
+    }
+    this._elevatorCooldown = Date.now();
+
+    const dialog = window.RPGDialog;
+
     if (this.playerData.isTeacher) {
       if (this.engine.player.floor === 5) {
-        const choice = confirm('🛗 [교사 전용 프리패스 - 5층 엘리베이터]\n\n[확인]을 누르면 1학년 복도(7층)로 이동합니다.\n([취소]를 누르면 현재 5층에 머무릅니다)');
-        if (choice) {
+        if (dialog) {
+          dialog.confirm(
+            '교사 전용 프리패스',
+            '5층 엘리베이터입니다.\n[확인]을 누르면 1학년 복도(7층)로 이동합니다.\n([취소]를 누르면 현재 5층에 머무릅니다)',
+            '🛗',
+            () => {
+              this.engine.triggerFadeWarp(() => {
+                this.engine.player.floor = 7;
+                this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
+                this._elevatorCooldown = Date.now() + 1500;
+              });
+            }
+          );
+        } else if (confirm('🛗 [교사 전용 프리패스 - 5층 엘리베이터]\n\n[확인]을 누르면 1학년 복도(7층)로 이동합니다.\n([취소]를 누르면 현재 5층에 머무릅니다)')) {
           this.engine.triggerFadeWarp(() => {
             this.engine.player.floor = 7;
-            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
+            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
           });
         }
         return;
       }
       if (this.engine.player.room === 'playground') {
-        const goUp = confirm('🛗 [교사 전용 프리패스]\n\n1학년 복도로 이동하시겠습니까?');
-        if (goUp) {
+        if (dialog) {
+          dialog.confirm(
+            '교사 전용 프리패스',
+            '1학년 복도로 이동하시겠습니까?',
+            '🛗',
+            () => {
+              this.engine.triggerFadeWarp(() => {
+                this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
+                this._elevatorCooldown = Date.now() + 1500;
+              });
+            }
+          );
+        } else if (confirm('🛗 [교사 전용 프리패스]\n\n1학년 복도로 이동하시겠습니까?')) {
           this.engine.triggerFadeWarp(() => {
-            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
+            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
           });
         }
       } else {
-        const goDown = confirm('🛗 [교사 전용 프리패스]\n\n숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)');
-        if (goDown) {
+        if (dialog) {
+          dialog.confirm(
+            '교사 전용 프리패스',
+            '숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)',
+            '🛗',
+            () => {
+              this.engine.triggerFadeWarp(() => {
+                this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
+                this._elevatorCooldown = Date.now() + 1500;
+              });
+            }
+          );
+        } else if (confirm('🛗 [교사 전용 프리패스]\n\n숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)')) {
           this.engine.triggerFadeWarp(() => {
-            this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 5 * 32);
+            this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
           });
         }
       }
@@ -849,11 +902,23 @@ class MainApp {
     }
 
     if (this.engine.player.room === 'playground') {
-      const goUp = confirm('🛗 [중앙 엘리베이터 탑승]\n\n1학년 복도로 올라가시겠습니까?');
-      if (goUp) {
+      if (dialog) {
+        dialog.confirm(
+          '중앙 엘리베이터 탑승',
+          '1학년 복도로 올라가시겠습니까?',
+          '🛗',
+          () => {
+            if (window.AudioManager) window.AudioManager.playSelect();
+            this.engine.triggerFadeWarp(() => {
+              this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
+              this._elevatorCooldown = Date.now() + 1500;
+            });
+          }
+        );
+      } else if (confirm('🛗 [중앙 엘리베이터 탑승]\n\n1학년 복도로 올라가시겠습니까?')) {
         if (window.AudioManager) window.AudioManager.playSelect();
         this.engine.triggerFadeWarp(() => {
-          this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 5 * 32);
+          this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
         });
       }
     } else {
@@ -868,15 +933,26 @@ class MainApp {
       // 2. 엘리베이터 작동권 장착 여부 검사
       if (!this.isElevatorPassEquipped()) {
         if (this.hasItem('equip_elevator_pass')) {
-          const equipNow = confirm(
-            '🛗 [엘리베이터 키 미인식]\n\n가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?'
-          );
-          if (equipNow) {
-            this.equipItem('equip_elevator_pass');
-            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+          if (dialog) {
+            dialog.confirm(
+              '엘리베이터 키 미인식',
+              '가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?',
+              '🛗',
+              () => {
+                this.equipItem('equip_elevator_pass');
+                this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+              }
+            );
           } else {
-            return;
+            const equipNow = confirm(
+              '🛗 [엘리베이터 키 미인식]\n\n가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?'
+            );
+            if (equipNow) {
+              this.equipItem('equip_elevator_pass');
+              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+            }
           }
+          return;
         } else {
           // 혹시 골렘은 잡았는데 작동권이 인벤토리에 없는 경우 (소급 자동 지급)
           this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
@@ -886,15 +962,26 @@ class MainApp {
             stats: { atk: 0, def: 0, hp: 0 },
             effect: '🛗 중앙 엘리베이터 가동 인가증'
           });
-          const equipNow = confirm(
-            '🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?'
-          );
-          if (equipNow) {
-            this.equipItem('equip_elevator_pass');
-            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+          if (dialog) {
+            dialog.confirm(
+              '작동권 발급',
+              '골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?',
+              '🎉',
+              () => {
+                this.equipItem('equip_elevator_pass');
+                this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+              }
+            );
           } else {
-            return;
+            const equipNow = confirm(
+              '🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?'
+            );
+            if (equipNow) {
+              this.equipItem('equip_elevator_pass');
+              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+            }
           }
+          return;
         }
       }
 
@@ -906,15 +993,32 @@ class MainApp {
         return;
       }
 
-      const goDown = confirm(
-        `🛗 [중앙 엘리베이터 가동]\n\n10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`
-      );
-      if (goDown) {
-        this.addGold(-10);
-        if (window.AudioManager) window.AudioManager.playSelect();
-        this.engine.triggerFadeWarp(() => {
-          this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 5 * 32);
-        });
+      if (dialog) {
+        dialog.confirm(
+          '중앙 엘리베이터 가동',
+          `10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`,
+          '🛗',
+          () => {
+            this.addGold(-10);
+            if (window.AudioManager) window.AudioManager.playSelect();
+            this.engine.triggerFadeWarp(() => {
+              this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
+              this._elevatorCooldown = Date.now() + 1500;
+            });
+          }
+        );
+      } else {
+        const goDown = confirm(
+          `🛗 [중앙 엘리베이터 가동]\n\n10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`
+        );
+        if (goDown) {
+          this.addGold(-10);
+          if (window.AudioManager) window.AudioManager.playSelect();
+          this.engine.triggerFadeWarp(() => {
+            this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
+            this._elevatorCooldown = Date.now() + 1500;
+          });
+        }
       }
     }
   }
@@ -3108,6 +3212,14 @@ class MainApp {
     mob.defeated = true;
     mob.respawnAt = Date.now() + (mob.respawnSec || 15) * 1000;
 
+    // 다른 모든 플레이어에게 몬스터 처치 및 사라짐 실시간 동기화 브로드캐스트
+    if (this.networkManager && this.networkManager.socket) {
+      this.networkManager.socket.emit('field_monster_defeat', {
+        mobId: mob.id,
+        respawnSec: mob.respawnSec || 15
+      });
+    }
+
     // 1. Gold & EXP
     this.addGold(mob.goldReward || 10);
     this.addExp(mob.expReward || 20);
@@ -3194,6 +3306,44 @@ class MainApp {
     alert(
       `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${mob.goldReward}G, 🌟 경험치 +${mob.expReward} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n${craftGuide}`
     );
+  }
+
+  onFieldMonstersState(state) {
+    if (!state || !window.WORLD_DATA || !WORLD_DATA.playground) return;
+    const now = Date.now();
+    const allMobs = [
+      ...(WORLD_DATA.playground.basketballMonsters || []),
+      ...(WORLD_DATA.playground.futsalMonsters || [])
+    ];
+    allMobs.forEach(m => {
+      if (state[m.id] && now < state[m.id]) {
+        m.defeated = true;
+        m.respawnAt = state[m.id];
+      }
+    });
+  }
+
+  onFieldMonsterDefeatedSync(data) {
+    if (!data || !data.mobId || !window.WORLD_DATA || !WORLD_DATA.playground) return;
+    const allMobs = [
+      ...(WORLD_DATA.playground.basketballMonsters || []),
+      ...(WORLD_DATA.playground.futsalMonsters || [])
+    ];
+    const targetMob = allMobs.find(m => m.id === data.mobId);
+    if (targetMob) {
+      targetMob.defeated = true;
+      targetMob.respawnAt = data.respawnAt || (Date.now() + 15000);
+      targetMob.hp = targetMob.maxHp;
+    }
+
+    // 만약 내가 지금 이 몬스터와 대결 중이었다면, 다른 친구가 먼저 잡았으므로 배틀 모달 닫기
+    if (this.currentFieldMob && this.currentFieldMob.id === data.mobId) {
+      this.closeFieldBattleModal();
+      if (window.AudioManager && window.AudioManager.playHit) {
+        window.AudioManager.playHit();
+      }
+      this.showToast(`💨 ${data.defeatedBy || '다른 친구'}가 몬스터를 먼저 처치했습니다!`, 'info');
+    }
   }
 
   respawnAtHallway() {
@@ -4930,7 +5080,7 @@ class MainApp {
         const costItemId = useExam ? 'item_perfect_exam' : 'item_eval_paper';
         const costItemName = useExam ? '💯 백점만점 시험지' : '📜 A+ 만점 수행평가지';
         
-        if (confirm(`👟 [${costItemName}] 1개를 소모하여 [👟 삼디다스 실내화]를 교환하시겠습니까?`)) {
+        const doExchange = () => {
           this.removeItem(costItemId, 1);
           this.addItem('equip_shoes_samdidas', '👟 삼디다스 실내화', 1, '👟', {
             type: 'equipment',
@@ -4945,6 +5095,17 @@ class MainApp {
           }
           alert('🎉 [이벤트 신발 교환 완료!]\n\n[👟 삼디다스 실내화]를 획득하여 장착했습니다!\n이제 Shift 키를 누르면 가볍게 질주할 수 있습니다! 🏃💨');
           this.renderTitleExchangeModal();
+        };
+
+        if (window.RPGDialog) {
+          window.RPGDialog.confirm(
+            '신발 교환',
+            `[${costItemName}] 1개를 소모하여 [👟 삼디다스 실내화]를 교환하시겠습니까?`,
+            '👟',
+            doExchange
+          );
+        } else if (confirm(`👟 [${costItemName}] 1개를 소모하여 [👟 삼디다스 실내화]를 교환하시겠습니까?`)) {
+          doExchange();
         }
       });
     }
