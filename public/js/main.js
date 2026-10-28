@@ -92,6 +92,141 @@ const ITEM_SELL_PRICES = {
 };
 
 // 호칭 교환소 4대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자, 백점만점 시험지 -> 시험의 제왕)
+// =========================================================================
+// 🌟 5층 진로 아카데미: 6대 직업 및 고유 패시브 스킬 정의
+// =========================================================================
+const JOB_PASSIVE_DEFINITIONS = [
+  {
+    id: 'medic',
+    name: '메딕 (Medic)',
+    title: '🩺 수호의 메딕',
+    icon: '👨‍⚕️',
+    skillName: '치유의 손길 (Healing Touch)',
+    effect: '최대 체력(HP) +40 영구 증가 & 3초당 자동 자연 치유량 2배 (2 HP 회복)',
+    desc: '환자를 보살피고 동료의 상처를 치유하는 숭실의 힐러!',
+    stats: { hpBonus: 40, hpRegen: 2 }
+  },
+  {
+    id: 'runner',
+    name: '러너 (Runner)',
+    title: '⚡ 질주의 러너',
+    icon: '🏃‍♂️',
+    skillName: '쾌속 질주 (Swift Sprint)',
+    effect: '기본 걷기 속도 +15% 상시 증가 & 삼디다스 실내화 질주 시간 +1.5초 연장',
+    desc: '지치지 않는 체력과 빠른 스피드로 숭실을 누비는 육상 스타!',
+    stats: { speedBonus: 0.15, dashBonus: 1500 }
+  },
+  {
+    id: 'scholar',
+    name: '스칼라 (Scholar)',
+    title: '📚 지혜의 스칼라',
+    icon: '🧙‍♂️',
+    skillName: '지식의 탐구자 (Deep Knowledge)',
+    effect: '모든 퀴즈 정답 시 경험치(EXP) +30% 추가 획득 (초고속 레벨업)',
+    desc: '끊임없는 학구열과 지혜로 초고속 성장을 달성하는 학자!',
+    stats: { expBonus: 0.3 }
+  },
+  {
+    id: 'banker',
+    name: '뱅커 (Banker)',
+    title: '🪙 황금의 뱅커',
+    icon: '💼',
+    skillName: '스마트 투자 (Smart Investment)',
+    effect: '모든 골드(Gold) 획득량 +35% 추가 획득 & 매점 아이템 판매 시 10% 추가 정산',
+    desc: '밝은 경제 감각과 재테크 지혜로 부를 일구는 숭실 자산가!',
+    stats: { goldBonus: 0.35, storeBonus: 0.1 }
+  },
+  {
+    id: 'scout',
+    name: '스카우트 (Scout)',
+    title: '🍀 행운의 스카우트',
+    icon: '🏹',
+    skillName: '보물 사냥꾼 (Treasure Hunter)',
+    effect: '채집 시 재료 아이템(목재, 허브, 꽃잎, 은행잎 등) 드랍 확률 +20% 증가',
+    desc: '날카로운 관찰력으로 숨겨진 귀한 재료를 찾아내는 탐험가!',
+    stats: { dropRateBonus: 20 }
+  },
+  {
+    id: 'guardian',
+    name: '가디언 (Guardian)',
+    title: '🛡️ 철벽의 가디언',
+    icon: '🛡️',
+    skillName: '강철 멘탈 (Iron Fortress)',
+    effect: '방어력(DEF) +8 영구 증가 & 퀴즈 오답 체력 데미지 50% 대폭 감소',
+    desc: '어떤 난관과 위기에도 끄떡없는 숭실의 든든한 방패!',
+    stats: { defBonus: 8, penaltyReduction: 0.5 }
+  }
+];
+
+const CAREER_ESCAPE_CLUES = [
+  {
+    index: 1,
+    id: 'career_clue_1',
+    title: '🏥 [단서 1] 적성검사 PC (의료/생명)',
+    letter: 'D',
+    stationName: '적성검사 컴퓨터',
+    question: '환자의 아픔을 치료하고 생명을 살리는 고귀한 직업은 무엇일까요?\n\n💡 힌트: 영어 철자 D로 시작하는 6글자 단어입니다!',
+    options: ['Doctor (의사)', 'Dancer (무용수)', 'Driver (운전기사)', 'Dentist (치과의사)'],
+    answer: 'Doctor (의사)',
+    clueReveal: '첫 번째 알파벳은 [ D ] 입니다! (D - _ - _ - _ - _ - _)'
+  },
+  {
+    index: 2,
+    id: 'career_clue_2',
+    title: '🔬 [단서 2] 과학 연구대 (학술/탐구)',
+    letter: 'R',
+    stationName: '과학 연구 실험대',
+    question: '새로운 지식과 과학 기술을 깊이 탐색하고 발견하는 \'연구원\'을 뜻하는 영어 단어는?\n\n💡 힌트: R로 시작하며 research(연구하다)를 하는 전문가입니다!',
+    options: ['Researcher (연구원)', 'Reader (독서가)', 'Runner (달리기 선수)', 'Reporter (기자)'],
+    answer: 'Researcher (연구원)',
+    clueReveal: '두 번째 알파벳은 [ R ] 입니다! (D - R - _ - _ - _ - _)'
+  },
+  {
+    index: 3,
+    id: 'career_clue_3',
+    title: '💻 [단서 3] 공학 작업대 (IT/기술)',
+    letter: 'E',
+    stationName: '공학 코딩석',
+    question: '소프트웨어, 인공지능, 첨단 기계를 설계하고 만드는 \'공학자·엔지니어\'는?\n\n💡 힌트: E로 시작하며 엔진(engine)과 기술을 다루는 사람입니다!',
+    options: ['Engineer (엔지니어)', 'Explorer (탐험가)', 'Editor (편집자)', 'Economist (경제학자)'],
+    answer: 'Engineer (엔지니어)',
+    clueReveal: '세 번째 알파벳은 [ E ] 입니다! (D - R - E - _ - _ - _)'
+  },
+  {
+    index: 4,
+    id: 'career_clue_4',
+    title: '🎨 [단서 4] 예술 이젤 (문화/창작)',
+    letter: 'A',
+    stationName: '예술 창작 이젤',
+    question: '풍부한 상상력과 아름다움을 그림, 조각, 음악으로 표현하는 \'예술가\'는?\n\n💡 힌트: A로 시작하며 art(예술)를 창작하는 사람입니다!',
+    options: ['Artist (예술가)', 'Actor (배우)', 'Athlete (운동선수)', 'Author (작가)'],
+    answer: 'Artist (예술가)',
+    clueReveal: '네 번째 알파벳은 [ A ] 입니다! (D - R - E - A - _ - _)'
+  },
+  {
+    index: 5,
+    id: 'career_clue_5',
+    title: '🤝 [단서 5] 멘토링 데스크 (교육/리더십)',
+    letter: 'M',
+    stationName: '멘토링 데스크',
+    question: '사람들에게 지혜와 꿈을 전하고 든든한 길잡이가 되어주는 \'조언자·멘토\'는?\n\n💡 힌트: M으로 시작하는 6글자 단어입니다!',
+    options: ['Mentor (멘토/조언자)', 'Musician (음악가)', 'Magician (마술사)', 'Mechanic (정비사)'],
+    answer: 'Mentor (멘토/조언자)',
+    clueReveal: '다섯 번째 알파벳은 [ M ] 입니다! (D - R - E - A - M - _)'
+  },
+  {
+    index: 6,
+    id: 'career_clue_6',
+    title: '🔭 [단서 6] 우주 탐구관 (자연/천문)',
+    letter: 'S',
+    stationName: '우주 탐구관',
+    question: '자연의 법칙과 우주의 신비를 탐구하는 \'과학자\'를 뜻하는 영어 단어는?\n\n💡 힌트: S로 시작하며 science(과학)를 연구하는 학자입니다!',
+    options: ['Scientist (과학자)', 'Sailor (항해사)', 'Soldier (군인)', 'Singer (가수)'],
+    answer: 'Scientist (과학자)',
+    clueReveal: '여섯 번째 알파벳은 [ S ] 입니다! (D - R - E - A - M - S)'
+  }
+];
+
 const TITLE_DEFINITIONS = [
   {
     id: 'title_wood_king',
@@ -127,8 +262,14 @@ const TITLE_DEFINITIONS = [
     costItemName: '💯 백점만점 시험지',
     costAmount: 1
   },
+  { id: 'title_job_medic', name: '🩺 수호의 메딕', desc: '5층 진로 방탈출을 통과하고 메딕으로 전직한 힐러!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_runner', name: '⚡ 질주의 러너', desc: '5층 진로 방탈출을 통과하고 러너로 전직한 육상 스타!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scholar', name: '📚 지혜의 스칼라', desc: '5층 진로 방탈출을 통과하고 스칼라로 전직한 학자!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_banker', name: '🪙 황금의 뱅커', desc: '5층 진로 방탈출을 통과하고 뱅커로 전직한 자산가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scout', name: '🍀 행운의 스카우트', desc: '5층 진로 방탈출을 통과하고 스카우트로 전직한 탐험가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_guardian', name: '🛡️ 철벽의 가디언', desc: '5층 진로 방탈출을 통과하고 가디언으로 전직한 방패!', costType: 'quest', costAmount: 0 },
   {
-    id: 'title_rock_drummer',
+
     name: '🥁 영혼의 드러머',
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
@@ -192,6 +333,9 @@ class MainApp {
       hasClearedCerberusRaid: false,
       hasClearedClass704: false,
       solvedMoralQuestionIds: [],
+      job: null,
+      hasEscapedCareerRoom: false,
+      careerClues: [false, false, false, false, false, false],
       titles: [],
       equippedTitle: null,
       inventory: []
@@ -199,6 +343,8 @@ class MainApp {
 
     this.ITEM_SELL_PRICES = ITEM_SELL_PRICES;
     this.TITLE_DEFINITIONS = TITLE_DEFINITIONS;
+    this.JOB_PASSIVE_DEFINITIONS = JOB_PASSIVE_DEFINITIONS;
+    this.CAREER_ESCAPE_CLUES = CAREER_ESCAPE_CLUES;
 
     this.bossState = {
       currentHp: window.BOSS_CONFIG.maxHp,
@@ -530,6 +676,10 @@ class MainApp {
       this.openTitleExchangeModal();
     } else if (target.type === 'secret_locker') {
       this.handleSecretLocker();
+    } else if (target.type === 'career_clue') {
+      this.handleCareerClueInteraction(target.data);
+    } else if (target.type === 'career_exit_keypad') {
+      this.openCareerKeypadModal();
     } else if (target.type === 'moral_desk' || target.type === 'moral_board') {
       this.handleMoralClassroomInteraction();
     } else if (target.type === 'drum_kit') {
@@ -602,6 +752,299 @@ class MainApp {
     }
 
     this.showToast(`🚰 시원한 정수기 냉수를 마셨습니다! HP +${actualHealed} 회복 (${this.playerData.hp}/${this.playerData.maxHp}) [쿨타임: 1분 30초]`, 'success');
+  }
+
+  // =========================================================================
+  // 🌟 5층 진로 방탈출 시스템 & 6대 직업 패시브 아카데미
+  // =========================================================================
+  handleCareerClueInteraction(clueData) {
+    if (!clueData) return;
+    const clueIndex = clueData.clueIndex || 1;
+    const clue = this.CAREER_ESCAPE_CLUES.find(c => c.index === clueIndex) || this.CAREER_ESCAPE_CLUES[0];
+    const isAlreadyFound = !!(this.playerData.careerClues && this.playerData.careerClues[clueIndex - 1]);
+
+    const modal = document.getElementById('modal-career-clue');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('career-clue-title');
+    const descEl = document.getElementById('career-clue-desc');
+    const optsEl = document.getElementById('career-clue-options');
+    const feedEl = document.getElementById('career-clue-feedback');
+    const feedTextEl = document.getElementById('career-clue-feedback-text');
+    const btnConfirm = document.getElementById('btn-confirm-career-clue');
+    const btnCloseX = document.getElementById('btn-close-career-clue-x');
+
+    if (titleEl) titleEl.innerText = clue.title;
+    if (descEl) descEl.innerHTML = clue.question.replace(/\n/g, '<br>');
+    if (feedEl) feedEl.classList.add('hidden');
+
+    if (btnCloseX && !btnCloseX._bound) {
+      btnCloseX._bound = true;
+      btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (btnConfirm && !btnConfirm._bound) {
+      btnConfirm._bound = true;
+      btnConfirm.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    if (optsEl) {
+      optsEl.innerHTML = '';
+      if (isAlreadyFound) {
+        if (feedEl && feedTextEl) {
+          feedEl.classList.remove('hidden');
+          feedEl.style.borderColor = '#22c55e';
+          feedEl.style.background = '#f0fdf4';
+          feedTextEl.innerHTML = `✨ <b>[해독 완료]</b> 이미 이 단서를 완벽하게 풀었습니다!<br><span style="font-size:16px; color:#15803d; font-weight:900;">획득한 알파벳: [ ${clue.letter} ]</span>`;
+        }
+      } else {
+        clue.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-primary';
+          btn.style.cssText = 'width: 100%; font-size: 13px; font-weight: 800; padding: 10px 4px; background: #0284c7; border-color: #0369a1; text-align: center;';
+          btn.innerText = opt;
+          btn.addEventListener('click', () => {
+            const isCorrect = (opt === clue.answer);
+            if (isCorrect) {
+              if (window.AudioManager && typeof window.AudioManager.playCorrect === 'function') {
+                window.AudioManager.playCorrect();
+              }
+              if (!Array.isArray(this.playerData.careerClues)) {
+                this.playerData.careerClues = [false, false, false, false, false, false];
+              }
+              this.playerData.careerClues[clueIndex - 1] = true;
+              this.saveProgress();
+
+              const solvedCount = this.playerData.careerClues.filter(Boolean).length;
+
+              if (feedEl && feedTextEl) {
+                feedEl.classList.remove('hidden');
+                feedEl.style.borderColor = '#22c55e';
+                feedEl.style.background = '#f0fdf4';
+                feedTextEl.innerHTML = `🎉 <b>정답입니다!</b> 훌륭해요!<br><span style="font-size:15px; color:#15803d; font-weight:900;">${clue.clueReveal}</span><br><span style="font-size:12px; color:#64748b;">(현재 수집한 단서: ${solvedCount} / 6개)</span>`;
+              }
+              btn.style.background = '#16a34a';
+              btn.style.borderColor = '#15803d';
+
+              if (solvedCount >= 6) {
+                setTimeout(() => {
+                  if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+                    window.AudioManager.playFanfare();
+                  }
+                  this.showToast('🎉 6개 단서를 모두 모았습니다! 탈출 도어락(DREAMS)을 해제하세요!', 'success');
+                }, 400);
+              }
+            } else {
+              if (window.AudioManager && typeof window.AudioManager.playWrong === 'function') {
+                window.AudioManager.playWrong();
+              }
+              if (feedEl && feedTextEl) {
+                feedEl.classList.remove('hidden');
+                feedEl.style.borderColor = '#ef4444';
+                feedEl.style.background = '#fef2f2';
+                feedTextEl.innerHTML = `💔 아쉽네요! 다시 한번 힌트를 읽고 정답을 찾아보세요! 😊<br><span style="font-size:12px; color:#dc2626;">(패널티 0: 친절한 방탈출입니다)</span>`;
+              }
+            }
+          });
+          optsEl.appendChild(btn);
+        });
+      }
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  openCareerKeypadModal() {
+    const modal = document.getElementById('modal-career-keypad');
+    if (!modal) return;
+
+    if (!Array.isArray(this.playerData.careerClues)) {
+      this.playerData.careerClues = [false, false, false, false, false, false];
+    }
+    const clues = this.playerData.careerClues;
+    const letters = ['D', 'R', 'E', 'A', 'M', 'S'];
+    const solvedCount = clues.filter(Boolean).length;
+    const allSolved = (solvedCount >= 6);
+
+    for (let i = 1; i <= 6; i++) {
+      const txtEl = document.getElementById('txt-clue-' + i);
+      const slotEl = document.getElementById('slot-clue-' + i);
+      const isFound = !!clues[i - 1];
+      if (txtEl) {
+        txtEl.innerText = isFound ? letters[i - 1] : '?';
+        txtEl.style.color = isFound ? '#15803d' : '#94a3b8';
+      }
+      if (slotEl) {
+        slotEl.style.borderColor = isFound ? '#22c55e' : '#64748b';
+        slotEl.style.background = isFound ? '#f0fdf4' : '#f8fafc';
+      }
+    }
+
+    const unlockBanner = document.getElementById('keypad-all-unlocked-banner');
+    const manualBox = document.getElementById('keypad-manual-input-box');
+    const hintText = document.getElementById('keypad-hint-text');
+
+    if (allSolved || this.playerData.hasEscapedCareerRoom) {
+      if (unlockBanner) unlockBanner.classList.remove('hidden');
+      if (manualBox) manualBox.classList.add('hidden');
+    } else {
+      if (unlockBanner) unlockBanner.classList.add('hidden');
+      if (manualBox) manualBox.classList.remove('hidden');
+      if (hintText) {
+        hintText.innerHTML = `현재 수집된 단서: <b>${solvedCount} / 6개</b> (부족한 단서는 진로실 가구들을 조사해보세요!)`;
+      }
+    }
+
+    if (!this._careerKeypadInitialized) {
+      this._careerKeypadInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-career-keypad-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+
+      const btnOpenJob = document.getElementById('btn-open-job-select');
+      if (btnOpenJob) {
+        btnOpenJob.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          this.openCareerJobSelectModal();
+        });
+      }
+
+      const btnSubmit = document.getElementById('btn-submit-career-password');
+      const inputPwd = document.getElementById('input-career-password');
+      if (btnSubmit && inputPwd) {
+        btnSubmit.addEventListener('click', () => {
+          const val = (inputPwd.value || '').trim().toUpperCase();
+          if (val === 'DREAMS') {
+            modal.classList.add('hidden');
+            this.playerData.hasEscapedCareerRoom = true;
+            this.saveProgress();
+            this.showToast('🔓 비밀번호 DREAMS 일치! 탈출 도어락이 열렸습니다!', 'success');
+            setTimeout(() => this.openCareerJobSelectModal(), 300);
+          } else {
+            alert('🔒 비밀번호가 일치하지 않습니다!\n방 안의 6가지 진로 단서(Doctor, Researcher, Engineer, Artist, Mentor, Scientist)의 첫 글자를 조합해보세요!');
+          }
+        });
+      }
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  openCareerJobSelectModal() {
+    const modal = document.getElementById('modal-career-job-select');
+    if (!modal) return;
+
+    const grid = document.getElementById('grid-career-jobs');
+    if (grid) {
+      grid.innerHTML = '';
+      this.JOB_PASSIVE_DEFINITIONS.forEach(job => {
+        const isCurrentJob = (this.playerData.job === job.id);
+        const card = document.createElement('div');
+        card.style.cssText = `
+          background: ${isCurrentJob ? '#f0fdf4' : '#ffffff'};
+          border: 2.5px solid ${isCurrentJob ? '#22c55e' : '#cbd5e1'};
+          border-radius: 12px;
+          padding: 12px 8px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          text-align: center;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        `;
+
+        card.innerHTML = `
+          <div>
+            <div style="font-size: 34px; margin-bottom: 4px;">${job.icon}</div>
+            <div style="font-size: 14px; font-weight: 900; color: #0f172a;">${job.name}</div>
+            <div style="font-size: 11.5px; font-weight: 800; color: #4338ca; margin: 2px 0 6px;">${job.title}</div>
+            <div style="font-size: 12px; font-weight: 800; color: #166534; background: #dcfce7; border-radius: 6px; padding: 4px; margin-bottom: 6px;">
+              ⚡ ${job.skillName}
+            </div>
+            <div style="font-size: 11px; color: #475569; line-height: 1.4; margin-bottom: 8px;">
+              ${job.effect}
+            </div>
+          </div>
+          <button class="btn-primary btn-select-this-job" style="width: 100%; font-size: 12px; font-weight: 800; padding: 7px 0; background: ${isCurrentJob ? '#15803d' : '#4338ca'}; border-color: ${isCurrentJob ? '#14532d' : '#3730a3'};">
+            ${isCurrentJob ? '✅ 현재 전직 중' : '전직하기 ➔'}
+          </button>
+        `;
+
+        const btn = card.querySelector('.btn-select-this-job');
+        if (btn) {
+          btn.addEventListener('click', () => {
+            if (isCurrentJob) {
+              this.showToast(`이미 [${job.name}] 직업을 장착 중입니다!`, 'info');
+              return;
+            }
+            if (window.RPGDialog) {
+              window.RPGDialog.confirm(
+                '🌟 진로 전직 선택',
+                `[${job.icon} ${job.name}] 직업으로 전직하시겠습니까?\n\n고유 패시브 스킬: [${job.skillName}]\n효과: ${job.effect}`,
+                job.icon,
+                () => {
+                  this.selectCareerJob(job.id);
+                  modal.classList.add('hidden');
+                },
+                null,
+                '전직하기',
+                '취소'
+              );
+            } else {
+              if (confirm(`[${job.name}] 직업으로 전직하시겠습니까?`)) {
+                this.selectCareerJob(job.id);
+                modal.classList.add('hidden');
+              }
+            }
+          });
+        }
+        grid.appendChild(card);
+      });
+    }
+
+    if (!this._careerJobModalInitialized) {
+      this._careerJobModalInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-career-job-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  selectCareerJob(jobId) {
+    const job = this.JOB_PASSIVE_DEFINITIONS.find(j => j.id === jobId);
+    if (!job) return;
+
+    this.playerData.job = job.id;
+    this.playerData.hasEscapedCareerRoom = true;
+
+    // 호칭 자동 등록 및 장착
+    if (!Array.isArray(this.playerData.titles)) {
+      this.playerData.titles = [];
+    }
+    if (!this.playerData.titles.includes(job.title)) {
+      this.playerData.titles.push(job.title);
+    }
+    this.playerData.equippedTitle = job.title;
+
+    this.recalcCombatStats();
+    this.updatePlayerNameDisplay();
+    this.saveProgress(true);
+
+    if (this.networkManager && this.networkManager.sendTitleUpdate) {
+      this.networkManager.sendTitleUpdate(job.title);
+    }
+
+    if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+      window.AudioManager.playFanfare();
+    }
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '🌟 진로 선생님',
+        `"축하한다! 5층 진로 방탈출을 완파하고 너만의 멋진 꿈인 [${job.icon} ${job.name}]에 당당히 전직했단다! 👏\n\n고유 패시브 스킬 [${job.skillName}]이 항상 너를 든든하게 보호해줄 거야!\n\n(언제든 진로실에 오면 다른 직업의 스킬을 경험해볼 수 있단다! 🌟)"`,
+        job.icon
+      );
+    } else {
+      alert(`🎉 축하합니다! [${job.name}] 직업에 전직하고 패시브 스킬 [${job.skillName}]을 습득했습니다!`);
+    }
   }
 
   // 🥁 1학년 4반 후니후니 선생님 & 학생 의자 상호작용 (20문항 도덕 비트 퀴즈)
@@ -1620,6 +2063,15 @@ class MainApp {
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedClass704 = !!(saved.hasClearedClass704 || (studentId && localStorage.getItem('soongsil_class704_cleared_' + studentId) === 'true'));
+          this.playerData.job = saved.job || (studentId ? localStorage.getItem('soongsil_job_' + studentId) : null) || null;
+          this.playerData.hasEscapedCareerRoom = !!(saved.hasEscapedCareerRoom || (studentId && localStorage.getItem('soongsil_career_escaped_' + studentId) === 'true'));
+          this.playerData.careerClues = Array.isArray(saved.careerClues) ? saved.careerClues : [false, false, false, false, false, false];
+          if (!this.playerData.careerClues.some(Boolean) && studentId) {
+            try {
+              const localClues = localStorage.getItem('soongsil_career_clues_' + studentId);
+              if (localClues) this.playerData.careerClues = JSON.parse(localClues);
+            } catch (e) {}
+          }
           this.playerData.solvedMoralQuestionIds = Array.isArray(saved.solvedMoralQuestionIds) ? saved.solvedMoralQuestionIds : [];
           if (this.playerData.solvedMoralQuestionIds.length === 0 && studentId) {
             try {
@@ -1640,6 +2092,15 @@ class MainApp {
           this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
           this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
           this.playerData.hasClearedClass704 = !!(studentId && localStorage.getItem('soongsil_class704_cleared_' + studentId) === 'true');
+          this.playerData.job = studentId ? localStorage.getItem('soongsil_job_' + studentId) : null;
+          this.playerData.hasEscapedCareerRoom = !!(studentId && localStorage.getItem('soongsil_career_escaped_' + studentId) === 'true');
+          this.playerData.careerClues = [false, false, false, false, false, false];
+          if (studentId) {
+            try {
+              const localClues = localStorage.getItem('soongsil_career_clues_' + studentId);
+              if (localClues) this.playerData.careerClues = JSON.parse(localClues);
+            } catch (e) {}
+          }
           this.playerData.solvedMoralQuestionIds = [];
           if (studentId) {
             try {
@@ -1734,6 +2195,12 @@ class MainApp {
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
               hasClearedClass704: !!this.playerData.hasClearedClass704,
+              job: this.playerData.job || null,
+              hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
+              careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
+        job: this.playerData.job || null,
+        hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
+        careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
               solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
               titles: this.playerData.titles || [],
               equippedTitle: this.playerData.equippedTitle || null,
@@ -2106,6 +2573,13 @@ class MainApp {
       });
     }
 
+        // 🌟 진로 직업 패시브 스킬 스탯 보너스
+    if (this.playerData.job === 'medic') {
+      bonusHp += 40; // 메딕: 최대 체력 +40
+    } else if (this.playerData.job === 'guardian') {
+      bonusDef += 8; // 가디언: 방어력 +8
+    }
+
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
     this.playerData.def = this.playerData.baseDef + lvBonus + bonusDef;
     this.playerData.maxHp = this.playerData.baseHp + bonusHp;
@@ -2170,7 +2644,8 @@ class MainApp {
     if (isBossRaidOpen || isInBossRoom) return;
 
     // 5. 체력 +1 자연 회복 및 UI 동기화
-    this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + 1);
+    const regenAmount = (this.playerData.job === 'medic') ? 2 : 1;
+    this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + regenAmount);
     this.updateHpBar();
 
     const equipHp = document.getElementById('equip-total-hp');
@@ -2185,7 +2660,10 @@ class MainApp {
   takeQuizDamage(amount) {
     if (!this.playerData || this.playerData.hp <= 0 || this.playerData.isFallen) return 0;
 
-    const penalty = Math.max(1, amount || 1);
+    let penalty = Math.max(1, amount || 1);
+    if (this.playerData.job === 'guardian') {
+      penalty = Math.max(1, Math.floor(penalty * 0.5)); // 가디언: 퀴즈 오답 데미지 50% 감소
+    }
     this.playerData.hp = Math.max(0, this.playerData.hp - penalty);
     this.updateHpBar();
 
@@ -4579,13 +5057,22 @@ class MainApp {
       if (this.playerData.hasClearedClass704) {
         try { localStorage.setItem('soongsil_class704_cleared_' + this.playerData.studentId, 'true'); } catch (e) {}
       }
+      if (this.playerData.job) {
+        try { localStorage.setItem('soongsil_job_' + this.playerData.studentId, this.playerData.job); } catch (e) {}
+      }
+      if (this.playerData.hasEscapedCareerRoom) {
+        try { localStorage.setItem('soongsil_career_escaped_' + this.playerData.studentId, 'true'); } catch (e) {}
+      }
+      if (Array.isArray(this.playerData.careerClues)) {
+        try { localStorage.setItem('soongsil_career_clues_' + this.playerData.studentId, JSON.stringify(this.playerData.careerClues)); } catch (e) {}
+      }
       if (Array.isArray(this.playerData.solvedMoralQuestionIds)) {
         try { localStorage.setItem('soongsil_class704_solved_' + this.playerData.studentId, JSON.stringify(this.playerData.solvedMoralQuestionIds)); } catch (e) {}
       }
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${saveData.job}_${saveData.hasEscapedCareerRoom}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
@@ -4654,6 +5141,9 @@ class MainApp {
       localStorage.removeItem('soongsil_cerberus_cleared_' + studentId);
       localStorage.removeItem('soongsil_class704_cleared_' + studentId);
       localStorage.removeItem('soongsil_class704_solved_' + studentId);
+      localStorage.removeItem('soongsil_job_' + studentId);
+      localStorage.removeItem('soongsil_career_escaped_' + studentId);
+      localStorage.removeItem('soongsil_career_clues_' + studentId);
       console.log(`[Storage] 학생(${studentId}) 로컬 브라우저 세이브 초기화 완료`);
     } catch (e) {
       console.warn('Failed to clear local student data', e);
@@ -5020,6 +5510,16 @@ class MainApp {
     const title = this.playerData.equippedTitle;
     const name = this.playerData.name || '학생';
     const fullDisplayName = title ? `[${title}] ${name}` : name;
+        const jobBadge = document.getElementById('hud-job-badge');
+    if (jobBadge) {
+      if (this.playerData.job) {
+        const jobDef = this.JOB_PASSIVE_DEFINITIONS ? this.JOB_PASSIVE_DEFINITIONS.find(j => j.id === this.playerData.job) : null;
+        jobBadge.style.display = 'inline-block';
+        jobBadge.innerText = jobDef ? `${jobDef.icon} ${jobDef.name}` : `직업: ${this.playerData.job}`;
+      } else {
+        jobBadge.style.display = 'none';
+      }
+    }
     if (this.hudName) {
       this.hudName.innerText = fullDisplayName;
     }

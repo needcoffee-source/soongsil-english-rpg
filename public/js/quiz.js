@@ -524,26 +524,28 @@ class QuizManager {
 
   resolveTargetDropInfo() {
     const cfg = window.ECONOMY_CONFIG;
+    const scoutBonus = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.job === 'scout') ? 20 : 0;
     if (this.currentSpotData && this.currentSpotData.dropItem) {
+      const baseRate = cfg.spotDropRates[this.currentSourceType] || this.currentSpotData.dropRate || cfg.itemDropRatePercent;
       return {
         item: this.currentSpotData.dropItem,
         name: this.currentSpotData.dropName,
         icon: this.currentSpotData.dropIcon || ITEM_ICON_MAP[this.currentSpotData.dropItem] || '📦',
-        rate: cfg.spotDropRates[this.currentSourceType] || this.currentSpotData.dropRate || cfg.itemDropRatePercent
+        rate: Math.min(95, baseRate + scoutBonus)
       };
     }
 
     if (this.currentSourceType === 'gather_wood') {
-      return { item: 'item_wood', name: '단단한 목재', icon: '🪵', rate: cfg.spotDropRates.gather_wood || 45 };
+      return { item: 'item_wood', name: '단단한 목재', icon: '🪵', rate: Math.min(95, (cfg.spotDropRates.gather_wood || 45) + scoutBonus) };
     }
     if (this.currentSourceType === 'gather_herb') {
-      return { item: 'item_herb', name: '향긋한 허브', icon: '🌿', rate: cfg.spotDropRates.gather_herb || 35 };
+      return { item: 'item_herb', name: '향긋한 허브', icon: '🌿', rate: Math.min(95, (cfg.spotDropRates.gather_herb || 35) + scoutBonus) };
     }
     if (this.currentSourceType === 'gather_forsythia' || this.currentSourceType === 'forsythia') {
-      return { item: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', rate: cfg.spotDropRates.gather_forsythia || 20 };
+      return { item: 'item_forsythia', name: '노란 개나리 꽃잎', icon: '🌼', rate: Math.min(95, (cfg.spotDropRates.gather_forsythia || 20) + scoutBonus) };
     }
     if (this.currentSourceType === 'gather_ginkgo' || this.currentSourceType === 'ginkgo') {
-      return { item: 'item_ginkgo', name: '황금 은행잎', icon: '🍂', rate: cfg.spotDropRates.gather_ginkgo || 17 };
+      return { item: 'item_ginkgo', name: '황금 은행잎', icon: '🍂', rate: Math.min(95, (cfg.spotDropRates.gather_ginkgo || 17) + scoutBonus) };
     }
 
     const randMat = BASIC_GRIND_POOL[Math.floor(Math.random() * BASIC_GRIND_POOL.length)];
@@ -551,7 +553,7 @@ class QuizManager {
       item: randMat.item,
       name: randMat.name,
       icon: randMat.icon,
-      rate: cfg.spotDropRates.board || cfg.itemDropRatePercent || 25
+      rate: Math.min(95, (cfg.spotDropRates.board || cfg.itemDropRatePercent || 25) + scoutBonus)
     };
   }
 
@@ -670,8 +672,23 @@ class QuizManager {
       const multiplier = isDesk ? 2 : 1; // 💡 교탁 퀴즈: 골드 2배 + EXP 2배 보너스!
 
       const rawGold = Math.floor(Math.random() * (cfg.maxGold - cfg.minGold + 1)) + cfg.minGold;
-      const earnedGold = rawGold * multiplier;
-      const earnedExp = cfg.baseExp * multiplier;
+      let earnedGold = rawGold * multiplier;
+      let earnedExp = cfg.baseExp * multiplier;
+
+      // 🌟 진로 직업 패시브 스킬 보너스 적용
+      let jobBonusNotice = '';
+      if (window.MainApp && window.MainApp.playerData) {
+        if (window.MainApp.playerData.job === 'scholar') {
+          const bonus = Math.floor(earnedExp * 0.3);
+          earnedExp += bonus;
+          jobBonusNotice += ` (🧙 스칼라: EXP +30% 적용!)`;
+        }
+        if (window.MainApp.playerData.job === 'banker') {
+          const bonus = Math.floor(earnedGold * 0.35);
+          earnedGold += bonus;
+          jobBonusNotice += ` (🪙 뱅커: 골드 +35% 적용!)`;
+        }
+      }
 
       const dropInfo = this.resolveTargetDropInfo();
       const roll = Math.random() * 100;

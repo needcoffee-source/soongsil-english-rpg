@@ -148,13 +148,14 @@ class GameEngine {
       this.player.speed = isDashing ? 7.6 : 4.0; // 교사: 기본 이동속도 4.0, Shift 누르면 7.6
       return;
     }
+    const runnerMult = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.job === 'runner') ? 1.15 : 1.0;
     if (!this.player.hasRunningShoes) {
       this.player.isDashing = false;
-      this.player.speed = 3.8;
+      this.player.speed = 3.8 * runnerMult;
       return;
     }
     this.player.isDashing = isDashing;
-    this.player.speed = isDashing ? 4.37 : 3.8; // 1티어 신발: 기본 3.8 -> 달리기 4.37 (약 15% 질주 속도 증가)
+    this.player.speed = (isDashing ? 4.37 : 3.8) * runnerMult; // 1티어 신발: 기본 3.8 -> 달리기 4.37 (러너 전직 시 15% 추가)
   }
 
   // ========================================================
@@ -878,6 +879,20 @@ class GameEngine {
           }
         }
       }
+      if (this.player.room === 'room_career' && cr.interactive) {
+        for (const item of cr.interactive) {
+          const dist = Math.hypot(item.x * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
+          if (dist < 56 && dist < minDist) {
+            closest = {
+              type: item.type,
+              data: item,
+              name: item.name,
+              prompt: item.prompt || '조사하기 (SPACE)'
+            };
+            minDist = dist;
+          }
+        }
+      }
       if (cr.drumKit) {
         const drumDist = Math.hypot(cr.drumKit.x * 32 - this.player.x, (cr.drumKit.y + 0.5) * 32 - this.player.y);
         if (drumDist < 72 && drumDist < minDist) {
@@ -1081,6 +1096,13 @@ class GameEngine {
               data: { ...d, seatIndex: i + 1 },
               name: `🪑 학생 의자 (${i + 1}번석)`
             };
+          }
+        }
+      }
+      if (this.player.room === 'room_career' && cr.interactive) {
+        for (const item of cr.interactive) {
+          if (Math.hypot(item.x * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
+            return { type: item.type, data: item, name: item.name };
           }
         }
       }
@@ -2167,6 +2189,358 @@ class GameEngine {
       height: 20
     });
 
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // 🌟 5층 대형 진로실: 진로 방탈출 6대 단서 & 직업 패시브 아카데미
+  // ========================================================
+  renderCareerEscapeRoom(cr) {
+    const app = window.MainApp;
+    const clues = (app && app.playerData && Array.isArray(app.playerData.careerClues)) ? app.playerData.careerClues : [false, false, false, false, false, false];
+    const hasEscaped = !!(app && app.playerData && app.playerData.hasEscapedCareerRoom);
+    const solvedCount = clues.filter(Boolean).length;
+
+    // 1. Zone Carpets / Mats
+    // Clue 1: Aptitude PC (x: 10, y: 7) - Cyan carpet
+    this.ctx.fillStyle = 'rgba(6, 182, 212, 0.16)';
+    this.ctx.fillRect(8.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#0891b2';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(8.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 2: Science Lab (x: 20, y: 7) - Emerald carpet
+    this.ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
+    this.ctx.fillRect(18.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#059669';
+    this.ctx.strokeRect(18.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 3: IT Coding Desk (x: 15, y: 12) - Violet carpet
+    this.ctx.fillStyle = 'rgba(139, 92, 246, 0.16)';
+    this.ctx.fillRect(13.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#7c3aed';
+    this.ctx.strokeRect(13.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 4: Art Easel (x: 40, y: 12) - Amber carpet
+    this.ctx.fillStyle = 'rgba(245, 158, 11, 0.16)';
+    this.ctx.fillRect(38.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.strokeRect(38.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 5: Mentoring Desk (x: 45, y: 7) - Blue carpet
+    this.ctx.fillStyle = 'rgba(59, 130, 246, 0.16)';
+    this.ctx.fillRect(43.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#2563eb';
+    this.ctx.strokeRect(43.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 6: Astronomy Lab (x: 52, y: 7) - Indigo carpet
+    this.ctx.fillStyle = 'rgba(99, 102, 241, 0.16)';
+    this.ctx.fillRect(50.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#4f46e5';
+    this.ctx.strokeRect(50.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Central Exit Carpet Runner (x: 28 ~ 32, y: 15 ~ 17)
+    this.ctx.fillStyle = hasEscaped ? 'rgba(34, 197, 94, 0.22)' : 'rgba(239, 68, 68, 0.22)';
+    this.ctx.fillRect(28.5 * 32, 14.8 * 32, 3 * 32, 2.4 * 32);
+    this.ctx.strokeStyle = hasEscaped ? '#22c55e' : '#ef4444';
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(28.5 * 32, 14.8 * 32, 3 * 32, 2.4 * 32);
+
+    // 2. Draw Station 1: 🏥 Aptitude PC (x: 10, y: 7)
+    this.drawCareerStationPC(10 * 32, 7 * 32);
+    this.drawCareerClueLabel(10 * 32 + 16, 7 * 32 - 18, 1, '적성검사 PC', 'D', clues[0]);
+
+    // 3. Draw Station 2: 🔬 Science Lab (x: 20, y: 7)
+    this.drawCareerStationLab(20 * 32, 7 * 32);
+    this.drawCareerClueLabel(20 * 32 + 16, 7 * 32 - 18, 2, '과학 연구대', 'R', clues[1]);
+
+    // 4. Draw Station 3: 💻 Engineering / IT Desk (x: 15, y: 12)
+    this.drawCareerStationTech(15 * 32, 12 * 32);
+    this.drawCareerClueLabel(15 * 32 + 16, 12 * 32 - 18, 3, '공학 작업대', 'E', clues[2]);
+
+    // 5. Draw Station 4: 🎨 Art Easel (x: 40, y: 12)
+    this.drawCareerStationArt(40 * 32, 12 * 32);
+    this.drawCareerClueLabel(40 * 32 + 16, 12 * 32 - 18, 4, '예술 이젤', 'A', clues[3]);
+
+    // 6. Draw Station 5: 🤝 Mentoring Desk (x: 45, y: 7)
+    this.drawCareerStationMentor(45 * 32, 7 * 32);
+    this.drawCareerClueLabel(45 * 32 + 16, 7 * 32 - 18, 5, '멘토링 데스크', 'M', clues[4]);
+
+    // 7. Draw Station 6: 🔭 Astronomy Lab (x: 52, y: 7)
+    this.drawCareerStationSpace(52 * 32, 7 * 32);
+    this.drawCareerClueLabel(52 * 32 + 16, 7 * 32 - 18, 6, '우주 탐구관', 'S', clues[5]);
+
+    // 8. Draw Digital Escape Keypad (x: 30, y: 16)
+    this.drawCareerKeypadStation(30 * 32, 16 * 32, hasEscaped, solvedCount);
+
+    // 9. Chalkboard Mission Header on the Top Wall (x: 30, y: 2)
+    this.drawCareerBlackboardBanner(clues, solvedCount, hasEscaped);
+  }
+
+  // Clue 1: Medical / Aptitude PC Desk
+  drawCareerStationPC(px, py) {
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px - 4, py + 8, 40, 20);
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px - 2, py + 10, 36, 16);
+
+    // Glowing Cyan Medical Monitor
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px + 4, py - 6, 24, 16);
+    this.ctx.fillStyle = '#0284c7';
+    this.ctx.fillRect(px + 6, py - 4, 20, 12);
+    // Medical Cross
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 14, py - 2, 4, 8);
+    this.ctx.fillRect(px + 12, py, 8, 4);
+
+    // Keyboard & Mouse
+    this.ctx.fillStyle = '#64748b';
+    this.ctx.fillRect(px + 4, py + 16, 16, 6);
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(px + 23, py + 17, 5, 5);
+  }
+
+  // Clue 2: Science Lab Bench with Flask & Microscope
+  drawCareerStationLab(px, py) {
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px - 6, py + 8, 44, 20);
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px - 4, py + 10, 40, 16);
+
+    // Glass Beaker & Flask with Bubbling Liquid
+    this.ctx.fillStyle = '#10b981';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 6, py + 16, 6, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    this.ctx.fillRect(px + 4, py + 7, 4, 6);
+
+    // Test Tube Rack
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px + 16, py + 14, 14, 5);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px + 17, py + 9, 3, 6);
+    this.ctx.fillStyle = '#3b82f6';
+    this.ctx.fillRect(px + 21, py + 9, 3, 6);
+    this.ctx.fillStyle = '#10b981';
+    this.ctx.fillRect(px + 25, py + 9, 3, 6);
+  }
+
+  // Clue 3: Engineering Workstation with Dual Monitors
+  drawCareerStationTech(px, py) {
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px - 6, py + 8, 44, 20);
+    this.ctx.fillStyle = '#1e1b4b';
+    this.ctx.fillRect(px - 4, py + 10, 40, 16);
+
+    // Dual Monitors (Left: Code, Right: Circuit)
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px - 2, py - 4, 16, 13);
+    this.ctx.fillStyle = '#10b981';
+    this.ctx.fillRect(px, py - 2, 12, 9);
+    // Green code lines
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px + 1, py, 10, 1.5);
+    this.ctx.fillRect(px + 1, py + 3, 8, 1.5);
+
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px + 18, py - 4, 16, 13);
+    this.ctx.fillStyle = '#8b5cf6';
+    this.ctx.fillRect(px + 20, py - 2, 12, 9);
+
+    // Cyber Keyboard
+    this.ctx.fillStyle = '#6366f1';
+    this.ctx.fillRect(px + 6, py + 16, 20, 6);
+  }
+
+  // Clue 4: Wooden Art Easel with Sunset Canvas
+  drawCareerStationArt(px, py) {
+    // Easel Legs (Wooden A-frame)
+    this.ctx.strokeStyle = '#b45309';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 16, py - 8);
+    this.ctx.lineTo(px + 4, py + 24);
+    this.ctx.moveTo(px + 16, py - 8);
+    this.ctx.lineTo(px + 28, py + 24);
+    this.ctx.moveTo(px + 16, py - 8);
+    this.ctx.lineTo(px + 16, py + 24);
+    this.ctx.stroke();
+
+    // Canvas
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(px + 4, py - 4, 24, 18);
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(px + 4, py - 4, 24, 18);
+
+    // Sunset Painting on Canvas
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px + 6, py - 2, 20, 8);
+    this.ctx.fillStyle = '#ec4899';
+    this.ctx.fillRect(px + 6, py + 6, 20, 6);
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 6, 4, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Palette on Stool
+    this.ctx.fillStyle = '#d97706';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 26, py + 18, 6, 4, 0.3, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px + 24, py + 17, 2, 2);
+    this.ctx.fillStyle = '#3b82f6';
+    this.ctx.fillRect(px + 27, py + 17, 2, 2);
+  }
+
+  // Clue 5: Executive Mentoring Desk with Globe
+  drawCareerStationMentor(px, py) {
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(px - 4, py + 8, 40, 20);
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px - 2, py + 10, 36, 16);
+
+    // Glowing World Globe
+    this.ctx.strokeStyle = '#fbbf24';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.arc(px + 8, py + 2, 7, 0, Math.PI * 2);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 8, py + 2, 5.5, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Stacked Books with Ribbon
+    this.ctx.fillStyle = '#1e3a8a';
+    this.ctx.fillRect(px + 20, py + 13, 14, 4);
+    this.ctx.fillStyle = '#be123c';
+    this.ctx.fillRect(px + 21, py + 9, 12, 4);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px + 26, py + 8, 2, 10);
+  }
+
+  // Clue 6: Astronomical Telescope Station
+  drawCareerStationSpace(px, py) {
+    // Telescope Tripod
+    this.ctx.strokeStyle = '#64748b';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 16, py + 10);
+    this.ctx.lineTo(px + 6, py + 24);
+    this.ctx.moveTo(px + 16, py + 10);
+    this.ctx.lineTo(px + 26, py + 24);
+    this.ctx.moveTo(px + 16, py + 10);
+    this.ctx.lineTo(px + 16, py + 24);
+    this.ctx.stroke();
+
+    // Brass Telescope Barrel pointing upper right
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 4;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 8, py + 14);
+    this.ctx.lineTo(px + 24, py + 4);
+    this.ctx.stroke();
+    this.ctx.strokeStyle = '#fbbf24';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 24, py + 4);
+    this.ctx.lineTo(px + 28, py + 1.5);
+    this.ctx.stroke();
+
+    // Star particle sparkle
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.fillRect(px + 29, py, 2, 2);
+    this.ctx.fillRect(px + 28, py - 1, 4, 1);
+  }
+
+  // Digital Escape Keypad
+  drawCareerKeypadStation(kx, ky, hasEscaped, solvedCount) {
+    // Pedestal
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(kx + 6, ky + 8, 20, 22);
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(kx + 8, ky + 10, 16, 18);
+
+    // Glowing Keypad Screen
+    this.ctx.fillStyle = hasEscaped ? '#14532d' : (solvedCount >= 6 ? '#78350f' : '#450a0a');
+    this.ctx.fillRect(kx + 8, ky - 4, 16, 12);
+    this.ctx.strokeStyle = hasEscaped ? '#22c55e' : (solvedCount >= 6 ? '#f59e0b' : '#ef4444');
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(kx + 8, ky - 4, 16, 12);
+
+    // Status Icon
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = 'bold 8px monospace';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText(hasEscaped ? 'OPEN' : (solvedCount >= 6 ? 'READY' : `${solvedCount}/6`), kx + 16, ky + 4);
+
+    const keypadLabel = hasEscaped ? '🔓 탈출 도어락 (전직 아카데미)' : `🔐 탈출 도어락 (단서 ${solvedCount}/6)`;
+    this.drawSharpLabel(kx + 16, ky - 20, keypadLabel, {
+      bgColor: hasEscaped ? 'rgba(6, 78, 59, 0.94)' : 'rgba(15, 23, 42, 0.94)',
+      borderColor: hasEscaped ? '#22c55e' : (solvedCount >= 6 ? '#f59e0b' : '#ef4444'),
+      textColor: '#ffffff',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 19
+    });
+  }
+
+  // Clue Floating Label
+  drawCareerClueLabel(x, y, index, name, letter, isSolved) {
+    if (isSolved) {
+      this.drawSharpLabel(x, y, `✅ [단서 ${index}] ${name}: [ ${letter} ]`, {
+        bgColor: 'rgba(6, 78, 59, 0.95)',
+        borderColor: '#22c55e',
+        textColor: '#dcfce7',
+        fontSize: 10,
+        paddingX: 7,
+        height: 18
+      });
+    } else {
+      this.drawSharpLabel(x, y, `🔍 [단서 ${index}] ${name}`, {
+        bgColor: 'rgba(15, 23, 42, 0.92)',
+        borderColor: '#38bdf8',
+        textColor: '#e0f2fe',
+        fontSize: 10,
+        paddingX: 7,
+        height: 18
+      });
+    }
+  }
+
+  // Blackboard Mission Banner (Top Wall, centerTileX = 30)
+  drawCareerBlackboardBanner(clues, solvedCount, hasEscaped) {
+    const bw = 18 * 32;
+    const bx = Math.round((30 * 32) - (bw / 2));
+    const by = 12;
+
+    this.ctx.save();
+    this.ctx.textAlign = 'center';
+    this.ctx.font = '800 13px "Pretendard", "Malgun Gothic", sans-serif';
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillText('🌟 [5층 진로 방탈출] 6대 단서를 모아 너의 미래 비전(D·R·E·A·M·S)을 완성하라! 🌟', bx + bw / 2, by + 23);
+
+    // Clue letter blocks
+    const letters = ['D', 'R', 'E', 'A', 'M', 'S'];
+    const startX = bx + bw / 2 - 130;
+    for (let i = 0; i < 6; i++) {
+      const lx = startX + i * 52;
+      const isFound = !!clues[i];
+
+      this.ctx.fillStyle = isFound ? '#14532d' : 'rgba(15, 23, 42, 0.6)';
+      this.ctx.fillRect(lx, by + 34, 40, 24);
+      this.ctx.strokeStyle = isFound ? '#22c55e' : '#475569';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.strokeRect(lx, by + 34, 40, 24);
+
+      this.ctx.fillStyle = isFound ? '#fde047' : '#94a3b8';
+      this.ctx.font = 'bold 13px monospace';
+      this.ctx.fillText(isFound ? letters[i] : '?', lx + 20, by + 51);
+    }
     this.ctx.restore();
   }
 
@@ -4284,8 +4658,11 @@ class GameEngine {
     } else if (this.player.room === 'room_704') {
       // === 1학년 4반: 드럼 치는 도덕쌤의 락스피릿 교실 ===
       this.renderDrumMoralClassroom(cr);
-    } else if (this.player.floor === 5 || this.player.room === 'room_career') {
-      // 5층 및 진로실: 파밍 없고 교탁 골드 파밍 없는 깨끗한 빈 공간 연출
+    } else if (this.player.room === 'room_career') {
+      // === 5층 대형 진로실: 진로 방탈출 6대 단서 & 직업 패시브 아카데미 ===
+      this.renderCareerEscapeRoom(cr);
+    } else if (this.player.floor === 5) {
+      // 5층 잠긴 교실들: 깨끗한 빈 공간 연출
     } else {
       // === 1학년 1반: 시즌1 기초 재료 노가다 채집장 연출 ===
       if (cr.teacherDesk) {

@@ -90,21 +90,29 @@ const WORLD_DATA = {
     }
   },
 
-  // 1학년 1반
+  // 5층 대형 진로상담실 (진로 방탈출 6대 단서 & 직업 패시브 아카데미)
   classroom_career: {
     name: "🌟 진로상담실 (Career Center)",
     exitDoor: { x: 30, y: 17 },
     blackboard: {
       x: 30,
       y: 2,
-      name: "칠판",
-      prompt: ""
+      name: "🌟 진로 비전 보드 (Vision Board)",
+      prompt: "비전 보드 확인 (SPACE)"
     },
     teacherDesk: null,
     gatherSpots: [],
     desks: [],
     npcs: [],
-    interactive: []
+    interactive: [
+      { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 10, y: 7, name: "🏥 [단서 1] 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 20, y: 7, name: "🔬 [단서 2] 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 15, y: 12, name: "💻 [단서 3] 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 40, y: 12, name: "🎨 [단서 4] 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 45, y: 7, name: "🤝 [단서 5] 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 52, y: 7, name: "🔭 [단서 6] 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 16, name: "🔐 진로실 탈출 도어락 (D-R-E-A-M-S)", prompt: "탈출 암호 입력 (SPACE)" }
+    ]
   },
 
   // 5층 잠김 교실 (내부 비어있음)
