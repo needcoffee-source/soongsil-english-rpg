@@ -100,6 +100,7 @@ class GameEngine {
   initTouchAndMouse() {
     this.canvas.addEventListener('pointerdown', (e) => {
       if (this.fade.active) return; // ignore clicks during fade
+      if (this.player.isFallen) return; // 기절 상태 시 터치 조작/이동 전면 차단
 
       const rect = this.canvas.getBoundingClientRect();
       const scaleX = this.width / rect.width;
@@ -132,6 +133,10 @@ class GameEngine {
   }
 
   setDirectionInput(dir, active) {
+    if (this.player.isFallen) {
+      if (this.keys.hasOwnProperty(dir)) this.keys[dir] = false;
+      return;
+    }
     if (this.keys.hasOwnProperty(dir)) {
       this.keys[dir] = active;
     }
@@ -201,6 +206,16 @@ class GameEngine {
     // If fading out or in hold, pause movement
     if (this.fade.active && this.fade.phase !== 'fade_in') {
       this.player.isMoving = false;
+      return;
+    }
+
+    // 기절(isFallen) 상태 시 이동 및 애니메이션 전면 정지
+    if (this.player.isFallen) {
+      this.player.isMoving = false;
+      this.keys.up = false;
+      this.keys.down = false;
+      this.keys.left = false;
+      this.keys.right = false;
       return;
     }
 
@@ -478,6 +493,7 @@ class GameEngine {
   }
 
   exitClassroom() {
+    if (this.player.isFallen) return; // 기절 상태에서는 교실 밖으로 걸어나갈 수 없음
     const floorData = WORLD_DATA.floors[this.player.floor];
     const currentRoomInfo = floorData && floorData.rooms ? floorData.rooms.find(r => r.id === this.player.room) : null;
     const returnX = currentRoomInfo ? currentRoomInfo.doorX * 32 : 15 * 32;
@@ -589,6 +605,13 @@ class GameEngine {
   }
 
   checkNearbyInteractable() {
+    if (this.player.isFallen) {
+      this.activeInteractable = null;
+      const promptEl = document.getElementById('interaction-prompt');
+      if (promptEl) promptEl.classList.add('hidden');
+      return;
+    }
+
     let closest = null;
     let minDist = 56;
 
@@ -1051,6 +1074,13 @@ class GameEngine {
   }
 
   interact() {
+    if (this.player.isFallen) {
+      if (window.MainApp && window.MainApp.showToast) {
+        window.MainApp.showToast('💀 기절한 상태에서는 행동할 수 없습니다. 부활을 선택하세요!', 'error');
+      }
+      return;
+    }
+
     // 1학년 2반 가장 오른쪽 철제 사물함 이스터에그 (UI 프롬프트 버튼 없이 비밀 상호작용)
     if (this.player.room === 'room_702') {
       const lockerCenterX = 26 * 32 + 16;

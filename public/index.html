@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=58">
+  <link rel="stylesheet" href="css/style.css?v=59">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -75,6 +75,18 @@
         <!-- Interaction Prompt (SPACE hint) -->
         <div id="interaction-prompt" class="hidden">
           <span class="key-badge">SPACE</span> <span id="prompt-text">대화하기</span>
+        </div>
+
+        <!-- Fallen Respawn Floating Banner (기절 상태 복도 부활 바) -->
+        <div id="fallen-respawn-banner" class="fallen-respawn-banner hidden">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:22px;">💀</span>
+            <div style="display:flex; flex-direction:column; text-align:left;">
+              <span style="color:#ef4444; font-weight:900; font-size:13.5px;">기절 상태 (이동/상호작용 불가)</span>
+              <span style="color:#fde047; font-size:11px;">친구의 [부활 주문서]를 기다리거나 복도에서 부활하세요</span>
+            </div>
+          </div>
+          <button id="btn-banner-respawn" class="btn-banner-respawn">🏛️ 복도에서 부활 (15%)</button>
         </div>
 
         <!-- Teacher Announcement Banner -->

@@ -460,6 +460,10 @@ class MainApp {
   }
 
   handleInteraction(target) {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      this.showToast('💀 기절한 상태에서는 상호작용이나 채집을 할 수 없습니다!', 'error');
+      return;
+    }
     if (target.type === 'npc') {
       const npc = target.data;
       if (!npc) return;
@@ -1544,7 +1548,17 @@ class MainApp {
     // Boss Raid Modal
     const btnCloseBossX = document.getElementById('btn-close-boss-x');
     if (btnCloseBossX) {
-      btnCloseBossX.addEventListener('click', () => this.modalBossRaid.classList.add('hidden'));
+      btnCloseBossX.addEventListener('click', () => {
+        this.modalBossRaid.classList.add('hidden');
+        this.updateFallenBannerUI();
+      });
+    }
+
+    const btnBannerRespawn = document.getElementById('btn-banner-respawn');
+    if (btnBannerRespawn) {
+      btnBannerRespawn.addEventListener('click', () => {
+        this.respawnAtHallway();
+      });
     }
     const btnRaidNextTurn = document.getElementById('btn-raid-next-turn');
     if (btnRaidNextTurn) {
@@ -1796,6 +1810,18 @@ class MainApp {
     const fill = document.getElementById('side-hp-fill');
     if (txt) txt.innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
     if (fill) fill.style.width = `${pct}%`;
+    this.updateFallenBannerUI();
+  }
+
+  updateFallenBannerUI() {
+    const banner = document.getElementById('fallen-respawn-banner');
+    if (!banner) return;
+    const isFallen = !!(this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0));
+    if (isFallen) {
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
   }
 
   // =========================================================================
@@ -1953,6 +1979,11 @@ class MainApp {
   }
 
   usePotion(itemId = 'item_hp_potion') {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 스스로 물약을 마실 수 없습니다!\n동료의 [부활 주문서]를 받거나 복도에서 부활하세요.');
+      return false;
+    }
+
     const pot = this.playerData.inventory.find(i => i.item === itemId);
     if (!pot || pot.count <= 0) {
       alert('보유한 포션이 없습니다.');
