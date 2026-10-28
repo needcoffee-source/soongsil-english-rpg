@@ -196,13 +196,7 @@ class QuizManager {
 
     // 단원명 및 제목 표시
     this.titleEl.innerText = this.currentSourceName;
-    if (this.currentSourceType === 'gather_wood') {
-      this.unitEl.innerText = `1~4단원 통합 (${q.unit || 'L1~L4'})`;
-    } else if (this.currentSourceType === 'teacher_desk') {
-      this.unitEl.innerText = `4단원 골드 (${q.unit || 'L4'})`;
-    } else {
-      this.unitEl.innerText = q.unit || `Grade ${q.grade}`;
-    }
+    this.unitEl.innerText = q.unit || `Grade ${q.grade}`;
     this.questionEl.innerText = q.question;
 
     this.feedbackEl.classList.add('hidden');
