@@ -1148,6 +1148,10 @@ class GameEngine {
     this.ctx.save();
     this.ctx.translate(-this.camera.x, -this.camera.y);
 
+    // Defer world, NPC, material and guidance labels so they render in front of player nameplates
+    this.deferredWorldLabels = [];
+    this.deferWorldLabels = true;
+
     if (this.player.room === 'hallway') {
       this.renderHallway();
     } else if (this.player.room === 'playground') {
@@ -1162,6 +1166,9 @@ class GameEngine {
     // Render NPCs
     this.renderNPCs();
 
+    // End deferral: characters and player nameplates render now
+    this.deferWorldLabels = false;
+
     // Render other players
     for (const id in this.otherPlayers) {
       this.renderOtherPlayer(this.otherPlayers[id]);
@@ -1169,6 +1176,30 @@ class GameEngine {
 
     // Render Local Player
     this.renderPlayer(this.player, true);
+
+    // Render deferred World, NPC, Material, and Guidance Labels ON TOP of characters!
+    if (this.deferredWorldLabels && this.deferredWorldLabels.length > 0) {
+      const activeName = (this.activeInteractable && this.activeInteractable.name) ? this.activeInteractable.name : null;
+      // Sort so active interactable label is rendered last (on the very top)
+      if (activeName) {
+        this.deferredWorldLabels.sort((a, b) => {
+          const aMatch = a.text && a.text.includes(activeName);
+          const bMatch = b.text && b.text.includes(activeName);
+          return (aMatch === bMatch) ? 0 : (aMatch ? 1 : -1);
+        });
+      }
+
+      for (const item of this.deferredWorldLabels) {
+        const isActive = activeName && item.text && item.text.includes(activeName);
+        if (isActive) {
+          const opts = { ...item.options, borderColor: '#fbbf24', borderWidth: 2.2 };
+          this._renderSharpLabelDirect(item.cx, item.cy, item.text, opts);
+        } else {
+          this._renderSharpLabelDirect(item.cx, item.cy, item.text, item.options);
+        }
+      }
+      this.deferredWorldLabels = [];
+    }
 
     this.ctx.restore();
 
@@ -1187,9 +1218,19 @@ class GameEngine {
    * High-Legibility Pill Badge & Outlined Korean Typography Renderer
    */
   drawSharpLabel(cx, cy, text, options = {}) {
+    if (this.deferWorldLabels) {
+      if (!this.deferredWorldLabels) this.deferredWorldLabels = [];
+      this.deferredWorldLabels.push({ cx, cy, text, options });
+      return;
+    }
+    this._renderSharpLabelDirect(cx, cy, text, options);
+  }
+
+  _renderSharpLabelDirect(cx, cy, text, options = {}) {
     const {
       bgColor = 'rgba(15, 23, 42, 0.94)',
       borderColor = '#cbd5e1',
+      borderWidth = 1.5,
       textColor = '#ffffff',
       fontSize = 12.5,
       paddingX = 10,
@@ -1221,7 +1262,7 @@ class GameEngine {
 
     // Crisp border
     this.ctx.strokeStyle = borderColor;
-    this.ctx.lineWidth = 1.5;
+    this.ctx.lineWidth = borderWidth;
     this.ctx.stroke();
 
     // Dark stroke outline around letters for 100% legibility
