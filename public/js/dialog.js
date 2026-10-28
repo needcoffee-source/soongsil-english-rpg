@@ -51,18 +51,16 @@ class RPGDialogManager {
     this.choicesEl = document.getElementById('rpg-dialog-choices');
     this.btnConfirm = document.getElementById('btn-rpg-confirm');
     this.btnCancel = document.getElementById('btn-rpg-cancel');
+    this.hintEl = document.querySelector('.rpg-dialog-hint');
 
     if (!this.overlay) return;
 
-    // Advance / Dismiss on click (unless in confirm mode waiting for choice)
+    // Advance / Dismiss on click
     this.overlay.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (this.isConfirmMode) {
-        if (this.isTyping) {
-          this.finishTypewriter();
-        }
+      if (e.target.closest('#rpg-dialog-choices') || e.target.closest('#btn-close-rpg-dialog')) {
         return;
       }
+      e.stopPropagation();
       this.advance();
     });
 
@@ -94,30 +92,36 @@ class RPGDialogManager {
       });
     }
 
-    // Keyboard support (Space, Enter, Escape)
+    // Keyboard support: Space/Enter = 확인(진행), ESC = 취소(닫기)
     window.addEventListener('keydown', (e) => {
       if (!this.isOpen) return;
-      if (this.isConfirmMode) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          e.stopPropagation();
-          this.resolveChoice(true);
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          e.stopPropagation();
+
+      // 1. ESC / Escape -> 취소
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.isConfirmMode) {
           this.resolveChoice(false);
-        } else if (e.key === ' ' && this.isTyping) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.finishTypewriter();
+        } else {
+          this.close();
         }
         return;
       }
 
-      if (e.key === ' ' || e.key === 'Enter' || e.key === 'Escape') {
+      // 2. Space / Enter -> 확인 / 넘기기
+      if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
-        this.advance();
+        if (this.isTyping) {
+          this.finishTypewriter();
+          return;
+        }
+        if (this.isConfirmMode) {
+          this.resolveChoice(true);
+        } else {
+          this.advance();
+        }
+        return;
       }
     }, true);
   }
@@ -164,6 +168,7 @@ class RPGDialogManager {
     if (this.speakerEl) this.speakerEl.innerText = speaker || '안내';
     if (this.textEl) this.textEl.innerText = '';
     if (this.indicatorEl) this.indicatorEl.classList.add('hidden');
+    if (this.hintEl) this.hintEl.innerText = '스페이스바 / Enter: 넘기기 ｜ ESC: 닫기';
 
     if (this.overlay) {
       this.overlay.classList.remove('hidden');
@@ -229,6 +234,7 @@ class RPGDialogManager {
     if (this.btnConfirm) this.btnConfirm.innerText = confirmText;
     if (this.btnCancel) this.btnCancel.innerText = cancelText;
     if (this.choicesEl) this.choicesEl.classList.remove('hidden');
+    if (this.hintEl) this.hintEl.innerText = '스페이스바 / Enter: 확인 ｜ ESC: 취소';
 
     if (this.overlay) {
       this.overlay.classList.remove('hidden');
@@ -299,6 +305,9 @@ class RPGDialogManager {
     if (this.isTyping) {
       // Fast forward to full text immediately
       this.finishTypewriter();
+    } else if (this.isConfirmMode) {
+      // Confirm mode: pressing advance (Space, Enter, Touch action button) confirms choice!
+      this.resolveChoice(true);
     } else {
       // Close or next message
       this.close();
