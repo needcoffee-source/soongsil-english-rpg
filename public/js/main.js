@@ -2827,13 +2827,30 @@ class MainApp {
   }
 
   loadNextBossQuestion() {
-    let uFilter = (window.BOSS_CONFIG.unitFilter && window.BOSS_CONFIG.unitFilter !== 'ALL')
+    let uFilter = (window.BOSS_CONFIG.unitFilter && window.BOSS_CONFIG.unitFilter !== 'ALL' && window.BOSS_CONFIG.unitFilter !== 'AUTO')
       ? window.BOSS_CONFIG.unitFilter
       : null;
 
-    // 케르베로스는 5~6단원에서 집중 출제
-    if (!uFilter && window.BOSS_CONFIG.name && (window.BOSS_CONFIG.name.includes('케르베로스') || window.BOSS_CONFIG.name.includes('cerberus'))) {
-      uFilter = Math.random() < 0.5 ? '5단원' : '6단원';
+    if (!uFilter) {
+      const bName = (window.BOSS_CONFIG.name || '').toLowerCase();
+      if (bName.includes('골렘') || bName.includes('golem') || bName.includes('드래곤') || bName.includes('dragon')) {
+        // 골렘, 드래곤: 1~4단원 출제
+        uFilter = ['1단원', '2단원', '3단원', '4단원'];
+      } else if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon')) {
+        // 중간고사 대마왕: 1~5단원 출제
+        uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원'];
+      } else if (bName.includes('케르베로스') || bName.includes('cerberus') || bName.includes('수행평가')) {
+        // 케르베로스: 1~6단원 출제
+        uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원', '6단원'];
+      } else {
+        uFilter = ['1단원', '2단원', '3단원', '4단원'];
+      }
+    } else if (uFilter === '1~4') {
+      uFilter = ['1단원', '2단원', '3단원', '4단원'];
+    } else if (uFilter === '1~5') {
+      uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원'];
+    } else if (uFilter === '1~6') {
+      uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원', '6단원'];
     }
 
     const q = this.quizManager.getRandomQuestion(uFilter);

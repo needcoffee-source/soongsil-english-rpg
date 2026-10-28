@@ -1,9 +1,10 @@
 /**
  * Quiz Manager for Soongsil Open World RPG — Season 1
- * - 목재(gather_wood): 1단원(L1) 문제만 출제 (25문항 비복원 셔플 덱)
- * - 허브(gather_herb): 2단원(L2) 문제만 출제 (25문항 비복원 셔플 덱)
- * - 개나리(gather_forsythia): 3단원(L3) 문제만 출제 (25문항 비복원 셔플 덱)
- * - 교목 은행나무(gather_ginkgo): 4단원(L4) 문제만 출제 (25문항 비복원 셔플 덱)
+ * - 목재(gather_wood): 1~4단원(L1~L4) 통합 출제 (225문항 비복원 셔플 덱)
+ * - 허브(gather_herb): 1단원(L1) 문제 출제 (60문항 비복원 셔플 덱)
+ * - 개나리(gather_forsythia): 2단원(L2) 문제 출제 (55문항 비복원 셔플 덱)
+ * - 교목 은행나무(gather_ginkgo): 3단원(L3) 문제 출제 (55문항 비복원 셔플 덱)
+ * - 교탁(teacher_desk): 4단원(L4) 문제 출제 (55문항 비복원 셔플 덱, 골드 2배)
  * - 객관식 4지선다 보기는 매 출제 시마다 Fisher-Yates 셔플로 무작위 배치
  * - 드랍 테이블 및 확률은 화면에 노출하지 않음
  */
@@ -102,16 +103,30 @@ class QuizManager {
 
   /**
    * 단원별 비복원 셔플 덱(Deck)에서 다음 문제를 꺼내어 같은 문제가 연속으로 나오지 않게 보장
+   * unitFilter: 단일 문자열 ('1단원', 'L1') 또는 단원 배열 (['1단원', '2단원', '3단원', '4단원'])
    */
   getRandomQuestion(unitFilter = null) {
     if (!this.questions || this.questions.length === 0) return null;
 
-    const deckKey = unitFilter || 'ALL';
+    let deckKey = 'ALL';
+    if (Array.isArray(unitFilter)) {
+      deckKey = unitFilter.slice().sort().join(',');
+    } else if (unitFilter) {
+      deckKey = String(unitFilter);
+    }
+
     if (!this.unitDecks[deckKey] || this.unitDecks[deckKey].length === 0) {
       let pool = this.questions;
       if (unitFilter) {
-        const filtered = this.questions.filter(q => q.unit && q.unit.includes(unitFilter));
-        if (filtered.length > 0) pool = filtered;
+        if (Array.isArray(unitFilter)) {
+          const filtered = this.questions.filter(q =>
+            q.unit && unitFilter.some(u => q.unit.includes(u))
+          );
+          if (filtered.length > 0) pool = filtered;
+        } else {
+          const filtered = this.questions.filter(q => q.unit && q.unit.includes(unitFilter));
+          if (filtered.length > 0) pool = filtered;
+        }
       }
       let shuffled = shuffleArray(pool);
       // 덱을 새로 섞었을 때 직전 마지막 문제와 첫 문제가 겹치면 한 칸 뒤로 스왑
@@ -132,14 +147,21 @@ class QuizManager {
   }
 
   getUnitFilterForSource(sourceType) {
-    if (sourceType === 'gather_wood') return 'L1';
-    if (sourceType === 'gather_herb') return 'L2';
-    if (sourceType === 'gather_forsythia' || sourceType === 'forsythia') return 'L3';
-    if (sourceType === 'gather_ginkgo' || sourceType === 'ginkgo') return 'L4';
-    if (sourceType === 'basketball' || sourceType === 'basketball_monster') return 'L5';
-    if (sourceType === 'futsal' || sourceType === 'futsal_monster') return 'L6';
-    if (sourceType === 'field_monster') return Math.random() < 0.5 ? 'L5' : 'L6';
-    return null; // 칠판/보스 레이드/기타는 L1~L6 전체 출제
+    // 목재: 1~4단원
+    if (sourceType === 'gather_wood') return ['1단원', '2단원', '3단원', '4단원'];
+    // 허브: 1단원
+    if (sourceType === 'gather_herb') return '1단원';
+    // 개나리: 2단원
+    if (sourceType === 'gather_forsythia' || sourceType === 'forsythia') return '2단원';
+    // 은행나무: 3단원
+    if (sourceType === 'gather_ginkgo' || sourceType === 'ginkgo') return '3단원';
+    // 교탁(골드): 4단원
+    if (sourceType === 'teacher_desk' || sourceType === 'board') return '4단원';
+    // 필드 몬스터
+    if (sourceType === 'basketball' || sourceType === 'basketball_monster') return '5단원';
+    if (sourceType === 'futsal' || sourceType === 'futsal_monster') return '6단원';
+    if (sourceType === 'field_monster') return Math.random() < 0.5 ? '5단원' : '6단원';
+    return ['1단원', '2단원', '3단원', '4단원'];
   }
 
   nextQuiz() {
@@ -167,15 +189,20 @@ class QuizManager {
     this.currentSourceType = sourceType || 'board';
     this.currentSpotData = spotData || null;
 
-    // 단원별 필터링 (목재=L1, 허브=L2, 개나리=L3, 교목=L4)
+    // 단원별 필터링
     const unitKey = this.getUnitFilterForSource(this.currentSourceType);
     const q = this.getRandomQuestion(unitKey);
     this.currentQuestion = q;
 
-    // 드랍 테이블/확률은 절대 노출하지 않고 단원명과 제목만 깔끔하게 표시
-    const isComprehensive = (this.currentSourceType === 'teacher_desk');
+    // 단원명 및 제목 표시
     this.titleEl.innerText = this.currentSourceName;
-    this.unitEl.innerText = isComprehensive ? `전범위 모의고사 (${q.unit || 'L1~L4'})` : (q.unit || `Grade ${q.grade}`);
+    if (this.currentSourceType === 'gather_wood') {
+      this.unitEl.innerText = `1~4단원 통합 (${q.unit || 'L1~L4'})`;
+    } else if (this.currentSourceType === 'teacher_desk') {
+      this.unitEl.innerText = `4단원 골드 (${q.unit || 'L4'})`;
+    } else {
+      this.unitEl.innerText = q.unit || `Grade ${q.grade}`;
+    }
     this.questionEl.innerText = q.question;
 
     this.feedbackEl.classList.add('hidden');
@@ -259,8 +286,8 @@ class QuizManager {
       buttonEl.classList.add('correct');
 
       const cfg = window.ECONOMY_CONFIG;
-      const isComprehensive = (this.currentSourceType === 'teacher_desk');
-      const multiplier = isComprehensive ? 2 : 1; // 💡 교탁 모의고사: 골드 2배 + EXP 2배 보너스!
+      const isDesk = (this.currentSourceType === 'teacher_desk');
+      const multiplier = isDesk ? 2 : 1; // 💡 교탁 퀴즈: 골드 2배 + EXP 2배 보너스!
 
       const rawGold = Math.floor(Math.random() * (cfg.maxGold - cfg.minGold + 1)) + cfg.minGold;
       const earnedGold = rawGold * multiplier;
@@ -280,19 +307,19 @@ class QuizManager {
         }
       }
 
-      let rewardMsg = isComprehensive
-        ? `⭐ [1~4단원 전범위 모의고사 보너스: 골드 2배 & EXP 2배!]\n🪙 골드 +${earnedGold}G (2배), 경험치 +${earnedExp} EXP (2배)`
+      let rewardMsg = isDesk
+        ? `⭐ [교탁 퀴즈 보너스: 골드 2배 & EXP 2배!]\n🪙 골드 +${earnedGold}G (2배), 경험치 +${earnedExp} EXP (2배)`
         : `🪙 골드 +${earnedGold}G, 경험치 +${earnedExp} EXP`;
 
       if (isItemDropped) {
         this.feedbackIcon.innerText = '🌟';
-        this.feedbackText.innerText = isComprehensive ? '정답입니다! (모의고사 2배 보너스 + 아이템)' : '정답입니다! (아이템 획득)';
+        this.feedbackText.innerText = isDesk ? '정답입니다! (교탁 2배 보너스 + 아이템)' : '정답입니다! (아이템 획득)';
         this.feedbackEl.style.borderColor = '#eab308';
         rewardMsg += `\n🎁 아이템 획득: ${dropInfo.icon} ${dropInfo.name} x${cfg.dropAmount}`;
       } else {
-        this.feedbackIcon.innerText = isComprehensive ? '🏆' : '🎉';
-        this.feedbackText.innerText = isComprehensive ? '정답입니다! (골드·EXP 2배 보너스!)' : '정답입니다!';
-        this.feedbackEl.style.borderColor = isComprehensive ? '#eab308' : '#16a34a';
+        this.feedbackIcon.innerText = isDesk ? '🏆' : '🎉';
+        this.feedbackText.innerText = isDesk ? '정답입니다! (골드·EXP 2배 보너스!)' : '정답입니다!';
+        this.feedbackEl.style.borderColor = isDesk ? '#eab308' : '#16a34a';
       }
 
       this.feedbackExp.innerText = `${this.currentQuestion.explanation || ''}\n\n${rewardMsg}`;
