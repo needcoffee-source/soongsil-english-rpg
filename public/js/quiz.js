@@ -152,6 +152,17 @@ class QuizManager {
       return;
     }
 
+    // 🛑 오답 쿨타임 (1초 광클 방지)
+    if (this.wrongCooldownUntil && Date.now() < this.wrongCooldownUntil) {
+      const remainMs = this.wrongCooldownUntil - Date.now();
+      const remainSec = (remainMs / 1000).toFixed(1);
+      if (window.MainApp && window.MainApp.showToast) {
+        window.MainApp.showToast(`⏳ 오답 패널티: ${remainSec}초 후 다시 채집할 수 있습니다.`, 'warning');
+      }
+      return;
+    }
+
+    this.isHandlingAnswer = false;
     this.currentSourceName = sourceName || '영어 문제';
     this.currentSourceType = sourceType || 'board';
     this.currentSpotData = spotData || null;
@@ -172,15 +183,27 @@ class QuizManager {
     this.btnClose.innerText = '나가기';
     if (this.btnNext) {
       this.btnNext.classList.remove('hidden');
+      this.btnNext.disabled = false;
       this.btnNext.innerText = '다음 문제 ➔';
+      this.btnNext.style.opacity = '1';
+      this.btnNext.style.cursor = 'pointer';
     }
     this.optionsGrid.innerHTML = '';
+
+    // 0.35초 입력 디바운스: 문제가 나타나자마자 화면 연타로 찍기 방지
+    this.optionsClickable = false;
+    setTimeout(() => {
+      this.optionsClickable = true;
+    }, 350);
 
     q.options.forEach(opt => {
       const btn = document.createElement('button');
       btn.className = 'quiz-opt-btn';
       btn.innerText = opt;
-      btn.addEventListener('click', () => this.handleAnswer(opt, btn));
+      btn.addEventListener('click', () => {
+        if (!this.optionsClickable) return;
+        this.handleAnswer(opt, btn);
+      });
       this.optionsGrid.appendChild(btn);
     });
 
@@ -221,12 +244,17 @@ class QuizManager {
   }
 
   handleAnswer(selectedOption, buttonEl) {
+    if (!this.optionsClickable) return;
+    if (this.isHandlingAnswer) return;
+    this.isHandlingAnswer = true;
+
     const isCorrect = (selectedOption === this.currentQuestion.answer);
 
     const allBtns = this.optionsGrid.querySelectorAll('.quiz-opt-btn');
     allBtns.forEach(b => b.disabled = true);
 
     if (isCorrect) {
+      this.wrongCooldownUntil = 0;
       if (window.AudioManager) window.AudioManager.playCorrect();
       buttonEl.classList.add('correct');
 
@@ -293,6 +321,23 @@ class QuizManager {
 
       const expText = this.currentQuestion.explanation ? `\n해설: ${this.currentQuestion.explanation}` : '';
       this.feedbackExp.innerText = `정답: '${this.currentQuestion.answer}'${expText}\n\n⚠️ 오답 패널티: 체력 -${penalty} HP (현재 HP: ${currentHp} / ${maxHp})`;
+
+      // 🛑 틀렸을 때 1초간 다음 문제 및 연속 입력 차단 (광클 방지)
+      this.wrongCooldownUntil = Date.now() + 1000;
+      if (this.btnNext) {
+        this.btnNext.disabled = true;
+        this.btnNext.style.opacity = '0.5';
+        this.btnNext.style.cursor = 'not-allowed';
+        this.btnNext.innerText = '⏳ 1초 대기 (오답 쿨타임)...';
+        setTimeout(() => {
+          if (this.btnNext && !this.modal.classList.contains('hidden')) {
+            this.btnNext.disabled = false;
+            this.btnNext.style.opacity = '1';
+            this.btnNext.style.cursor = 'pointer';
+            this.btnNext.innerText = '다음 문제 ➔';
+          }
+        }, 1000);
+      }
     }
 
     this.feedbackEl.classList.remove('hidden');
@@ -306,6 +351,7 @@ class QuizManager {
   closeQuiz() {
     this.modal.classList.add('hidden');
     this.currentQuestion = null;
+    this.isHandlingAnswer = false;
   }
 }
 

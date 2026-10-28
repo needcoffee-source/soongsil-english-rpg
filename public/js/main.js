@@ -1302,7 +1302,15 @@ class MainApp {
           this.playerData.exp = saved.exp || 0;
           this.playerData.gold = saved.gold !== undefined ? saved.gold : 10;
           this.playerData.baseHp = saved.baseHp || 100;
-          this.playerData.hp = saved.baseHp || 100;
+          if (saved.hp !== undefined && saved.hp !== null) {
+            this.playerData.hp = Math.max(0, Math.min(saved.maxHp || 9999, saved.hp));
+          } else {
+            this.playerData.hp = saved.baseHp || 100;
+          }
+          this.playerData.isFallen = !!(saved.isFallen || this.playerData.hp <= 0);
+          if (this.engine && this.engine.player) {
+            this.engine.player.isFallen = this.playerData.isFallen;
+          }
           this.playerData.baseAtk = saved.baseAtk || 10;
           this.playerData.baseDef = saved.baseDef || 2;
           this.playerData.inventory = Array.isArray(saved.inventory) ? saved.inventory : [];
@@ -1414,6 +1422,9 @@ class MainApp {
               level: this.playerData.level,
               exp: this.playerData.exp,
               gold: this.playerData.gold,
+              hp: (this.playerData.hp !== undefined && this.playerData.hp !== null) ? this.playerData.hp : 100,
+              maxHp: this.playerData.maxHp || 100,
+              isFallen: !!this.playerData.isFallen,
               baseHp: this.playerData.baseHp,
               baseAtk: this.playerData.baseAtk,
               baseDef: this.playerData.baseDef,
@@ -1869,6 +1880,9 @@ class MainApp {
     if (equipHp && this.modalEquipment && !this.modalEquipment.classList.contains('hidden')) {
       equipHp.innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
     }
+
+    // 체력 감소 즉시 영구 저장 (새로고침으로 피 채우는 편법 차단)
+    this.saveProgress(true);
   }
 
   takeQuizDamage(amount) {
@@ -1882,6 +1896,9 @@ class MainApp {
     if (equipHp && this.modalEquipment && !this.modalEquipment.classList.contains('hidden')) {
       equipHp.innerText = `${this.playerData.hp} / ${this.playerData.maxHp}`;
     }
+
+    // 체력 감소 즉시 영구 저장 (새로고침으로 피 채우는 편법 차단)
+    this.saveProgress(true);
 
     // 체력이 0이 되어 탈진한 경우 안전하게 복도로 귀환
     if (this.playerData.hp <= 0) {
@@ -2796,6 +2813,7 @@ class MainApp {
       const incomingDmg = this.playerData.isTeacher ? 0 : Math.max(0, bossAtk - this.playerData.def);
       this.playerData.hp = Math.max(0, this.playerData.hp - incomingDmg);
       this.updateBossRaidUI();
+      this.saveProgress(true);
 
       if (incomingDmg > 0) {
         logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
@@ -2809,6 +2827,7 @@ class MainApp {
       const incomingDmg = this.playerData.isTeacher ? 0 : bossAtk;
       this.playerData.hp = Math.max(0, this.playerData.hp - incomingDmg);
       this.updateBossRaidUI();
+      this.saveProgress(true);
 
       logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (방어력 무시)`;
     }
@@ -2860,7 +2879,29 @@ class MainApp {
       return;
     }
 
-    document.getElementById('btn-raid-next-turn').classList.remove('hidden');
+    const nextBtn = document.getElementById('btn-raid-next-turn');
+    if (nextBtn) {
+      nextBtn.classList.remove('hidden');
+      if (!isCorrect) {
+        nextBtn.disabled = true;
+        nextBtn.innerText = '⏳ 1초 대기 (오답 쿨타임)...';
+        nextBtn.style.opacity = '0.5';
+        nextBtn.style.cursor = 'not-allowed';
+        setTimeout(() => {
+          if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.innerText = '다음 턴 ➔';
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+          }
+        }, 1000);
+      } else {
+        nextBtn.disabled = false;
+        nextBtn.innerText = '다음 턴 ➔';
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
+      }
+    }
   }
 
   // ========================================================
@@ -3020,6 +3061,7 @@ class MainApp {
       this.playerData.hp = Math.max(0, this.playerData.hp - counterDmg);
       this.updateFieldBattleUI();
       this.updateHpBar();
+      this.saveProgress(true);
 
       if (logEl) {
         logEl.innerHTML = `💥 <b>오답!</b> 정답은 [<b>${q.answer}</b>]입니다.<br>🚨 <b>${mob.name}</b>의 반격으로 <b>-${counterDmg} HP (풀피의 20% 피해)</b>를 입었습니다!`;
@@ -3044,7 +3086,21 @@ class MainApp {
       }
 
       const btnNext = document.getElementById('btn-battle-next-turn');
-      if (btnNext) btnNext.classList.remove('hidden');
+      if (btnNext) {
+        btnNext.classList.remove('hidden');
+        btnNext.disabled = true;
+        btnNext.innerText = '⏳ 1초 대기 (오답 쿨타임)...';
+        btnNext.style.opacity = '0.5';
+        btnNext.style.cursor = 'not-allowed';
+        setTimeout(() => {
+          if (btnNext) {
+            btnNext.disabled = false;
+            btnNext.innerText = '다음 턴 ➔';
+            btnNext.style.opacity = '1';
+            btnNext.style.cursor = 'pointer';
+          }
+        }, 1000);
+      }
     }
   }
 
@@ -4105,6 +4161,9 @@ class MainApp {
         level: this.playerData.level,
         exp: this.playerData.exp,
         gold: this.playerData.gold,
+        hp: (this.playerData.hp !== undefined && this.playerData.hp !== null) ? this.playerData.hp : 100,
+        maxHp: this.playerData.maxHp || 100,
+        isFallen: !!this.playerData.isFallen,
         baseHp: this.playerData.baseHp,
         baseAtk: this.playerData.baseAtk,
         baseDef: this.playerData.baseDef,
@@ -4127,7 +4186,7 @@ class MainApp {
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
