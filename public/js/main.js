@@ -1374,6 +1374,8 @@ class MainApp {
       this.playerData.outfitColor = isTeacher ? 'gold' : selectedOutfit;
       this.engine.player.hairColor = this.playerData.hairColor;
       this.engine.player.outfitColor = this.playerData.outfitColor;
+      this.engine.player.hp = this.playerData.hp;
+      this.engine.player.maxHp = this.playerData.maxHp;
 
       this.updatePlayerNameDisplay();
       this.hudLevel.innerText = `Lv.${this.playerData.level}`;
@@ -1550,6 +1552,10 @@ class MainApp {
     if (btnCloseBossX) {
       btnCloseBossX.addEventListener('click', () => {
         this.modalBossRaid.classList.add('hidden');
+        if (this.bossTimerInterval) {
+          clearInterval(this.bossTimerInterval);
+          this.bossTimerInterval = null;
+        }
         this.updateFallenBannerUI();
       });
     }
@@ -1805,6 +1811,10 @@ class MainApp {
   }
 
   updateHpBar() {
+    if (this.engine && this.engine.player) {
+      this.engine.player.hp = this.playerData.hp;
+      this.engine.player.maxHp = this.playerData.maxHp;
+    }
     const pct = Math.max(0, Math.min(100, Math.floor((this.playerData.hp / this.playerData.maxHp) * 100)));
     const txt = document.getElementById('side-hp-text');
     const fill = document.getElementById('side-hp-fill');
@@ -2308,6 +2318,65 @@ class MainApp {
     this.updateBossRaidUI();
     this.loadNextBossQuestion();
     this.modalBossRaid.classList.remove('hidden');
+
+    if (this.bossTimerInterval) clearInterval(this.bossTimerInterval);
+    this.bossTimerInterval = setInterval(() => {
+      if (this.modalBossRaid && !this.modalBossRaid.classList.contains('hidden')) {
+        this.updateBossRaidTimerOnly();
+      } else {
+        clearInterval(this.bossTimerInterval);
+        this.bossTimerInterval = null;
+      }
+    }, 500);
+  }
+
+  updateBossRaidTimerOnly() {
+    const timerText = document.getElementById('boss-raid-timer-text');
+    const timerBar = document.getElementById('boss-raid-timer-bar');
+    if (!timerText) return;
+    if (window.BOSS_CONFIG && window.BOSS_CONFIG.expiresAt) {
+      const remainingMs = Math.max(0, window.BOSS_CONFIG.expiresAt - Date.now());
+      const totalSec = Math.floor(remainingMs / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      timerText.innerText = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      if (timerBar) {
+        if (totalSec <= 30) {
+          timerBar.classList.add('urgent');
+        } else {
+          timerBar.classList.remove('urgent');
+        }
+      }
+    } else {
+      timerText.innerText = '03:00';
+      if (timerBar) timerBar.classList.remove('urgent');
+    }
+  }
+
+  onBossRaidTimeout(data) {
+    if (this.modalBossRaid) {
+      this.modalBossRaid.classList.add('hidden');
+    }
+    if (this.bossTimerInterval) {
+      clearInterval(this.bossTimerInterval);
+      this.bossTimerInterval = null;
+    }
+    if (window.AudioManager) {
+      window.AudioManager.playHit();
+    }
+    alert(data && data.message ? data.message : '⏳ [레이드 시간 초과] 3분 제한시간이 초과되어 보스가 격노하고 학생들을 복도로 밀어냈습니다!');
+  }
+
+  onBossRaidWiped(data) {
+    if (window.AudioManager) {
+      window.AudioManager.playHit();
+    }
+    this.bossState.currentHp = this.bossState.maxHp;
+    this.updateBossRaidUI();
+    const logEl = document.getElementById('raid-battle-log');
+    if (logEl) {
+      logEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;">💀 [전원 기절 전멸] 보스가 체력을 100% 회복했습니다!</span>`;
+    }
   }
 
   onBossRaidStateUpdate(state) {
@@ -2371,6 +2440,10 @@ class MainApp {
   }
 
   onBossRaidCleared(data) {
+    if (this.bossTimerInterval) {
+      clearInterval(this.bossTimerInterval);
+      this.bossTimerInterval = null;
+    }
     window.BOSS_CONFIG.active = false;
     const bName = data.bossName || window.BOSS_CONFIG.name || '';
     const myId = (this.networkManager && this.networkManager.socket) ? this.networkManager.socket.id : null;
@@ -2628,6 +2701,8 @@ class MainApp {
       btnScroll.innerText = `📜 부활 주문서 (${scrollCount}개)`;
       btnScroll.disabled = (scrollCount <= 0 || this.playerData.isFallen);
     }
+
+    this.updateBossRaidTimerOnly();
   }
 
   loadNextBossQuestion() {
@@ -3075,6 +3150,10 @@ class MainApp {
     // Close Boss Raid Modal
     if (this.modalBossRaid) {
       this.modalBossRaid.classList.add('hidden');
+    }
+    if (this.bossTimerInterval) {
+      clearInterval(this.bossTimerInterval);
+      this.bossTimerInterval = null;
     }
 
     // Warp player to hallway center (15*32, 10*32)

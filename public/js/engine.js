@@ -439,6 +439,20 @@ class GameEngine {
       for (const r of floorData.rooms) {
         const isAtDoor = (r.id === "room_career") ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2 && r.doorY === tileY) : (r.doorX === tileX && r.doorY === tileY);
         if (isAtDoor) {
+          if (r.id === 'room_702' && !this.player.isTeacher) {
+            const curHp = this.player.hp !== undefined ? this.player.hp : 100;
+            const maxHp = this.player.maxHp || 100;
+            const hpRatio = curHp / maxHp;
+            if (hpRatio < 0.7) {
+              this.player.y = (r.doorY + 1.2) * 32;
+              if (!this._lastLockedDoorNotice || Date.now() - this._lastLockedDoorNotice > 2000) {
+                this._lastLockedDoorNotice = Date.now();
+                const curPct = Math.floor(hpRatio * 100);
+                alert(`⚠️ [1학년 2반 입장 불가 - 체력 부족]\n\n"보스방에 입장하기엔 체력이 너무 부족합니다!\n(현재 체력: ${curPct}% / 최소 70% 필요)\n\n복도에서 안전하게 휴식을 취해 체력을 회복(3초당 1 HP)하거나, 가방에서 회복 물약을 마시고 도전하세요!"`);
+              }
+              return;
+            }
+          }
           if (r.locked) {
             if (this.player.isTeacher) {
               this.triggerFadeWarp(() => {
@@ -1500,11 +1514,18 @@ class GameEngine {
     this.ctx.fillRect(px + 28, py + 34, 1, 14);
 
     // Class Nameplate Plaque mounted above door
-    const doorTitle = r.locked ? `🚪 ${r.name} 🔒` : `🚪 ${r.name}`;
+    let doorTitle = r.locked ? `🚪 ${r.name} 🔒` : `🚪 ${r.name}`;
+    let isLowHp = false;
+    if (r.id === 'room_702' && !this.player.isTeacher && this.player.hp !== undefined && this.player.maxHp) {
+      if ((this.player.hp / this.player.maxHp) < 0.7) {
+        doorTitle = `⚠️ ${r.name} (체력 70% 필요)`;
+        isLowHp = true;
+      }
+    }
     this.drawSharpLabel(px + 16, py + 4, doorTitle, {
-      bgColor: r.locked ? '#450a0a' : '#1e1b4b',
-      borderColor: r.locked ? '#f87171' : '#f59e0b',
-      textColor: r.locked ? '#fecaca' : '#fef08a',
+      bgColor: (r.locked || isLowHp) ? '#450a0a' : '#1e1b4b',
+      borderColor: (r.locked || isLowHp) ? '#f87171' : '#f59e0b',
+      textColor: (r.locked || isLowHp) ? '#fecaca' : '#fef08a',
       fontSize: 13,
       paddingX: 11,
       height: 22

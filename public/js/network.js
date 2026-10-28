@@ -229,6 +229,28 @@ class NetworkManager {
       }
     });
 
+    this.socket.on('boss_raid_timeout', (data) => {
+      if (window.MainApp && window.MainApp.onBossRaidTimeout) {
+        window.MainApp.onBossRaidTimeout(data);
+      }
+    });
+
+    this.socket.on('boss_raid_wiped', (data) => {
+      if (window.MainApp && window.MainApp.onBossRaidWiped) {
+        window.MainApp.onBossRaidWiped(data);
+      }
+    });
+
+    this.socket.on('boss_raid_force_warp_hallway', () => {
+      if (this.engine && this.engine.player && this.engine.player.room === 'room_702') {
+        if (window.MainApp && window.MainApp.modalBossRaid) {
+          window.MainApp.modalBossRaid.classList.add('hidden');
+        }
+        this.engine.teleportTo(7, 'hallway', 15 * 32, 10 * 32);
+        this.addSystemChat('💨 보스룸에서 복도로 튕겨져 나왔습니다!');
+      }
+    });
+
     this.socket.on('player_status_updated', (data) => {
       if (this.engine.otherPlayers[data.id]) {
         this.engine.otherPlayers[data.id].isFallen = data.isFallen;

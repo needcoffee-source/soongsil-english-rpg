@@ -276,6 +276,9 @@ let bossRaidEvent = {
   def: 14,
   rewardGold: 50,
   rewardExp: 100,
+  duration: 180,      // 3분 제한 시간
+  startedAt: 0,
+  expiresAt: 0,
   participants: {}
 };
 
@@ -654,18 +657,24 @@ io.on('connection', (socket) => {
 
   // Boss Raid Event Controls (Teacher)
   socket.on('teacher_start_boss_raid', (opts = {}) => {
+    const maxHp = Math.max(50, parseInt(opts.maxHp) || 2000);
+    const duration = 180; // 3분 제한 시간
+    const now = Date.now();
     bossRaidEvent = {
       active: true,
       name: opts.name || '👾 가죽 골렘',
       level: parseInt(opts.level) || 10,
       mode: opts.mode || 'coop',
       unitFilter: opts.unitFilter || 'ALL',
-      maxHp: Math.max(50, parseInt(opts.maxHp) || 2000),
-      currentHp: Math.max(50, parseInt(opts.maxHp) || 2000),
+      maxHp: maxHp,
+      currentHp: maxHp,
       atk: Math.max(1, parseInt(opts.atk) || 30),
       def: Math.max(0, parseInt(opts.def) || 14),
       rewardGold: Math.max(0, parseInt(opts.rewardGold) || 50),
       rewardExp: Math.max(0, parseInt(opts.rewardExp) || 100),
+      duration: duration,
+      startedAt: now,
+      expiresAt: now + duration * 1000,
       participants: {}
     };
 
@@ -677,7 +686,7 @@ io.on('connection', (socket) => {
 
     if (opts.announce !== false) {
       io.emit('teacher_announcement_popup', {
-        message: `🔥 [보스레이드 시작] ${locText}에 '${bossRaidEvent.name}'(HP ${bossRaidEvent.maxHp})이(가) 출현했습니다!`
+        message: `🔥 [보스레이드 시작] ${locText}에 '${bossRaidEvent.name}'(HP ${bossRaidEvent.maxHp})이(가) 출현했습니다! (제한시간 3분)`
       });
     }
 
@@ -692,11 +701,63 @@ io.on('connection', (socket) => {
 
   socket.on('teacher_stop_boss_raid', () => {
     bossRaidEvent.active = false;
+    bossRaidEvent.expiresAt = 0;
     io.emit('boss_raid_state', bossRaidEvent);
     io.emit('teacher_action_alert', {
       message: '⏹️ [알림] 교사에 의해 보스레이드 이벤트가 종료되었습니다.'
     });
   });
+
+// ========================================================
+// BOSS RAID SERVER MONITOR (3분 제한시간 및 파티 전멸 Wipe 실시간 감지)
+// ========================================================
+setInterval(() => {
+  if (!bossRaidEvent.active || bossRaidEvent.mode !== 'coop') return;
+  const now = Date.now();
+
+  // 1. 3분(180초) 타임오버 감지
+  if (bossRaidEvent.expiresAt && now >= bossRaidEvent.expiresAt) {
+    if (bossRaidEvent.currentHp > 0) {
+      bossRaidEvent.active = false;
+      bossRaidEvent.currentHp = bossRaidEvent.maxHp;
+      bossRaidEvent.participants = {};
+      io.emit('boss_raid_timeout', {
+        message: '⏰ [레이드 시간 초과] 3분 제한 시간이 초과되었습니다! 보스가 광폭화하여 체력을 완전히 회복하고 모두를 복도로 밀어냈습니다!'
+      });
+      io.emit('boss_raid_state', bossRaidEvent);
+      io.emit('boss_raid_force_warp_hallway');
+      return;
+    }
+  }
+
+  // 2. 보스방 파티 전멸(Wipe) 감지 (전투 중 보스방 안의 생존자가 0명일 때)
+  if (bossRaidEvent.currentHp < bossRaidEvent.maxHp && bossRaidEvent.currentHp > 0) {
+    const bName = bossRaidEvent.name || '';
+    const isSoccerBoss = bName.includes('케르베로스') || bName.includes('파멸신') || bName.includes('나태') || bName.includes('대마왕');
+    const targetRoom = isSoccerBoss ? 'playground' : 'room_702';
+
+    const studentsInRoom = Object.values(players).filter(p => !p.isTeacher && p.room === targetRoom);
+    const aliveStudents = studentsInRoom.filter(p => !p.isFallen);
+
+    if (aliveStudents.length === 0) {
+      const reason = studentsInRoom.length === 0 ? '도전자 전원 후퇴/이탈' : '전원 기절로 파티 전멸';
+      bossRaidEvent.currentHp = bossRaidEvent.maxHp;
+      bossRaidEvent.participants = {};
+      // 전멸 시 3분 타이머도 3분으로 리셋
+      bossRaidEvent.startedAt = now;
+      bossRaidEvent.expiresAt = now + (bossRaidEvent.duration || 180) * 1000;
+
+      io.emit('boss_raid_wiped', {
+        message: `💀 [파티 전멸] ${reason}! 보스가 체력을 완전히 회복했습니다 (HP 100%)!`
+      });
+      io.emit('boss_raid_hp_sync', {
+        currentHp: bossRaidEvent.maxHp,
+        maxHp: bossRaidEvent.maxHp
+      });
+      io.emit('boss_raid_state', bossRaidEvent);
+    }
+  }
+}, 1000);
 
   // ========================================================
   // TEACHER POP QUIZ & REWARD BROADCAST
