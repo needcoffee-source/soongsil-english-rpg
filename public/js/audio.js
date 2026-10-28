@@ -380,6 +380,92 @@ class AudioManager {
       });
     } catch (e) {}
   }
+  /**
+   * Authentic 8-Bit Drum Kit Synthesizer (Rock Drum Beat)
+   */
+  playDrumBeat() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      this._playKick(now);
+      this._playSnare(now + 0.16);
+      this._playKick(now + 0.32);
+      this._playKick(now + 0.40);
+      this._playSnare(now + 0.48);
+      this._playCymbal(now + 0.48);
+    } catch (e) {}
+  }
+
+  _playKick(time) {
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.frequency.setValueAtTime(140, time);
+    osc.frequency.exponentialRampToValueAtTime(35, time + 0.12);
+    gain.gain.setValueAtTime(0.35, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.12);
+  }
+
+  _playSnare(time) {
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 1000;
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.28, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    noise.start(time);
+    noise.stop(time + 0.12);
+
+    const osc = this.ctx.createOscillator();
+    const oscGain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(180, time);
+    osc.frequency.exponentialRampToValueAtTime(60, time + 0.08);
+    oscGain.gain.setValueAtTime(0.18, time);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+    osc.connect(oscGain);
+    oscGain.connect(this.ctx.destination);
+    osc.start(time);
+    osc.stop(time + 0.08);
+  }
+
+  _playCymbal(time) {
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.35);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 4500;
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.25, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    noise.start(time);
+    noise.stop(time + 0.35);
+  }
 }
 
 window.AudioManager = new AudioManager();

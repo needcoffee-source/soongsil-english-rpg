@@ -515,6 +515,8 @@ class MainApp {
       this.openTitleExchangeModal();
     } else if (target.type === 'secret_locker') {
       this.handleSecretLocker();
+    } else if (target.type === 'drum_kit') {
+      this.handleDrumKitInteraction(target);
     } else if (target.type === 'field_monster') {
       this.startFieldMonsterBattle(target.data);
     } else if (target.type === 'acid_rain') {
@@ -583,6 +585,26 @@ class MainApp {
     }
 
     this.showToast(`🚰 시원한 정수기 냉수를 마셨습니다! HP +${actualHealed} 회복 (${this.playerData.hp}/${this.playerData.maxHp}) [쿨타임: 1분 30초]`, 'success');
+  }
+
+  // 🥁 1학년 4반 도덕&락앤롤 드럼 세트 연주 (신디사이저 비트 사운드 + 멘탈 회복)
+  handleDrumKitInteraction(target) {
+    if (window.AudioManager && typeof window.AudioManager.playDrumBeat === 'function') {
+      window.AudioManager.playDrumBeat();
+    }
+
+    const curHp = this.playerData.hp || 0;
+    const maxHp = this.playerData.maxHp || 100;
+    let healed = 0;
+    if (curHp < maxHp) {
+      healed = Math.min(maxHp - curHp, 15);
+      this.playerData.hp += healed;
+      this.updateHpBar();
+      this.saveProgress();
+    }
+
+    const healMsg = healed > 0 ? ` (🎵 신나는 드럼 비트로 멘탈 회복! HP +${healed})` : '';
+    this.showToast(`🥁 쿵-치-따-치! 1학년 4반 도덕쌤의 락스피릿이 온몸에 울려 퍼집니다!${healMsg}`, 'success');
   }
 
   // 🪞 복도 전신 거울 이스터에그 (최초 1회 골드 20, 경험치 20)

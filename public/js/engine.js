@@ -863,6 +863,18 @@ class GameEngine {
           minDist = arDist;
         }
       }
+      if (cr.drumKit) {
+        const drumDist = Math.hypot(cr.drumKit.x * 32 - this.player.x, (cr.drumKit.y + 0.5) * 32 - this.player.y);
+        if (drumDist < 72 && drumDist < minDist) {
+          closest = {
+            type: 'drum_kit',
+            data: cr.drumKit,
+            name: cr.drumKit.name || '🥁 숭실 드럼 세트',
+            prompt: cr.drumKit.prompt || '드럼 연주하기 (SPACE)'
+          };
+          minDist = drumDist;
+        }
+      }
       if (cr.teacherDesk) {
         const tdDist = Math.hypot(cr.teacherDesk.x * 32 - this.player.x, (cr.teacherDesk.y + 0.5) * 32 - this.player.y);
         if (tdDist < 64 && tdDist < minDist) {
@@ -1047,6 +1059,9 @@ class GameEngine {
       }
       if (cr.acidRain && Math.hypot(cr.acidRain.x * 32 - x, (cr.acidRain.y + 0.5) * 32 - y) < 60) {
         return { type: 'acid_rain', data: cr.acidRain, name: cr.acidRain.name };
+      }
+      if (cr.drumKit && Math.hypot(cr.drumKit.x * 32 - x, (cr.drumKit.y + 0.5) * 32 - y) < 60) {
+        return { type: 'drum_kit', data: cr.drumKit, name: cr.drumKit.name || '🥁 숭실 드럼 세트' };
       }
       if (cr.teacherDesk && Math.hypot(cr.teacherDesk.x * 32 - x, (cr.teacherDesk.y + 0.5) * 32 - y) < 48) {
         return { type: 'teacher_desk', data: cr.teacherDesk, name: cr.teacherDesk.name || '교탁(골드)' };
@@ -1875,6 +1890,248 @@ class GameEngine {
     for (const d of (cr.desks || [])) {
       this.drawHighResComputerDesk(d);
     }
+  }
+
+  // 8-B-2. Render 1학년 4반: 드럼 치는 도덕쌤의 락스피릿 교실
+  renderDrumMoralClassroom(cr) {
+    const drumX = (cr.drumKit ? cr.drumKit.x : 19) * 32;
+    const drumY = (cr.drumKit ? cr.drumKit.y : 5) * 32;
+
+    // 1. Stage Lighting & Soundproof Velvet Mat
+    this.ctx.fillStyle = 'rgba(136, 19, 55, 0.45)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(drumX, drumY + 10, 68, 40, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // Stage Spot Light Aura
+    const grad = this.ctx.createRadialGradient(drumX, drumY - 5, 8, drumX, drumY + 8, 80);
+    grad.addColorStop(0, 'rgba(253, 224, 71, 0.22)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    this.ctx.fillStyle = grad;
+    this.ctx.beginPath();
+    this.ctx.ellipse(drumX, drumY + 5, 80, 50, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. High-Res Drum Kit on Stage
+    this.drawHighResDrumKit(drumX, drumY);
+
+    // 3. Teacher Desk (도덕 교탁)
+    if (cr.teacherDesk) {
+      this.drawHighResTeacherDesk(cr);
+    }
+
+    // 4. Student Desks with Sheet Music
+    for (const d of (cr.desks || [])) {
+      this.drawHighResStudentDesk(d);
+      const sx = d.x * 32;
+      const sy = d.y * 32;
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillRect(sx + 5, sy + 6, 10, 8);
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(sx + 7, sy + 8, 6, 1);
+      this.ctx.fillRect(sx + 7, sy + 10, 6, 1);
+    }
+  }
+
+  // Draw High-Res 8-Bit Drum Kit (Bass, Snare, Toms, Cymbals, Amps, Throne)
+  drawHighResDrumKit(x, y) {
+    this.ctx.save();
+
+    // 1. Vintage Stage Amplifiers (Left & Right)
+    // Left Amp
+    this.ctx.fillStyle = '#18181b';
+    this.ctx.fillRect(x - 56, y - 10, 22, 28);
+    this.ctx.fillStyle = '#78350f'; // vintage gold tweed grill
+    this.ctx.fillRect(x - 54, y - 6, 18, 20);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = 'bold 6px monospace';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('ROCK', x - 45, y + 6);
+
+    // Right Amp
+    this.ctx.fillStyle = '#18181b';
+    this.ctx.fillRect(x + 36, y - 10, 22, 28);
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(x + 38, y - 6, 18, 20);
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillText('ETHIC', x + 47, y + 6);
+
+    // 2. Drum Throne (Stool behind bass drum)
+    this.ctx.fillStyle = '#09090b';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x, y - 16, 10, 5, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    // Crossed Drumsticks on throne
+    this.ctx.strokeStyle = '#fef08a';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x - 7, y - 20);
+    this.ctx.lineTo(x + 7, y - 12);
+    this.ctx.moveTo(x + 7, y - 20);
+    this.ctx.lineTo(x - 7, y - 12);
+    this.ctx.stroke();
+
+    // 3. Central Bass Drum (22" Big Kick Drum)
+    // Shell Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x, y + 14, 20, 7, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Bass Drum Outer Rim (Sparkling Wine Red / Crimson Velvet)
+    this.ctx.fillStyle = '#881337';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x, y + 2, 20, 18, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Chrome Rim & Lugs
+    this.ctx.strokeStyle = '#e2e8f0';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // Front Resonant Head (Glossy Black with Gold Text)
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x, y + 2, 17, 15, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Logo on Bass Drum Head
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.font = 'bold 7px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('SOONGSIL', x, y - 1);
+    this.ctx.font = 'bold 6px monospace';
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillText('BEAT 4', x, y + 7);
+
+    // Kick Legs
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x - 16, y + 14);
+    this.ctx.lineTo(x - 22, y + 18);
+    this.ctx.moveTo(x + 16, y + 14);
+    this.ctx.lineTo(x + 22, y + 18);
+    this.ctx.stroke();
+
+    // 4. Mounted Toms (Rack Toms) over bass drum
+    // High Tom (Left)
+    this.ctx.fillStyle = '#9f1239';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x - 9, y - 11, 8, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#cbd5e1';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.stroke();
+
+    // Mid Tom (Right)
+    this.ctx.fillStyle = '#9f1239';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x + 9, y - 11, 8, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#cbd5e1';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.stroke();
+
+    // 5. Snare Drum on Chrome Stand (Left side)
+    this.ctx.strokeStyle = '#64748b';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x - 23, y + 2);
+    this.ctx.lineTo(x - 23, y + 12);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#e2e8f0'; // White Coated Head
+    this.ctx.beginPath();
+    this.ctx.ellipse(x - 23, y + 2, 9, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#38bdf8'; // Blue Accent Ring
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // 6. Floor Tom (Right side)
+    this.ctx.fillStyle = '#881337';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x + 24, y + 5, 11, 8, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#e2e8f0';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // 7. Cymbals (Gleaming Brass / Gold)
+    // Hi-Hat Cymbals (Far Left)
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x - 36, y - 10);
+    this.ctx.lineTo(x - 36, y + 14);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x - 36, y - 8, 12, 4, -0.1, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#fef08a';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    // Crash Cymbal (Top Left Boom Stand)
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x - 22, y - 24);
+    this.ctx.lineTo(x - 26, y - 6);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x - 22, y - 24, 13, 4.5, -0.2, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#fffbeb';
+    this.ctx.stroke();
+
+    // Ride Cymbal (Top Right Boom Stand)
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x + 24, y - 22);
+    this.ctx.lineTo(x + 28, y - 4);
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.beginPath();
+    this.ctx.ellipse(x + 24, y - 22, 15, 5, 0.2, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#fef08a';
+    this.ctx.stroke();
+
+    // 8. Music Stand with Sheet Music (Right of Drum)
+    this.ctx.strokeStyle = '#475569';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x + 44, y + 8);
+    this.ctx.lineTo(x + 44, y + 20);
+    this.ctx.stroke();
+    this.ctx.fillStyle = '#f8fafc';
+    this.ctx.fillRect(x + 39, y + 2, 10, 8);
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.font = 'bold 6px monospace';
+    this.ctx.fillText('♪♫', x + 44, y + 8);
+
+    // 9. Floating World Label
+    this.drawSharpLabel(x, y - 36, '🥁 락앤롤 드럼 세트', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#fbbf24',
+      textColor: '#ffffff',
+      fontSize: 11,
+      paddingX: 9,
+      height: 20
+    });
+
+    this.ctx.restore();
   }
 
   drawHighResComputerDesk(d) {
@@ -3988,6 +4245,9 @@ class GameEngine {
     } else if (this.player.room === 'room_703') {
       // === 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어 기지) ===
       this.renderAcidRainComputerLab(cr);
+    } else if (this.player.room === 'room_704') {
+      // === 1학년 4반: 드럼 치는 도덕쌤의 락스피릿 교실 ===
+      this.renderDrumMoralClassroom(cr);
     } else if (this.player.floor === 5 || this.player.room === 'room_career') {
       // 5층 및 진로실: 파밍 없고 교탁 골드 파밍 없는 깨끗한 빈 공간 연출
     } else {

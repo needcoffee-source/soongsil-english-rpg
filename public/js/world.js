@@ -45,7 +45,7 @@ const WORLD_DATA = {
         { id: "room_701", name: "1학년 1반", doorX: 10, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 },
-        { id: "room_704", name: "1학년 4반", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" },
+        { id: "room_704", name: "1학년 4반 (도덕·드럼)", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: false },
         { id: "room_705", name: "1학년 5반", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" },
         { id: "room_706", name: "1학년 6반", doorX: 49, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" }
       ],
@@ -244,25 +244,41 @@ const WORLD_DATA = {
     ]
   },
 
-  // 1학년 4반: 스포츠 시간 출입제한 (담임: 후니후니선생님)
+  // 1학년 4반: 드럼 치는 도덕쌤의 락스피릿 교실
   classroom_704: {
-    name: "1학년 4반",
+    name: "1학년 4반 (도덕 & 비트)",
     exitDoor: { x: 15, y: 17 },
     blackboard: {
       x: 15,
       y: 2,
-      name: "교실 칠판",
-      prompt: "칠판 확인"
+      name: "도덕 명언 칠판 (Words of Wisdom)",
+      prompt: "4단원 도덕 퀴즈 풀기"
     },
-    desks: [],
+    drumKit: {
+      x: 19,
+      y: 5,
+      name: "🥁 숭실 락앤롤 드럼 세트",
+      prompt: "드럼 연주하기 (SPACE)"
+    },
+    teacherDesk: {
+      x: 15,
+      y: 5,
+      name: "도덕 교탁 (골드 2배)",
+      prompt: "골드 문제 풀기"
+    },
+    desks: [
+      { x: 9, y: 8 }, { x: 12, y: 8 }, { x: 18, y: 8 }, { x: 21, y: 8 },
+      { x: 9, y: 11 }, { x: 12, y: 11 }, { x: 18, y: 11 }, { x: 21, y: 11 },
+      { x: 9, y: 14 }, { x: 12, y: 14 }, { x: 18, y: 14 }, { x: 21, y: 14 }
+    ],
     npcs: [
       {
-        id: "npc_teacher_jihong",
-        name: "후니후니선생님",
-        x: 15,
-        y: 8,
+        id: "npc_teacher_moral_drum",
+        name: "도덕선생님",
+        x: 11,
+        y: 5,
         avatar: "teacher",
-        dialogue: "안녕! 1학년 4반 담임 후니후니선생님이란다. 👨‍🏫\n\n지금은 스포츠(체육) 시간이라 교실 수업이 없단다!\n타반 학생은 출입금지이니 어서 지상 운동장으로 가보렴! ⚽"
+        dialogue: "안녕! 1학년 4반 담임이자 드럼 치는 도덕선생님이란다! 🥁👨‍🏫\n\n'인생은 리듬이고, 도덕은 세상과 맞추는 하모니다!'\n\n옆에 있는 드럼 세트를 신나게 연주해보거나, 칠판의 [Words of Wisdom 퀴즈]를 풀고 바른 인성과 지혜를 길러보렴! ✨"
       }
     ]
   },
