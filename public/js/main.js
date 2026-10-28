@@ -261,16 +261,11 @@ class MainApp {
 
   initServerStatusMonitor() {
     this.isServerOnline = true;
-    const checkHealth = async () => {
-      try {
-        const res = await fetch('/api/admin/all-students-progress', { method: 'GET', cache: 'no-store' });
-        this.setServerStatus(res.ok);
-      } catch (e) {
-        this.setServerStatus(false);
-      }
-    };
-    checkHealth();
-    setInterval(checkHealth, 6000);
+    // 실시간 서버 상태는 NetworkManager의 Socket.IO 연결/해제 이벤트(connect/disconnect)로 동기화됩니다.
+    // 최초 1회 경량 헬스체크만 수행하여 불필요한 전체 학생 데이터 폴링 부하를 제거합니다.
+    fetch('/api/health', { method: 'GET', cache: 'no-store' })
+      .then(res => this.setServerStatus(res.ok))
+      .catch(() => this.setServerStatus(false));
   }
 
   initControls() {

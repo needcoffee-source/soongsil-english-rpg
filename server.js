@@ -99,21 +99,59 @@ if (!fs.existsSync(DELETED_FILE)) {
   fs.writeFileSync(DELETED_FILE, JSON.stringify({}), 'utf8');
 }
 
+let studentsProgressCache = null;
+let saveProgressTimer = null;
+
 function getStudentsProgress() {
-  try {
-    return JSON.parse(fs.readFileSync(PROGRESS_FILE, 'utf8'));
-  } catch (e) {
-    return {};
+  if (!studentsProgressCache) {
+    try {
+      if (fs.existsSync(PROGRESS_FILE)) {
+        studentsProgressCache = JSON.parse(fs.readFileSync(PROGRESS_FILE, 'utf8'));
+      } else {
+        studentsProgressCache = {};
+      }
+    } catch (e) {
+      console.error('[Progress Load Error]', e);
+      studentsProgressCache = {};
+    }
+  }
+  return studentsProgressCache;
+}
+
+function saveStudentsProgress(allData, immediate = false) {
+  studentsProgressCache = allData;
+  if (immediate) {
+    if (saveProgressTimer) {
+      clearTimeout(saveProgressTimer);
+      saveProgressTimer = null;
+    }
+    try {
+      fs.writeFileSync(PROGRESS_FILE, JSON.stringify(studentsProgressCache, null, 2), 'utf8');
+    } catch (e) {
+      console.error('[Progress Save Sync Error]', e);
+    }
+    return;
+  }
+
+  if (!saveProgressTimer) {
+    saveProgressTimer = setTimeout(() => {
+      saveProgressTimer = null;
+      fs.writeFile(PROGRESS_FILE, JSON.stringify(studentsProgressCache, null, 2), 'utf8', (err) => {
+        if (err) console.error('[Progress Save Async Error]', err);
+      });
+    }, 1000); // 1초 배치 비동기 디바운스
   }
 }
 
-function saveStudentsProgress(allData) {
-  try {
-    fs.writeFileSync(PROGRESS_FILE, JSON.stringify(allData, null, 2), 'utf8');
-  } catch (e) {
-    console.error('[Progress Save Error]', e);
+function flushProgressOnExit() {
+  if (studentsProgressCache) {
+    try {
+      fs.writeFileSync(PROGRESS_FILE, JSON.stringify(studentsProgressCache, null, 2), 'utf8');
+    } catch (e) {}
   }
 }
+process.on('SIGINT', () => { flushProgressOnExit(); process.exit(0); });
+process.on('SIGTERM', () => { flushProgressOnExit(); process.exit(0); });
 
 function getDeletedStudents() {
   try {
@@ -213,6 +251,10 @@ app.get('/api/admin/download-item-drops-excel', (req, res) => {
   }
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, timestamp: Date.now() });
+});
+
 app.post('/api/admin/restore-progress', (req, res) => {
   let body = req.body;
   if (typeof body === 'string') {
@@ -222,7 +264,7 @@ app.post('/api/admin/restore-progress', (req, res) => {
   if (!allData || typeof allData !== 'object' || Array.isArray(allData)) {
     return res.status(400).json({ error: '올바른 백업 JSON 형식이 아닙니다.' });
   }
-  saveStudentsProgress(allData);
+  saveStudentsProgress(allData, true);
   res.json({ success: true, count: Object.keys(allData).length });
 });
 
@@ -240,7 +282,7 @@ app.post('/api/admin/delete-student-progress', (req, res) => {
   const all = getStudentsProgress();
   if (all[studentId]) {
     delete all[studentId];
-    saveStudentsProgress(all);
+    saveStudentsProgress(all, true);
   }
 
   // Record deleted timestamp so student client cannot resurrect from browser localStorage
@@ -265,6 +307,20 @@ app.post('/api/admin/delete-student-progress', (req, res) => {
 const players = {}; // socketId -> player data
 const mutedStudents = new Set(); // student names or socket IDs
 const chatLogs = []; // for teacher review
+
+// ========================================================
+// 1학년 3반 컴퓨터실 산성비 4석 동시 플레이 제한 (Active Seats - 전역 공유)
+// ========================================================
+const activeAcidRainPlayers = new Map(); // socket.id -> { studentId, name, seatIndex, joinedAt }
+
+function broadcastAcidRainSeats() {
+  const list = Array.from(activeAcidRainPlayers.values());
+  io.emit('acid_rain_seats_update', {
+    activeCount: list.length,
+    maxSeats: 4,
+    players: list.map(p => ({ name: p.name, seatIndex: p.seatIndex }))
+  });
+}
 
 // Boss Raid Event State (Teacher Controlled)
 let bossRaidEvent = {
@@ -906,16 +962,30 @@ setInterval(() => {
 
   socket.on('player_respawn_hallway', () => {
     const p = players[socket.id];
-    if (p) {
-      p.isFallen = false;
-      p.room = 'hallway';
-      p.x = 15 * 32;
-      p.y = 10 * 32;
-    }
-    const currentRoom = p ? `server_${p.grade}_f${p.floor}_${p.room}` : null;
-    if (currentRoom) {
-      io.to(currentRoom).emit('player_status_updated', { id: socket.id, isFallen: false, name: p ? p.name : '학생' });
-    }
+    if (!p) return;
+
+    const oldRoom = `server_${p.grade}_f${p.floor}_${p.room}`;
+    socket.leave(oldRoom);
+    socket.to(oldRoom).emit('player_left', socket.id);
+
+    p.isFallen = false;
+    p.room = 'hallway';
+    p.x = 15 * 32;
+    p.y = 10 * 32;
+
+    const newRoom = `server_${p.grade}_f${p.floor}_${p.room}`;
+    socket.join(newRoom);
+    socket.to(newRoom).emit('player_joined', p);
+    io.to(newRoom).emit('player_status_updated', { id: socket.id, isFallen: false, name: p.name || '학생' });
+
+    // Sync other players in hallway to the respawned player
+    const others = Object.values(players).filter(other =>
+      other.id !== socket.id &&
+      other.grade === p.grade &&
+      other.floor === p.floor &&
+      other.room === p.room
+    );
+    socket.emit('current_room_players', others);
   });
 
   socket.on('field_monster_defeat', ({ mobId, respawnSec }) => {
@@ -931,22 +1001,9 @@ setInterval(() => {
     });
   });
 
-  // Disconnect
-  
   // ========================================================
-  // 1학년 3반 컴퓨터실 산성비 4석 동시 플레이 제한 (Active Seats)
+  // 1학년 3반 컴퓨터실 산성비 4석 동시 플레이 핸들러
   // ========================================================
-  const activeAcidRainPlayers = new Map(); // socket.id -> { studentId, name, seatIndex, joinedAt }
-
-  function broadcastAcidRainSeats() {
-    const list = Array.from(activeAcidRainPlayers.values());
-    io.emit('acid_rain_seats_update', {
-      activeCount: list.length,
-      maxSeats: 4,
-      players: list.map(p => ({ name: p.name, seatIndex: p.seatIndex }))
-    });
-  }
-
   socket.on('request_acid_rain_seat', (data = {}, callback) => {
     const isTeacher = socket.isTeacher || (data && data.isTeacher);
     const studentId = data.studentId || (socket.player && socket.player.studentId) || 'unknown';

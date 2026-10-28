@@ -1183,25 +1183,23 @@ class GameEngine {
     // Render deferred World, NPC, Material, and Guidance Labels ON TOP of characters!
     if (this.deferredWorldLabels && this.deferredWorldLabels.length > 0) {
       const activeName = (this.activeInteractable && this.activeInteractable.name) ? this.activeInteractable.name : null;
-      // Sort so active interactable label is rendered last (on the very top)
-      if (activeName) {
-        this.deferredWorldLabels.sort((a, b) => {
-          const aMatch = a.text && a.text.includes(activeName);
-          const bMatch = b.text && b.text.includes(activeName);
-          return (aMatch === bMatch) ? 0 : (aMatch ? 1 : -1);
-        });
-      }
+      let activeItem = null;
 
-      for (const item of this.deferredWorldLabels) {
-        const isActive = activeName && item.text && item.text.includes(activeName);
-        if (isActive) {
-          const opts = { ...item.options, borderColor: '#fbbf24', borderWidth: 2.2 };
-          this._renderSharpLabelDirect(item.cx, item.cy, item.text, opts);
+      // Single-pass render: 일반 라벨을 먼저 그리고, 활성 대상은 마지막에 최상단으로 렌더 (매 프레임 .sort() 제거)
+      for (let i = 0; i < this.deferredWorldLabels.length; i++) {
+        const item = this.deferredWorldLabels[i];
+        if (activeName && item.text && item.text.includes(activeName)) {
+          activeItem = item;
         } else {
           this._renderSharpLabelDirect(item.cx, item.cy, item.text, item.options);
         }
       }
-      this.deferredWorldLabels = [];
+
+      if (activeItem) {
+        const opts = { ...activeItem.options, borderColor: '#fbbf24', borderWidth: 2.2 };
+        this._renderSharpLabelDirect(activeItem.cx, activeItem.cy, activeItem.text, opts);
+      }
+      this.deferredWorldLabels.length = 0;
     }
 
     this.ctx.restore();
