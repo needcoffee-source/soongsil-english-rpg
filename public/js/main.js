@@ -126,6 +126,13 @@ const TITLE_DEFINITIONS = [
     costItem: 'item_perfect_exam',
     costItemName: '💯 백점만점 시험지',
     costAmount: 1
+  },
+  {
+    id: 'title_rock_drummer',
+    name: '🥁 영혼의 드러머',
+    desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -183,6 +190,8 @@ class MainApp {
       hasOpenedLostBox: false,
       hasClearedDragonRaid: false,
       hasClearedCerberusRaid: false,
+      hasClearedClass704: false,
+      solvedMoralQuestionIds: [],
       titles: [],
       equippedTitle: null,
       inventory: []
@@ -474,6 +483,12 @@ class MainApp {
         }
       }
 
+      // 1학년 4반 담임 후니후니 선생님 (도덕 & 비트 퀴즈)
+      if (npc.id === 'npc_teacher_moral_drum' || (npc.name && npc.name.includes('후니후니'))) {
+        this.handleMoralClassroomInteraction();
+        return;
+      }
+
       if (!npc.dialogue) return; // 대사 없는 NPC (오예숙 선생님 등)
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
     } else if (target.type === 'mascot') {
@@ -515,6 +530,8 @@ class MainApp {
       this.openTitleExchangeModal();
     } else if (target.type === 'secret_locker') {
       this.handleSecretLocker();
+    } else if (target.type === 'moral_desk' || target.type === 'moral_board') {
+      this.handleMoralClassroomInteraction();
     } else if (target.type === 'drum_kit') {
       this.handleDrumKitInteraction(target);
     } else if (target.type === 'field_monster') {
@@ -585,6 +602,144 @@ class MainApp {
     }
 
     this.showToast(`🚰 시원한 정수기 냉수를 마셨습니다! HP +${actualHealed} 회복 (${this.playerData.hp}/${this.playerData.maxHp}) [쿨타임: 1분 30초]`, 'success');
+  }
+
+  // 🥁 1학년 4반 후니후니 선생님 & 학생 의자 상호작용 (20문항 도덕 비트 퀴즈)
+  handleMoralClassroomInteraction() {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      this.showToast('💀 기절 상태에서는 상호작용할 수 없습니다!', 'error');
+      return;
+    }
+
+    if (this.playerData.hasClearedClass704) {
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '🥁 후니후니 선생님',
+          `"오! [${this.playerData.name}] 학생이구나! 👏\n\n넌 이미 1학년 4반의 20문제 도덕 비트를 모두 마스터하고 [🥁 영혼의 드러머] 칭호를 획득했단다!\n\n더 이상 시험을 치를 필요는 없으니 교실 뒤 드럼 세트를 치며 신나게 락스피릿을 즐기렴! 🤘"`,
+          '🥁'
+        );
+      } else {
+        alert(`🥁 [후니후니 선생님]\n\n"와우! 넌 이미 20문제를 모두 마스터했단다! 언제든 드럼 세트를 치러 놀러오렴!"`);
+      }
+      return;
+    }
+
+    const solvedIds = this.playerData.solvedMoralQuestionIds || [];
+    const solvedCount = solvedIds.length;
+
+    if (solvedCount >= 20) {
+      this.openMoralRewardModal();
+      return;
+    }
+
+    const msg = `"안녕! 1학년 4반 담임이자 드럼 치는 도덕쌤 후니후니 선생님이다! 🥁🎸\n\n우리 반에서는 4단원 영어 지혜 명언과 바른 인성을 다루는 [20문제 도덕 비트 퀴즈]를 수련한단다.\n\n정답을 맞힌 문제는 소거되어 다시 나오지 않으며, 20문제를 모두 맞히면 특별 한정 호칭 [🥁 영혼의 드러머]와 핵심 재료 10개(목재, 허브, 농구가죽, 풋살가죽 중 택1)를 선물로 준단다!\n\n현재 수련 진행도: [ ${solvedCount} / 20 문제 ]\n\n지금 도덕 비트 퀴즈에 도전해볼래?"`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '🥁 후니후니 선생님',
+        msg,
+        '🥁',
+        () => {
+          if (this.quizManager) {
+            this.quizManager.startMoralDrumQuiz();
+          }
+        },
+        null,
+        '도전하기',
+        '나중에'
+      );
+    } else {
+      if (confirm('🥁 1학년 4반 후니후니 선생님의 도덕 비트 퀴즈(20문항)에 도전하시겠습니까?')) {
+        if (this.quizManager) {
+          this.quizManager.startMoralDrumQuiz();
+        }
+      }
+    }
+  }
+
+  // 🎁 1학년 4반 20문항 완파 1회성 보상 수령 모달 (호칭 자동지급 + 재료 10개 선택)
+  openMoralRewardModal() {
+    const modal = document.getElementById('modal-moral-reward');
+    if (!modal) return;
+
+    if (this.playerData.hasClearedClass704) {
+      this.showToast('이미 1학년 4반 도덕 수련 보상을 수령하셨습니다!', 'info');
+      return;
+    }
+
+    modal.classList.remove('hidden');
+
+    if (!this._moralRewardModalInitialized) {
+      this._moralRewardModalInitialized = true;
+
+      const btnCloseX = document.getElementById('btn-close-moral-reward-x');
+      if (btnCloseX) {
+        btnCloseX.addEventListener('click', () => {
+          modal.classList.add('hidden');
+        });
+      }
+
+      const claimReward = (itemKey, itemName, icon) => {
+        if (this.playerData.hasClearedClass704) return;
+        this.playerData.hasClearedClass704 = true;
+
+        // 1. 재료 10개 지급
+        this.addItem(itemKey, itemName, 10, icon, { type: 'material' });
+
+        // 2. 호칭 지급 및 자동 장착
+        const titleName = '🥁 영혼의 드러머';
+        if (!Array.isArray(this.playerData.titles)) {
+          this.playerData.titles = [];
+        }
+        if (!this.playerData.titles.includes(titleName)) {
+          this.playerData.titles.push(titleName);
+        }
+        this.playerData.equippedTitle = titleName;
+        this.updatePlayerNameDisplay();
+        if (this.networkManager && this.networkManager.sendTitleUpdate) {
+          this.networkManager.sendTitleUpdate(titleName);
+        }
+
+        // 3. 영구 저장
+        const studentId = this.playerData.studentId;
+        if (studentId && studentId !== '교사') {
+          try {
+            localStorage.setItem('soongsil_class704_cleared_' + studentId, 'true');
+          } catch (e) {}
+        }
+        this.saveProgress(true);
+
+        // 4. 모달 닫기
+        modal.classList.add('hidden');
+
+        // 5. 팡파레 & 축하 대사
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+
+        if (window.RPGDialog) {
+          window.RPGDialog.show(
+            '🥁 후니후니 선생님',
+            `"축하한다! 20문제를 완벽하게 마스터하고 [${titleName}] 호칭과 [${icon} ${itemName} 10개]를 획득했단다! 👏\n\n너의 멋진 도덕적 인성과 비트 감각이 앞으로의 숭실 모험을 더욱 빛나게 해줄 거야!\n\n이제 1학년 4반의 모든 수련을 마쳤으니 더 이상 시험을 치르러 오지 않아도 된단다. 드럼 치러 언제든 편하게 놀러오렴! 🥁"`,
+            '🥁'
+          );
+        } else {
+          alert(`🥁 [후니후니 선생님]\n\n"축하한다! [${titleName}] 호칭과 [${icon} ${itemName} 10개]를 획득했단다!"`);
+        }
+      };
+
+      const btnWood = document.getElementById('btn-claim-moral-wood');
+      if (btnWood) btnWood.addEventListener('click', () => claimReward('item_wood', '단단한 목재', '🪵'));
+
+      const btnHerb = document.getElementById('btn-claim-moral-herb');
+      if (btnHerb) btnHerb.addEventListener('click', () => claimReward('item_herb', '향긋한 허브', '🌿'));
+
+      const btnBasket = document.getElementById('btn-claim-moral-basket');
+      if (btnBasket) btnBasket.addEventListener('click', () => claimReward('item_basketball_leather', '농구공 겉가죽', '🏀'));
+
+      const btnFutsal = document.getElementById('btn-claim-moral-futsal');
+      if (btnFutsal) btnFutsal.addEventListener('click', () => claimReward('item_futsal_leather', '탄력있는 풋살공 가죽', '⚽'));
+    }
   }
 
   // 🥁 1학년 4반 도덕&락앤롤 드럼 세트 연주 (신디사이저 비트 사운드 + 멘탈 회복)
@@ -1464,9 +1619,17 @@ class MainApp {
           this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
+          this.playerData.hasClearedClass704 = !!(saved.hasClearedClass704 || (studentId && localStorage.getItem('soongsil_class704_cleared_' + studentId) === 'true'));
+          this.playerData.solvedMoralQuestionIds = Array.isArray(saved.solvedMoralQuestionIds) ? saved.solvedMoralQuestionIds : [];
+          if (this.playerData.solvedMoralQuestionIds.length === 0 && studentId) {
+            try {
+              const localSolved = localStorage.getItem('soongsil_class704_solved_' + studentId);
+              if (localSolved) this.playerData.solvedMoralQuestionIds = JSON.parse(localSolved);
+            } catch (e) {}
+          }
           this.playerData.titles = Array.isArray(saved.titles) ? saved.titles : [];
           this.playerData.equippedTitle = saved.equippedTitle || null;
-          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}`);
+          console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}, 704클리어: ${this.playerData.hasClearedClass704}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
@@ -1476,6 +1639,14 @@ class MainApp {
           this.playerData.hasClearedFirstBoss = !!(studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true');
           this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
           this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
+          this.playerData.hasClearedClass704 = !!(studentId && localStorage.getItem('soongsil_class704_cleared_' + studentId) === 'true');
+          this.playerData.solvedMoralQuestionIds = [];
+          if (studentId) {
+            try {
+              const localSolved = localStorage.getItem('soongsil_class704_solved_' + studentId);
+              if (localSolved) this.playerData.solvedMoralQuestionIds = JSON.parse(localSolved);
+            } catch (e) {}
+          }
           this.playerData.titles = [];
           this.playerData.equippedTitle = null;
         }
@@ -1562,6 +1733,8 @@ class MainApp {
               hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
+              hasClearedClass704: !!this.playerData.hasClearedClass704,
+              solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
               titles: this.playerData.titles || [],
               equippedTitle: this.playerData.equippedTitle || null,
               updatedAt: Date.now()
@@ -4396,15 +4569,23 @@ class MainApp {
         hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
+        hasClearedClass704: !!this.playerData.hasClearedClass704,
+        solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
         titles: this.playerData.titles || [],
         equippedTitle: this.playerData.equippedTitle || null,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
+      if (this.playerData.hasClearedClass704) {
+        try { localStorage.setItem('soongsil_class704_cleared_' + this.playerData.studentId, 'true'); } catch (e) {}
+      }
+      if (Array.isArray(this.playerData.solvedMoralQuestionIds)) {
+        try { localStorage.setItem('soongsil_class704_solved_' + this.playerData.studentId, JSON.stringify(this.playerData.solvedMoralQuestionIds)); } catch (e) {}
+      }
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
@@ -4471,6 +4652,8 @@ class MainApp {
       localStorage.removeItem('soongsil_first_boss_cleared_' + studentId);
       localStorage.removeItem('soongsil_dragon_cleared_' + studentId);
       localStorage.removeItem('soongsil_cerberus_cleared_' + studentId);
+      localStorage.removeItem('soongsil_class704_cleared_' + studentId);
+      localStorage.removeItem('soongsil_class704_solved_' + studentId);
       console.log(`[Storage] 학생(${studentId}) 로컬 브라우저 세이브 초기화 완료`);
     } catch (e) {
       console.warn('Failed to clear local student data', e);

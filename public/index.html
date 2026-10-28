@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=70">
+  <link rel="stylesheet" href="css/style.css?v=71">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -488,6 +488,76 @@
 
         <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0;">
           💡 받은 장비는 우측 사이드바의 [🎒 가방] 메뉴에서 착용할 수 있습니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+    <!-- 4-G-2. 1학년 4반 도덕 수련 20문항 완파 보상 모달 -->
+  <div id="modal-moral-reward" class="modal-overlay hidden" style="z-index: 130;">
+    <div class="modal-card" style="max-width: 580px; width: 95%; text-align: center; border: 3px solid #be123c;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #881337, #be123c); color: #fff; border-bottom: 2px solid #fbbf24;">
+        <h3 style="margin:0; font-size:16px;">🥁 1학년 4반 도덕 수련(20문항) 완파 축하! 🏆</h3>
+        <button class="btn-modal-close" id="btn-close-moral-reward-x">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 16px 14px;">
+        <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom: 10px;">
+          <span style="font-size:38px;">🥁</span>
+          <div style="text-align:left;">
+            <p style="font-size: 14.5px; font-weight: 800; color: #0f172a; margin: 0 0 2px;">
+              "와아! 20문제를 모두 정복했구나! 훌륭하다! 👏"
+            </p>
+            <p style="font-size: 12.5px; color: #475569; margin: 0; line-height: 1.4;">
+              특별 한정판 호칭 <b>[🥁 영혼의 드러머]</b>를 획득했습니다!<br>
+              수련 완료 축하 선물로 <b>원하는 핵심 재료 1종(10개)</b>을 선택하세요:
+            </p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0 10px;">
+          <!-- 목재 10개 카드 -->
+          <div class="soongsil-gift-card" style="background: #ffffff; border: 2px solid #d97706; border-radius: 10px; padding: 10px 4px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size: 32px; margin-bottom: 4px;">🪵</div>
+              <div style="font-weight: 900; font-size: 13px; color: #0f172a;">단단한 목재</div>
+              <div style="font-size: 11.5px; color: #d97706; font-weight: 800; margin: 4px 0 8px; background: #fef3c7; padding: 2px 4px; border-radius: 4px;">x10개</div>
+            </div>
+            <button id="btn-claim-moral-wood" class="btn-primary" style="width: 100%; font-size: 11.5px; font-weight: 800; padding: 6px 0; background: #d97706; border-color: #b45309;">목재 받기</button>
+          </div>
+
+          <!-- 허브 10개 카드 -->
+          <div class="soongsil-gift-card" style="background: #ffffff; border: 2px solid #16a34a; border-radius: 10px; padding: 10px 4px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size: 32px; margin-bottom: 4px;">🌿</div>
+              <div style="font-weight: 900; font-size: 13px; color: #0f172a;">향긋한 허브</div>
+              <div style="font-size: 11.5px; color: #16a34a; font-weight: 800; margin: 4px 0 8px; background: #dcfce7; padding: 2px 4px; border-radius: 4px;">x10개</div>
+            </div>
+            <button id="btn-claim-moral-herb" class="btn-primary" style="width: 100%; font-size: 11.5px; font-weight: 800; padding: 6px 0; background: #16a34a; border-color: #15803d;">허브 받기</button>
+          </div>
+
+          <!-- 농구공 가죽 10개 카드 -->
+          <div class="soongsil-gift-card" style="background: #ffffff; border: 2px solid #ea580c; border-radius: 10px; padding: 10px 4px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size: 32px; margin-bottom: 4px;">🏀</div>
+              <div style="font-weight: 900; font-size: 13px; color: #0f172a;">농구공 가죽</div>
+              <div style="font-size: 11.5px; color: #ea580c; font-weight: 800; margin: 4px 0 8px; background: #ffedd5; padding: 2px 4px; border-radius: 4px;">x10개</div>
+            </div>
+            <button id="btn-claim-moral-basket" class="btn-primary" style="width: 100%; font-size: 11.5px; font-weight: 800; padding: 6px 0; background: #ea580c; border-color: #c2410c;">농구가죽 받기</button>
+          </div>
+
+          <!-- 풋살공 가죽 10개 카드 -->
+          <div class="soongsil-gift-card" style="background: #ffffff; border: 2px solid #2563eb; border-radius: 10px; padding: 10px 4px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size: 32px; margin-bottom: 4px;">⚽</div>
+              <div style="font-weight: 900; font-size: 13px; color: #0f172a;">풋살공 가죽</div>
+              <div style="font-size: 11.5px; color: #2563eb; font-weight: 800; margin: 4px 0 8px; background: #dbeafe; padding: 2px 4px; border-radius: 4px;">x10개</div>
+            </div>
+            <button id="btn-claim-moral-futsal" class="btn-primary" style="width: 100%; font-size: 11.5px; font-weight: 800; padding: 6px 0; background: #2563eb; border-color: #1d4ed8;">풋살가죽 받기</button>
+          </div>
+        </div>
+
+        <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0;">
+          💡 받은 재료는 [장비 제작대]에서 2티어 가죽 장비나 물약을 제작할 때 사용할 수 있습니다.
         </p>
       </div>
     </div>
@@ -1371,16 +1441,17 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=70"></script>
-  <script src="js/dialog.js?v=70"></script>
+  <script src="js/audio.js?v=71"></script>
+  <script src="js/dialog.js?v=71"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=70"></script>
-  <script src="js/engine.js?v=70"></script>
-  <script src="js/quiz.js?v=70"></script>
-  <script src="js/crafting.js?v=70"></script>
-  <script src="js/network.js?v=70"></script>
-  <script src="js/acid_rain.js?v=70"></script>
-  <script src="js/main.js?v=70"></script>
+  <script src="js/world.js?v=71"></script>
+  <script src="js/engine.js?v=71"></script>
+  <script src="js/quiz.js?v=71"></script>
+  <script src="js/crafting.js?v=71"></script>
+  <script src="js/network.js?v=71"></script>
+  <script src="js/acid_rain.js?v=71"></script>
+  <script src="js/main.js?v=71"></script>
 </body>
 </html>
+

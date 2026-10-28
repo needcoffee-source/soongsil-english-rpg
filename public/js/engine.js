@@ -863,6 +863,21 @@ class GameEngine {
           minDist = arDist;
         }
       }
+      if (this.player.room === 'room_704' && cr.desks) {
+        for (let i = 0; i < cr.desks.length; i++) {
+          const d = cr.desks[i];
+          const dist = Math.hypot(d.x * 32 - this.player.x, (d.y + 0.5) * 32 - this.player.y);
+          if (dist < 52 && dist < minDist) {
+            closest = {
+              type: 'moral_desk',
+              data: { ...d, seatIndex: i + 1 },
+              name: `🪑 학생 의자 (${i + 1}번석)`,
+              prompt: '도덕 퀴즈 풀기 (SPACE)'
+            };
+            minDist = dist;
+          }
+        }
+      }
       if (cr.drumKit) {
         const drumDist = Math.hypot(cr.drumKit.x * 32 - this.player.x, (cr.drumKit.y + 0.5) * 32 - this.player.y);
         if (drumDist < 72 && drumDist < minDist) {
@@ -891,7 +906,7 @@ class GameEngine {
         const bDist = Math.hypot(cr.blackboard.x * 32 - this.player.x, cr.blackboard.y * 32 - this.player.y);
         if (bDist < 72 && bDist < minDist) {
           closest = {
-            type: 'teacher_desk',
+            type: (this.player.room === 'room_704') ? 'moral_board' : 'teacher_desk',
             data: cr.blackboard,
             name: cr.blackboard.name || '교탁(골드)',
             prompt: cr.blackboard.prompt || '골드 문제 풀기'
@@ -1057,6 +1072,18 @@ class GameEngine {
           }
         }
       }
+      if (this.player.room === 'room_704' && cr.desks) {
+        for (let i = 0; i < cr.desks.length; i++) {
+          const d = cr.desks[i];
+          if (Math.hypot(d.x * 32 - x, (d.y + 0.5) * 32 - y) < 48) {
+            return {
+              type: 'moral_desk',
+              data: { ...d, seatIndex: i + 1 },
+              name: `🪑 학생 의자 (${i + 1}번석)`
+            };
+          }
+        }
+      }
       if (cr.acidRain && Math.hypot(cr.acidRain.x * 32 - x, (cr.acidRain.y + 0.5) * 32 - y) < 60) {
         return { type: 'acid_rain', data: cr.acidRain, name: cr.acidRain.name };
       }
@@ -1067,7 +1094,7 @@ class GameEngine {
         return { type: 'teacher_desk', data: cr.teacherDesk, name: cr.teacherDesk.name || '교탁(골드)' };
       }
       if (cr.blackboard && Math.hypot(cr.blackboard.x * 32 - x, cr.blackboard.y * 32 - y) < 60) {
-        return { type: 'teacher_desk', data: cr.blackboard, name: cr.blackboard.name || '교탁(골드)' };
+        return { type: (this.player.room === 'room_704') ? 'moral_board' : 'teacher_desk', data: cr.blackboard, name: cr.blackboard.name || '교탁(골드)' };
       }
       for (const spot of (cr.gatherSpots || [])) {
         if (Math.hypot(spot.x * 32 - x, spot.y * 32 - y) < 48) {
@@ -1933,6 +1960,15 @@ class GameEngine {
       this.ctx.fillStyle = '#0f172a';
       this.ctx.fillRect(sx + 7, sy + 8, 6, 1);
       this.ctx.fillRect(sx + 7, sy + 10, 6, 1);
+
+      this.drawSharpLabel(sx + 16, sy - 18, `🪑 ${d.seatIndex || (cr.desks.indexOf(d) + 1)}번 의자`, {
+        bgColor: 'rgba(15, 23, 42, 0.92)',
+        borderColor: '#38bdf8',
+        textColor: '#e0f2fe',
+        fontSize: 9.5,
+        paddingX: 5,
+        height: 17
+      });
     }
   }
 

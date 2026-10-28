@@ -45,7 +45,7 @@ const WORLD_DATA = {
         { id: "room_701", name: "1학년 1반", doorX: 10, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 },
-        { id: "room_704", name: "1학년 4반 (도덕·드럼)", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: false },
+        { id: "room_704", name: "1학년 4반", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: false },
         { id: "room_705", name: "1학년 5반", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" },
         { id: "room_706", name: "1학년 6반", doorX: 49, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" }
       ],
@@ -244,15 +244,15 @@ const WORLD_DATA = {
     ]
   },
 
-  // 1학년 4반: 드럼 치는 도덕쌤의 락스피릿 교실
+  // 1학년 4반: 후니후니 선생님의 도덕 & 락스피릿 교실 (가로 의자 4개)
   classroom_704: {
-    name: "1학년 4반 (도덕 & 비트)",
+    name: "1학년 4반",
     exitDoor: { x: 15, y: 17 },
     blackboard: {
       x: 15,
       y: 2,
       name: "도덕 명언 칠판 (Words of Wisdom)",
-      prompt: "4단원 도덕 퀴즈 풀기"
+      prompt: "도덕 명언 확인 (SPACE)"
     },
     drumKit: {
       x: 19,
@@ -260,25 +260,20 @@ const WORLD_DATA = {
       name: "🥁 숭실 락앤롤 드럼 세트",
       prompt: "드럼 연주하기 (SPACE)"
     },
-    teacherDesk: {
-      x: 15,
-      y: 5,
-      name: "도덕 교탁 (골드 2배)",
-      prompt: "골드 문제 풀기"
-    },
     desks: [
-      { x: 9, y: 8 }, { x: 12, y: 8 }, { x: 18, y: 8 }, { x: 21, y: 8 },
-      { x: 9, y: 11 }, { x: 12, y: 11 }, { x: 18, y: 11 }, { x: 21, y: 11 },
-      { x: 9, y: 14 }, { x: 12, y: 14 }, { x: 18, y: 14 }, { x: 21, y: 14 }
+      { x: 9, y: 10, seatIndex: 1 },
+      { x: 13, y: 10, seatIndex: 2 },
+      { x: 17, y: 10, seatIndex: 3 },
+      { x: 21, y: 10, seatIndex: 4 }
     ],
     npcs: [
       {
         id: "npc_teacher_moral_drum",
-        name: "도덕선생님",
-        x: 11,
+        name: "후니후니 선생님",
+        x: 12,
         y: 5,
         avatar: "teacher",
-        dialogue: "안녕! 1학년 4반 담임이자 드럼 치는 도덕선생님이란다! 🥁👨‍🏫\n\n'인생은 리듬이고, 도덕은 세상과 맞추는 하모니다!'\n\n옆에 있는 드럼 세트를 신나게 연주해보거나, 칠판의 [Words of Wisdom 퀴즈]를 풀고 바른 인성과 지혜를 길러보렴! ✨"
+        dialogue: "안녕! 1학년 4반 담임이자 드럼 치는 후니후니 선생님이란다! 🥁👨‍🏫\n\n'인생은 리듬이고, 도덕은 세상과 맞추는 하모니다!'\n\n교실 의자에 앉아 20문제를 모두 맞히면 특별 호칭 [🥁 영혼의 드러머]과 핵심 재료 10개(목재/허브/농구가죽/풋살가죽)를 선물한단다! ✨"
       }
     ]
   },
