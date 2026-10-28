@@ -32,6 +32,7 @@ class NetworkManager {
 
     this.initChatEvents();
     this.initTradeEvents();
+    window.networkManager = this;
   }
 
   connect(userData) {

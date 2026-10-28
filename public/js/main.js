@@ -1536,9 +1536,12 @@ class MainApp {
               hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
               hasCheckedMirror: !!this.playerData.hasCheckedMirror,
               hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
-        hasReadDevNote: !!this.playerData.hasReadDevNote,
+              hasReadDevNote: !!this.playerData.hasReadDevNote,
+              hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
+              titles: this.playerData.titles || [],
+              equippedTitle: this.playerData.equippedTitle || null,
               updatedAt: Date.now()
             };
             try {
@@ -3190,12 +3193,26 @@ class MainApp {
         }
         this.saveProgress();
         setTimeout(() => {
-          const respawn = confirm(
-            `😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n1학년 복도(보건실)로 안전하게 귀환하시겠습니까?\n(취소 시 가방의 물약을 사용하여 회복할 수 있습니다)`
-          );
           this.closeFieldBattleModal();
-          if (respawn) {
-            this.respawnAtHallway();
+          if (window.RPGDialog) {
+            window.RPGDialog.confirm(
+              '😵 전투 패배',
+              `${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n1학년 복도(보건실)로 안전하게 귀환하시겠습니까?\n(취소 시 가방의 물약을 사용하여 회복할 수 있습니다)`,
+              '💀',
+              () => {
+                this.respawnAtHallway();
+              },
+              null,
+              '귀환하기',
+              '현 위치 대기'
+            );
+          } else {
+            const respawn = confirm(
+              `😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n1학년 복도(보건실)로 안전하게 귀환하시겠습니까?\n(취소 시 가방의 물약을 사용하여 회복할 수 있습니다)`
+            );
+            if (respawn) {
+              this.respawnAtHallway();
+            }
           }
         }, 500);
         return;
@@ -3433,15 +3450,16 @@ class MainApp {
       return;
     }
 
-    // 1학년 2반에서 쓰러진 다른 플레이어 찾기
-    const fallenOthers = Object.values(this.engine.otherPlayers).filter(p => p.isFallen && p.room === 'room_702');
+    // 현재 보스방/전투방에서 쓰러진 다른 플레이어 찾기
+    const curRoom = (this.engine && this.engine.player && this.engine.player.room) || 'room_702';
+    const fallenOthers = Object.values(this.engine.otherPlayers).filter(p => p.isFallen && p.room === curRoom);
     if (fallenOthers.length === 0) {
-      alert('현재 1학년 2반에 쓰러진 친구가 없습니다.');
+      alert('현재 위치한 전장에 쓰러진 친구가 없습니다.');
       return;
     }
 
     const target = fallenOthers[0];
-    if (confirm(`'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까? (상대방이 수락 시 HP 50% 복귀)`)) {
+    const sendRevive = () => {
       this.removeItem('item_revive_scroll', 1);
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('use_revive_scroll', {
@@ -3450,6 +3468,20 @@ class MainApp {
         });
       }
       this.updateBossRaidUI();
+    };
+
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '📜 부활 주문서',
+        `'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까?\n(상대방이 수락 시 즉시 HP 50% 상태로 전장에 복귀합니다!)`,
+        '✨',
+        () => sendRevive(),
+        null,
+        '주문서 전달',
+        '취소'
+      );
+    } else if (confirm(`'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까? (상대방이 수락 시 HP 50% 복귀)`)) {
+      sendRevive();
     }
   }
 
@@ -4331,12 +4363,14 @@ class MainApp {
         baseDef: this.playerData.baseDef,
         inventory: this.playerData.inventory,
         equipment: this.playerData.equipment,
+        isAccessory2Unlocked: !!this.playerData.isAccessory2Unlocked,
         hairColor: this.playerData.hairColor,
         outfitColor: this.playerData.outfitColor,
         hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
         hasCheckedMirror: !!this.playerData.hasCheckedMirror,
         hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
+        hasReadDevNote: !!this.playerData.hasReadDevNote,
         hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,

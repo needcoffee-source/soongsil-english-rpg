@@ -274,8 +274,10 @@ class AcidRainGame {
 
   close() {
     this.stop();
-    if (window.NetworkManager && window.NetworkManager.leaveAcidRainSeat) {
-      window.NetworkManager.leaveAcidRainSeat();
+    if (window.MainApp && window.MainApp.networkManager && typeof window.MainApp.networkManager.leaveAcidRainSeat === 'function') {
+      window.MainApp.networkManager.leaveAcidRainSeat();
+    } else if (window.networkManager && typeof window.networkManager.leaveAcidRainSeat === 'function') {
+      window.networkManager.leaveAcidRainSeat();
     }
     if (this.modal) {
       this.modal.classList.add('hidden');
