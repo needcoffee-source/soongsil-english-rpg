@@ -286,8 +286,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '퀘스트 인가증',
     tierColor: '#2563eb',
     effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
-    source: '1학년 2반 가죽 골렘 보스 토벌 시 100% 지급',
-    recipe: '1-2 보스 처치 시 100% 지급'
+    source: '1학년 2반 가죽 골렘 토벌 시 100% 획득',
+    recipe: '가죽 골렘 토벌'
   }
 ];
 
