@@ -2583,3 +2583,37 @@ body, html {
   grid-column: span 2;
 }
 
+
+/* ========================================================
+   TOP QUICK BAR (ROADMAP & ITEM CODEX BUTTONS)
+   ======================================================== */
+.btn-top-quick {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #f8fafc;
+  border: 1.5px solid #64748b;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.btn-top-quick:hover {
+  background: linear-gradient(135deg, #334155, #475569);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+.btn-top-quick:active {
+  transform: translateY(0);
+}
+.codex-tab-btn.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #1d4ed8 !important;
+}

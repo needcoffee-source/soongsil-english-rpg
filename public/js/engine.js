@@ -148,7 +148,8 @@ class GameEngine {
       this.player.speed = isDashing ? 7.6 : 4.0; // 교사: 기본 이동속도 4.0, Shift 누르면 7.6
       return;
     }
-    const runnerMult = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.job === 'runner') ? 1.15 : 1.0;
+    const isSpeedJob = (window.MainApp && window.MainApp.playerData && (window.MainApp.playerData.job === 'engineer' || window.MainApp.playerData.job === 'runner'));
+    const runnerMult = isSpeedJob ? 1.15 : 1.0;
     if (!this.player.hasRunningShoes) {
       this.player.isDashing = false;
       this.player.speed = 3.8 * runnerMult;

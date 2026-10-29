@@ -1,3 +1,263 @@
+
+// =========================================================================
+// 📖 ITEM CODEX MASTER DATABASE (도감 및 획득처 사전)
+// =========================================================================
+window.ITEM_CODEX_DATABASE = [
+  // 1. Materials
+  {
+    id: 'item_wood',
+    name: '단단한 목재',
+    icon: '🪵',
+    category: 'material',
+    tierBadge: '기본 재료',
+    tierColor: '#78350f',
+    effect: '1티어 나무 장비 제작의 핵심 기본 재료',
+    source: '1학년 1반 책상, 사물함, 교탁 퀴즈 정답 시 드랍',
+    recipe: '채집 파밍'
+  },
+  {
+    id: 'item_herb',
+    name: '향긋한 허브',
+    icon: '🌿',
+    category: 'material',
+    tierBadge: '약초 재료',
+    tierColor: '#166534',
+    effect: '빨간 물약 및 주홍 물약 조제 필수 재료',
+    source: '1층 현관 화단 및 복도 식물 상호작용',
+    recipe: '채집 파밍'
+  },
+  {
+    id: 'item_forsythia',
+    name: '노란 개나리 꽃잎',
+    icon: '🌼',
+    category: 'material',
+    tierBadge: '교화 재료',
+    tierColor: '#ca8a04',
+    effect: '주홍 물약 조제 및 특별 장신구 제작 재료',
+    source: '숭실 교정 화단 및 운동장 주변 개나리 군락',
+    recipe: '채집 파밍'
+  },
+  {
+    id: 'item_ginkgo',
+    name: '황금 은행잎',
+    icon: '🍂',
+    category: 'material',
+    tierBadge: '교목 재료',
+    tierColor: '#d97706',
+    effect: '부활 주문서 제작 및 부적 재료',
+    source: '학교 교문 진입로 및 가로수 은행나무 채집',
+    recipe: '채집 파밍'
+  },
+  {
+    id: 'item_golem_core',
+    name: '고목의 핵',
+    icon: '🟢',
+    category: 'material',
+    tierBadge: '보스 전리품',
+    tierColor: '#059669',
+    effect: '골렘 보스 토벌 증표 · 상위 장비 제작 재료',
+    source: '1학년 2반 가죽 골렘 보스 처치 시 100% 획득',
+    recipe: '1-2 보스 처치'
+  },
+  {
+    id: 'item_boss_leather',
+    name: '질긴 보스의 가죽',
+    icon: '🥋',
+    category: 'material',
+    tierBadge: '보스 가죽',
+    tierColor: '#b45309',
+    effect: '2티어 고급 가죽 방어구 제작 핵심 재료',
+    source: '1학년 2반 가죽 골렘 보스 처치 시 100% 획득',
+    recipe: '1-2 보스 처치'
+  },
+  {
+    id: 'item_basketball_leather',
+    name: '농구공 가죽 조각',
+    icon: '🏀',
+    category: 'material',
+    tierBadge: '야외 전리품',
+    tierColor: '#c2410c',
+    effect: '2티어 가죽 글러브 및 부츠 제작 재료',
+    source: '야외 농구장 체육 몬스터 퀴즈 사냥 시 드랍',
+    recipe: '농구장 사냥'
+  },
+  {
+    id: 'item_futsal_leather',
+    name: '탄력있는 풋살공 가죽',
+    icon: '⚽',
+    category: 'material',
+    tierBadge: '야외 전리품',
+    tierColor: '#15803d',
+    effect: '2티어 가죽 갑옷 및 부츠 제작 재료',
+    source: '야외 풋살장 체육 몬스터 퀴즈 사냥 시 드랍',
+    recipe: '풋살장 사냥'
+  },
+  {
+    id: 'item_bronze_heart',
+    name: '청동 드래곤의 심장',
+    icon: '❤️‍🔥',
+    category: 'material',
+    tierBadge: '최종 보스 전리품',
+    tierColor: '#dc2626',
+    effect: '3티어 종결 청동 장비 세트 제작 필수 재료',
+    source: '옥상 심층 레이드 청동 드래곤 보스 격파 시 획득',
+    recipe: '드래곤 보스 처치'
+  },
+
+  // 2. Consumables
+  {
+    id: 'item_red_potion',
+    name: '빨간 물약',
+    icon: '🍷',
+    category: 'consumable',
+    tierBadge: '회복 물약',
+    tierColor: '#e11d48',
+    effect: '사용 시 체력(HP) +10 즉시 회복',
+    source: '제작창(C)에서 향긋한 허브 2개로 조제 / 매점 구매',
+    recipe: '향긋한 허브 2개'
+  },
+  {
+    id: 'item_orange_potion',
+    name: '주홍 물약',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '고급 물약',
+    tierColor: '#ea580c',
+    effect: '사용 시 체력(HP) +25 대폭 회복',
+    source: '제작창(C)에서 허브 2개 + 개나리 꽃잎 1개로 조제',
+    recipe: '허브 2개 + 개나리 1개'
+  },
+  {
+    id: 'item_revive_scroll',
+    name: '부활 주문서',
+    icon: '📜',
+    category: 'consumable',
+    tierBadge: '특수 주문서',
+    tierColor: '#7c3aed',
+    effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
+    source: '제작창(C)에서 은행잎 2개 + 허브 1개로 제작',
+    recipe: '은행잎 2개 + 허브 1개'
+  },
+
+  // 3. Tier 1 Wood Equipment
+  {
+    id: 'equip_wood_dagger',
+    name: '나무 단검',
+    icon: '🗡️',
+    category: 'equip',
+    tierBadge: '1티어 무기',
+    tierColor: '#854d0e',
+    effect: '공격력(ATK) +3 증가',
+    source: '제작창(C)에서 단단한 목재 5개로 제작',
+    recipe: '단단한 목재 5개'
+  },
+  {
+    id: 'equip_wood_armor',
+    name: '나무 갑옷',
+    icon: '🥋',
+    category: 'equip',
+    tierBadge: '1티어 갑옷',
+    tierColor: '#854d0e',
+    effect: '방어력(DEF) +2, 최대 체력(HP) +10 증가',
+    source: '제작창(C)에서 단단한 목재 8개로 제작',
+    recipe: '단단한 목재 8개'
+  },
+  {
+    id: 'equip_wood_shield',
+    name: '나무 방패',
+    icon: '🛡️',
+    category: 'equip',
+    tierBadge: '1티어 방패',
+    tierColor: '#854d0e',
+    effect: '방어력(DEF) +3, 최대 체력(HP) +5 증가',
+    source: '제작창(C)에서 단단한 목재 6개로 제작',
+    recipe: '단단한 목재 6개'
+  },
+
+  // 4. Tier 2 Leather Equipment
+  {
+    id: 'equip_leather_gloves',
+    name: '훈련용 가죽 글러브',
+    icon: '🥊',
+    category: 'equip',
+    tierBadge: '2티어 무기',
+    tierColor: '#b45309',
+    effect: '공격력(ATK) +7 증가',
+    source: '제작창(C)에서 보스의 가죽 1개 + 농구공 가죽 3개로 제작',
+    recipe: '보스의 가죽 1개 + 농구공 가죽 3개'
+  },
+  {
+    id: 'equip_leather_armor',
+    name: '질긴 가죽 갑옷',
+    icon: '🦺',
+    category: 'equip',
+    tierBadge: '2티어 갑옷',
+    tierColor: '#b45309',
+    effect: '방어력(DEF) +5, 최대 체력(HP) +20 증가',
+    source: '제작창(C)에서 보스의 가죽 2개 + 풋살공 가죽 3개로 제작',
+    recipe: '보스의 가죽 2개 + 풋살공 가죽 3개'
+  },
+  {
+    id: 'equip_leather_boots',
+    name: '가죽 스터드 부츠',
+    icon: '🥾',
+    category: 'equip',
+    tierBadge: '2티어 신발',
+    tierColor: '#b45309',
+    effect: '방어력(DEF) +4, 이동속도 +5% 증가',
+    source: '제작창(C)에서 농구공 가죽 2개 + 풋살공 가죽 2개로 제작',
+    recipe: '농구공 가죽 2개 + 풋살공 가죽 2개'
+  },
+
+  // 5. Tier 3 Bronze Equipment
+  {
+    id: 'equip_bronze_sword',
+    name: '청동 드래곤 대검',
+    icon: '⚔️',
+    category: 'equip',
+    tierBadge: '3티어 종결 무기',
+    tierColor: '#047857',
+    effect: '공격력(ATK) +15 대폭 증가',
+    source: '제작창(C)에서 청동 드래곤 심장 1개 + 목재 10개로 제작',
+    recipe: '드래곤 심장 1개 + 목재 10개'
+  },
+  {
+    id: 'equip_bronze_armor',
+    name: '청동 비늘 갑옷',
+    icon: '🛡️',
+    category: 'equip',
+    tierBadge: '3티어 종결 갑옷',
+    tierColor: '#047857',
+    effect: '방어력(DEF) +12, 최대 체력(HP) +50 대폭 증가',
+    source: '제작창(C)에서 청동 드래곤 심장 2개 + 보스의 가죽 3개로 제작',
+    recipe: '드래곤 심장 2개 + 보스의 가죽 3개'
+  },
+  {
+    id: 'equip_bronze_boots',
+    name: '청동 날개 부츠',
+    icon: '👢',
+    category: 'equip',
+    tierBadge: '3티어 종결 신발',
+    tierColor: '#047857',
+    effect: '방어력(DEF) +8, 이동속도 +10% 대폭 증가',
+    source: '제작창(C)에서 청동 드래곤 심장 1개 + 풋살공 가죽 4개로 제작',
+    recipe: '드래곤 심장 1개 + 풋살공 가죽 4개'
+  },
+
+  // 6. Special Artifacts
+  {
+    id: 'item_perfect_exam',
+    name: '백점만점 시험지',
+    icon: '💯',
+    category: 'material',
+    tierBadge: '숭실 명예 증표',
+    tierColor: '#4338ca',
+    effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 교환권',
+    source: '중간고사 대마왕 보스 격파 시 증정',
+    recipe: '중간고사 보스 보상'
+  }
+];
+
 /**
  * Main Application Orchestrator for Soongsil English Open World RPG — Season 1
  * - Lv.1 ~ Lv.100 성장 (1레벨당 체력 +1, 공격력 +1, 방어력 +1)
@@ -262,12 +522,18 @@ const TITLE_DEFINITIONS = [
     costItemName: '💯 백점만점 시험지',
     costAmount: 1
   },
-  { id: 'title_job_medic', name: '🩺 수호의 메딕', desc: '5층 진로 방탈출을 통과하고 메딕으로 전직한 힐러!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_runner', name: '⚡ 질주의 러너', desc: '5층 진로 방탈출을 통과하고 러너로 전직한 육상 스타!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_scholar', name: '📚 지혜의 스칼라', desc: '5층 진로 방탈출을 통과하고 스칼라로 전직한 학자!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_banker', name: '🪙 황금의 뱅커', desc: '5층 진로 방탈출을 통과하고 뱅커로 전직한 자산가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_scout', name: '🍀 행운의 스카우트', desc: '5층 진로 방탈출을 통과하고 스카우트로 전직한 탐험가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_guardian', name: '🛡️ 철벽의 가디언', desc: '5층 진로 방탈출을 통과하고 가디언으로 전직한 방패!', costType: 'quest', costAmount: 0 },
+    { id: 'title_job_doctor', name: '🩺 생명을 살리는 의사', desc: '5층 진로 방탈출을 통과하고 의사로 전직한 의료 전문가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_researcher', name: '🔬 진리를 밝히는 연구원', desc: '5층 진로 방탈출을 통과하고 연구원으로 전직한 학술 전문가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_engineer', name: '💻 미래를 코딩하는 엔지니어', desc: '5층 진로 방탈출을 통과하고 소프트웨어 엔지니어로 전직한 IT 공학자!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_artist', name: '🎨 영감을 주는 디자이너', desc: '5층 진로 방탈출을 통과하고 디자이너로 전직한 시각 예술가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_mentor', name: '🤝 마음을 보듬는 멘토', desc: '5층 진로 방탈출을 통과하고 상담 멘토로 전직한 교육 상담가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scientist', name: '🔭 미래를 여는 과학자', desc: '5층 진로 방탈출을 통과하고 과학자로 전직한 과학 탐구자!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_medic', name: '🩺 생명을 살리는 의사', desc: '5층 진로 방탈출을 통과하고 의사로 전직한 의료 전문가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_runner', name: '💻 미래를 코딩하는 엔지니어', desc: '5층 진로 방탈출을 통과하고 엔지니어로 전직한 IT 공학자!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scholar', name: '🔬 진리를 밝히는 연구원', desc: '5층 진로 방탈출을 통과하고 연구원으로 전직한 학술 전문가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_banker', name: '🔭 미래를 여는 과학자', desc: '5층 진로 방탈출을 통과하고 과학자로 전직한 과학 탐구자!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scout', name: '🎨 영감을 주는 디자이너', desc: '5층 진로 방탈출을 통과하고 디자이너로 전직한 시각 예술가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_guardian', name: '🤝 마음을 보듬는 멘토', desc: '5층 진로 방탈출을 통과하고 상담 멘토로 전직한 교육 상담가!', costType: 'quest', costAmount: 0 },
   {
 
     name: '🥁 영혼의 드러머',
@@ -936,7 +1202,7 @@ class MainApp {
     if (grid) {
       grid.innerHTML = '';
       this.JOB_PASSIVE_DEFINITIONS.forEach(job => {
-        const isCurrentJob = (this.playerData.job === job.id);
+        const isCurrentJob = (this.playerData.job === job.id || this.playerData.job === job.legacyId);
         const card = document.createElement('div');
         card.style.cssText = `
           background: ${isCurrentJob ? '#f0fdf4' : '#ffffff'};
@@ -2574,10 +2840,10 @@ class MainApp {
     }
 
         // 🌟 진로 직업 패시브 스킬 스탯 보너스
-    if (this.playerData.job === 'medic') {
-      bonusHp += 40; // 메딕: 최대 체력 +40
-    } else if (this.playerData.job === 'guardian') {
-      bonusDef += 8; // 가디언: 방어력 +8
+    if (this.playerData.job === 'doctor' || this.playerData.job === 'medic') {
+      bonusHp += 40; // 의사: 최대 체력 +40
+    } else if (this.playerData.job === 'mentor' || this.playerData.job === 'guardian') {
+      bonusDef += 8; // 상담교사/멘토: 방어력 +8
     }
 
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
@@ -2644,7 +2910,7 @@ class MainApp {
     if (isBossRaidOpen || isInBossRoom) return;
 
     // 5. 체력 +1 자연 회복 및 UI 동기화
-    const regenAmount = (this.playerData.job === 'medic') ? 2 : 1;
+    const regenAmount = (this.playerData.job === 'doctor' || this.playerData.job === 'medic') ? 2 : 1;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + regenAmount);
     this.updateHpBar();
 
@@ -2661,8 +2927,8 @@ class MainApp {
     if (!this.playerData || this.playerData.hp <= 0 || this.playerData.isFallen) return 0;
 
     let penalty = Math.max(1, amount || 1);
-    if (this.playerData.job === 'guardian') {
-      penalty = Math.max(1, Math.floor(penalty * 0.5)); // 가디언: 퀴즈 오답 데미지 50% 감소
+    if (this.playerData.job === 'mentor' || this.playerData.job === 'guardian') {
+      penalty = Math.max(1, Math.floor(penalty * 0.5)); // 상담교사/멘토: 퀴즈 오답 데미지 50% 감소
     }
     this.playerData.hp = Math.max(0, this.playerData.hp - penalty);
     this.updateHpBar();
@@ -5513,7 +5779,7 @@ class MainApp {
         const jobBadge = document.getElementById('hud-job-badge');
     if (jobBadge) {
       if (this.playerData.job) {
-        const jobDef = this.JOB_PASSIVE_DEFINITIONS ? this.JOB_PASSIVE_DEFINITIONS.find(j => j.id === this.playerData.job) : null;
+        const jobDef = this.JOB_PASSIVE_DEFINITIONS ? this.JOB_PASSIVE_DEFINITIONS.find(j => j.id === this.playerData.job || j.legacyId === this.playerData.job) : null;
         jobBadge.style.display = 'inline-block';
         jobBadge.innerText = jobDef ? `${jobDef.icon} ${jobDef.name}` : `직업: ${this.playerData.job}`;
       } else {
@@ -6102,6 +6368,147 @@ class MainApp {
     } else {
       alert(noteStory);
     }
+  }
+
+
+// =========================================================================
+  // 🧭 PROGRESSION ROADMAP MODAL (진행 매뉴얼)
+  // =========================================================================
+  openRoadmapModal() {
+    const modal = document.getElementById('modal-roadmap');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+
+    if (!this._roadmapModalInitialized) {
+      this._roadmapModalInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-roadmap-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+      const btnClose = document.getElementById('btn-close-roadmap');
+      if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+  }
+
+  // =========================================================================
+  // 📖 ITEM CODEX MODAL (아이템 도감)
+  // =========================================================================
+  openCodexModal() {
+    const modal = document.getElementById('modal-codex');
+    if (!modal) return;
+
+    this.currentCodexTab = this.currentCodexTab || 'all';
+    this.renderCodexItems();
+    modal.classList.remove('hidden');
+
+    if (!this._codexModalInitialized) {
+      this._codexModalInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-codex-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+      const btnClose = document.getElementById('btn-close-codex');
+      if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+
+      const tabContainer = document.getElementById('codex-tab-container');
+      if (tabContainer) {
+        tabContainer.querySelectorAll('.codex-tab-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            tabContainer.querySelectorAll('.codex-tab-btn').forEach(b => {
+              b.classList.remove('active');
+              b.style.background = '#ffffff';
+              b.style.color = '#475569';
+            });
+            btn.classList.add('active');
+            btn.style.background = '#2563eb';
+            btn.style.color = '#ffffff';
+            this.currentCodexTab = btn.dataset.tab;
+            this.renderCodexItems();
+          });
+        });
+      }
+    }
+  }
+
+  renderCodexItems() {
+    const grid = document.getElementById('grid-codex-items');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const db = window.ITEM_CODEX_DATABASE || [];
+    const inv = (this.playerData && this.playerData.inventory) ? this.playerData.inventory : {};
+    const equip = (this.playerData && this.playerData.equipment) ? this.playerData.equipment : {};
+
+    // Count collected items
+    let collectedCount = 0;
+    db.forEach(item => {
+      const inInv = inv[item.id] && inv[item.id].count > 0;
+      const isEquipped = Object.values(equip).some(eq => eq && eq.id === item.id);
+      if (inInv || isEquipped) collectedCount++;
+    });
+
+    const pct = db.length > 0 ? Math.round((collectedCount / db.length) * 100) : 0;
+    const countEl = document.getElementById('codex-collect-count');
+    const fillEl = document.getElementById('codex-progress-fill');
+    const pctEl = document.getElementById('codex-percent-text');
+    if (countEl) countEl.innerText = `${collectedCount} / ${db.length}종`;
+    if (fillEl) fillEl.style.width = `${pct}%`;
+    if (pctEl) pctEl.innerText = `${pct}%`;
+
+    // Filter by tab
+    const tab = this.currentCodexTab || 'all';
+    const filtered = (tab === 'all') ? db : db.filter(item => item.category === tab);
+
+    filtered.forEach(item => {
+      const inInv = inv[item.id] && inv[item.id].count > 0;
+      const isEquipped = Object.values(equip).some(eq => eq && eq.id === item.id);
+      const isOwned = inInv || isEquipped;
+
+      const card = document.createElement('div');
+      card.style.cssText = `
+        background: ${isOwned ? '#ffffff' : '#f1f5f9'};
+        border: 2px solid ${isOwned ? '#22c55e' : '#cbd5e1'};
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: ${isOwned ? '0 4px 6px -1px rgba(16, 185, 129, 0.1)' : 'none'};
+        opacity: ${isOwned ? '1.0' : '0.82'};
+        position: relative;
+      `;
+
+      card.innerHTML = `
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+            <div style="font-size: 28px; line-height: 1;">${item.icon}</div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+              <span style="font-size: 10px; font-weight: 800; background: ${item.tierColor}15; color: ${item.tierColor}; border: 1px solid ${item.tierColor}40; border-radius: 4px; padding: 1px 5px;">
+                ${item.tierBadge}
+              </span>
+              <span style="font-size: 10px; font-weight: 800; color: ${isOwned ? '#16a34a' : '#64748b'};">
+                ${isOwned ? '✅ 보유 중' : '🔒 미보유'}
+              </span>
+            </div>
+          </div>
+
+          <div style="font-size: 13.5px; font-weight: 900; color: ${isOwned ? '#0f172a' : '#475569'}; margin-bottom: 4px;">
+            ${item.name}
+          </div>
+
+          <div style="font-size: 11px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 4px 6px; border-radius: 5px; margin-bottom: 6px;">
+            ⚡ ${item.effect}
+          </div>
+
+          <div style="font-size: 11px; color: #334155; line-height: 1.4; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; margin-bottom: 4px;">
+            <div style="font-weight: 800; color: #475569; margin-bottom: 2px;">📍 획득 경로:</div>
+            <div>${item.source}</div>
+          </div>
+        </div>
+
+        <div style="font-size: 10.5px; color: #64748b; text-align: right; margin-top: 4px;">
+          제작: <span style="font-weight: 700; color: #0f172a;">${item.recipe}</span>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
   }
 }
 
