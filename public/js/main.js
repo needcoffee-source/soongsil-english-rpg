@@ -3,7 +3,7 @@
 // 📖 ITEM CODEX MASTER DATABASE (도감 및 획득처 사전)
 // =========================================================================
 window.ITEM_CODEX_DATABASE = [
-  // 1. Materials
+  // 1. Materials (재료 10종)
   {
     id: 'item_wood',
     name: '단단한 목재',
@@ -11,9 +11,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '기본 재료',
     tierColor: '#78350f',
-    effect: '1티어 나무 장비 제작의 핵심 기본 재료',
-    source: '1학년 1반 책상, 사물함, 교탁 퀴즈 정답 시 드랍',
-    recipe: '채집 파밍'
+    effect: '1티어 나무 장비(나무검·투구·갑옷) 제작 핵심 기본 재료',
+    source: '1학년 1반 책상, 사물함, 교탁 퀴즈 정답 시 100% 드랍',
+    recipe: '1반 교실 채집 파밍'
   },
   {
     id: 'item_herb',
@@ -22,9 +22,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '약초 재료',
     tierColor: '#166534',
-    effect: '빨간 물약 및 주홍 물약 조제 필수 재료',
+    effect: '빨간 물약, 주홍 물약, 부활 주문서 조제 필수 재료',
     source: '1층 현관 화단 및 복도 식물 상호작용',
-    recipe: '채집 파밍'
+    recipe: '교내 화단 채집 파밍'
   },
   {
     id: 'item_forsythia',
@@ -33,9 +33,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '교화 재료',
     tierColor: '#ca8a04',
-    effect: '주홍 물약 조제 및 특별 장신구 제작 재료',
+    effect: '주홍 물약, 청동 장비, 성실의 개나리 반지 제작 재료',
     source: '숭실 교정 화단 및 운동장 주변 개나리 군락',
-    recipe: '채집 파밍'
+    recipe: '교정 화단 채집 파밍'
   },
   {
     id: 'item_ginkgo',
@@ -44,9 +44,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '교목 재료',
     tierColor: '#d97706',
-    effect: '부활 주문서 제작 및 부적 재료',
+    effect: '부활 주문서 및 합심의 황금 은행잎 부적 제작 재료',
     source: '학교 교문 진입로 및 가로수 은행나무 채집',
-    recipe: '채집 파밍'
+    recipe: '가로수길 채집 파밍'
   },
   {
     id: 'item_golem_core',
@@ -55,9 +55,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '보스 전리품',
     tierColor: '#059669',
-    effect: '골렘 보스 토벌 증표 · 상위 장비 제작 재료',
+    effect: '1차 관문 골렘 보스 토벌 증표 · 상위 장비 제작 재료',
     source: '1학년 2반 가죽 골렘 보스 처치 시 100% 획득',
-    recipe: '1-2 보스 처치'
+    recipe: '1-2 보스 처치 전리품'
   },
   {
     id: 'item_boss_leather',
@@ -66,9 +66,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '보스 가죽',
     tierColor: '#b45309',
-    effect: '2티어 고급 가죽 방어구 제작 핵심 재료',
+    effect: '2티어 고급 가죽 방어구(세이버·투구·갑옷) 제작 핵심 재료',
     source: '1학년 2반 가죽 골렘 보스 처치 시 100% 획득',
-    recipe: '1-2 보스 처치'
+    recipe: '1-2 보스 처치 전리품'
   },
   {
     id: 'item_basketball_leather',
@@ -77,9 +77,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '야외 전리품',
     tierColor: '#c2410c',
-    effect: '2티어 가죽 글러브 및 부츠 제작 재료',
+    effect: '2티어 가죽손잡이 세이버 및 가죽갑옷 제작 재료',
     source: '야외 농구장 체육 몬스터 퀴즈 사냥 시 드랍',
-    recipe: '농구장 사냥'
+    recipe: '농구장 몬스터 사냥'
   },
   {
     id: 'item_futsal_leather',
@@ -88,23 +88,34 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '야외 전리품',
     tierColor: '#15803d',
-    effect: '2티어 가죽 갑옷 및 부츠 제작 재료',
+    effect: '2티어 가죽투구 및 가죽손잡이 세이버 제작 재료',
     source: '야외 풋살장 체육 몬스터 퀴즈 사냥 시 드랍',
-    recipe: '풋살장 사냥'
+    recipe: '풋살장 몬스터 사냥'
   },
   {
     id: 'item_bronze_heart',
     name: '청동 드래곤의 심장',
     icon: '❤️‍🔥',
     category: 'material',
-    tierBadge: '최종 보스 전리품',
+    tierBadge: '보스 전리품',
     tierColor: '#dc2626',
-    effect: '3티어 종결 청동 장비 세트 제작 필수 재료',
-    source: '옥상 심층 레이드 청동 드래곤 보스 격파 시 획득',
-    recipe: '드래곤 보스 처치'
+    effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
+    source: '옥상 심층 레이드 청동 드래곤 보스 격파 시 100% 획득',
+    recipe: '드래곤 보스 처치 전리품'
+  },
+  {
+    id: 'item_perfect_exam',
+    name: '백점만점 시험지',
+    icon: '💯',
+    category: 'material',
+    tierBadge: '명예 증표',
+    tierColor: '#4338ca',
+    effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 교환권',
+    source: '중간고사 대마왕 보스 격파 시 증정',
+    recipe: '중간고사 대마왕 격파'
   },
 
-  // 2. Consumables
+  // 2. Consumables (소비품 3종 - craft_recipes.json 공식 레시피)
   {
     id: 'item_red_potion',
     name: '빨간 물약',
@@ -113,8 +124,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '회복 물약',
     tierColor: '#e11d48',
     effect: '사용 시 체력(HP) +10 즉시 회복',
-    source: '제작창(C)에서 향긋한 허브 2개로 조제 / 매점 구매',
-    recipe: '향긋한 허브 2개'
+    source: '포션 제작대 조제 / 매점 구매 (5G)',
+    recipe: '향긋한 허브 1개 + 5G'
   },
   {
     id: 'item_orange_potion',
@@ -124,8 +135,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '고급 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '제작창(C)에서 허브 2개 + 개나리 꽃잎 1개로 조제',
-    recipe: '허브 2개 + 개나리 1개'
+    source: '포션 제작대 조제 / 매점 구매 (10G)',
+    recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
   },
   {
     id: 'item_revive_scroll',
@@ -135,126 +146,148 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 주문서',
     tierColor: '#7c3aed',
     effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
-    source: '제작창(C)에서 은행잎 2개 + 허브 1개로 제작',
-    recipe: '은행잎 2개 + 허브 1개'
+    source: '포션 제작대에서 제작 (은행잎 1개 + 허브 3개 + 25G)',
+    recipe: '향긋한 허브 3개 + 황금 은행잎 1개 + 25G'
   },
 
-  // 3. Tier 1 Wood Equipment
+  // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
   {
-    id: 'equip_wood_dagger',
-    name: '나무 단검',
+    id: 'equip_wood_sword',
+    name: '나무검 (Wooden Sword)',
     icon: '🗡️',
     category: 'equip',
     tierBadge: '1티어 무기',
     tierColor: '#854d0e',
-    effect: '공격력(ATK) +3 증가',
-    source: '제작창(C)에서 단단한 목재 5개로 제작',
-    recipe: '단단한 목재 5개'
+    effect: '공격력(ATK) +15 증가',
+    source: '장비 제작대(C)에서 제작 (목재 10개 + 15G)',
+    recipe: '단단한 목재 10개 + 15G'
+  },
+  {
+    id: 'equip_wood_helmet',
+    name: '나무투구 (Wooden Helmet)',
+    icon: '🪖',
+    category: 'equip',
+    tierBadge: '1티어 투구',
+    tierColor: '#854d0e',
+    effect: '방어력(DEF) +8, 체력(HP) +25 증가',
+    source: '장비 제작대(C)에서 제작 (목재 10개 + 15G)',
+    recipe: '단단한 목재 10개 + 15G'
   },
   {
     id: 'equip_wood_armor',
-    name: '나무 갑옷',
-    icon: '🥋',
+    name: '나무갑옷 (Wooden Armor)',
+    icon: '🛡️',
     category: 'equip',
     tierBadge: '1티어 갑옷',
     tierColor: '#854d0e',
-    effect: '방어력(DEF) +2, 최대 체력(HP) +10 증가',
-    source: '제작창(C)에서 단단한 목재 8개로 제작',
-    recipe: '단단한 목재 8개'
-  },
-  {
-    id: 'equip_wood_shield',
-    name: '나무 방패',
-    icon: '🛡️',
-    category: 'equip',
-    tierBadge: '1티어 방패',
-    tierColor: '#854d0e',
-    effect: '방어력(DEF) +3, 최대 체력(HP) +5 증가',
-    source: '제작창(C)에서 단단한 목재 6개로 제작',
-    recipe: '단단한 목재 6개'
+    effect: '방어력(DEF) +15, 체력(HP) +15 증가',
+    source: '장비 제작대(C)에서 제작 (목재 10개 + 15G)',
+    recipe: '단단한 목재 10개 + 15G'
   },
 
-  // 4. Tier 2 Leather Equipment
+  // 4. Tier 2 Leather Equipment (2티어 가죽 장비 - craft_recipes.json 공식 레시피)
   {
-    id: 'equip_leather_gloves',
-    name: '훈련용 가죽 글러브',
-    icon: '🥊',
+    id: 'equip_leather_sword',
+    name: '가죽손잡이 세이버 (Leather-Grip Saber)',
+    icon: '🗡️',
     category: 'equip',
     tierBadge: '2티어 무기',
     tierColor: '#b45309',
-    effect: '공격력(ATK) +7 증가',
-    source: '제작창(C)에서 보스의 가죽 1개 + 농구공 가죽 3개로 제작',
-    recipe: '보스의 가죽 1개 + 농구공 가죽 3개'
+    effect: '공격력(ATK) +20 증가',
+    source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 농구가죽 10개 + 풋살가죽 10개 + 35G)',
+    recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 35G'
+  },
+  {
+    id: 'equip_leather_helmet',
+    name: '가죽투구 (Leather Helmet)',
+    icon: '⛑️',
+    category: 'equip',
+    tierBadge: '2티어 투구',
+    tierColor: '#b45309',
+    effect: '방어력(DEF) +12, 체력(HP) +28 증가',
+    source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 풋살가죽 20개 + 40G)',
+    recipe: '보스의 가죽 1개 + 풋살공 가죽 20개 + 40G'
   },
   {
     id: 'equip_leather_armor',
-    name: '질긴 가죽 갑옷',
-    icon: '🦺',
+    name: '가죽갑옷 (Leather Armor)',
+    icon: '🥋',
     category: 'equip',
     tierBadge: '2티어 갑옷',
     tierColor: '#b45309',
-    effect: '방어력(DEF) +5, 최대 체력(HP) +20 증가',
-    source: '제작창(C)에서 보스의 가죽 2개 + 풋살공 가죽 3개로 제작',
-    recipe: '보스의 가죽 2개 + 풋살공 가죽 3개'
-  },
-  {
-    id: 'equip_leather_boots',
-    name: '가죽 스터드 부츠',
-    icon: '🥾',
-    category: 'equip',
-    tierBadge: '2티어 신발',
-    tierColor: '#b45309',
-    effect: '방어력(DEF) +4, 이동속도 +5% 증가',
-    source: '제작창(C)에서 농구공 가죽 2개 + 풋살공 가죽 2개로 제작',
-    recipe: '농구공 가죽 2개 + 풋살공 가죽 2개'
+    effect: '방어력(DEF) +17, 체력(HP) +20 증가',
+    source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 농구가죽 30개 + 50G)',
+    recipe: '보스의 가죽 1개 + 농구공 가죽 30개 + 50G'
   },
 
-  // 5. Tier 3 Bronze Equipment
+  // 5. Tier 3 Bronze Equipment (3티어 청동 장비 - craft_recipes.json 공식 레시피)
   {
     id: 'equip_bronze_sword',
-    name: '청동 드래곤 대검',
+    name: '청동검 (Bronze Sword)',
     icon: '⚔️',
     category: 'equip',
-    tierBadge: '3티어 종결 무기',
+    tierBadge: '3티어 최고급 무기',
     tierColor: '#047857',
-    effect: '공격력(ATK) +15 대폭 증가',
-    source: '제작창(C)에서 청동 드래곤 심장 1개 + 목재 10개로 제작',
-    recipe: '드래곤 심장 1개 + 목재 10개'
+    effect: '공격력(ATK) +25 증가',
+    source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G)',
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G'
+  },
+  {
+    id: 'equip_bronze_helmet',
+    name: '청동투구 (Bronze Helmet)',
+    icon: '🪖',
+    category: 'equip',
+    tierBadge: '3티어 최고급 투구',
+    tierColor: '#047857',
+    effect: '방어력(DEF) +14, 체력(HP) +35 증가',
+    source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G)',
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G'
   },
   {
     id: 'equip_bronze_armor',
-    name: '청동 비늘 갑옷',
+    name: '청동갑옷 (Bronze Armor)',
     icon: '🛡️',
     category: 'equip',
-    tierBadge: '3티어 종결 갑옷',
+    tierBadge: '3티어 최고급 갑옷',
     tierColor: '#047857',
-    effect: '방어력(DEF) +12, 최대 체력(HP) +50 대폭 증가',
-    source: '제작창(C)에서 청동 드래곤 심장 2개 + 보스의 가죽 3개로 제작',
-    recipe: '드래곤 심장 2개 + 보스의 가죽 3개'
-  },
-  {
-    id: 'equip_bronze_boots',
-    name: '청동 날개 부츠',
-    icon: '👢',
-    category: 'equip',
-    tierBadge: '3티어 종결 신발',
-    tierColor: '#047857',
-    effect: '방어력(DEF) +8, 이동속도 +10% 대폭 증가',
-    source: '제작창(C)에서 청동 드래곤 심장 1개 + 풋살공 가죽 4개로 제작',
-    recipe: '드래곤 심장 1개 + 풋살공 가죽 4개'
+    effect: '방어력(DEF) +22, 체력(HP) +25 증가',
+    source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G)',
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G'
   },
 
-  // 6. Special Artifacts
+  // 6. Special School Accessories (교화/교목 장신구 - craft_recipes.json 공식 레시피)
   {
-    id: 'item_perfect_exam',
-    name: '백점만점 시험지',
-    icon: '💯',
-    category: 'material',
-    tierBadge: '숭실 명예 증표',
-    tierColor: '#4338ca',
-    effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 교환권',
-    source: '중간고사 대마왕 보스 격파 시 증정',
-    recipe: '중간고사 보스 보상'
+    id: 'equip_forsythia_ring',
+    name: '성실의 개나리 반지 (Forsythia Ring)',
+    icon: '🌼',
+    category: 'equip',
+    tierBadge: '교화 장신구',
+    tierColor: '#ca8a04',
+    effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
+    source: '장비 제작대(C)에서 제작 (개나리 꽃잎 20개 + 30G)',
+    recipe: '노란 개나리 꽃잎 20개 + 30G'
+  },
+  {
+    id: 'equip_ginkgo_talisman',
+    name: '합심의 황금 은행잎 부적 (Ginkgo Talisman)',
+    icon: '🍂',
+    category: 'equip',
+    tierBadge: '교목 장신구',
+    tierColor: '#d97706',
+    effect: '공격력 +20, 방어력 +12, 체력 +40 증가',
+    source: '장비 제작대(C)에서 제작 (황금 은행잎 10개 + 50G)',
+    recipe: '황금 은행잎 10개 + 50G'
+  },
+  {
+    id: 'equip_elevator_pass',
+    name: '엘리베이터 작동권',
+    icon: '🪪',
+    category: 'equip',
+    tierBadge: '퀘스트 인가증',
+    tierColor: '#2563eb',
+    effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
+    source: '1학년 2반 가죽 골렘 보스 토벌 시 100% 지급',
+    recipe: '1-2 보스 처치 시 100% 지급'
   }
 ];
 
@@ -6409,13 +6442,109 @@ class MainApp {
     if (!modal) return;
     modal.classList.remove('hidden');
 
+    this.currentRoadmapStep = this.currentRoadmapStep || 1;
+    this.showRoadmapStep(this.currentRoadmapStep);
+
     if (!this._roadmapModalInitialized) {
       this._roadmapModalInitialized = true;
       const btnCloseX = document.getElementById('btn-close-roadmap-x');
       if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
       const btnClose = document.getElementById('btn-close-roadmap');
       if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+
+      // Next / Prev button listeners
+      const btnPrev = document.getElementById('btn-roadmap-prev');
+      const btnNext = document.getElementById('btn-roadmap-next');
+      if (btnPrev) {
+        btnPrev.addEventListener('click', () => {
+          if (this.currentRoadmapStep > 1) {
+            this.showRoadmapStep(this.currentRoadmapStep - 1);
+          }
+        });
+      }
+      if (btnNext) {
+        btnNext.addEventListener('click', () => {
+          if (this.currentRoadmapStep < 5) {
+            this.showRoadmapStep(this.currentRoadmapStep + 1);
+          } else {
+            modal.classList.add('hidden');
+          }
+        });
+      }
+
+      // Step pills click
+      document.querySelectorAll('.roadmap-step-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const step = parseInt(pill.dataset.step) || 1;
+          this.showRoadmapStep(step);
+        });
+      });
+
+      // Flow arrows click
+      document.querySelectorAll('.roadmap-arrow-click').forEach(arrow => {
+        arrow.addEventListener('click', () => {
+          const targetStep = parseInt(arrow.dataset.target) || 1;
+          this.showRoadmapStep(targetStep);
+        });
+      });
     }
+  }
+
+  showRoadmapStep(step) {
+    this.currentRoadmapStep = Math.max(1, Math.min(5, step));
+
+    // Toggle card visibility
+    for (let i = 1; i <= 5; i++) {
+      const card = document.getElementById('roadmap-card-' + i);
+      if (card) {
+        card.style.display = (i === this.currentRoadmapStep) ? 'block' : 'none';
+      }
+    }
+
+    // Update step indicator
+    const indicator = document.getElementById('roadmap-step-indicator');
+    if (indicator) {
+      indicator.innerText = `STEP ${this.currentRoadmapStep} / 5`;
+    }
+
+    // Update Prev / Next buttons
+    const btnPrev = document.getElementById('btn-roadmap-prev');
+    const btnNext = document.getElementById('btn-roadmap-next');
+    if (btnPrev) {
+      btnPrev.style.visibility = (this.currentRoadmapStep === 1) ? 'hidden' : 'visible';
+    }
+    if (btnNext) {
+      btnNext.innerHTML = (this.currentRoadmapStep === 5) ? '확인 완료 ➔' : '다음 단계 ▶';
+      btnNext.style.background = (this.currentRoadmapStep === 5) ? '#15803d' : '#0284c7';
+      btnNext.style.borderColor = (this.currentRoadmapStep === 5) ? '#166534' : '#0369a1';
+    }
+
+    // Update top flow pills & arrows styling
+    const pillColors = {
+      1: '#0284c7',
+      2: '#be185d',
+      3: '#4338ca',
+      4: '#15803d',
+      5: '#d97706'
+    };
+
+    document.querySelectorAll('.roadmap-step-pill').forEach(pill => {
+      const pStep = parseInt(pill.dataset.step) || 1;
+      const isActive = (pStep === this.currentRoadmapStep);
+      const isPast = (pStep < this.currentRoadmapStep);
+      
+      pill.style.background = isActive ? (pillColors[pStep] || '#0284c7') : (isPast ? '#334155' : '#1e293b');
+      pill.style.borderColor = isActive ? '#38bdf8' : (isPast ? '#64748b' : '#334155');
+      pill.style.color = isActive ? '#ffffff' : (isPast ? '#94a3b8' : '#64748b');
+      pill.style.transform = isActive ? 'scale(1.05)' : 'scale(1.0)';
+      pill.style.boxShadow = isActive ? '0 0 8px rgba(56, 189, 248, 0.4)' : 'none';
+    });
+
+    document.querySelectorAll('.roadmap-arrow-click').forEach(arrow => {
+      const aTarget = parseInt(arrow.dataset.target) || 1;
+      const isHighlighted = (aTarget <= this.currentRoadmapStep);
+      arrow.style.color = isHighlighted ? '#38bdf8' : '#475569';
+    });
   }
 
   // =========================================================================
