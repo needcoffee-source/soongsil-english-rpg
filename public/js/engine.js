@@ -501,23 +501,43 @@ class GameEngine {
       return;
     } else if (this.player.room && (this.player.room.startsWith('room_') || this.player.room.startsWith('classroom'))) {
       // 교실 내부에서만 출구 문 밟았을 때 복도로 나가기 실행
-      const cr = this.getCurrentClassroomData();
-      const exit = (cr && cr.exitDoor) || WORLD_DATA.classroom.exitDoor;
-      if (Math.abs(tileX - exit.x) <= 2 && tileY >= exit.y - 1) {
-        this.triggerFadeWarp(() => {
-          this.exitClassroom();
-        });
+      if (this.player.room === 'room_career') {
+        // 진로실: 출구 문은 y >= 19일 때만 나가기 발동 (단말기 조작 중 튕김 방지)
+        const cr = this.getCurrentClassroomData();
+        const exit = (cr && cr.exitDoor) || { x: 30, y: 19 };
+        if (Math.abs(tileX - exit.x) <= 2 && tileY >= 19) {
+          this.triggerFadeWarp(() => {
+            this.exitClassroom();
+          });
+        }
+      } else {
+        const cr = this.getCurrentClassroomData();
+        const exit = (cr && cr.exitDoor) || WORLD_DATA.classroom.exitDoor;
+        if (Math.abs(tileX - exit.x) <= 2 && tileY >= exit.y - 1) {
+          this.triggerFadeWarp(() => {
+            this.exitClassroom();
+          });
+        }
       }
     }
   }
 
   exitClassroom() {
     if (this.player.isFallen) return; // 기절 상태에서는 교실 밖으로 걸어나갈 수 없음
-    const floorData = WORLD_DATA.floors[this.player.floor];
+    if (this.player.room === 'room_career') {
+      this.player.floor = 5;
+      const f5 = WORLD_DATA.floors[5];
+      const r = f5 && f5.rooms ? f5.rooms.find(rm => rm.id === 'room_career') : null;
+      const rx = r ? r.doorX * 32 : 13 * 32;
+      const ry = r ? (r.doorY + 2) * 32 : 7 * 32;
+      this.warpToRoom('hallway', f5 ? f5.name : '5층 복도', rx, ry);
+      return;
+    }
+    const floorData = WORLD_DATA.floors[this.player.floor] || WORLD_DATA.floors[7];
     const currentRoomInfo = floorData && floorData.rooms ? floorData.rooms.find(r => r.id === this.player.room) : null;
     const returnX = currentRoomInfo ? currentRoomInfo.doorX * 32 : 15 * 32;
     const returnY = currentRoomInfo ? (currentRoomInfo.doorY + 2) * 32 : 10 * 32;
-    this.warpToRoom('hallway', floorData ? floorData.name : '복도', returnX, returnY);
+    this.warpToRoom('hallway', floorData ? floorData.name : '1학년 복도', returnX, returnY);
   }
 
   warpToRoom(roomId, roomName, x, y) {
@@ -599,9 +619,10 @@ class GameEngine {
         this.player.y = 10 * 32;
         this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
       } else if (room === 'room_career') {
+        this.player.floor = 5;
         this.player.room = 'room_career';
         this.player.x = 30 * 32;
-        this.player.y = 15 * 32;
+        this.player.y = 13 * 32;
         this.player.roomName = '🌟 진로실 (Career Center)';
       } else {
         this.player.room = room || 'room_701';

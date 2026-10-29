@@ -20,7 +20,7 @@ const WORLD_DATA = {
     5: {
       name: "5층 복도 (진로 & 선배 구역)",
       rooms: [
-        { id: "room_career", name: "🌟 진로상담실 (Career Center)", doorX: 13, doorY: 5, targetX: 30, targetY: 15, locked: false },
+        { id: "room_career", name: "🌟 진로상담실 (Career Center)", doorX: 13, doorY: 5, targetX: 30, targetY: 13, locked: false },
         { id: "room_501", name: "2학년 1반", doorX: 25, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 1반 자율학습 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_502", name: "2학년 2반", doorX: 32, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 2반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_503", name: "2학년 3반", doorX: 39, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 3반 수업 시간입니다. (현재 준비 중 🚧)" },
@@ -93,7 +93,7 @@ const WORLD_DATA = {
   // 5층 대형 진로상담실 (진로 방탈출 6대 단서 & 직업 패시브 아카데미)
   classroom_career: {
     name: "🌟 진로상담실 (Career Center)",
-    exitDoor: { x: 30, y: 17 },
+    exitDoor: { x: 30, y: 19 },
     blackboard: {
       x: 30,
       y: 2,
@@ -111,7 +111,7 @@ const WORLD_DATA = {
       { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 40, y: 12, name: "🎨 [단서 4] 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 45, y: 7, name: "🤝 [단서 5] 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 52, y: 7, name: "🔭 [단서 6] 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 16, name: "🔐 진로실 탈출 도어락 (D-R-E-A-M-S)", prompt: "탈출 암호 입력 (SPACE)" }
+      { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 17, name: "🔐 진로실 탈출 도어락 (D-R-E-A-M-S)", prompt: "탈출 암호 입력 (SPACE)" }
     ]
   },
 

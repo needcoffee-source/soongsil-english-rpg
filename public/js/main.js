@@ -1723,8 +1723,8 @@ class MainApp {
       if (this.engine.player.floor === 5) {
         if (dialog) {
           dialog.confirm(
-            '교사 전용 프리패스',
-            '5층 엘리베이터입니다.\n[확인]을 누르면 1학년 복도(7층)로 이동합니다.\n([취소]를 누르면 현재 5층에 머무릅니다)',
+            '🛗 5층 중앙 엘리베이터',
+            '1학년 복도로 내려가시겠습니까?\n([취소]를 누르면 현재 5층에 머무릅니다)',
             '🛗',
             () => {
               this.engine.triggerFadeWarp(() => {
@@ -1734,10 +1734,11 @@ class MainApp {
               });
             }
           );
-        } else if (confirm('🛗 [교사 전용 프리패스 - 5층 엘리베이터]\n\n[확인]을 누르면 1학년 복도(7층)로 이동합니다.\n([취소]를 누르면 현재 5층에 머무릅니다)')) {
+        } else if (confirm('🛗 [5층 중앙 엘리베이터]\n\n[확인]을 누르면 1학년 복도로 내려갑니다.')) {
           this.engine.triggerFadeWarp(() => {
             this.engine.player.floor = 7;
             this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
+            this._elevatorCooldown = Date.now() + 1500;
           });
         }
         return;
@@ -1866,33 +1867,52 @@ class MainApp {
         }
       }
 
-      // 3. 1학년 복도 -> 운동장 (10G 소모)
-      if (this.playerData.gold < 10) {
-        alert(
-          `❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)\n\n교탁(골드)이나 교실에서 퀴즈를 풀어 골드를 모아보세요!`
-        );
-        return;
-      }
-
+      // 3. 엘리베이터 행선지 선택 (1학년 복도 vs 5층 진로실 vs 운동장)
+      const currentFloor = this.engine.player.floor;
       if (dialog) {
         dialog.confirm(
-          '중앙 엘리베이터 가동',
-          `10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`,
+          '🛗 중앙 엘리베이터 가동',
+          '이동할 층을 선택하세요:\n\n[확인] ➔ 🌟 5층 진로상담실 (진로 방탈출 & 6대 직업 전직)\n[취소] ➔ ⚽ 숭실 운동장 (10G 소모)',
           '🛗',
           () => {
+            // 5층 이동
+            if (window.AudioManager) window.AudioManager.playSelect();
+            this.engine.triggerFadeWarp(() => {
+              this.engine.player.floor = 5;
+              this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+              this._elevatorCooldown = Date.now() + 1500;
+            });
+          },
+          () => {
+            // 운동장 이동 (10G)
+            if (this.playerData.gold < 10) {
+              alert(`❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
+              return;
+            }
             this.addGold(-10);
             if (window.AudioManager) window.AudioManager.playSelect();
             this.engine.triggerFadeWarp(() => {
               this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
               this._elevatorCooldown = Date.now() + 1500;
             });
-          }
+          },
+          '5층 진로실',
+          '운동장 (10G)'
         );
       } else {
-        const goDown = confirm(
-          `🛗 [중앙 엘리베이터 가동]\n\n10G를 지불하고 숭실 운동장으로 내려가시겠습니까?\n(현재 보유 골드: ${this.playerData.gold}G ➔ 지불 후: ${this.playerData.gold - 10}G)`
-        );
-        if (goDown) {
+        const choice = confirm('🛗 [중앙 엘리베이터]\n\n[확인]: 5층 진로상담실로 이동\n[취소]: 숭실 운동장으로 이동 (10G)');
+        if (choice) {
+          if (window.AudioManager) window.AudioManager.playSelect();
+          this.engine.triggerFadeWarp(() => {
+            this.engine.player.floor = 5;
+            this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+            this._elevatorCooldown = Date.now() + 1500;
+          });
+        } else {
+          if (this.playerData.gold < 10) {
+            alert(`❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
+            return;
+          }
           this.addGold(-10);
           if (window.AudioManager) window.AudioManager.playSelect();
           this.engine.triggerFadeWarp(() => {
@@ -2482,6 +2502,16 @@ class MainApp {
         });
       }
     });
+
+    // 🧭 Roadmap & 📖 Codex Top Quick Buttons
+    const btnRoadmap = document.getElementById('btn-open-roadmap');
+    if (btnRoadmap) {
+      btnRoadmap.addEventListener('click', () => this.openRoadmapModal());
+    }
+    const btnCodex = document.getElementById('btn-open-codex');
+    if (btnCodex) {
+      btnCodex.addEventListener('click', () => this.openCodexModal());
+    }
 
     // Sound Toggle Button
     const btnToggleSound = document.getElementById('btn-toggle-sound');
