@@ -288,6 +288,7 @@ class GameEngine {
     // Update roaming basketball monsters on playground
     this.updateBasketballMonsters();
     this.updateFutsalMonsters();
+    this.updateHistoryMonsters();
 
     // Check nearby interactable
     this.checkNearbyInteractable();
@@ -962,6 +963,37 @@ class GameEngine {
           }
         }
       }
+      if (this.player.room === 'room_history') {
+        if (cr.historyMonsters) {
+          for (const mob of cr.historyMonsters) {
+            if (mob.defeated) continue;
+            const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
+            if (mDist < 48 && mDist < minDist) {
+              closest = {
+                type: 'field_monster',
+                data: mob,
+                name: `${mob.icon} ${mob.name}`,
+                prompt: '1:1 퀴즈 배틀'
+              };
+              minDist = mDist;
+            }
+          }
+        }
+        if (cr.interactive) {
+          for (const item of cr.interactive) {
+            const dist = Math.hypot(item.x * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
+            if (dist < 56 && dist < minDist) {
+              closest = {
+                type: item.type,
+                data: item,
+                name: item.name,
+                prompt: item.prompt || '조사하기 (SPACE)'
+              };
+              minDist = dist;
+            }
+          }
+        }
+      }
       if (this.player.room === 'room_career' && cr.interactive) {
         for (const item of cr.interactive) {
           const dist = Math.hypot(item.x * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
@@ -1182,6 +1214,23 @@ class GameEngine {
               data: { ...d, seatIndex: i + 1 },
               name: `🪑 학생 의자 (${i + 1}번석)`
             };
+          }
+        }
+      }
+      if (this.player.room === 'room_history') {
+        if (cr.historyMonsters) {
+          for (const mob of cr.historyMonsters) {
+            if (mob.defeated) continue;
+            if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
+              return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
+            }
+          }
+        }
+        if (cr.interactive) {
+          for (const item of cr.interactive) {
+            if (Math.hypot(item.x * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
+              return { type: item.type, data: item, name: item.name };
+            }
           }
         }
       }
@@ -4722,6 +4771,8 @@ class GameEngine {
       for (let ty = 0; ty < curH; ty++) {
         if (ty <= 2 || tx === 0 || tx === curW - 1 || ty >= 18) {
           this.drawHighResWall(tx, ty, true);
+        } else if (this.player.room === 'room_history') {
+          this.drawHighResMarbleFloor(tx, ty);
         } else {
           this.drawHighResWoodPlankFloor(tx, ty);
         }
@@ -4744,6 +4795,8 @@ class GameEngine {
     } else if (isCareerRoom) {
       this.drawHighResLockers(4, 17, 6);
       this.drawHighResLockers(50, 17, 6);
+    } else if (this.player.room === 'room_history') {
+      // Museum has no student lockers
     } else {
       this.drawHighResLockers(3, 17, 5);
       this.drawHighResLockers(22, 17, 5);
@@ -4798,24 +4851,7 @@ class GameEngine {
       // === 5층 대형 진로실: 진로 방탈출 6대 단서 & 직업 패시브 아카데미 ===
       this.renderCareerEscapeRoom(cr);
     } else if (this.player.room === 'room_history') {
-      // === 🏛️ 숭실역사관: 1-1반 크기 고풍스러운 역사 기념관 홀 연출 ===
-      // 중앙 레드 카펫 러너 (출입문부터 기념 현판까지)
-      this.ctx.fillStyle = 'rgba(185, 28, 28, 0.35)';
-      this.ctx.fillRect(13 * 32, 5 * 32, 4 * 32, 12 * 32);
-      this.ctx.strokeStyle = '#f59e0b';
-      this.ctx.lineWidth = 2;
-      this.ctx.strokeRect(13 * 32, 5 * 32, 4 * 32, 12 * 32);
-
-      // 상단 역사관 칠판 배너
-      const hw = 18 * 32;
-      const hx = Math.round((15 * 32) - (hw / 2));
-      const hy = 12;
-      this.ctx.save();
-      this.ctx.textAlign = 'center';
-      this.ctx.font = '800 13px "Pretendard", "Malgun Gothic", sans-serif';
-      this.ctx.fillStyle = '#fef08a';
-      this.ctx.fillText('🏛️ [숭실역사관] 1897년 평양에서 시작된 숭실의 127년 역사와 사명 🏛️', hx + hw / 2, hy + 23);
-      this.ctx.restore();
+      this.renderHistoryMuseum(cr);
     } else if (this.player.floor === 5) {
       // 5층 잠긴 교실들: 깨끗한 빈 공간 연출
     } else {
@@ -8022,3 +8058,331 @@ class GameEngine {
   }
 
 }
+
+
+  // ========================================================
+  // 🏛️ 숭실역사관: 고품격 박물관 & 4티어 몬스터 필드 렌더링
+  // ========================================================
+
+  // High-Res Polished Marble Checkerboard Floor Tile
+  drawHighResMarbleFloor(tx, ty) {
+    const px = tx * 32;
+    const py = ty * 32;
+    const isDark = (tx + ty) % 2 === 0;
+
+    // High-polish marble stone base
+    this.ctx.fillStyle = isDark ? '#1e293b' : '#334155';
+    this.ctx.fillRect(px, py, 32, 32);
+
+    // Marble subtle veining
+    this.ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.14)';
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 4, py + 8);
+    this.ctx.lineTo(px + 18, py + 22);
+    this.ctx.lineTo(px + 28, py + 16);
+    this.ctx.stroke();
+
+    // Subtle edge bevel
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+    this.ctx.fillRect(px, py, 32, 1);
+    this.ctx.fillRect(px, py, 1, 32);
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    this.ctx.fillRect(px, py + 31, 32, 1);
+    this.ctx.fillRect(px + 31, py, 1, 32);
+  }
+
+  renderHistoryMuseum(cr) {
+    const app = window.MainApp;
+    const clues = (app && app.playerData && Array.isArray(app.playerData.historyClues)) ? app.playerData.historyClues : [false, false, false, false];
+    const solvedCount = clues.filter(Boolean).length;
+    const now = Date.now();
+
+    // 1. Central Plush Red Velvet Runner (from exit door at 15, 17 to altar at 15, 5)
+    this.ctx.fillStyle = '#881337'; // rich royal burgundy
+    this.ctx.fillRect(13.8 * 32, 4.8 * 32, 2.4 * 32, 12.4 * 32);
+    this.ctx.strokeStyle = '#f59e0b'; // golden border
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(13.8 * 32, 4.8 * 32, 2.4 * 32, 12.4 * 32);
+
+    // Velvet gold fringe trims
+    this.ctx.fillStyle = '#fbbf24';
+    for (let gy = 5.2 * 32; gy < 17 * 32; gy += 16) {
+      this.ctx.fillRect(13.8 * 32 - 1, gy, 2, 4);
+      this.ctx.fillRect(16.2 * 32 - 1, gy, 2, 4);
+    }
+
+    // 2. Gilded Wall Portraits on North Wall (x: 8 Baird, x: 22 Jo Man-sik & Yun Dong-ju)
+    this.drawMuseumPortrait(8 * 32, 2 * 32 - 4, '베어드 박사 (Baird)', '🏛️');
+    this.drawMuseumPortrait(22 * 32, 2 * 32 - 4, '조만식 선생 & 윤동주', '🌟');
+
+    // 3. Central Grand Mission Blackboard & History Banner
+    const hw = 18 * 32;
+    const hx = Math.round((15 * 32) - (hw / 2));
+    this.drawSharpLabel(15 * 32, 1.8 * 32, '🏛️ [숭실역사관] 1897년 평양에서 시작된 127년 역사와 사명', {
+      bgColor: 'rgba(15, 23, 42, 0.96)',
+      borderColor: '#f59e0b',
+      borderWidth: 2,
+      textColor: '#fef08a',
+      fontSize: 13,
+      paddingX: 16,
+      height: 26
+    });
+
+    // 4. Draw 4 Glass Display Vitrines (전시관 쇼케이스)
+    // Vitrine 1 (x: 6, y: 7) - 1897 평양 창립관
+    this.drawMuseumVitrine(6 * 32, 7 * 32, 1, '1897 평양 창립관', '📜', clues[0]);
+
+    // Vitrine 2 (x: 6, y: 13) - 1938 신사참배 거부관
+    this.drawMuseumVitrine(6 * 32, 13 * 32, 2, '1938 자진폐교관', '🕊️', clues[1]);
+
+    // Vitrine 3 (x: 24, y: 7) - 1954 서울 재건관
+    this.drawMuseumVitrine(24 * 32, 7 * 32, 3, '1954 서울 재건관', '🧱', clues[2]);
+
+    // Vitrine 4 (x: 24, y: 13) - 숭실의 위인관
+    this.drawMuseumVitrine(24 * 32, 13 * 32, 4, '숭실의 위인관', '✒️', clues[3]);
+
+    // 5. Draw 4-Tier Heritage Weapon Crafting Altar (x: 15, y: 4)
+    this.drawHeritageCraftAltar(15 * 32, 4.2 * 32, solvedCount >= 4);
+
+    // 6. Render History Monsters (시간의 수호석상, 불멸의 파수병, 기록관 골렘, 사명의 기사)
+    this.renderHistoryMonsters();
+  }
+
+  // Draw Gilded Museum Oil Painting Portrait
+  drawMuseumPortrait(px, py, title, icon) {
+    this.ctx.save();
+    // Gold Frame
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(px - 14, py - 12, 28, 30);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px - 12, py - 10, 24, 26);
+    // Canvas
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px - 9, py - 7, 18, 20);
+
+    // Icon
+    this.ctx.font = '14px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText(icon, px, py + 2);
+
+    this.ctx.restore();
+  }
+
+  // Draw Museum Glass Vitrine Display Case
+  drawMuseumVitrine(px, py, index, label, relicIcon, visited) {
+    this.ctx.save();
+
+    // 1. Ceiling Spotlight Beam
+    this.ctx.fillStyle = visited ? 'rgba(250, 204, 21, 0.15)' : 'rgba(56, 189, 248, 0.12)';
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 16, py - 40);
+    this.ctx.lineTo(px - 12, py + 24);
+    this.ctx.lineTo(px + 44, py + 24);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // 2. Mahogany Wood Plinth / Stand
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(px - 6, py + 12, 44, 18);
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px - 4, py + 14, 40, 14);
+
+    // 3. Brass Plate with Vitrine Number
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(px + 6, py + 18, 20, 6);
+
+    // 4. Tempered Glass Vitrine Enclosure
+    this.ctx.fillStyle = visited ? 'rgba(254, 240, 138, 0.18)' : 'rgba(224, 242, 254, 0.22)';
+    this.ctx.fillRect(px - 2, py - 16, 36, 28);
+    this.ctx.strokeStyle = visited ? '#fbbf24' : '#38bdf8';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(px - 2, py - 16, 36, 28);
+
+    // Glass reflection diagonal glare
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 4, py - 14);
+    this.ctx.lineTo(px + 28, py + 8);
+    this.ctx.stroke();
+
+    // 5. Floating Relic Artifact
+    this.ctx.font = '16px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText(relicIcon, px + 16, py - 2);
+
+    // 6. Vitrine Pill Badge
+    const badgeText = visited ? `✓ ${label}` : `🔍 ${label}`;
+    this.drawSharpLabel(px + 16, py - 28, badgeText, {
+      bgColor: visited ? 'rgba(20, 83, 45, 0.95)' : 'rgba(15, 23, 42, 0.95)',
+      borderColor: visited ? '#4ade80' : '#38bdf8',
+      textColor: visited ? '#86efac' : '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // Draw 4-Tier Heritage Weapon Crafting Altar
+  drawHeritageCraftAltar(px, py, unlocked) {
+    this.ctx.save();
+
+    // Glowing Sacred Altar Base
+    this.ctx.fillStyle = unlocked ? 'rgba(245, 158, 11, 0.25)' : 'rgba(100, 116, 139, 0.18)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 18, 36, 14, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Granite Pedestal
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px - 14, py + 4, 60, 20);
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px - 12, py + 6, 56, 16);
+
+    // Golden Anvil / Weapon Forge Shrine
+    this.ctx.fillStyle = unlocked ? '#d97706' : '#64748b';
+    this.ctx.fillRect(px - 4, py - 8, 40, 12);
+    this.ctx.fillStyle = unlocked ? '#fbbf24' : '#94a3b8';
+    this.ctx.fillRect(px + 2, py - 12, 28, 4);
+
+    // Sacred Sword Silhouette
+    this.ctx.font = '20px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText('⚔️', px + 16, py - 10);
+
+    // Label
+    const altarTitle = unlocked ? '🔨 4티어 헤리티지 성검 제단' : '🔒 4티어 제단 (4대 전시관 탐방 필요)';
+    this.drawSharpLabel(px + 16, py - 28, altarTitle, {
+      bgColor: unlocked ? 'rgba(120, 53, 15, 0.95)' : 'rgba(30, 41, 59, 0.95)',
+      borderColor: unlocked ? '#f59e0b' : '#64748b',
+      textColor: unlocked ? '#fef08a' : '#cbd5e1',
+      fontSize: 12,
+      paddingX: 10,
+      height: 22
+    });
+
+    this.ctx.restore();
+  }
+
+  // Roaming & Respawn Logic for History Museum Monsters
+  updateHistoryMonsters() {
+    if (!this.player || this.player.room !== 'room_history') return;
+    const cr = this.getCurrentClassroomData();
+    if (!cr || !cr.historyMonsters) return;
+
+    const now = Date.now();
+    for (const mob of cr.historyMonsters) {
+      if (mob.defeated) {
+        if (mob.respawnAt && now >= mob.respawnAt) {
+          mob.defeated = false;
+          mob.hp = mob.maxHp;
+          mob.x = Math.round(8 + Math.random() * 14);
+          mob.y = Math.round(7 + Math.random() * 8);
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+        }
+        continue;
+      }
+
+      if (mob.inBattle) continue;
+
+      if (mob.roam) {
+        if (mob.targetX === undefined || mob.targetY === undefined) {
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+          mob.nextMoveTime = now + 1000 + Math.random() * 2000;
+        }
+
+        const dx = mob.targetX - mob.x;
+        const dy = mob.targetY - mob.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 0.1) {
+          mob.x = mob.targetX;
+          mob.y = mob.targetY;
+          if (now >= (mob.nextMoveTime || 0)) {
+            // Pick new target in museum wings (x: 8 ~ 22, y: 7 ~ 15)
+            mob.targetX = Math.round((8 + Math.random() * 14) * 10) / 10;
+            mob.targetY = Math.round((7 + Math.random() * 8) * 10) / 10;
+            mob.nextMoveTime = now + 2500 + Math.random() * 3500;
+          }
+        } else {
+          const step = 0.015;
+          mob.x += (dx / dist) * Math.min(step, dist);
+          mob.y += (dy / dist) * Math.min(step, dist);
+        }
+      }
+    }
+  }
+
+  renderHistoryMonsters() {
+    const cr = this.getCurrentClassroomData();
+    if (!cr || !cr.historyMonsters) return;
+
+    const now = Date.now();
+    for (const mob of cr.historyMonsters) {
+      if (mob.defeated) continue;
+
+      const floatY = Math.sin((now + mob.x * 200) / 200) * 3;
+      const px = mob.x * 32;
+      const py = mob.y * 32 + floatY;
+
+      // Drop shadow on marble floor
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 16, mob.y * 32 + 28, 14, 6, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Monster Sprite
+      this.drawHistoryMonsterSprite(px, py, mob, now);
+
+      // HP Bar
+      const hpW = 42;
+      const hpH = 6;
+      const hpX = px + 16 - hpW / 2;
+      const hpY = py - 14;
+      const hpPct = Math.max(0, Math.min(1, mob.hp / mob.maxHp));
+
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      this.ctx.fillRect(hpX - 1, hpY - 1, hpW + 2, hpH + 2);
+      this.ctx.fillStyle = '#dc2626';
+      this.ctx.fillRect(hpX, hpY, hpW, hpH);
+      this.ctx.fillStyle = hpPct > 0.5 ? '#16a34a' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      this.ctx.fillRect(hpX, hpY, hpW * hpPct, hpH);
+
+      // Name & Icon Label below
+      this.drawSharpLabel(px + 16, py + 38, `${mob.icon} ${mob.name}`, {
+        bgColor: 'rgba(30, 41, 59, 0.95)',
+        borderColor: '#a855f7',
+        textColor: '#e9d5ff',
+        fontSize: 11.5,
+        paddingX: 8,
+        height: 20
+      });
+    }
+  }
+
+  // Draw History Guardian Monster Sprite
+  drawHistoryMonsterSprite(px, py, mob, now) {
+    this.ctx.save();
+
+    // Sacred stone / ancient aura
+    this.ctx.fillStyle = 'rgba(168, 85, 247, 0.25)';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 12, 18, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Main Icon / Sprite Body
+    this.ctx.font = '22px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText(mob.icon, px + 16, py + 12);
+
+    this.ctx.restore();
+  }

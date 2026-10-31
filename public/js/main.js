@@ -1,4 +1,44 @@
 
+const SOONGSIL_HISTORY_VITRINES = [
+  {
+    index: 1,
+    id: 'hist_vitrine_1',
+    title: '🏛️ [제1전시관] 1897 평양 숭실학당 창립관',
+    era: '1897년 ~ 1900년대',
+    heading: '평양에서 타오른 근대 교육의 첫 불꽃',
+    story: '1897년 10월 10일, 미국인 선교사 윌리엄 M. 베어드(배위량) 박사가 평양 신양동 사택에서 13명의 학생으로 숭실학당을 설립했습니다.\n\n"실력 있는 기독교 인재를 양성하여 민족을 깨우치자!"\n\n숭실은 한국 최초로 영어, 과학, 서양 문물을 가르치며 한국 근대 대학의 모태가 되었습니다.',
+    relic: '📜 배위량 박사의 초기 영문 타자기와 성경 원본'
+  },
+  {
+    index: 2,
+    id: 'hist_vitrine_2',
+    title: '🕊️ [제2전시관] 1938 신사참배 거부와 자진폐교관',
+    era: '1930년대 ~ 1938년',
+    heading: '신앙과 민족의 지조를 지킨 눈물의 자진 폐교',
+    story: '일제강점기 말기, 일제는 학생들에게 신사참배를 강요하며 민족정신을 말살하려 했습니다.\n\n숭실은 불의와의 타협을 거부하고 당당히 외쳤습니다:\n"신앙의 양심을 버리고 일제에 굴복하느니, 차라리 학교 문을 닫겠다!"\n\n1938년 3월, 숭실은 민족의 절개와 신념을 지키기 위해 스스로 폐교의 길을 택했습니다.',
+    relic: '🕊️ 1938년 자진폐교 결의서와 눈물의 졸업식 사진'
+  },
+  {
+    index: 3,
+    id: 'hist_vitrine_3',
+    title: '🌱 [제3전시관] 1954 서울 재건과 상도동 캠퍼스관',
+    era: '1945년 해방 ~ 1954년 서울 재건',
+    heading: '전쟁의 폐허 속에서 다시 피어난 배움의 전당',
+    story: '해방과 6.25 전쟁의 참화 속에서도 숭실의 등불은 결코 꺼지지 않았습니다.\n\n피란 시절 부산에서 숭실의 재건을 결의한 동문과 교수진은, 1954년 서울 상도동 언덕에 숭실의 새로운 터전을 일구어냈습니다.\n\n학생들은 손수 벽돌을 나르고 천막 교실에서 공부하며 오늘날 찬란한 숭실 캠퍼스를 완성했습니다.',
+    relic: '🧱 상도동 캠퍼스 첫 주춧돌과 피란 천막 교실 기록'
+  },
+  {
+    index: 4,
+    id: 'hist_vitrine_4',
+    title: '🌟 [제4전시관] 숭실의 위인관 (인물과 문학)',
+    era: '숭실을 빛낸 자랑스러운 스승과 선배들',
+    heading: '시대를 비추는 등불이 된 숭실의 거인들',
+    story: '민족의 지도자이자 평양 숭실의 학장이었던 "조만식 선생",\n\n어둠의 일제 치하에서 별을 노래하며 조국의 독립을 갈망했던 숭실중학 출신의 민족시인 "윤동주",\n\n한국 순수문학의 거장 "황순원 작가".\n\n이 위대한 인물들이 모두 숭실의 교정에서 사명과 진리를 배웠습니다.',
+    relic: '✒️ 윤동주 시인의 유고 시집 <하늘과 바람과 별과 시> & 조만식 선생의 유묵'
+  }
+];
+
+
 // =========================================================================
 // 📖 ITEM CODEX MASTER DATABASE (도감 및 획득처 사전)
 // =========================================================================
@@ -534,6 +574,13 @@ const CAREER_ESCAPE_CLUES = [
 
 const TITLE_DEFINITIONS = [
   {
+    id: 'title_history_bearer',
+    name: '🏛️ 역사를 기억하는 자',
+    desc: '숭실역사관 4대 전시관을 모두 탐방하고 127년의 역사와 사명을 마음에 새긴 숭실의 후예! (공격력 +10, 체력 +30, 파멸신 피해 +15%)',
+    costType: 'quest',
+    costAmount: 0
+  },
+  {
     id: 'title_wood_king',
     name: '🪵 숭실 벌목왕',
     desc: '수많은 영어 문제를 풀고 학교 나무를 가꾼 진정한 벌목의 달인!',
@@ -983,6 +1030,10 @@ class MainApp {
       this.openLeaderboard();
     } else if (target.type === 'elevator') {
       this.handleElevatorInteraction();
+    } else if (target.type === 'history_vitrine') {
+      this.handleHistoryVitrineInteraction(target.data || target);
+    } else if (target.type === 'history_altar') {
+      this.handleHistoryAltarInteraction();
     } else if (target.type === 'history_hall') {
       this.engine.triggerFadeWarp(() => {
         this.engine.warpToRoom('room_history', '🏛️ 숭실역사관 (History Hall)', 15 * 32, 13 * 32);
@@ -4306,7 +4357,23 @@ class MainApp {
     const dropsList = [];
 
     // 2. Drops based on field court
-    if (mob.court === 'futsal') {
+    if (mob.court === 'history') {
+      const essenceCount = Math.floor(Math.random() * 2) + 1; // 1~2개
+      this.addItem('item_history_essence', '🏛️ 숭실 역사의 정수', essenceCount, '🏛️', {
+        type: 'material',
+        effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료'
+      });
+      dropsList.push(`🏛️ 숭실 역사의 정수 x${essenceCount}개`);
+
+      // 35% chance to drop unyielding stone
+      if (Math.random() * 100 < 35) {
+        this.addItem('item_unyielding_stone', '💎 꺾이지 않는 사명석', 1, '💎', {
+          type: 'material',
+          effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료'
+        });
+        dropsList.push('💎 꺾이지 않는 사명석 1개 (35% 행운 드랍!)');
+      }
+    } else if (mob.court === 'futsal') {
       const fLeatherCount = Math.floor(Math.random() * ((mob.leatherMax || 3) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);
       this.addItem('item_futsal_leather', '탄력있는 풋살공 가죽', fLeatherCount, '⚽', {
         type: 'material',

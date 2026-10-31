@@ -619,5 +619,54 @@
       "heal": 0,
       "effect": "쓰러진 친구를 50% 체력으로 부활"
     }
+  },
+  {
+    "id": "recipe_heritage_sword",
+    "name": "⚔️ 1897 숭실 헤리티지 소드 (The 1897 Heritage Blade)",
+    "category": "equipment",
+    "description": "[4티어 전설 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다. 기말고사 파멸신에게 25% 추가 피해를 입힙니다.",
+    "icon": "⚔️",
+    "gradeLevel": 1,
+    "requiredGold": 150,
+    "requiredItems": [
+      {
+        "item": "item_history_essence",
+        "name": "🏛️ 숭실 역사의 정수",
+        "count": 5
+      },
+      {
+        "item": "item_unyielding_stone",
+        "name": "💎 꺾이지 않는 사명석",
+        "count": 3
+      }
+    ],
+    "unscramble": {
+      "korean": "역사를 기억하는 자가 더 밝은 미래를 만듭니다.",
+      "words": [
+        "Those",
+        "who",
+        "remember",
+        "history",
+        "will",
+        "build",
+        "a",
+        "brighter",
+        "future."
+      ],
+      "correct": "Those who remember history will build a brighter future."
+    },
+    "result": {
+      "item": "equip_heritage_blade",
+      "name": "⚔️ 1897 숭실 헤리티지 소드",
+      "icon": "⚔️",
+      "type": "equipment",
+      "slot": "weapon",
+      "stats": {
+        "atk": 42,
+        "def": 12,
+        "hp": 35
+      },
+      "effect": "4티어 전설 무기 · 공격력 +42, 방어력 +12, 체력 +35 [특수] 기말고사 파멸신 대상 피해량 +25%"
+    }
   }
 ]
