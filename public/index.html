@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=83">
+  <link rel="stylesheet" href="css/style.css?v=84">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -674,6 +674,59 @@
         <p style="font-size: 11px; color: #94a3b8; margin: 6px 0 0;">
           💡 장착한 직업과 패시브 스킬은 캐릭터 상태창(HUD)에 표시되며, 사냥·채집·퀴즈 등 학교 전역에서 상시 발동합니다.
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-G2. Modal: Central Elevator (중앙 엘리베이터 층 선택) -->
+  <div id="modal-elevator" class="modal-overlay hidden" style="z-index: 135;">
+    <div class="modal-box" style="max-width: 440px; width: 92%; border: 3px solid #64748b; background: linear-gradient(180deg, #1e293b, #0f172a); color: #fff; padding: 22px 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 2px solid #334155; padding-bottom: 10px;">
+        <h2 style="font-size: 19px; font-weight: 900; color: #f8fafc; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🛗</span> 중앙 엘리베이터 층 선택
+        </h2>
+        <button id="btn-close-elevator-modal" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 12.5px; color: #94a3b8; margin: 0 0 16px;">
+        이동할 층을 선택하세요. 숭실 캠퍼스 곳곳을 자유롭게 이동할 수 있습니다.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;" id="elevator-floor-list">
+        <!-- 6층 -->
+        <button class="btn-elevator-floor" data-target="floor_6" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: rgba(30, 41, 59, 0.85); border: 2px solid #a855f7; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14px; font-weight: 900; color: #c084fc;">🏛️ 6층 — 본관 교무실 & 2학년 구역</div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">대형 교무실 (교실 3개 크기) & 2학년 교실</div>
+          </div>
+          <span class="elevator-tag" style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: #581c87; color: #e9d5ff;">이동 ➔</span>
+        </button>
+
+        <!-- 5층 -->
+        <button class="btn-elevator-floor" data-target="floor_5" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: rgba(30, 41, 59, 0.85); border: 2px solid #38bdf8; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14px; font-weight: 900; color: #38bdf8;">🌟 5층 — 진로상담실 (Career Center)</div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">직업 단서 방탈출 & 6대 직업 전직 아카데미</div>
+          </div>
+          <span class="elevator-tag" style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: #075985; color: #bae6fd;">이동 ➔</span>
+        </button>
+
+        <!-- 1층 -->
+        <button class="btn-elevator-floor" data-target="floor_1" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: rgba(30, 41, 59, 0.85); border: 2px solid #22c55e; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14px; font-weight: 900; color: #4ade80;">🏫 1층 — 1학년 복도</div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">장비·포션 제작대, 1~4반 교실, 보스 레이드</div>
+          </div>
+          <span class="elevator-tag" style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: #14532d; color: #bbf7d0;">이동 ➔</span>
+        </button>
+
+        <!-- 운동장 -->
+        <button class="btn-elevator-floor" data-target="playground" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: rgba(30, 41, 59, 0.85); border: 2px solid #f59e0b; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14px; font-weight: 900; color: #fbbf24;">⚽ 지상 — 숭실 야외 운동장</div>
+            <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">축구장, 농구장, 풋살장 필드 몬스터 파밍 (통행료 10G)</div>
+          </div>
+          <span class="elevator-tag" style="font-size: 11px; padding: 3px 8px; border-radius: 6px; background: #78350f; color: #fef08a;">10G 소모 ➔</span>
+        </button>
       </div>
     </div>
   </div>
@@ -1556,17 +1609,17 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=83"></script>
-  <script src="js/dialog.js?v=83"></script>
+  <script src="js/audio.js?v=84"></script>
+  <script src="js/dialog.js?v=84"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=83"></script>
-  <script src="js/engine.js?v=83"></script>
-  <script src="js/quiz.js?v=83"></script>
-  <script src="js/crafting.js?v=83"></script>
-  <script src="js/network.js?v=83"></script>
-  <script src="js/acid_rain.js?v=83"></script>
-  <script src="js/main.js?v=83"></script>
+  <script src="js/world.js?v=84"></script>
+  <script src="js/engine.js?v=84"></script>
+  <script src="js/quiz.js?v=84"></script>
+  <script src="js/crafting.js?v=84"></script>
+  <script src="js/network.js?v=84"></script>
+  <script src="js/acid_rain.js?v=84"></script>
+  <script src="js/main.js?v=84"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

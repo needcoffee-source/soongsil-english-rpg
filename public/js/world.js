@@ -10,7 +10,9 @@ const WORLD_DATA = {
   MAP_WIDTH: 30,
   HALLWAY_WIDTH: 60,
   CAREER_WIDTH: 60,
-  CAREER_HEIGHT: 20, // 1학년 복도 길이 2배 확장 (30타일 -> 60타일)
+  CAREER_HEIGHT: 20,
+  STAFF_OFFICE_WIDTH: 90, // 교실 3개 사이즈 대형 본관 교무실 (90 x 20 타일)
+  STAFF_OFFICE_HEIGHT: 20, // 1학년 복도 길이 2배 확장 (30타일 -> 60타일)
   PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
   PLAYGROUND_HEIGHT: 54, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
   MAP_HEIGHT: 20,
@@ -105,15 +107,32 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
-      { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 10, y: 7, name: "🏥 [단서 1] 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 20, y: 7, name: "🔬 [단서 2] 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 15, y: 12, name: "💻 [단서 3] 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 40, y: 12, name: "🎨 [단서 4] 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 45, y: 7, name: "🤝 [단서 5] 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 52, y: 7, name: "🔭 [단서 6] 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 6, name: "🔐 진로실 탈출 도어락", prompt: "탈출 도어락 조작 (SPACE)" }
+      { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 10, y: 7, name: "🏥 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 20, y: 7, name: "🔬 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 15, y: 12, name: "💻 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 40, y: 12, name: "🎨 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 45, y: 7, name: "🤝 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 52, y: 7, name: "🔭 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_7", type: "career_clue", clueIndex: 7, isDecoy: true, letter: "X", x: 28, y: 12, name: "💼 골동품 서류가방 (미지의 단서)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 6, name: "🔐 진로실 탈출 도어락", prompt: "탈출 도어락 조작 (SPACE)" },
+      { id: "note_developer_career", type: "dev_note_2", x: 4, y: 16, name: "📜 떨어진 개발자노트 (제2편)", prompt: "개발자노트 2편 읽기 (SPACE)" }
     ]
   },
+
+    // 6층 대형 교무실 (교실 3개 사이즈: 90 x 20) & 2학년 교실
+  classroom_staff_office: {
+    name: "🏛️ 본관 교무실 (Staff Office)",
+    exitDoor: { x: 45, y: 17 },
+    blackboard: { x: 45, y: 2, name: "🏛️ 교무실 상황판", prompt: "" },
+    teacherDesk: null,
+    gatherSpots: [],
+    desks: [],
+    npcs: [],
+    interactive: []
+  },
+  classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+  classroom_205: { name: "2학년 5반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
+  classroom_206: { name: "2학년 6반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
 
   // 5층 잠김 교실 (내부 비어있음)
   classroom_501: { name: "2학년 1반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },

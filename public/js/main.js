@@ -455,68 +455,80 @@ const CAREER_ESCAPE_CLUES = [
   {
     index: 1,
     id: 'career_clue_1',
-    title: '🏥 [단서 1] 적성검사 PC (의료/생명)',
+    title: '🏥 적성검사 PC (의료/생명)',
     letter: 'D',
     stationName: '적성검사 컴퓨터',
     question: '환자의 아픔을 치료하고 생명을 살리는 고귀한 직업은 무엇일까요?\n\n💡 힌트: 영어 철자 D로 시작하는 6글자 단어입니다!',
     options: ['Doctor (의사)', 'Dancer (무용수)', 'Driver (운전기사)', 'Dentist (치과의사)'],
     answer: 'Doctor (의사)',
-    clueReveal: '첫 번째 알파벳은 [ D ] 입니다! (D - _ - _ - _ - _ - _)'
+    clueReveal: '알파벳 [ D ]를 획득했습니다! (D - _ - _ - _ - _ - _)'
   },
   {
     index: 2,
     id: 'career_clue_2',
-    title: '🔬 [단서 2] 과학 연구대 (학술/탐구)',
+    title: '🔬 과학 연구대 (학술/탐구)',
     letter: 'R',
     stationName: '과학 연구 실험대',
     question: '새로운 지식과 과학 기술을 깊이 탐색하고 발견하는 \'연구원\'을 뜻하는 영어 단어는?\n\n💡 힌트: R로 시작하며 research(연구하다)를 하는 전문가입니다!',
     options: ['Researcher (연구원)', 'Reader (독서가)', 'Runner (달리기 선수)', 'Reporter (기자)'],
     answer: 'Researcher (연구원)',
-    clueReveal: '두 번째 알파벳은 [ R ] 입니다! (D - R - _ - _ - _ - _)'
+    clueReveal: '알파벳 [ R ]를 획득했습니다! (D - R - _ - _ - _ - _)'
   },
   {
     index: 3,
     id: 'career_clue_3',
-    title: '💻 [단서 3] 공학 작업대 (IT/기술)',
+    title: '💻 공학 작업대 (IT/기술)',
     letter: 'E',
     stationName: '공학 코딩석',
     question: '소프트웨어, 인공지능, 첨단 기계를 설계하고 만드는 \'공학자·엔지니어\'는?\n\n💡 힌트: E로 시작하며 엔진(engine)과 기술을 다루는 사람입니다!',
     options: ['Engineer (엔지니어)', 'Explorer (탐험가)', 'Editor (편집자)', 'Economist (경제학자)'],
     answer: 'Engineer (엔지니어)',
-    clueReveal: '세 번째 알파벳은 [ E ] 입니다! (D - R - E - _ - _ - _)'
+    clueReveal: '알파벳 [ E ]를 획득했습니다! (D - R - E - _ - _ - _)'
   },
   {
     index: 4,
     id: 'career_clue_4',
-    title: '🎨 [단서 4] 예술 이젤 (문화/창작)',
+    title: '🎨 예술 이젤 (문화/창작)',
     letter: 'A',
     stationName: '예술 창작 이젤',
     question: '풍부한 상상력과 아름다움을 그림, 조각, 음악으로 표현하는 \'예술가\'는?\n\n💡 힌트: A로 시작하며 art(예술)를 창작하는 사람입니다!',
     options: ['Artist (예술가)', 'Actor (배우)', 'Athlete (운동선수)', 'Author (작가)'],
     answer: 'Artist (예술가)',
-    clueReveal: '네 번째 알파벳은 [ A ] 입니다! (D - R - E - A - _ - _)'
+    clueReveal: '알파벳 [ A ]를 획득했습니다! (D - R - E - A - _ - _)'
   },
   {
     index: 5,
     id: 'career_clue_5',
-    title: '🤝 [단서 5] 멘토링 데스크 (교육/리더십)',
+    title: '🤝 멘토링 데스크 (교육/리더십)',
     letter: 'M',
     stationName: '멘토링 데스크',
     question: '사람들에게 지혜와 꿈을 전하고 든든한 길잡이가 되어주는 \'조언자·멘토\'는?\n\n💡 힌트: M으로 시작하는 6글자 단어입니다!',
     options: ['Mentor (멘토/조언자)', 'Musician (음악가)', 'Magician (마술사)', 'Mechanic (정비사)'],
     answer: 'Mentor (멘토/조언자)',
-    clueReveal: '다섯 번째 알파벳은 [ M ] 입니다! (D - R - E - A - M - _)'
+    clueReveal: '알파벳 [ M ]를 획득했습니다! (D - R - E - A - M - _)'
   },
   {
     index: 6,
     id: 'career_clue_6',
-    title: '🔭 [단서 6] 우주 탐구관 (자연/천문)',
+    title: '🔭 우주 탐구관 (자연/천문)',
     letter: 'S',
     stationName: '우주 탐구관',
     question: '자연의 법칙과 우주의 신비를 탐구하는 \'과학자\'를 뜻하는 영어 단어는?\n\n💡 힌트: S로 시작하며 science(과학)를 연구하는 학자입니다!',
     options: ['Scientist (과학자)', 'Sailor (항해사)', 'Soldier (군인)', 'Singer (가수)'],
     answer: 'Scientist (과학자)',
-    clueReveal: '여섯 번째 알파벳은 [ S ] 입니다! (D - R - E - A - M - S)'
+    clueReveal: '알파벳 [ S ]를 획득했습니다! (D - R - E - A - M - S)'
+  },
+  {
+    index: 7,
+    id: 'career_clue_7',
+    isDecoy: true,
+    title: '💼 골동품 서류가방 (미지의 단서)',
+    letter: 'X',
+    stationName: '골동품 가죽 서류가방',
+    question: '빛바랜 서류가방 틈새에서 수수께끼 쪽지가 발견되었습니다!\n\n\"모든 단서가 정답으로 이어지는 것은 아니다...\n어둠 속에서 반짝이는 것은 모두 금이 아니다. (All that glitters is not gold.)\"\n\n이 가방에 새겨진 미지의 단어는 무엇일까요?\n💡 힌트: X로 시작하는 9글자 악기 단어입니다!',
+    options: ['Xylophone (실로폰)', 'Xenon (크세논)', 'X-ray (엑스레이)', 'Xerox (복사기)'],
+    answer: 'Xylophone (실로폰)',
+    clueReveal: '알파벳 [ X ]를 발견했습니다! ...어라? 🤔 칠판의 6자리 비밀 암호(D-R-E-A-M-S) 어디에도 \'X\'가 들어갈 자리가 없는 것 같습니다!\n\n💡 [주의]: 탈출 정답과 관련 없는 낚시 단서인 것 같습니다! 🎣'
   }
 ];
 
@@ -1024,6 +1036,8 @@ class MainApp {
       this.handlePlantZoneInteraction(target);
     } else if (target.type === 'dev_note') {
       this.handleDevNoteInteraction();
+    } else if (target.type === 'dev_note_2') {
+      this.handleDevNote2Interaction();
     }
   }
 
@@ -1112,7 +1126,7 @@ class MainApp {
                 window.AudioManager.playCorrect();
               }
               if (!Array.isArray(this.playerData.careerClues)) {
-                this.playerData.careerClues = [false, false, false, false, false, false];
+                this.playerData.careerClues = [false, false, false, false, false, false, false];
               }
               this.playerData.careerClues[clueIndex - 1] = true;
               this.saveProgress();
@@ -1166,7 +1180,7 @@ class MainApp {
     const clues = this.playerData.careerClues;
     const letters = ['D', 'R', 'E', 'A', 'M', 'S'];
     const solvedCount = clues.filter(Boolean).length;
-    const allSolved = (solvedCount >= 6);
+    const allSolved = clues.slice(0, 6).every(Boolean);
     const hasEscaped = !!this.playerData.hasEscapedCareerRoom;
 
     for (let i = 1; i <= 6; i++) {
@@ -1969,7 +1983,10 @@ class MainApp {
         }
       }
 
-      // 3. 엘리베이터 행선지 선택 (1학년 복도 vs 5층 진로실 vs 운동장)
+      // 3. 엘리베이터 행선지 선택 (모달 UI 호출)
+      this.openElevatorModal();
+      return;
+      // 3. 구형 엘리베이터 행선지 선택
       const currentFloor = this.engine.player.floor;
       if (dialog) {
         dialog.confirm(

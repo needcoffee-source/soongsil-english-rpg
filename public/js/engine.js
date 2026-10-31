@@ -306,6 +306,9 @@ class GameEngine {
     if (this.player && this.player.room === 'hallway') {
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
+    if (this.player && this.player.room === 'room_staff_office') {
+      return WORLD_DATA.STAFF_OFFICE_WIDTH || 90;
+    }
     if (this.player && this.player.room === 'room_career') {
       return WORLD_DATA.CAREER_WIDTH || 60;
     }
@@ -373,7 +376,7 @@ class GameEngine {
       if (tileY <= 4) {
         const floorData = WORLD_DATA.floors[this.player.floor];
         if (floorData) {
-          const isDoor = floorData.rooms.some(r => (r.id === "room_career" ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2) : r.doorX === tileX) && r.doorY === tileY);
+          const isDoor = floorData.rooms.some(r => ((r.id === "room_career" || r.id === "room_staff_office") ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2) : r.doorX === tileX) && r.doorY === tileY);
           if (!isDoor) return true;
         }
       }
@@ -400,6 +403,10 @@ class GameEngine {
   }
 
   getCurrentClassroomData() {
+    if (this.player.room === 'room_staff_office' && WORLD_DATA.classroom_staff_office) return WORLD_DATA.classroom_staff_office;
+    if (this.player.room === 'room_204' && WORLD_DATA.classroom_204) return WORLD_DATA.classroom_204;
+    if (this.player.room === 'room_205' && WORLD_DATA.classroom_205) return WORLD_DATA.classroom_205;
+    if (this.player.room === 'room_206' && WORLD_DATA.classroom_206) return WORLD_DATA.classroom_206;
     if (this.player.room === 'room_career' && WORLD_DATA.classroom_career) return WORLD_DATA.classroom_career;
     if (this.player.room === 'room_501' && WORLD_DATA.classroom_501) return WORLD_DATA.classroom_501;
     if (this.player.room === 'room_502' && WORLD_DATA.classroom_502) return WORLD_DATA.classroom_502;
@@ -439,7 +446,7 @@ class GameEngine {
 
       // 1. Enter classroom through door
       for (const r of floorData.rooms) {
-        const isAtDoor = (r.id === "room_career") ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2 && r.doorY === tileY) : (r.doorX === tileX && r.doorY === tileY);
+        const isAtDoor = ((r.id === "room_career" || r.id === "room_staff_office")) ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2 && r.doorY === tileY) : (r.doorX === tileX && r.doorY === tileY);
         if (isAtDoor) {
           if (r.id === 'room_702' && !this.player.isTeacher) {
             const curHp = this.player.hp !== undefined ? this.player.hp : 100;
@@ -1572,26 +1579,27 @@ class GameEngine {
   // 5. High-Res Classroom Sliding Door with Brass Plaque
   drawHighResDoor(r) {
     const isCareer = (r.id === 'room_career');
+    const isStaffOffice = (r.id === 'room_staff_office');
     const px = r.doorX * 32;
-    if (isCareer) {
-      // 🌟 2배 확장된 대형 진로상담실 슬라이딩 도어 (약 96px 폭, 3타일 확장)
+    if (isCareer || isStaffOffice) {
+      // 🌟 대형 슬라이딩 도어 (약 96px 폭, 3타일 확장)
       const py = 3 * 32 - 12;
       const dw = 96; // 2배 너비
-      // 상단 황금 러너 트랙
-      this.ctx.fillStyle = '#f59e0b';
+      // 상단 러너 트랙
+      this.ctx.fillStyle = isStaffOffice ? '#c084fc' : '#f59e0b';
       this.ctx.fillRect(px - 14, py + 8, dw + 28, 6);
-      this.ctx.fillStyle = '#fef08a';
+      this.ctx.fillStyle = isStaffOffice ? '#f3e8ff' : '#fef08a';
       this.ctx.fillRect(px - 14, py + 8, dw + 28, 1.5);
 
-      // 네이비 외곽 도어 프레임
+      // 외곽 도어 프레임
       this.ctx.fillStyle = '#0f172a';
       this.ctx.fillRect(px - 6, py + 14, dw + 12, 43);
-      this.ctx.fillStyle = '#1e3a8a';
+      this.ctx.fillStyle = isStaffOffice ? '#581c87' : '#1e3a8a';
       this.ctx.fillRect(px - 4, py + 16, dw + 8, 40);
 
       // 좌/우 2개의 대형 유리 패널
       const panelW = 42;
-      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.fillStyle = isStaffOffice ? '#c084fc' : '#38bdf8';
       this.ctx.fillRect(px, py + 19, panelW, 34);
       this.ctx.fillRect(px + panelW + 4, py + 19, panelW, 34);
 
@@ -1606,9 +1614,12 @@ class GameEngine {
       this.ctx.fillRect(px + panelW + 6, py + 28, 3, 16);
 
       // 대형 명패
-      this.drawSharpLabel(px + dw / 2, py - 4, '🌟 진로상담실 (Career Center)', {
-        bgColor: 'rgba(30, 58, 138, 0.95)',
-        borderColor: '#fbbf24',
+      const plaqueTitle = isStaffOffice ? '🏛️ 본관 교무실 (Staff Office)' : '🌟 진로상담실 (Career Center)';
+      const plaqueBg = isStaffOffice ? 'rgba(88, 28, 135, 0.95)' : 'rgba(30, 58, 138, 0.95)';
+      const plaqueBorder = isStaffOffice ? '#c084fc' : '#fbbf24';
+      this.drawSharpLabel(px + dw / 2, py - 4, plaqueTitle, {
+        bgColor: plaqueBg,
+        borderColor: plaqueBorder,
         textColor: '#fef08a',
         fontSize: 12.5,
         paddingX: 14,
@@ -2305,7 +2316,14 @@ class GameEngine {
     this.drawCareerStationSpace(52 * 32, 7 * 32);
     this.drawCareerClueLabel(52 * 32 + 16, 7 * 32 - 18, 6, '우주 탐구관', 'S', clues[5]);
 
-    // 8. Draw Digital Escape Keypad (x: 30, y: 16)
+    // 8. Draw Decoy Clue Station 7: 💼 Vintage Briefcase (x: 28, y: 12)
+    this.drawCareerStationDecoy(28 * 32, 12 * 32);
+    this.drawCareerClueLabel(28 * 32 + 16, 12 * 32 - 18, 7, '골동품 서류가방', 'X', clues[6]);
+
+    // 9. Draw Fallen Developer Note #2 (가장 왼쪽 아래편: x: 4, y: 16)
+    this.drawHighResDevNote(4 * 32, 16 * 32, '📜 떨어진 개발자노트 (제2편)');
+
+    // 10. Draw Digital Escape Keypad (x: 30, y: 6)
     this.drawCareerKeypadStation(30 * 32, 6 * 32, hasEscaped, solvedCount);
 
     // 9. Chalkboard Mission Header on the Top Wall (x: 30, y: 2)
@@ -2527,7 +2545,7 @@ class GameEngine {
   // Clue Floating Label
   drawCareerClueLabel(x, y, index, name, letter, isSolved) {
     if (isSolved) {
-      this.drawSharpLabel(x, y, `✅ [단서 ${index}] ${name}: [ ${letter} ]`, {
+      this.drawSharpLabel(x, y, `✅ ${name}: [ ${letter} ]`, {
         bgColor: 'rgba(6, 78, 59, 0.95)',
         borderColor: '#22c55e',
         textColor: '#dcfce7',
@@ -2536,7 +2554,7 @@ class GameEngine {
         height: 18
       });
     } else {
-      this.drawSharpLabel(x, y, `🔍 [단서 ${index}] ${name}`, {
+      this.drawSharpLabel(x, y, `🔍 ${name}`, {
         bgColor: 'rgba(15, 23, 42, 0.92)',
         borderColor: '#38bdf8',
         textColor: '#e0f2fe',
@@ -4405,18 +4423,24 @@ class GameEngine {
     const h = 44;
 
     const isHallway = (currentFloor === 7);
-    const status = (currentFloor === 5) ? {
+    const status = (currentFloor === 6) ? {
       state: 'ready',
-      ledText: '[ 7F ▲ ]',
+      ledText: '[ 6F ]',
+      ledColor: '#c084fc',
+      name: '중앙 엘리베이터 (6층)',
+      prompt: '엘리베이터 층 선택 (SPACE)'
+    } : (currentFloor === 5) ? {
+      state: 'ready',
+      ledText: '[ 5F ]',
       ledColor: '#38bdf8',
       name: '중앙 엘리베이터 (5층)',
-      prompt: '1학년 복도(7층)로 이동'
+      prompt: '엘리베이터 층 선택 (SPACE)'
     } : (isHallway ? this.getElevatorStatus() : {
       state: 'ready',
       ledText: '[ 1F ▲ ]',
       ledColor: '#10b981',
       name: '중앙 엘리베이터',
-      prompt: '1학년 복도로 올라가기'
+      prompt: '엘리베이터 층 선택 (SPACE)'
     });
 
     // Floor shadow
@@ -4633,14 +4657,18 @@ class GameEngine {
 
     // 2. High-Res Classroom Blackboard & School Motto
     const isCareerRoom = (this.player.room === 'room_career');
-    const centerTileX = isCareerRoom ? 30 : 15;
+    const isStaffOffice = (this.player.room === 'room_staff_office');
+    const centerTileX = isStaffOffice ? 45 : (isCareerRoom ? 30 : 15);
     this.drawHighResBlackboard(cr, centerTileX);
 
     // 3. Wall Clock above Blackboard (Center Top)
     this.drawHighResWallClock(centerTileX * 32, 16);
 
     // 4. Back Wall Student Lockers (Row of Lockers along Back Wall)
-    if (isCareerRoom) {
+    if (isStaffOffice) {
+      this.drawHighResLockers(6, 17, 10);
+      this.drawHighResLockers(74, 17, 10);
+    } else if (isCareerRoom) {
       this.drawHighResLockers(4, 17, 6);
       this.drawHighResLockers(50, 17, 6);
     } else {
@@ -7773,7 +7801,7 @@ class GameEngine {
   }
 
   // High-Res Hallway Fallen Developer Note (떨어진 개발자노트 제1편 - 정수기와 거울 사이)
-  drawHighResDevNote(px, py) {
+  drawHighResDevNote(px, py, labelText = '📜 떨어진 개발자노트 (제1편)') {
     this.ctx.save();
     const time = Date.now() / 1000;
     const pulse = 0.5 + 0.5 * Math.sin(time * 3);
@@ -7844,7 +7872,7 @@ class GameEngine {
     this.ctx.fill();
 
     // 4. Sharp Badge Label (aligned to camera & world coordinates)
-    this.drawSharpLabel(px + 16, py - 18, '📜 떨어진 개발자노트 (제1편)', {
+    this.drawSharpLabel(px + 16, py - 18, labelText, {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#f59e0b',
       textColor: '#fef08a',
