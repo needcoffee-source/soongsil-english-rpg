@@ -928,9 +928,13 @@ class MainApp {
         }
       }
 
-      // 1학년 4반 담임 후니후니 선생님 (도덕 & 비트 퀴즈)
+      // 1학년 4반 담임 후니후니 선생님
       if (npc.id === 'npc_teacher_moral_drum' || (npc.name && npc.name.includes('후니후니'))) {
-        this.handleMoralClassroomInteraction();
+        if (window.RPGDialog) {
+          window.RPGDialog.show('🥁 후니후니 선생님', npc.dialogue, '🥁');
+        } else {
+          alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
+        }
         return;
       }
 
@@ -1439,7 +1443,7 @@ class MainApp {
       return;
     }
 
-    const msg = `"안녕! 1학년 4반 담임이자 드럼 치는 도덕쌤 후니후니 선생님이다! 🥁🎸\n\n우리 반에서는 4단원 영어 지혜 명언과 바른 인성을 다루는 [20문제 도덕 비트 퀴즈]를 수련한단다.\n\n정답을 맞힌 문제는 소거되어 다시 나오지 않으며, 20문제를 모두 맞히면 특별 한정 호칭 [🥁 영혼의 드러머]와 핵심 재료 10개(목재, 허브, 농구가죽, 풋살가죽 중 택1)를 선물로 준단다!\n\n현재 수련 진행도: [ ${solvedCount} / 20 문제 ]\n\n지금 도덕 비트 퀴즈에 도전해볼래?"`;
+    const msg = `"안녕! 1학년 4반 담임이자 드럼 치는 도덕쌤 후니후니 선생님이다! 🥁🎸\n\n우리 반에서는 영어 지혜 명언과 바른 인성을 다루는 [20문제 도덕 비트 퀴즈]를 수련한단다.\n\n정답을 맞힌 문제는 다시 나오지 않으며, 20문제를 모두 맞히면 특별한 호칭과 핵심 재료 보상을 선물로 준단다!\n\n현재 수련 진행도: [ ${solvedCount} / 20 문제 ]\n\n지금 도덕 비트 퀴즈에 도전해볼래?"`;
 
     if (window.RPGDialog) {
       window.RPGDialog.confirm(
@@ -1452,8 +1456,8 @@ class MainApp {
           }
         },
         null,
-        '도전하기',
-        '나중에'
+        '도전하기 ➔',
+        '다음에 하기'
       );
     } else {
       if (confirm('🥁 1학년 4반 후니후니 선생님의 도덕 비트 퀴즈(20문항)에 도전하시겠습니까?')) {
