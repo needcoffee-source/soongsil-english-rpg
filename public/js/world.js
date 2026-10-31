@@ -42,7 +42,7 @@ const WORLD_DATA = {
     },
 
     7: {
-      name: "1학년 복도",
+      name: "7층 복도 (1학년 구역)",
       rooms: [
         { id: "room_701", name: "1학년 1반", doorX: 10, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },

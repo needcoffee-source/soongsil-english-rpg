@@ -461,7 +461,7 @@ const CAREER_ESCAPE_CLUES = [
     question: '환자의 아픔을 치료하고 생명을 살리는 고귀한 직업은 무엇일까요?\n\n💡 힌트: 영어 철자 D로 시작하는 6글자 단어입니다!',
     options: ['Dancer (무용수)', 'Driver (운전기사)', 'Doctor (의사)', 'Dentist (치과의사)'],
     answer: 'Doctor (의사)',
-    clueReveal: '알파벳 [ D ]를 획득했습니다! (D - _ - _ - _ - _ - _)'
+    clueReveal: '알파벳 [ D ]를 획득했습니다!'
   },
   {
     index: 2,
@@ -472,7 +472,7 @@ const CAREER_ESCAPE_CLUES = [
     question: '새로운 지식과 과학 기술을 깊이 탐색하고 발견하는 \'연구원\'을 뜻하는 영어 단어는?\n\n💡 힌트: R로 시작하며 research(연구하다)를 하는 전문가입니다!',
     options: ['Reader (독서가)', 'Researcher (연구원)', 'Runner (달리기 선수)', 'Reporter (기자)'],
     answer: 'Researcher (연구원)',
-    clueReveal: '알파벳 [ R ]를 획득했습니다! (D - R - _ - _ - _ - _)'
+    clueReveal: '알파벳 [ R ]를 획득했습니다!'
   },
   {
     index: 3,
@@ -483,7 +483,7 @@ const CAREER_ESCAPE_CLUES = [
     question: '소프트웨어, 인공지능, 첨단 기계를 설계하고 만드는 \'공학자·엔지니어\'는?\n\n💡 힌트: E로 시작하며 엔진(engine)과 기술을 다루는 사람입니다!',
     options: ['Explorer (탐험가)', 'Editor (편집자)', 'Economist (경제학자)', 'Engineer (엔지니어)'],
     answer: 'Engineer (엔지니어)',
-    clueReveal: '알파벳 [ E ]를 획득했습니다! (D - R - E - _ - _ - _)'
+    clueReveal: '알파벳 [ E ]를 획득했습니다!'
   },
   {
     index: 4,
@@ -494,7 +494,7 @@ const CAREER_ESCAPE_CLUES = [
     question: '풍부한 상상력과 아름다움을 그림, 조각, 음악으로 표현하는 \'예술가\'는?\n\n💡 힌트: A로 시작하며 art(예술)를 창작하는 사람입니다!',
     options: ['Actor (배우)', 'Artist (예술가)', 'Athlete (운동선수)', 'Author (작가)'],
     answer: 'Artist (예술가)',
-    clueReveal: '알파벳 [ A ]를 획득했습니다! (D - R - E - A - _ - _)'
+    clueReveal: '알파벳 [ A ]를 획득했습니다!'
   },
   {
     index: 5,
@@ -505,7 +505,7 @@ const CAREER_ESCAPE_CLUES = [
     question: '사람들에게 지혜와 꿈을 전하고 든든한 길잡이가 되어주는 \'조언자·멘토\'는?\n\n💡 힌트: M으로 시작하는 6글자 단어입니다!',
     options: ['Musician (음악가)', 'Magician (마술사)', 'Mechanic (정비사)', 'Mentor (멘토/조언자)'],
     answer: 'Mentor (멘토/조언자)',
-    clueReveal: '알파벳 [ M ]를 획득했습니다! (D - R - E - A - M - _)'
+    clueReveal: '알파벳 [ M ]를 획득했습니다!'
   },
   {
     index: 6,
@@ -516,7 +516,7 @@ const CAREER_ESCAPE_CLUES = [
     question: '자연의 법칙과 우주의 신비를 탐구하는 \'과학자\'를 뜻하는 영어 단어는?\n\n💡 힌트: S로 시작하며 science(과학)를 연구하는 학자입니다!',
     options: ['Sailor (항해사)', 'Soldier (군인)', 'Scientist (과학자)', 'Singer (가수)'],
     answer: 'Scientist (과학자)',
-    clueReveal: '알파벳 [ S ]를 획득했습니다! (D - R - E - A - M - S)'
+    clueReveal: '알파벳 [ S ]를 획득했습니다!'
   },
   {
     index: 7,
@@ -1848,7 +1848,7 @@ class MainApp {
       let isCurrent = false;
       if (target === 'floor_6' && curRoom === 'hallway' && curFloor === 6) isCurrent = true;
       if (target === 'floor_5' && curRoom === 'hallway' && curFloor === 5) isCurrent = true;
-      if (target === 'floor_1' && curRoom === 'hallway' && curFloor === 7) isCurrent = true;
+      if ((target === 'floor_7' || target === 'floor_1') && curRoom === 'hallway' && curFloor === 7) isCurrent = true;
       if (target === 'playground' && curRoom === 'playground') isCurrent = true;
 
       if (isCurrent) {
@@ -1904,7 +1904,7 @@ class MainApp {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
       });
-    } else if (target === 'floor_1') {
+    } else if (target === 'floor_7' || target === 'floor_1') {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 7;

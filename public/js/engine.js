@@ -562,7 +562,7 @@ class GameEngine {
     const currentRoomInfo = floorData && floorData.rooms ? floorData.rooms.find(r => r.id === this.player.room) : null;
     const returnX = currentRoomInfo ? currentRoomInfo.doorX * 32 : 15 * 32;
     const returnY = currentRoomInfo ? (currentRoomInfo.doorY + 2) * 32 : 10 * 32;
-    this.warpToRoom('hallway', floorData ? floorData.name : '1학년 복도', returnX, returnY);
+    this.warpToRoom('hallway', floorData ? floorData.name : '7층 복도 (1학년 구역)', returnX, returnY);
   }
 
   warpToRoom(roomId, roomName, x, y) {
@@ -789,7 +789,7 @@ class GameEngine {
         if (pg.elevator) {
           const eDist = Math.hypot(pg.elevator.x * 32 - this.player.x, (pg.elevator.y + 1.5) * 32 - this.player.y);
           if (eDist < minDist) {
-            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '1학년 복도로 올라가기' };
+            closest = { type: 'elevator', name: '중앙 엘리베이터', prompt: '7층 복도로 올라가기' };
             minDist = eDist;
           }
         }
