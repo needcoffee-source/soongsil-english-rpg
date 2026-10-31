@@ -1163,6 +1163,7 @@ class MainApp {
     const letters = ['D', 'R', 'E', 'A', 'M', 'S'];
     const solvedCount = clues.filter(Boolean).length;
     const allSolved = (solvedCount >= 6);
+    const hasEscaped = !!this.playerData.hasEscapedCareerRoom;
 
     for (let i = 1; i <= 6; i++) {
       const txtEl = document.getElementById('txt-clue-' + i);
@@ -1181,15 +1182,66 @@ class MainApp {
     const unlockBanner = document.getElementById('keypad-all-unlocked-banner');
     const manualBox = document.getElementById('keypad-manual-input-box');
     const hintText = document.getElementById('keypad-hint-text');
+    const inputPwd = document.getElementById('input-career-password');
+    const btnSubmit = document.getElementById('btn-submit-career-password');
 
-    if (allSolved || this.playerData.hasEscapedCareerRoom) {
-      if (unlockBanner) unlockBanner.classList.remove('hidden');
+    if (hasEscaped) {
+      if (unlockBanner) {
+        unlockBanner.classList.remove('hidden');
+        unlockBanner.innerHTML = `
+          <p style="font-size: 14px; font-weight: 900; color: #15803d; margin: 0 0 6px;">
+            🎉 탈출 도어락이 열려 있습니다!
+          </p>
+          <p style="font-size: 12px; color: #475569; margin: 0 0 10px;">
+            6대 직업 중 원하는 직업을 선택하여 고유 패시브 스킬을 습득/변경하세요!
+          </p>
+          <button id="btn-open-job-select" class="btn-primary" style="width: 100%; font-size: 14px; font-weight: 900; padding: 10px 0; background: linear-gradient(135deg, #16a34a, #15803d); border-color: #14532d;">
+            🔓 6대 직업 전직하기 ➔
+          </button>
+        `;
+        const btnOpenJob = document.getElementById('btn-open-job-select');
+        if (btnOpenJob) {
+          btnOpenJob.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            this.openCareerJobSelectModal();
+          });
+        }
+      }
       if (manualBox) manualBox.classList.add('hidden');
     } else {
       if (unlockBanner) unlockBanner.classList.add('hidden');
       if (manualBox) manualBox.classList.remove('hidden');
-      if (hintText) {
-        hintText.innerHTML = `현재 수집된 단서: <b>${solvedCount} / 6개</b> (부족한 단서는 진로실 가구들을 조사해보세요!)`;
+
+      if (allSolved) {
+        if (hintText) {
+          hintText.innerHTML = '🎉 <b>6개의 직업 단서를 모두 발견했습니다!</b><br>단서들의 첫 글자를 조합한 6자리 최종 탈출 암호를 입력하세요:';
+          hintText.style.color = '#15803d';
+        }
+        if (inputPwd) {
+          inputPwd.disabled = false;
+          inputPwd.placeholder = '6자리 영단어 입력 (대소문자 무관)';
+          setTimeout(() => inputPwd.focus(), 100);
+        }
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.style.opacity = '1.0';
+          btnSubmit.innerText = '탈출 암호 입력 ➔';
+        }
+      } else {
+        if (hintText) {
+          hintText.innerHTML = `🔒 <b>아직 6개 단서를 모두 모으지 못했습니다! (현재 발견: ${solvedCount} / 6개)</b><br>진로실 안 6개의 직업 가구를 모두 조사해야 암호를 입력할 수 있습니다!`;
+          hintText.style.color = '#b91c1c';
+        }
+        if (inputPwd) {
+          inputPwd.disabled = true;
+          inputPwd.value = '';
+          inputPwd.placeholder = `단서 ${6 - solvedCount}개 더 수집 필요`;
+        }
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.style.opacity = '0.5';
+          btnSubmit.innerText = `단서 수집 중 (${solvedCount}/6)`;
+        }
       }
     }
 
@@ -1198,27 +1250,33 @@ class MainApp {
       const btnCloseX = document.getElementById('btn-close-career-keypad-x');
       if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
 
-      const btnOpenJob = document.getElementById('btn-open-job-select');
-      if (btnOpenJob) {
-        btnOpenJob.addEventListener('click', () => {
-          modal.classList.add('hidden');
-          this.openCareerJobSelectModal();
-        });
-      }
-
-      const btnSubmit = document.getElementById('btn-submit-career-password');
-      const inputPwd = document.getElementById('input-career-password');
       if (btnSubmit && inputPwd) {
         btnSubmit.addEventListener('click', () => {
+          const curClues = this.playerData.careerClues || [];
+          const curSolved = curClues.filter(Boolean).length;
+          if (curSolved < 6) {
+            alert(`🔒 아직 6개의 직업 단서를 모두 찾지 못했습니다! (현재 발견: ${curSolved} / 6개)\n방 안의 가구들을 조사하여 부족한 단서를 먼저 모아오세요!`);
+            return;
+          }
+
           const val = (inputPwd.value || '').trim().toUpperCase();
           if (val === 'DREAMS') {
             modal.classList.add('hidden');
             this.playerData.hasEscapedCareerRoom = true;
-            this.saveProgress();
+            this.saveProgress(true);
             this.showToast('🔓 비밀번호 DREAMS 일치! 탈출 도어락이 열렸습니다!', 'success');
+            if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+              window.AudioManager.playFanfare();
+            }
             setTimeout(() => this.openCareerJobSelectModal(), 300);
           } else {
-            alert('🔒 비밀번호가 일치하지 않습니다!\n방 안의 6가지 진로 단서(Doctor, Researcher, Engineer, Artist, Mentor, Scientist)의 첫 글자를 조합해보세요!');
+            alert('🔒 비밀번호가 일치하지 않습니다!\n방 안에서 찾은 6가지 직업 단서(Doctor, Researcher, Engineer, Artist, Mentor, Scientist)의 첫 글자를 조합해보세요!');
+          }
+        });
+
+        inputPwd.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            btnSubmit.click();
           }
         });
       }
@@ -1305,6 +1363,13 @@ class MainApp {
     }
 
     modal.classList.remove('hidden');
+  }
+
+  resetCareerEscapeProgress() {
+    if (!this.playerData) return;
+    this.playerData.careerClues = [false, false, false, false, false, false];
+    this.playerData.hasEscapedCareerRoom = false;
+    this.saveProgress(true);
   }
 
   selectCareerJob(jobId) {

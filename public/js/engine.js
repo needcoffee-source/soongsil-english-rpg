@@ -502,10 +502,10 @@ class GameEngine {
     } else if (this.player.room && (this.player.room.startsWith('room_') || this.player.room.startsWith('classroom'))) {
       // 교실 내부에서만 출구 문 밟았을 때 복도로 나가기 실행
       if (this.player.room === 'room_career') {
-        // 진로실: 출구 문은 y >= 19일 때만 나가기 발동 (단말기 조작 중 튕김 방지)
+        // 진로실: 하단 출구 문(y >= 17) 밟았을 때 5층 복도로 퇴장 & 진행 리셋
         const cr = this.getCurrentClassroomData();
-        const exit = (cr && cr.exitDoor) || { x: 30, y: 19 };
-        if (Math.abs(tileX - exit.x) <= 2 && tileY >= 19) {
+        const exit = (cr && cr.exitDoor) || { x: 30, y: 17 };
+        if (Math.abs(tileX - exit.x) <= 2 && tileY >= 17) {
           this.triggerFadeWarp(() => {
             this.exitClassroom();
           });
@@ -525,12 +525,15 @@ class GameEngine {
   exitClassroom() {
     if (this.player.isFallen) return; // 기절 상태에서는 교실 밖으로 걸어나갈 수 없음
     if (this.player.room === 'room_career') {
+      if (window.MainApp && typeof window.MainApp.resetCareerEscapeProgress === 'function') {
+        window.MainApp.resetCareerEscapeProgress();
+      }
       this.player.floor = 5;
       const f5 = WORLD_DATA.floors[5];
       const r = f5 && f5.rooms ? f5.rooms.find(rm => rm.id === 'room_career') : null;
       const rx = r ? r.doorX * 32 : 13 * 32;
       const ry = r ? (r.doorY + 2) * 32 : 7 * 32;
-      this.warpToRoom('hallway', f5 ? f5.name : '5층 복도', rx, ry);
+      this.warpToRoom('hallway', f5 ? f5.name : '5층 복도 (진로 & 선배 구역)', rx, ry);
       return;
     }
     const floorData = WORLD_DATA.floors[this.player.floor] || WORLD_DATA.floors[7];
@@ -541,6 +544,16 @@ class GameEngine {
   }
 
   warpToRoom(roomId, roomName, x, y) {
+    if (this.player.room === 'room_career' && roomId !== 'room_career') {
+      if (window.MainApp && typeof window.MainApp.resetCareerEscapeProgress === 'function') {
+        window.MainApp.resetCareerEscapeProgress();
+      }
+    }
+    if (roomId === 'room_career') {
+      if (window.MainApp && typeof window.MainApp.resetCareerEscapeProgress === 'function') {
+        window.MainApp.resetCareerEscapeProgress();
+      }
+    }
     this.player.room = roomId;
     this.player.roomName = roomName;
     this.player.x = x;
@@ -2261,12 +2274,12 @@ class GameEngine {
     this.ctx.strokeStyle = '#4f46e5';
     this.ctx.strokeRect(50.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
 
-    // Central Exit Carpet Runner (x: 28 ~ 32, y: 15 ~ 17)
+    // Central Exit Carpet Runner at Doorlock (x: 28.5 ~ 31.5, y: 5.2 ~ 7.0)
     this.ctx.fillStyle = hasEscaped ? 'rgba(34, 197, 94, 0.22)' : 'rgba(239, 68, 68, 0.22)';
-    this.ctx.fillRect(28.5 * 32, 14.8 * 32, 3 * 32, 2.4 * 32);
+    this.ctx.fillRect(28.5 * 32, 5.2 * 32, 3 * 32, 1.8 * 32);
     this.ctx.strokeStyle = hasEscaped ? '#22c55e' : '#ef4444';
     this.ctx.lineWidth = 2;
-    this.ctx.strokeRect(28.5 * 32, 14.8 * 32, 3 * 32, 2.4 * 32);
+    this.ctx.strokeRect(28.5 * 32, 5.2 * 32, 3 * 32, 1.8 * 32);
 
     // 2. Draw Station 1: 🏥 Aptitude PC (x: 10, y: 7)
     this.drawCareerStationPC(10 * 32, 7 * 32);
@@ -2293,7 +2306,7 @@ class GameEngine {
     this.drawCareerClueLabel(52 * 32 + 16, 7 * 32 - 18, 6, '우주 탐구관', 'S', clues[5]);
 
     // 8. Draw Digital Escape Keypad (x: 30, y: 16)
-    this.drawCareerKeypadStation(30 * 32, 16 * 32, hasEscaped, solvedCount);
+    this.drawCareerKeypadStation(30 * 32, 6 * 32, hasEscaped, solvedCount);
 
     // 9. Chalkboard Mission Header on the Top Wall (x: 30, y: 2)
     this.drawCareerBlackboardBanner(clues, solvedCount, hasEscaped);
@@ -2544,7 +2557,7 @@ class GameEngine {
     this.ctx.textAlign = 'center';
     this.ctx.font = '800 13px "Pretendard", "Malgun Gothic", sans-serif';
     this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillText('🌟 [5층 진로 방탈출] 6대 단서를 모아 너의 미래 비전(D·R·E·A·M·S)을 완성하라! 🌟', bx + bw / 2, by + 23);
+    this.ctx.fillText('🌟 [5층 진로 방탈출] 6대 직업 단서를 모아 비밀 암호를 완성하라! 🌟', bx + bw / 2, by + 23);
 
     // Clue letter blocks
     const letters = ['D', 'R', 'E', 'A', 'M', 'S'];
