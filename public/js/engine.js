@@ -403,6 +403,7 @@ class GameEngine {
   }
 
   getCurrentClassroomData() {
+    if (this.player.room === 'room_history' && WORLD_DATA.classroom_history) return WORLD_DATA.classroom_history;
     if (this.player.room === 'room_staff_office' && WORLD_DATA.classroom_staff_office) return WORLD_DATA.classroom_staff_office;
     if (this.player.room === 'room_204' && WORLD_DATA.classroom_204) return WORLD_DATA.classroom_204;
     if (this.player.room === 'room_205' && WORLD_DATA.classroom_205) return WORLD_DATA.classroom_205;
@@ -508,10 +509,10 @@ class GameEngine {
       return;
     } else if (this.player.room && (this.player.room.startsWith('room_') || this.player.room.startsWith('classroom'))) {
       // 교실 내부에서만 출구 문 밟았을 때 복도로 나가기 실행
-      if (this.player.room === 'room_career') {
-        // 진로실: 하단 출구 문(y >= 17) 밟았을 때 5층 복도로 퇴장 & 진행 리셋
+      if (this.player.room === 'room_career' || this.player.room === 'room_staff_office') {
         const cr = this.getCurrentClassroomData();
-        const exit = (cr && cr.exitDoor) || { x: 30, y: 17 };
+        const defaultExitX = (this.player.room === 'room_staff_office') ? 45 : 30;
+        const exit = (cr && cr.exitDoor) || { x: defaultExitX, y: 17 };
         if (Math.abs(tileX - exit.x) <= 2 && tileY >= 17) {
           this.triggerFadeWarp(() => {
             this.exitClassroom();
@@ -541,6 +542,19 @@ class GameEngine {
       const rx = r ? r.doorX * 32 : 13 * 32;
       const ry = r ? (r.doorY + 2) * 32 : 7 * 32;
       this.warpToRoom('hallway', f5 ? f5.name : '5층 복도 (진로 & 선배 구역)', rx, ry);
+      return;
+    }
+    if (this.player.room === 'room_history') {
+      this.warpToRoom('playground', '숭실 운동장', 87 * 32, 53 * 32);
+      return;
+    }
+    if (this.player.room === 'room_staff_office') {
+      this.player.floor = 6;
+      const f6 = WORLD_DATA.floors[6];
+      const r = f6 && f6.rooms ? f6.rooms.find(rm => rm.id === 'room_staff_office') : null;
+      const rx = r ? r.doorX * 32 : 13 * 32;
+      const ry = r ? (r.doorY + 2) * 32 : 7 * 32;
+      this.warpToRoom('hallway', f6 ? f6.name : '6층 복도 (본관 교무실 & 2학년 구역)', rx, ry);
       return;
     }
     const floorData = WORLD_DATA.floors[this.player.floor] || WORLD_DATA.floors[7];
@@ -644,6 +658,18 @@ class GameEngine {
         this.player.x = 30 * 32;
         this.player.y = 13 * 32;
         this.player.roomName = '🌟 진로실 (Career Center)';
+      } else if (room === 'room_staff_office') {
+        this.player.floor = 6;
+        this.player.room = 'room_staff_office';
+        this.player.x = 45 * 32;
+        this.player.y = 13 * 32;
+        this.player.roomName = '🏛️ 본관 교무실 (Staff Office)';
+      } else if (room === 'room_history') {
+        this.player.floor = 0;
+        this.player.room = 'room_history';
+        this.player.x = 15 * 32;
+        this.player.y = 13 * 32;
+        this.player.roomName = '🏛️ 숭실역사관 (History Hall)';
       } else {
         this.player.room = room || 'room_701';
         this.player.x = 15 * 32;
@@ -1059,6 +1085,9 @@ class GameEngine {
         }
         if (pg.cafeteria && Math.hypot(pg.cafeteria.x * 32 - x, (pg.cafeteria.y + 1.5) * 32 - y) < 56) {
           return { type: 'cafeteria', name: '학생 급식실', prompt: '급식실 입장' };
+        }
+        if (pg.historyHall && Math.hypot(pg.historyHall.x * 32 - x, (pg.historyHall.y + 0.5) * 32 - y) < 56) {
+          return { type: 'history_hall', name: pg.historyHall.name, prompt: pg.historyHall.prompt };
         }
         if (pg.store && Math.hypot(pg.store.x * 32 - x, (pg.store.y + 0.5) * 32 - y) < 56) {
           return { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '물품 매각' };
@@ -2318,7 +2347,7 @@ class GameEngine {
 
     // 8. Draw Decoy Clue Station 7: 💼 Vintage Briefcase (x: 28, y: 12)
     this.drawCareerStationDecoy(28 * 32, 12 * 32);
-    this.drawCareerClueLabel(28 * 32 + 16, 12 * 32 - 18, 7, '골동품 서류가방', 'X', clues[6]);
+    this.drawCareerClueLabel(28 * 32 + 16, 12 * 32 - 18, 7, '골동품 서류가방', 'P', clues[6]);
 
     // 9. Draw Fallen Developer Note #2 (가장 왼쪽 아래편: x: 4, y: 16)
     this.drawHighResDevNote(4 * 32, 16 * 32, '📜 떨어진 개발자노트 (제2편)');
@@ -2508,6 +2537,35 @@ class GameEngine {
     this.ctx.fillStyle = '#fde047';
     this.ctx.fillRect(px + 29, py, 2, 2);
     this.ctx.fillRect(px + 28, py - 1, 4, 1);
+  }
+
+  // Decoy Clue 7: Vintage Briefcase on Small Table
+  drawCareerStationDecoy(px, py) {
+    // Red/Gold carpet runner
+    this.ctx.fillStyle = 'rgba(180, 83, 9, 0.16)';
+    this.ctx.fillRect(px - 14, py - 6, 60, 42);
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.strokeRect(px - 14, py - 6, 60, 42);
+
+    // Wooden table
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(px - 4, py + 8, 40, 18);
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(px - 2, py + 10, 36, 14);
+
+    // Vintage Leather Briefcase
+    this.ctx.fillStyle = '#713f12';
+    this.ctx.fillRect(px + 4, py, 24, 16);
+    this.ctx.strokeStyle = '#ca8a04';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.strokeRect(px + 4, py, 24, 16);
+
+    // Brass latches & handle
+    this.ctx.fillStyle = '#facc15';
+    this.ctx.fillRect(px + 7, py + 4, 3, 5);
+    this.ctx.fillRect(px + 22, py + 4, 3, 5);
+    this.ctx.fillRect(px + 13, py - 3, 6, 3);
   }
 
   // Digital Escape Keypad
@@ -4724,6 +4782,25 @@ class GameEngine {
     } else if (this.player.room === 'room_career') {
       // === 5층 대형 진로실: 진로 방탈출 6대 단서 & 직업 패시브 아카데미 ===
       this.renderCareerEscapeRoom(cr);
+    } else if (this.player.room === 'room_history') {
+      // === 🏛️ 숭실역사관: 1-1반 크기 고풍스러운 역사 기념관 홀 연출 ===
+      // 중앙 레드 카펫 러너 (출입문부터 기념 현판까지)
+      this.ctx.fillStyle = 'rgba(185, 28, 28, 0.35)';
+      this.ctx.fillRect(13 * 32, 5 * 32, 4 * 32, 12 * 32);
+      this.ctx.strokeStyle = '#f59e0b';
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeRect(13 * 32, 5 * 32, 4 * 32, 12 * 32);
+
+      // 상단 역사관 칠판 배너
+      const hw = 18 * 32;
+      const hx = Math.round((15 * 32) - (hw / 2));
+      const hy = 12;
+      this.ctx.save();
+      this.ctx.textAlign = 'center';
+      this.ctx.font = '800 13px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.fillStyle = '#fef08a';
+      this.ctx.fillText('🏛️ [숭실역사관] 1897년 평양에서 시작된 숭실의 127년 역사와 사명 🏛️', hx + hw / 2, hy + 23);
+      this.ctx.restore();
     } else if (this.player.floor === 5) {
       // 5층 잠긴 교실들: 깨끗한 빈 공간 연출
     } else {
@@ -4858,6 +4935,9 @@ class GameEngine {
     // 4. Cafeteria Entrance (Right next to elevator: x: 86, y: 3)
     const pgCaf = (WORLD_DATA.playground && WORLD_DATA.playground.cafeteria) || { x: 86, y: 3 };
     this.drawHighResCafeteriaEntrance(pgCaf.x * 32, pgCaf.y * 32);
+
+    // 4-B. 숭실역사관 입구 (풋살장 우측 하단: x: 87, y: 52)
+    this.drawHighResHistoryEntrance(87 * 32, 52 * 32);
 
     // 4-B. Store NPC (매점 - 엘리베이터 좌측 넓은 공터: x: 72, y: 4)
     const pgStore = (WORLD_DATA.playground && WORLD_DATA.playground.store) || { x: 72, y: 4 };

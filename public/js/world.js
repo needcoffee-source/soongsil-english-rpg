@@ -113,13 +113,30 @@ const WORLD_DATA = {
       { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 40, y: 12, name: "🎨 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 45, y: 7, name: "🤝 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 52, y: 7, name: "🔭 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_7", type: "career_clue", clueIndex: 7, isDecoy: true, letter: "X", x: 28, y: 12, name: "💼 골동품 서류가방 (미지의 단서)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_7", type: "career_clue", clueIndex: 7, isDecoy: true, letter: "P", x: 28, y: 12, name: "💼 골동품 서류가방 (미지의 단서)", prompt: "단서 조사 (SPACE)" },
       { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 6, name: "🔐 진로실 탈출 도어락", prompt: "탈출 도어락 조작 (SPACE)" },
       { id: "note_developer_career", type: "dev_note_2", x: 4, y: 16, name: "📜 떨어진 개발자노트 (제2편)", prompt: "개발자노트 2편 읽기 (SPACE)" }
     ]
   },
 
-    // 6층 대형 교무실 (교실 3개 사이즈: 90 x 20) & 2학년 교실
+    // 🏛️ 숭실역사관 (Soongsil History Museum - 1-1반 크기: 30 x 20)
+  classroom_history: {
+    name: "🏛️ 숭실역사관 (History Hall)",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "🏛️ 숭실역사관 기념관",
+      prompt: ""
+    },
+    teacherDesk: null,
+    gatherSpots: [],
+    desks: [],
+    npcs: [],
+    interactive: []
+  },
+
+  // 6층 대형 교무실 (교실 3개 사이즈: 90 x 20) & 2학년 교실
   classroom_staff_office: {
     name: "🏛️ 본관 교무실 (Staff Office)",
     exitDoor: { x: 45, y: 17 },
@@ -365,6 +382,14 @@ const WORLD_DATA = {
     height: 54,
     elevator: { x: 80, y: 3 },
     cafeteria: { x: 86, y: 3, name: "학생 급식실", prompt: "급식실 입장" },
+    historyHall: {
+      id: "entrance_history_hall",
+      type: "history_hall",
+      x: 87,
+      y: 52,
+      name: "🏛️ 숭실역사관 입구",
+      prompt: "숭실역사관 입장 (SPACE)"
+    },
     store: {
       id: "store_canteen",
       type: "store",

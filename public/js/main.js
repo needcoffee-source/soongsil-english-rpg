@@ -523,12 +523,12 @@ const CAREER_ESCAPE_CLUES = [
     id: 'career_clue_7',
     isDecoy: true,
     title: '💼 골동품 서류가방 (미지의 단서)',
-    letter: 'X',
+    letter: 'P',
     stationName: '골동품 가죽 서류가방',
-    question: '빛바랜 서류가방 틈새에서 수수께끼 쪽지가 발견되었습니다!\n\n\"모든 단서가 정답으로 이어지는 것은 아니다...\n어둠 속에서 반짝이는 것은 모두 금이 아니다. (All that glitters is not gold.)\"\n\n이 가방에 새겨진 미지의 단어는 무엇일까요?\n💡 힌트: X로 시작하는 9글자 악기 단어입니다!',
-    options: ['Xylophone (실로폰)', 'Xenon (크세논)', 'X-ray (엑스레이)', 'Xerox (복사기)'],
-    answer: 'Xylophone (실로폰)',
-    clueReveal: '알파벳 [ X ]를 발견했습니다! ...어라? 🤔 칠판의 6자리 비밀 암호(D-R-E-A-M-S) 어디에도 \'X\'가 들어갈 자리가 없는 것 같습니다!\n\n💡 [주의]: 탈출 정답과 관련 없는 낚시 단서인 것 같습니다! 🎣'
+    question: '빛바랜 서류가방 틈새에서 수수께끼 쪽지가 발견되었습니다!\n\n\"모든 단서가 정답으로 이어지는 것은 아니다...\n어둠 속에서 반짝이는 것은 모두 금이 아니다. (All that glitters is not gold.)\"\n\n이 가방에 새겨진 악기 단어는 무엇일까요?\n💡 힌트: P로 시작하는 5글자 건반 악기입니다!',
+    options: ['Piano (피아노)', 'Violin (바이올린)', 'Guitar (기타)', 'Drum (드럼)'],
+    answer: 'Piano (피아노)',
+    clueReveal: '알파벳 [ P ]를 발견했습니다! ...어라? 🤔 칠판의 6자리 비밀 암호(D-R-E-A-M-S) 어디에도 \'P\'가 들어갈 자리가 없는 것 같습니다!\n\n💡 [주의]: 탈출 정답과 관련 없는 낚시 단서인 것 같습니다! 🎣'
   }
 ];
 
@@ -983,6 +983,10 @@ class MainApp {
       this.openLeaderboard();
     } else if (target.type === 'elevator') {
       this.handleElevatorInteraction();
+    } else if (target.type === 'history_hall') {
+      this.engine.triggerFadeWarp(() => {
+        this.engine.warpToRoom('room_history', '🏛️ 숭실역사관 (History Hall)', 15 * 32, 13 * 32);
+      });
     } else if (target.type === 'cafeteria') {
       alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
     } else if (target.type === 'store') {
@@ -1835,212 +1839,74 @@ class MainApp {
 
     const dialog = window.RPGDialog;
 
-    if (this.playerData.isTeacher) {
-      if (this.engine.player.floor === 5) {
-        if (dialog) {
-          dialog.confirm(
-            '🛗 5층 중앙 엘리베이터',
-            '1학년 복도로 내려가시겠습니까?\n([취소]를 누르면 현재 5층에 머무릅니다)',
-            '🛗',
-            () => {
-              this.engine.triggerFadeWarp(() => {
-                this.engine.player.floor = 7;
-                this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
-                this._elevatorCooldown = Date.now() + 1500;
-              });
-            }
-          );
-        } else if (confirm('🛗 [5층 중앙 엘리베이터]\n\n[확인]을 누르면 1학년 복도로 내려갑니다.')) {
-          this.engine.triggerFadeWarp(() => {
-            this.engine.player.floor = 7;
-            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
-            this._elevatorCooldown = Date.now() + 1500;
-          });
-        }
-        return;
-      }
-      if (this.engine.player.room === 'playground') {
-        if (dialog) {
-          dialog.confirm(
-            '교사 전용 프리패스',
-            '1학년 복도로 이동하시겠습니까?',
-            '🛗',
-            () => {
-              this.engine.triggerFadeWarp(() => {
-                this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
-                this._elevatorCooldown = Date.now() + 1500;
-              });
-            }
-          );
-        } else if (confirm('🛗 [교사 전용 프리패스]\n\n1학년 복도로 이동하시겠습니까?')) {
-          this.engine.triggerFadeWarp(() => {
-            this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
-          });
-        }
-      } else {
-        if (dialog) {
-          dialog.confirm(
-            '교사 전용 프리패스',
-            '숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)',
-            '🛗',
-            () => {
-              this.engine.triggerFadeWarp(() => {
-                this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
-                this._elevatorCooldown = Date.now() + 1500;
-              });
-            }
-          );
-        } else if (confirm('🛗 [교사 전용 프리패스]\n\n숭실 운동장으로 이동하시겠습니까? (교사는 골드 무료)')) {
-          this.engine.triggerFadeWarp(() => {
-            this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
-          });
-        }
-      }
-      return;
-    }
-
-    if (this.engine.player.room === 'playground') {
-      if (dialog) {
-        dialog.confirm(
-          '중앙 엘리베이터 탑승',
-          '1학년 복도로 올라가시겠습니까?',
-          '🛗',
-          () => {
-            if (window.AudioManager) window.AudioManager.playSelect();
-            this.engine.triggerFadeWarp(() => {
-              this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
-              this._elevatorCooldown = Date.now() + 1500;
-            });
-          }
-        );
-      } else if (confirm('🛗 [중앙 엘리베이터 탑승]\n\n1학년 복도로 올라가시겠습니까?')) {
-        if (window.AudioManager) window.AudioManager.playSelect();
-        this.engine.triggerFadeWarp(() => {
-          this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
-        });
-      }
-    } else {
-      // 1. 1차 관문 보스(가죽 골렘) 토벌 여부 검사 (토벌 전까지는 점검 중)
-      if (!this.isElevatorUnlocked()) {
-        alert(
-          '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌하고 [🪪 엘리베이터 작동권]을 획득해야 엘리베이터를 가동할 수 있습니다!"'
-        );
-        return;
-      }
-
-      // 2. 엘리베이터 작동권 장착 여부 검사
-      if (!this.isElevatorPassEquipped()) {
-        if (this.hasItem('equip_elevator_pass')) {
-          if (dialog) {
-            dialog.confirm(
-              '엘리베이터 키 미인식',
-              '가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?',
-              '🛗',
-              () => {
-                this.equipItem('equip_elevator_pass');
-                this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-              }
-            );
-          } else {
-            const equipNow = confirm(
-              '🛗 [엘리베이터 키 미인식]\n\n가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?'
-            );
-            if (equipNow) {
-              this.equipItem('equip_elevator_pass');
-              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-            }
-          }
-          return;
-        } else {
-          // 혹시 골렘은 잡았는데 작동권이 인벤토리에 없는 경우 (소급 자동 지급)
-          this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
-            type: 'equipment',
-            slot: 'accessory',
-            isQuestItem: true,
-            stats: { atk: 0, def: 0, hp: 0 },
-            effect: '🛗 중앙 엘리베이터 가동 인가증'
-          });
-          if (dialog) {
-            dialog.confirm(
-              '작동권 발급',
-              '골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?',
-              '🎉',
-              () => {
-                this.equipItem('equip_elevator_pass');
-                this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-              }
-            );
-          } else {
-            const equipNow = confirm(
-              '🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?'
-            );
-            if (equipNow) {
-              this.equipItem('equip_elevator_pass');
-              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-            }
-          }
-          return;
-        }
-      }
-
-      // 3. 엘리베이터 행선지 선택 (모달 UI 호출)
+    // 교사는 통행권 및 퀘스트 검사 없이 즉시 전 층 엘리베이터 모달 오픈
+    if (this.playerData && this.playerData.isTeacher) {
       this.openElevatorModal();
       return;
-      // 3. 구형 엘리베이터 행선지 선택
-      const currentFloor = this.engine.player.floor;
-      if (dialog) {
-        dialog.confirm(
-          '🛗 중앙 엘리베이터 가동',
-          '이동할 층을 선택하세요:\n\n[확인] ➔ 🌟 5층 진로상담실 (진로 방탈출 & 6대 직업 전직)\n[취소] ➔ ⚽ 숭실 운동장 (10G 소모)',
-          '🛗',
-          () => {
-            // 5층 이동
-            if (window.AudioManager) window.AudioManager.playSelect();
-            this.engine.triggerFadeWarp(() => {
-              this.engine.player.floor = 5;
-              this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
-              this._elevatorCooldown = Date.now() + 1500;
-            });
-          },
-          () => {
-            // 운동장 이동 (10G)
-            if (this.playerData.gold < 10) {
-              alert(`❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
-              return;
+    }
+
+    // 1. 1차 관문 보스(가죽 골렘) 토벌 여부 검사 (운동장이나 복도 어디서든)
+    if (!this.isElevatorUnlocked()) {
+      alert(
+        '⚠️ [엘리베이터 점검 중]\n\n"현재 중앙 엘리베이터는 [점검 중]이라 탑승할 수 없습니다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌하고 [🪪 엘리베이터 작동권]을 획득해야 엘리베이터를 가동할 수 있습니다!"'
+      );
+      return;
+    }
+
+    // 2. 엘리베이터 작동권 장착 여부 검사
+    if (!this.isElevatorPassEquipped()) {
+      if (this.hasItem('equip_elevator_pass')) {
+        if (dialog) {
+          dialog.confirm(
+            '엘리베이터 키 미인식',
+            '가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?',
+            '🛗',
+            () => {
+              this.equipItem('equip_elevator_pass');
+              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+              this.openElevatorModal();
             }
-            this.addGold(-10);
-            if (window.AudioManager) window.AudioManager.playSelect();
-            this.engine.triggerFadeWarp(() => {
-              this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
-              this._elevatorCooldown = Date.now() + 1500;
-            });
-          },
-          '5층 진로실',
-          '운동장 (10G)'
-        );
-      } else {
-        const choice = confirm('🛗 [중앙 엘리베이터]\n\n[확인]: 5층 진로상담실로 이동\n[취소]: 숭실 운동장으로 이동 (10G)');
-        if (choice) {
-          if (window.AudioManager) window.AudioManager.playSelect();
-          this.engine.triggerFadeWarp(() => {
-            this.engine.player.floor = 5;
-            this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
-            this._elevatorCooldown = Date.now() + 1500;
-          });
+          );
         } else {
-          if (this.playerData.gold < 10) {
-            alert(`❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
-            return;
+          if (confirm('🛗 [엘리베이터 키 미인식]\n\n가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 장착하시겠습니까?')) {
+            this.equipItem('equip_elevator_pass');
+            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+            this.openElevatorModal();
           }
-          this.addGold(-10);
-          if (window.AudioManager) window.AudioManager.playSelect();
-          this.engine.triggerFadeWarp(() => {
-            this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
-            this._elevatorCooldown = Date.now() + 1500;
-          });
         }
+        return;
+      } else {
+        this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
+          type: 'equipment',
+          slot: 'accessory',
+          isQuestItem: true,
+          stats: { atk: 0, def: 0, hp: 0 },
+          effect: '🛗 중앙 엘리베이터 가동 인가증'
+        });
+        if (dialog) {
+          dialog.confirm(
+            '작동권 발급',
+            '골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?',
+            '🎉',
+            () => {
+              this.equipItem('equip_elevator_pass');
+              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+              this.openElevatorModal();
+            }
+          );
+        } else {
+          if (confirm('🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 작동권이 지급되었습니다! 지금 바로 장착하시겠습니까?')) {
+            this.equipItem('equip_elevator_pass');
+            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
+            this.openElevatorModal();
+          }
+        }
+        return;
       }
     }
+
+    // 3. 전 층 선택 모달 오픈
+    this.openElevatorModal();
   }
 
   handleSecretLocker() {
