@@ -8257,7 +8257,7 @@ class GameEngine {
     this.ctx.fillText('⚔️', px + 16, py - 10);
 
     // Label
-    const altarTitle = unlocked ? '🔨 4티어 헤리티지 성검 제단' : '🔒 4티어 제단 (4대 전시관 탐방 필요)';
+    const altarTitle = unlocked ? '🔨 4티어 헤리티지 무기·방어구 제단' : '🔒 4티어 제단 (4대 전시관 탐방 필요)';
     this.drawSharpLabel(px + 16, py - 28, altarTitle, {
       bgColor: unlocked ? 'rgba(120, 53, 15, 0.95)' : 'rgba(30, 41, 59, 0.95)',
       borderColor: unlocked ? '#f59e0b' : '#64748b',

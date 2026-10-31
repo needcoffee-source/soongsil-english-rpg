@@ -624,7 +624,7 @@
     "id": "recipe_heritage_sword",
     "name": "⚔️ 1897 숭실 헤리티지 소드 (The 1897 Heritage Blade)",
     "category": "equipment",
-    "description": "[4티어 전설 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다. 기말고사 파멸신에게 25% 추가 피해를 입힙니다.",
+    "description": "[4티어 전설 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
     "icon": "⚔️",
     "gradeLevel": 1,
     "requiredGold": 150,
@@ -666,7 +666,105 @@
         "def": 12,
         "hp": 35
       },
-      "effect": "4티어 전설 무기 · 공격력 +42, 방어력 +12, 체력 +35 [특수] 기말고사 파멸신 대상 피해량 +25%"
+      "effect": "4티어 전설 무기 · 공격력 +42, 방어력 +12, 체력 +35"
+    }
+  },
+  {
+    "id": "recipe_heritage_helmet",
+    "name": "👑 1897 숭실 헤리티지 투구 (The 1897 Heritage Helmet)",
+    "category": "equipment",
+    "description": "[4티어 전설 방어구] 숭실 127년의 역사와 선배들의 지혜가 깃든 성스러운 투구입니다.",
+    "icon": "👑",
+    "gradeLevel": 1,
+    "requiredGold": 120,
+    "requiredItems": [
+      {
+        "item": "item_history_essence",
+        "name": "🏛️ 숭실 역사의 정수",
+        "count": 4
+      },
+      {
+        "item": "item_unyielding_stone",
+        "name": "💎 꺾이지 않는 사명석",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "진정한 지혜는 우리의 뿌리를 존중하는 것에서 시작된다.",
+      "words": [
+        "True",
+        "wisdom",
+        "begins",
+        "with",
+        "respect",
+        "for",
+        "our",
+        "roots."
+      ],
+      "correct": "True wisdom begins with respect for our roots."
+    },
+    "result": {
+      "item": "equip_heritage_helmet",
+      "name": "👑 1897 숭실 헤리티지 투구",
+      "icon": "👑",
+      "type": "equipment",
+      "slot": "helmet",
+      "stats": {
+        "atk": 8,
+        "def": 26,
+        "hp": 55
+      },
+      "effect": "4티어 전설 투구 · 공격력 +8, 방어력 +26, 체력 +55"
+    }
+  },
+  {
+    "id": "recipe_heritage_armor",
+    "name": "🛡️ 1897 숭실 헤리티지 갑옷 (The 1897 Heritage Armor)",
+    "category": "equipment",
+    "description": "[4티어 전설 방어구] 어떤 시련에도 꺾이지 않는 숭실의 숭고한 사명이 깃든 성스러운 갑옷입니다.",
+    "icon": "🛡️",
+    "gradeLevel": 1,
+    "requiredGold": 140,
+    "requiredItems": [
+      {
+        "item": "item_history_essence",
+        "name": "🏛️ 숭실 역사의 정수",
+        "count": 5
+      },
+      {
+        "item": "item_unyielding_stone",
+        "name": "💎 꺾이지 않는 사명석",
+        "count": 3
+      }
+    ],
+    "unscramble": {
+      "korean": "우리는 믿음과 용기의 토대 위에서 굳건히 서 있습니다.",
+      "words": [
+        "We",
+        "stand",
+        "strong",
+        "on",
+        "the",
+        "foundation",
+        "of",
+        "faith",
+        "and",
+        "courage."
+      ],
+      "correct": "We stand strong on the foundation of faith and courage."
+    },
+    "result": {
+      "item": "equip_heritage_armor",
+      "name": "🛡️ 1897 숭실 헤리티지 갑옷",
+      "icon": "🛡️",
+      "type": "equipment",
+      "slot": "armor",
+      "stats": {
+        "atk": 10,
+        "def": 35,
+        "hp": 60
+      },
+      "effect": "4티어 전설 갑옷 · 공격력 +10, 방어력 +35, 체력 +60"
     }
   }
 ]
