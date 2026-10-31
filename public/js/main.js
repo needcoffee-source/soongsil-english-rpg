@@ -459,7 +459,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'D',
     stationName: '적성검사 컴퓨터',
     question: '환자의 아픔을 치료하고 생명을 살리는 고귀한 직업은 무엇일까요?\n\n💡 힌트: 영어 철자 D로 시작하는 6글자 단어입니다!',
-    options: ['Doctor (의사)', 'Dancer (무용수)', 'Driver (운전기사)', 'Dentist (치과의사)'],
+    options: ['Dancer (무용수)', 'Driver (운전기사)', 'Doctor (의사)', 'Dentist (치과의사)'],
     answer: 'Doctor (의사)',
     clueReveal: '알파벳 [ D ]를 획득했습니다! (D - _ - _ - _ - _ - _)'
   },
@@ -470,7 +470,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'R',
     stationName: '과학 연구 실험대',
     question: '새로운 지식과 과학 기술을 깊이 탐색하고 발견하는 \'연구원\'을 뜻하는 영어 단어는?\n\n💡 힌트: R로 시작하며 research(연구하다)를 하는 전문가입니다!',
-    options: ['Researcher (연구원)', 'Reader (독서가)', 'Runner (달리기 선수)', 'Reporter (기자)'],
+    options: ['Reader (독서가)', 'Researcher (연구원)', 'Runner (달리기 선수)', 'Reporter (기자)'],
     answer: 'Researcher (연구원)',
     clueReveal: '알파벳 [ R ]를 획득했습니다! (D - R - _ - _ - _ - _)'
   },
@@ -481,7 +481,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'E',
     stationName: '공학 코딩석',
     question: '소프트웨어, 인공지능, 첨단 기계를 설계하고 만드는 \'공학자·엔지니어\'는?\n\n💡 힌트: E로 시작하며 엔진(engine)과 기술을 다루는 사람입니다!',
-    options: ['Engineer (엔지니어)', 'Explorer (탐험가)', 'Editor (편집자)', 'Economist (경제학자)'],
+    options: ['Explorer (탐험가)', 'Editor (편집자)', 'Economist (경제학자)', 'Engineer (엔지니어)'],
     answer: 'Engineer (엔지니어)',
     clueReveal: '알파벳 [ E ]를 획득했습니다! (D - R - E - _ - _ - _)'
   },
@@ -492,7 +492,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'A',
     stationName: '예술 창작 이젤',
     question: '풍부한 상상력과 아름다움을 그림, 조각, 음악으로 표현하는 \'예술가\'는?\n\n💡 힌트: A로 시작하며 art(예술)를 창작하는 사람입니다!',
-    options: ['Artist (예술가)', 'Actor (배우)', 'Athlete (운동선수)', 'Author (작가)'],
+    options: ['Actor (배우)', 'Artist (예술가)', 'Athlete (운동선수)', 'Author (작가)'],
     answer: 'Artist (예술가)',
     clueReveal: '알파벳 [ A ]를 획득했습니다! (D - R - E - A - _ - _)'
   },
@@ -503,7 +503,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'M',
     stationName: '멘토링 데스크',
     question: '사람들에게 지혜와 꿈을 전하고 든든한 길잡이가 되어주는 \'조언자·멘토\'는?\n\n💡 힌트: M으로 시작하는 6글자 단어입니다!',
-    options: ['Mentor (멘토/조언자)', 'Musician (음악가)', 'Magician (마술사)', 'Mechanic (정비사)'],
+    options: ['Musician (음악가)', 'Magician (마술사)', 'Mechanic (정비사)', 'Mentor (멘토/조언자)'],
     answer: 'Mentor (멘토/조언자)',
     clueReveal: '알파벳 [ M ]를 획득했습니다! (D - R - E - A - M - _)'
   },
@@ -514,7 +514,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'S',
     stationName: '우주 탐구관',
     question: '자연의 법칙과 우주의 신비를 탐구하는 \'과학자\'를 뜻하는 영어 단어는?\n\n💡 힌트: S로 시작하며 science(과학)를 연구하는 학자입니다!',
-    options: ['Scientist (과학자)', 'Sailor (항해사)', 'Soldier (군인)', 'Singer (가수)'],
+    options: ['Sailor (항해사)', 'Soldier (군인)', 'Scientist (과학자)', 'Singer (가수)'],
     answer: 'Scientist (과학자)',
     clueReveal: '알파벳 [ S ]를 획득했습니다! (D - R - E - A - M - S)'
   },
@@ -526,7 +526,7 @@ const CAREER_ESCAPE_CLUES = [
     letter: 'P',
     stationName: '골동품 가죽 서류가방',
     question: '빛바랜 서류가방 틈새에서 수수께끼 쪽지가 발견되었습니다!\n\n\"모든 단서가 정답으로 이어지는 것은 아니다...\n어둠 속에서 반짝이는 것은 모두 금이 아니다. (All that glitters is not gold.)\"\n\n이 가방에 새겨진 악기 단어는 무엇일까요?\n💡 힌트: P로 시작하는 5글자 건반 악기입니다!',
-    options: ['Piano (피아노)', 'Violin (바이올린)', 'Guitar (기타)', 'Drum (드럼)'],
+    options: ['Violin (바이올린)', 'Guitar (기타)', 'Piano (피아노)', 'Drum (드럼)'],
     answer: 'Piano (피아노)',
     clueReveal: '알파벳 [ P ]를 발견했습니다! ...어라? 🤔 칠판의 6자리 비밀 암호(D-R-E-A-M-S) 어디에도 \'P\'가 들어갈 자리가 없는 것 같습니다!\n\n💡 [주의]: 탈출 정답과 관련 없는 낚시 단서인 것 같습니다! 🎣'
   }
@@ -1828,6 +1828,102 @@ class MainApp {
 
   isDragonCleared() {
     return this.isElevatorUnlocked();
+  }
+
+  // 🛗 중앙 엘리베이터 층 선택 모달
+  openElevatorModal() {
+    const modal = document.getElementById('modal-elevator');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+
+    const curFloor = this.engine.player.floor;
+    const curRoom = this.engine.player.room;
+
+    const floorButtons = modal.querySelectorAll('.btn-elevator-floor');
+    floorButtons.forEach(btn => {
+      const target = btn.dataset.target;
+      const tag = btn.querySelector('.elevator-tag');
+
+      let isCurrent = false;
+      if (target === 'floor_6' && curRoom === 'hallway' && curFloor === 6) isCurrent = true;
+      if (target === 'floor_5' && curRoom === 'hallway' && curFloor === 5) isCurrent = true;
+      if (target === 'floor_1' && curRoom === 'hallway' && curFloor === 7) isCurrent = true;
+      if (target === 'playground' && curRoom === 'playground') isCurrent = true;
+
+      if (isCurrent) {
+        btn.style.opacity = '0.55';
+        btn.style.pointerEvents = 'none';
+        if (tag) {
+          tag.innerText = '현재 위치';
+          tag.style.background = '#334155';
+          tag.style.color = '#94a3b8';
+        }
+      } else {
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+        if (tag) {
+          if (target === 'playground') {
+            tag.innerText = (this.playerData && this.playerData.isTeacher) ? '이동 (무료)' : '10G 소모 ➔';
+          } else {
+            tag.innerText = '이동 ➔';
+          }
+        }
+      }
+
+      // Rebind click
+      if (!btn._bound) {
+        btn._bound = true;
+        btn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          this.travelToElevatorFloor(btn.dataset.target);
+        });
+      }
+    });
+
+    const btnClose = document.getElementById('btn-close-elevator-modal');
+    if (btnClose && !btnClose._bound) {
+      btnClose._bound = true;
+      btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+  }
+
+  travelToElevatorFloor(target) {
+    if (this._elevatorCooldown && Date.now() - this._elevatorCooldown < 1500) return;
+    this._elevatorCooldown = Date.now() + 1500;
+
+    if (target === 'floor_6') {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 6;
+        this.engine.warpToRoom('hallway', '6층 복도 (본관 교무실 & 2학년 구역)', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'floor_5') {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 5;
+        this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'floor_1') {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 7;
+        this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'playground') {
+      if (!this.playerData.isTeacher) {
+        if (this.playerData.gold < 10) {
+          alert(`❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
+          return;
+        }
+        this.addGold(-10);
+      }
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 0;
+        this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
+      });
+    }
   }
 
   handleElevatorInteraction() {
@@ -6324,6 +6420,56 @@ class MainApp {
       btnB.title = '특별한 신발을 얻어야 달릴 수 있습니다';
       const sub = btnB.querySelector('.btn-sub');
       if (sub) sub.textContent = '🔒 달리기 (잠김)';
+    }
+  }
+
+  // 📜 진로실 떨어진 개발자노트 이스터에그 (제2편)
+  handleDevNote2Interaction() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const noteKey = 'soongsil_dev_note_2_' + studentId;
+    let alreadyRead = false;
+    try {
+      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+    } catch (e) {}
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const noteStory =
+      "📜 [떨어진 개발자노트 — 제2편: 저마다의 별을 향하여]\n\n" +
+      "\"새벽 3시의 교정. 교실 창밖으로 고요한 별빛들이 쏟아지고 있었다.\n" +
+      "진로실의 텅 빈 의자들을 바라보며, 문득 우리 아이들의 꿈을 떠올렸다.\n\n" +
+      "의사, 과학자, 공학자, 디자이너, 멘토...\n" +
+      "너희가 꿈꾸는 미래의 모습은 저마다 다르겠지만, 그 어떤 꿈도 결코 작거나 가볍지 않단다.\n\n" +
+      "비록 지금은 서툴고 실수를 하더라도 괜찮아.\n" +
+      "이곳에서의 모험이 언젠가 너희가 마주할 진짜 세상에서 가장 든든한 날개가 되어줄 테니까.\n\n" +
+      "너희의 찬란한 모든 꿈을 온 마음으로 응원한다.\n\n" +
+      "— 진로실 밤하늘을 올려다보며, 개발자 갓준철 올림 —\"";
+
+    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+      try {
+        localStorage.setItem(noteKey, 'true');
+      } catch (e) {}
+
+      this.addGold(50);
+      this.addExp(50);
+      this.saveProgress();
+
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+
+      alert(
+        noteStory + "\n\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "🎁 [개발자노트 제2편 감상 보너스]\n" +
+        "• 갓준철 선생님의 따뜻한 응원이 가슴을 뭉클하게 채웁니다!\n" +
+        "• 🪙 골드 +50G 획득!\n" +
+        "• 🌟 경험치 +50 EXP 획득!"
+      );
+    } else {
+      alert(noteStory);
     }
   }
 

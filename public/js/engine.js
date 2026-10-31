@@ -5581,6 +5581,48 @@ class GameEngine {
   }
 
   // High-Res Cafeteria Entrance (학생 급식실 입구)
+  // 17. High-Res Soongsil History Hall Entrance (풋살장 우하단 야외 기념 아치문)
+  drawHighResHistoryEntrance(px, py) {
+    this.ctx.save();
+
+    // Red carpet runner leading to entrance
+    this.ctx.fillStyle = 'rgba(185, 28, 28, 0.45)';
+    this.ctx.fillRect(px - 16, py - 4, 32, 36);
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.strokeRect(px - 16, py - 4, 32, 36);
+
+    // Historic Granite & Marble Pillars
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(px - 18, py - 18, 8, 32);
+    this.ctx.fillRect(px + 10, py - 18, 8, 32);
+    this.ctx.fillStyle = '#475569';
+    this.ctx.fillRect(px - 16, py - 16, 4, 28);
+    this.ctx.fillRect(px + 12, py - 16, 4, 28);
+
+    // Arch header with golden crest
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px - 22, py - 24, 44, 8);
+    this.ctx.fillStyle = '#f59e0b';
+    this.ctx.fillRect(px - 20, py - 22, 40, 4);
+
+    // Entrance gate aperture (deep dark portal)
+    this.ctx.fillStyle = '#090d16';
+    this.ctx.fillRect(px - 10, py - 16, 20, 24);
+
+    // Sharp badge label
+    this.drawSharpLabel(px, py - 36, '🏛️ 숭실역사관 (입장: SPACE)', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
+      fontSize: 12,
+      paddingX: 10,
+      height: 22
+    });
+
+    this.ctx.restore();
+  }
+
   drawHighResCafeteriaEntrance(cx, cy) {
     this.ctx.save();
     const w = 5 * 32;
