@@ -6100,8 +6100,8 @@ class MainApp {
     this.renderStoreModal();
 
     const modalInv = document.getElementById('modal-inventory');
-    if (modalInv && !modalInv.classList.contains('hidden') && this.renderInventory) {
-      this.renderInventory();
+    if (modalInv && !modalInv.classList.contains('hidden')) {
+      this.openInventory();
     }
   }
 

@@ -545,7 +545,8 @@ class GameEngine {
       return;
     }
     if (this.player.room === 'room_history') {
-      this.warpToRoom('playground', '숭실 운동장', 87 * 32, 53 * 32);
+      this._lastHistoryHallExitTime = Date.now() + 1500;
+      this.warpToRoom('playground', '숭실 운동장', 87 * 32, 51 * 32);
       return;
     }
     if (this.player.room === 'room_staff_office') {
@@ -800,6 +801,20 @@ class GameEngine {
             minDist = cDist;
           }
         }
+        // 2-D. History Hall Entrance (숭실역사관 입구: x: 87, y: 52)
+        if (pg.historyHall && (!this._lastHistoryHallExitTime || Date.now() > this._lastHistoryHallExitTime)) {
+          const hDist = Math.hypot(pg.historyHall.x * 32 - this.player.x, (pg.historyHall.y + 0.5) * 32 - this.player.y);
+          if (hDist < 64 && hDist < minDist) {
+            closest = {
+              type: 'history_hall',
+              data: pg.historyHall,
+              name: pg.historyHall.name || '🏛️ 숭실역사관',
+              prompt: pg.historyHall.prompt || '숭실역사관 입장 (SPACE)'
+            };
+            minDist = hDist;
+          }
+        }
+
         // 2-B. Store (매점)
         if (pg.store) {
           const sDist = Math.hypot(pg.store.x * 32 - this.player.x, (pg.store.y + 0.5) * 32 - this.player.y);
@@ -4686,8 +4701,8 @@ class GameEngine {
           this.drawHighResClubBoard(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'plant_zone') {
           this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera', this.getPlantStage(), this.plantWaterCount);
-        } else if (obj.type === 'dev_note') {
-          this.drawHighResDevNote(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'dev_note' || obj.type === 'dev_note_2') {
+          this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || (obj.type === 'dev_note_2' ? '📜 떨어진 개발자노트 (제2편)' : '📜 떨어진 개발자노트 (제1편)'));
         }
       }
     }
