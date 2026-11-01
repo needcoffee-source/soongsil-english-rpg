@@ -189,6 +189,17 @@ window.ITEM_CODEX_DATABASE = [
     source: '포션 제작대에서 제작 (은행잎 1개 + 허브 3개 + 25G)',
     recipe: '향긋한 허브 3개 + 황금 은행잎 1개 + 25G'
   },
+  {
+    id: 'item_return_scroll',
+    name: '귀환 주문서 (Return Scroll)',
+    icon: '📜',
+    category: 'consumable',
+    tierBadge: '공간 이동',
+    tierColor: '#0284c7',
+    effect: '사용 시 어디서든 안전한 7층 복도로 즉시 공간 이동',
+    source: '포션·주문서 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 10G)',
+    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 10G'
+  },
 
   // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
   {
@@ -437,6 +448,7 @@ const ALL_GAME_ITEMS = {
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
+  'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
@@ -3507,6 +3519,7 @@ class MainApp {
         const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
         const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
         const isScroll = (item.item === 'item_revive_scroll');
+        const isReturnScroll = (item.item === 'item_return_scroll');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
 
         const card = document.createElement('div');
@@ -3529,7 +3542,9 @@ class MainApp {
           const statText = parts.length > 0 ? parts.join(' · ') : (effect || '능력치 상승');
           statBadgeHtml = `<span class="inv-item-stat-badge">${statText}</span>`;
         } else if (isPotion) {
-          if (isScroll) {
+          if (isReturnScroll) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;">🌀 7층 복도로 즉시 공간 이동</span>`;
+          } else if (isScroll) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">💫 쓰러진 친구 50% 체력 부활</span>`;
           } else {
             const healAmount = heal || 10;
@@ -3575,11 +3590,13 @@ class MainApp {
           actionArea.appendChild(btn);
         } else if (isPotion) {
           const btn = document.createElement('button');
-          btn.className = 'btn-inv-action ' + (isScroll ? 'btn-inv-scroll' : 'btn-inv-potion');
-          btn.innerText = isScroll ? '사용' : '마시기';
+          btn.className = 'btn-inv-action ' + (isReturnScroll ? 'btn-inv-return' : (isScroll ? 'btn-inv-scroll' : 'btn-inv-potion'));
+          btn.innerText = isReturnScroll ? '귀환' : (isScroll ? '사용' : '마시기');
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (isScroll) {
+            if (isReturnScroll) {
+              this.useReturnScroll();
+            } else if (isScroll) {
               this.attemptUseReviveScroll();
             } else {
               this.usePotion(item.item);
@@ -3587,7 +3604,9 @@ class MainApp {
           });
           card.style.cursor = 'pointer';
           card.addEventListener('click', () => {
-            if (isScroll) {
+            if (isReturnScroll) {
+              this.useReturnScroll();
+            } else if (isScroll) {
               this.attemptUseReviveScroll();
             } else {
               this.usePotion(item.item);
@@ -4820,6 +4839,84 @@ class MainApp {
       );
     } else if (confirm(`'${target.name}' 친구에게 부활 주문서를 전달하시겠습니까? (상대방이 수락 시 HP 50% 복귀)`)) {
       sendRevive();
+    }
+  }
+
+  useReturnScroll() {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 귀환 주문서를 사용할 수 없습니다!\n동료의 [부활 주문서]를 받거나 [복도 부활]을 이용해주세요.');
+      return;
+    }
+
+    const scroll = this.playerData.inventory.find(i => i.item === 'item_return_scroll');
+    if (!scroll || scroll.count <= 0) {
+      alert('📜 보유 중인 귀환 주문서가 없습니다.\n포션·주문서 제작대에서 제작할 수 있습니다.');
+      return;
+    }
+
+    const executeReturn = () => {
+      this.removeItem('item_return_scroll', 1);
+
+      // Close inventory modal
+      if (this.modalInventory) {
+        this.modalInventory.classList.add('hidden');
+      }
+      // Close active field battle modal if in combat
+      if (this.closeFieldBattleModal) {
+        this.closeFieldBattleModal();
+      }
+      // Close active boss raid modal if in raid
+      if (this.modalBossRaid) {
+        this.modalBossRaid.classList.add('hidden');
+      }
+      if (this.bossTimerInterval) {
+        clearInterval(this.bossTimerInterval);
+        this.bossTimerInterval = null;
+      }
+
+      // Play teleport sound
+      if (window.AudioManager) {
+        if (window.AudioManager.playRevive) {
+          window.AudioManager.playRevive();
+        } else if (window.AudioManager.playSelect) {
+          window.AudioManager.playSelect();
+        }
+      }
+
+      // Warp player to 7th floor hallway (center: 15 * 32, 10 * 32)
+      if (this.engine) {
+        this.engine.triggerFadeWarp(() => {
+          this.engine.warpToFloor(7, 15 * 32, 10 * 32);
+        });
+      }
+
+      this.saveProgress();
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '📜 귀환 주문서',
+          '🌀 귀환 주문서의 마력이 발동하여\n안전한 7층 본관 복도로 즉시 공간 이동했습니다!',
+          '✨'
+        );
+      } else {
+        alert('🌀 안전한 7층 복도로 귀환했습니다!');
+      }
+
+      this.showToast('🌀 안전한 7층 복도로 즉시 귀환했습니다!', 'success');
+    };
+
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '📜 귀환 주문서 사용',
+        '귀환 주문서를 사용하여 안전한 7층 복도로 즉시 공간 이동하시겠습니까?',
+        '🌀',
+        () => executeReturn(),
+        null,
+        '귀환하기',
+        '취소'
+      );
+    } else if (confirm('귀환 주문서를 사용하여 7층 복도로 즉시 공간 이동하시겠습니까?')) {
+      executeReturn();
     }
   }
 

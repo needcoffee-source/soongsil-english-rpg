@@ -2344,6 +2344,14 @@ body, html {
   background: #6d28d9;
 }
 
+.btn-inv-return {
+  background: #0284c7;
+  color: #ffffff;
+}
+.btn-inv-return:hover {
+  background: #0369a1;
+}
+
 .inv-material-tag {
   font-size: 11.5px;
   font-weight: 700;

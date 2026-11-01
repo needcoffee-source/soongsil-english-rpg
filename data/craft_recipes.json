@@ -621,6 +621,48 @@
     }
   },
   {
+    "id": "recipe_return_scroll",
+    "name": "귀환 주문서 (Return Scroll)",
+    "category": "potion",
+    "description": "[주문서] 숭실의 마력이 깃든 비전 주문서입니다. 사용 시 현재 위치가 어디든 상관없이 안전한 7층 복도로 즉시 공간 이동합니다.",
+    "icon": "📜",
+    "gradeLevel": 1,
+    "requiredGold": 10,
+    "requiredItems": [
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 1
+      },
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "우리는 안전하게 학교로 돌아갈 것이다.",
+      "words": [
+        "We",
+        "will",
+        "return",
+        "to",
+        "school",
+        "safely."
+      ],
+      "correct": "We will return to school safely."
+    },
+    "result": {
+      "item": "item_return_scroll",
+      "name": "귀환 주문서",
+      "icon": "📜",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 0,
+      "effect": "사용 시 모든 장소에서 7층 복도로 즉시 공간 이동"
+    }
+  },
+  {
     "id": "recipe_heritage_sword",
     "name": "⚔️ 1897 숭실 헤리티지 소드 (The 1897 Heritage Blade)",
     "category": "equipment",
