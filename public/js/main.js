@@ -266,7 +266,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '2티어 신발',
     tierColor: '#b45309',
-    effect: '공격력 +3, 방어력 +3 (체력 증가 없음) · 고속 질주(B) 가능',
+    effect: '공격력 +3, 방어력 +3, 체력 +10 · 고속 질주(B) 가능',
     source: '기말고사 파멸신 레이드 전리품 드랍 (드랍 확률 25% / 제작 불가)',
     recipe: '제작 불가 (보스 레이드 전용 25% 드랍)'
   },
@@ -444,7 +444,7 @@ const ALL_GAME_ITEMS = {
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
   'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
   'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_shoes': { name: '날렵한 가죽 농구화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 0 }, effect: '공격력 +3, 방어력 +3, 고속 질주' } },
+  'equip_leather_shoes': { name: '날렵한 가죽 농구화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '공격력 +3, 방어력 +3, 체력 +10, 고속 질주' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
@@ -4048,7 +4048,7 @@ class MainApp {
       // 7. 기말고사 파멸신 전용 드랍 (2티어 농구화 드랍확률 25% 하향)
       if (bName.includes('파멸신') || bName.includes('기말고사')) {
         if (Math.random() < 0.25) {
-          this.addItem('equip_leather_shoes', '날렵한 가죽 농구화', 1, '👟', { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 0 }, effect: '공격력 +3, 방어력 +3, 고속 질주 가능' });
+          this.addItem('equip_leather_shoes', '날렵한 가죽 농구화', 1, '👟', { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '공격력 +3, 방어력 +3, 체력 +10, 고속 질주 가능' });
           rewardItemsList.push('👟 날렵한 가죽 농구화 (2티어 신발 전리품 드랍 - 25% 확률!)');
         } else {
           this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '공격력 +45, 방어력 +5' });
