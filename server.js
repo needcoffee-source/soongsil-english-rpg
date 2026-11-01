@@ -616,6 +616,8 @@ io.on('connection', (socket) => {
       message: '🤝 현재 학생 간 1:1 교환 기능은 비활성화되어 있습니다. (선생님께 요청하세요!)'
     });
   });
+  socket.on('trade_offer_update', () => {});
+  socket.on('trade_execute', () => {});
 
   // Teacher Item & Gold Grant System
   socket.on('teacher_grant_item', ({ pwd, targetSocketId, itemKey, count, reason }) => {
