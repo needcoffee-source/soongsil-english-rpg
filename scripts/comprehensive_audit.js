@@ -166,7 +166,7 @@ check('Exhibit 2 in main.js is "1938 민족신앙 수호관"', mainCode.includes
 check('No stale "자진폐교관" title in engine vitrine draw', !engineCode.includes("drawMuseumVitrine(6 * 32, 13 * 32, 2, '1938 신사참배 거부와 자진폐교관'"));
 
 check('History Altar in world.js is "✨ 숭실 역사관 신비한 제단"', worldCode.includes('✨ 숭실 역사관 신비한 제단'));
-check('History Altar in engine.js has correct unlock/lock titles', engineCode.includes("const altarTitle = unlocked ? '✨ 숭실 역사관 신비한 제단' : '🔒 숭실 역사관 신비한 제단 (4대 전시관 탐방 필요)';"));
+check('History Altar in engine.js has correct unlock/lock titles', engineCode.includes("const altarTitle = unlocked ? '✨ 숭실 역사관 신비한 제단' : '🔒 숭실 역사관 신비한 제단';"));
 
 check('Staff office plaque is "🏛️ 교무실"', engineCode.includes("const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실 (Career Center)';"));
 check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', !worldCode.includes('숭실역사관 입장 (SPACE)'));
@@ -174,10 +174,10 @@ check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', 
 // 5. Version Cache-Buster Consistency
 console.log('\n--- 5. CACHE BUSTER CONSISTENCY AUDIT ---');
 const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-const v95Matches = (indexHtml.match(/v=95/g) || []).length;
 const v96Matches = (indexHtml.match(/v=96/g) || []).length;
-check('No stale v=95 cache tags in index.html', v95Matches === 0, `Found ${v95Matches} stale tags`);
-check('All assets use v=96 cache tags in index.html', v96Matches >= 8, `Found ${v96Matches} v=96 tags`);
+const v97Matches = (indexHtml.match(/v=97/g) || []).length;
+check('No stale v=96 cache tags in index.html', v96Matches === 0, `Found ${v96Matches} stale tags`);
+check('All assets use v=97 cache tags in index.html', v97Matches >= 8, `Found ${v97Matches} v=97 tags`);
 
 console.log('\n====================================================');
 console.log(` AUDIT RESULT: ${passedChecks} / ${totalChecks} PASSED`);
