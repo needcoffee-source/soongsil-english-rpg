@@ -101,8 +101,9 @@ class CraftingManager {
         nameEn = match[2].trim();
       }
 
+      const isCourage = (r.id === 'recipe_courage_potion' || (r.result && r.result.item === 'item_courage_potion'));
       item.innerHTML = `
-        <span class="recipe-item-icon">${r.icon}</span>
+        <span class="recipe-item-icon ${isCourage ? 'icon-purple-potion' : ''}">${r.icon}</span>
         <div class="recipe-item-info">
           <div class="recipe-name-ko">${nameKo}</div>
           ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
@@ -121,6 +122,11 @@ class CraftingManager {
     this.renderRecipeList();
 
     this.craftIcon.innerText = recipe.icon;
+    if (recipe.id === 'recipe_courage_potion' || (recipe.result && recipe.result.item === 'item_courage_potion')) {
+      this.craftIcon.classList.add('icon-purple-potion');
+    } else {
+      this.craftIcon.classList.remove('icon-purple-potion');
+    }
     this.craftName.innerText = recipe.name;
     this.craftDesc.innerText = `${recipe.description} (효과: ${recipe.result.effect})`;
 

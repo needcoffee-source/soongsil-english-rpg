@@ -2360,6 +2360,11 @@ body, html {
   background: #6d28d9;
 }
 
+.icon-purple-potion {
+  display: inline-block;
+  filter: hue-rotate(155deg) saturate(1.8) brightness(1.05);
+}
+
 .inv-material-tag {
   font-size: 11.5px;
   font-weight: 700;

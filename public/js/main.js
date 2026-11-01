@@ -214,7 +214,7 @@ window.ITEM_CODEX_DATABASE = [
   {
     id: 'item_courage_potion',
     name: '용기의 물약 (Courage Potion)',
-    icon: '🔮',
+    icon: '🧪',
     category: 'consumable',
     tierBadge: '전투 버프',
     tierColor: '#9333ea',
@@ -470,7 +470,7 @@ const ALL_GAME_ITEMS = {
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 질주 속도 +10% 증가' } },
-  'item_courage_potion': { name: '용기의 물약', icon: '🔮', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
+  'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
 
@@ -3583,7 +3583,7 @@ class MainApp {
           } else if (isGreenPotion) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#4ade80;">⚡ 1분간 질주 속도 +10%</span>`;
           } else if (isCouragePotion) {
-            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">🔮 3분간 공격력(ATK) +5</span>`;
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;"><span class="icon-purple-potion">🧪</span> 3분간 공격력(ATK) +5</span>`;
           } else {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
@@ -3594,9 +3594,13 @@ class MainApp {
           statBadgeHtml = `<span class="inv-item-stat-badge material">📦 ${matDesc}</span>`;
         }
 
+        const iconHtml = isCouragePotion
+          ? `<span class="icon-purple-potion">${item.icon || '🧪'}</span>`
+          : `<span>${item.icon || '📦'}</span>`;
+
         card.innerHTML = `
           <div class="inv-item-icon-box">
-            <span>${item.icon || '📦'}</span>
+            ${iconHtml}
             <span class="inv-item-count-badge">x${item.count}</span>
           </div>
           <div class="inv-item-details">
@@ -5071,7 +5075,10 @@ class MainApp {
         badge.style.borderColor = '#c084fc';
         badge.style.color = '#c084fc';
       }
-      badge.innerText = `${b.icon} ${b.name} ${remSec}s`;
+      const iconHtml = (k === 'courage_boost')
+        ? `<span class="icon-purple-potion">🧪</span>`
+        : b.icon;
+      badge.innerHTML = `${iconHtml} ${b.name} ${remSec}s`;
       el.appendChild(badge);
     });
   }
@@ -5106,7 +5113,7 @@ class MainApp {
       return false;
     }
     this.removeItem('item_courage_potion', 1);
-    this.applyBuff('courage_boost', 180000, '용기의 투지 (+5 ATK)', '🔮');
+    this.applyBuff('courage_boost', 180000, '용기의 투지 (+5 ATK)', '🧪');
     this.saveProgress();
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();
@@ -7390,10 +7397,13 @@ class MainApp {
         position: relative;
       `;
 
+      const isCourage = (item.id === 'item_courage_potion');
+      const iconDisplay = isCourage ? `<span class="icon-purple-potion">${item.icon}</span>` : item.icon;
+
       card.innerHTML = `
         <div>
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-            <div style="font-size: 28px; line-height: 1;">${item.icon}</div>
+            <div style="font-size: 28px; line-height: 1;">${iconDisplay}</div>
             <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
               <span style="font-size: 10px; font-weight: 800; background: ${item.tierColor}15; color: ${item.tierColor}; border: 1px solid ${item.tierColor}40; border-radius: 4px; padding: 1px 5px;">
                 ${item.tierBadge}

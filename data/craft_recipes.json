@@ -710,7 +710,7 @@
     "name": "용기의 물약 (Courage Potion)",
     "category": "potion",
     "description": "[소비품] 불타는 투지를 북돋워주는 비약입니다. 마시면 3분 동안 공격력(ATK)이 +5 증가합니다.",
-    "icon": "🔮",
+    "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 20,
     "requiredItems": [
@@ -739,7 +739,7 @@
     "result": {
       "item": "item_courage_potion",
       "name": "용기의 물약",
-      "icon": "🔮",
+      "icon": "🧪",
       "type": "consumable",
       "slot": "consumable",
       "heal": 0,
