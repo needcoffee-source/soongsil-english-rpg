@@ -2893,6 +2893,39 @@ class GameEngine {
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     this.ctx.fillRect(px + 4, py + h - 6, w - 8, 8);
 
+    if (obj.category === 'accessory') {
+      // 💍 교화·교목 장신구 세공대 (벨벳 보석 세공 작업대)
+      this.ctx.fillStyle = '#78350f';
+      this.ctx.fillRect(px, py + 14, w, h - 14);
+      this.ctx.fillStyle = '#92400e';
+      this.ctx.fillRect(px + 4, py + 18, w - 8, h - 22);
+
+      // 버건디 와인 벨벳 상판
+      this.ctx.fillStyle = '#831843';
+      this.ctx.fillRect(px - 2, py, w + 4, 16);
+      this.ctx.fillStyle = '#fbbf24';
+      this.ctx.fillRect(px - 2, py, w + 4, 2);
+
+      // 반짝이는 보석 및 교화(개나리) 장식
+      this.ctx.save();
+      this.ctx.font = '13px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('💍', px + 16, py + 13);
+      this.ctx.fillText('🌼', px + 38, py + 13);
+      this.ctx.restore();
+
+      const labelText = obj.name ? `💍 ${obj.name}` : '💍 장신구 세공대';
+      this.drawSharpLabel(px + w / 2, py + h + 8, labelText, {
+        bgColor: 'rgba(131, 24, 67, 0.95)',
+        borderColor: '#f59e0b',
+        textColor: '#fef08a',
+        fontSize: 12,
+        paddingX: 10,
+        height: 21
+      });
+      return;
+    }
+
     // Heavy Oak Bench Body
     this.ctx.fillStyle = '#78350f';
     this.ctx.fillRect(px, py + 14, w, h - 14);

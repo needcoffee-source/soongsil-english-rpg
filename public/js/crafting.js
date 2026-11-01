@@ -51,6 +51,8 @@ class CraftingManager {
         headerTitle.innerHTML = '🔨 숭실 장비 제작대 (Equipment Crafting)';
       } else if (category === 'potion') {
         headerTitle.innerHTML = '🧪 숭실 포션·주문서 제작대 (Potion & Scroll Crafting)';
+      } else if (category === 'accessory') {
+        headerTitle.innerHTML = '💍 교화·교목 장신구 세공대 (Accessory Crafting)';
       } else {
         headerTitle.innerHTML = '🔨 숭실 제작대 (Sentence Crafting)';
       }

@@ -1049,6 +1049,37 @@ class MainApp {
       this.stopDash();
     });
 
+    // Mobile On-Screen Floating A / B Buttons
+    const mobileBtnA = document.getElementById('btn-mobile-a');
+    const mobileBtnB = document.getElementById('btn-mobile-b');
+
+    if (mobileBtnA) {
+      mobileBtnA.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (window.AudioManager) window.AudioManager.playSelect();
+        if (window.RPGDialog && window.RPGDialog.isOpen) {
+          window.RPGDialog.advance();
+          return;
+        }
+        this.engine.interact();
+      });
+    }
+
+    if (mobileBtnB) {
+      mobileBtnB.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        this.startDash();
+      });
+      mobileBtnB.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        this.stopDash();
+      });
+      mobileBtnB.addEventListener('pointercancel', (e) => {
+        e.preventDefault();
+        this.stopDash();
+      });
+    }
+
     window.addEventListener('keydown', (e) => {
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
       const arModal = document.getElementById('modal-acid-rain');
@@ -2905,6 +2936,42 @@ class MainApp {
       window.AudioManager.updateMuteButtonUI();
       btnToggleSound.addEventListener('click', () => {
         window.AudioManager.toggleMute();
+      });
+    }
+
+    // Mobile Virtual Gamepad (D-Pad + Action Buttons) Toggle Button
+    const btnToggleGamepad = document.getElementById('btn-toggle-gamepad');
+    const updateGamepadUI = (enabled) => {
+      const container = document.getElementById('canvas-wrapper');
+      if (container) {
+        if (enabled) {
+          container.classList.remove('gamepad-hidden');
+        } else {
+          container.classList.add('gamepad-hidden');
+        }
+      }
+      if (btnToggleGamepad) {
+        if (enabled) {
+          btnToggleGamepad.classList.add('gamepad-active');
+          btnToggleGamepad.title = '가상 게임패드 끄기 (D-패드 & A/B 버튼 숨김)';
+        } else {
+          btnToggleGamepad.classList.remove('gamepad-active');
+          btnToggleGamepad.title = '가상 게임패드 켜기 (D-패드 & A/B 버튼 표시)';
+        }
+      }
+    };
+
+    const isTouchDevice = ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768);
+    const savedGamepad = localStorage.getItem('soongsil_virtual_gamepad');
+    let gamepadEnabled = savedGamepad !== null ? (savedGamepad === 'true') : isTouchDevice;
+    updateGamepadUI(gamepadEnabled);
+
+    if (btnToggleGamepad) {
+      btnToggleGamepad.addEventListener('click', () => {
+        gamepadEnabled = !gamepadEnabled;
+        localStorage.setItem('soongsil_virtual_gamepad', gamepadEnabled ? 'true' : 'false');
+        updateGamepadUI(gamepadEnabled);
+        if (window.AudioManager) window.AudioManager.playSelect();
       });
     }
 
@@ -7074,18 +7141,34 @@ class MainApp {
 
   updateDashButtonUI() {
     const btnB = document.getElementById('btn-action-b');
-    if (!btnB) return;
+    const mobileBtnB = document.getElementById('btn-mobile-b');
     const canDash = this.engine && this.engine.player && (this.engine.player.hasRunningShoes || this.engine.player.isTeacher);
     if (canDash) {
-      btnB.classList.remove('btn-b-locked');
-      btnB.title = '달리기 (Shift를 누른 채 이동)';
-      const sub = btnB.querySelector('.btn-sub');
-      if (sub) sub.textContent = '달리기';
+      if (btnB) {
+        btnB.classList.remove('btn-b-locked');
+        btnB.title = '달리기 (Shift를 누른 채 이동)';
+        const sub = btnB.querySelector('.btn-sub');
+        if (sub) sub.textContent = '달리기';
+      }
+      if (mobileBtnB) {
+        mobileBtnB.classList.remove('btn-b-locked');
+        mobileBtnB.title = '질주 (SHIFT)';
+        const label = mobileBtnB.querySelector('.mobile-btn-label');
+        if (label) label.textContent = '질주';
+      }
     } else {
-      btnB.classList.add('btn-b-locked');
-      btnB.title = '특별한 신발을 얻어야 달릴 수 있습니다';
-      const sub = btnB.querySelector('.btn-sub');
-      if (sub) sub.textContent = '🔒 달리기 (잠김)';
+      if (btnB) {
+        btnB.classList.add('btn-b-locked');
+        btnB.title = '특별한 신발을 얻어야 달릴 수 있습니다';
+        const sub = btnB.querySelector('.btn-sub');
+        if (sub) sub.textContent = '🔒 달리기 (잠김)';
+      }
+      if (mobileBtnB) {
+        mobileBtnB.classList.add('btn-b-locked');
+        mobileBtnB.title = '특별한 신발을 얻어야 달릴 수 있습니다';
+        const label = mobileBtnB.querySelector('.mobile-btn-label');
+        if (label) label.textContent = '🔒';
+      }
     }
   }
 

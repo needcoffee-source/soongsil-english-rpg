@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=111">
+  <link rel="stylesheet" href="css/style.css?v=112">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -35,6 +35,7 @@
           <button id="btn-open-roadmap" class="btn-top-quick" title="진행 매뉴얼 (핵심 공략 로드맵)">🧭 매뉴얼</button>
           <button id="btn-open-codex" class="btn-top-quick" title="숭실백과사전 (아이템 & 제작 정보)">📖 숭실백과사전</button>
           <button id="btn-toggle-sound" class="btn-sound-toggle" title="8비트 소리 켜기/끄기">🔊</button>
+          <button id="btn-toggle-gamepad" class="btn-sound-toggle" title="가상 게임패드 (조이스틱/버튼) 켜기/끄기">🎮</button>
           <button id="btn-toggle-fullscreen" class="btn-sound-toggle" title="전체화면 (상단 탭/주소창 숨기기)">⛶</button>
         </div>
       </div>
@@ -46,6 +47,18 @@
         <!-- Floating Semi-Transparent D-Pad for Tablet & Touch -->
         <div id="dpad-container">
           <div class="dpad-btn dpad-up" data-dir="up">▲</div>
+        <!-- Floating Mobile Action Buttons (A / B) -->
+        <div id="mobile-actions-container">
+          <button id="btn-mobile-b" class="mobile-action-btn mobile-btn-b btn-b-locked" title="질주 (SHIFT)" type="button">
+            <span class="mobile-btn-key">B</span>
+            <span class="mobile-btn-label">질주</span>
+          </button>
+          <button id="btn-mobile-a" class="mobile-action-btn mobile-btn-a" title="조사 / 대화 (SPACE)" type="button">
+            <span class="mobile-btn-key">A</span>
+            <span class="mobile-btn-label">조사</span>
+          </button>
+        </div>
+
           <div class="dpad-btn dpad-left" data-dir="left">◀</div>
           <div class="dpad-btn dpad-center">●</div>
           <div class="dpad-btn dpad-right" data-dir="right">▶</div>
@@ -1711,17 +1724,17 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=111"></script>
-  <script src="js/dialog.js?v=111"></script>
+  <script src="js/audio.js?v=112"></script>
+  <script src="js/dialog.js?v=112"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=111"></script>
-  <script src="js/engine.js?v=111"></script>
-  <script src="js/quiz.js?v=111"></script>
-  <script src="js/crafting.js?v=111"></script>
-  <script src="js/network.js?v=111"></script>
-  <script src="js/acid_rain.js?v=111"></script>
-  <script src="js/main.js?v=111"></script>
+  <script src="js/world.js?v=112"></script>
+  <script src="js/engine.js?v=112"></script>
+  <script src="js/quiz.js?v=112"></script>
+  <script src="js/crafting.js?v=112"></script>
+  <script src="js/network.js?v=112"></script>
+  <script src="js/acid_rain.js?v=112"></script>
+  <script src="js/main.js?v=112"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

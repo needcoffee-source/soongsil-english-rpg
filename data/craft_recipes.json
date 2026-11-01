@@ -420,7 +420,7 @@
   {
     "id": "recipe_forsythia_ring",
     "name": "성실의 개나리 반지 (Forsythia Ring)",
-    "category": "equipment",
+    "category": "accessory",
     "description": "[장신구] (교화 개나리) 노란 개나리 꽃잎을 모아 빚은 반지입니다.",
     "icon": "🏵️",
     "gradeLevel": 1,
@@ -461,7 +461,7 @@
   {
     "id": "recipe_ginkgo_talisman",
     "name": "황금 은행잎 부적 (Ginkgo Talisman)",
-    "category": "equipment",
+    "category": "accessory",
     "description": "[장신구] (교목 은행나무) 황금 은행잎을 모아 만든 고급 장신구입니다.",
     "icon": "🍂",
     "gradeLevel": 1,
