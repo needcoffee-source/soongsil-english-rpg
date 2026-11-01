@@ -179,6 +179,82 @@ const vCurMatches = (indexHtml.match(/v=101/g) || []).length;
 check('No stale v=100 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
 check('All assets use v=101 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=101 tags`);
 
+// 6. DOM Element ID Integrity Audit
+console.log('\n--- 6. DOM ELEMENT ID INTEGRITY AUDIT ---');
+const htmlIdMatches = [...indexHtml.matchAll(/id=["']([^"']+)["']/g)].map(m => m[1]);
+const htmlIds = new Set(htmlIdMatches);
+const dynamicIds = new Set([
+  'quiz-option-0', 'quiz-option-1', 'quiz-option-2', 'quiz-option-3',
+  'btn-respawn-hallway', 'btn-wait-revive', 'btn-fallback-respawn'
+]);
+
+let missingDomIds = [];
+jsFiles.forEach(file => {
+  if (file === 'server.js') return;
+  const code = fs.readFileSync(file, 'utf8');
+  const matches = [...code.matchAll(/document\.getElementById\(['"]([^'"]+)['"]\)/g)].map(m => m[1]);
+  const uniqueInFile = [...new Set(matches)];
+  uniqueInFile.forEach(id => {
+    if (!htmlIds.has(id) && !dynamicIds.has(id)) {
+      missingDomIds.push(`${file} -> #${id}`);
+    }
+  });
+});
+check('All client document.getElementById targets exist in index.html', missingDomIds.length === 0, `Missing: ${missingDomIds.join(', ')}`);
+
+// 7. Craft Recipes Item Reference Integrity
+console.log('\n--- 7. RECIPES & INVENTORY ITEM INTEGRITY AUDIT ---');
+let missingRecipeItems = [];
+if (craftRecipes && serverItems) {
+  craftRecipes.forEach(r => {
+    const outItem = r.result && r.result.item;
+    if (!outItem || !serverItems[outItem]) {
+      missingRecipeItems.push(`Recipe ${r.name} output: ${outItem}`);
+    }
+    (r.requiredItems || []).forEach(req => {
+      if (!serverItems[req.item]) {
+        missingRecipeItems.push(`Recipe ${r.name} ingredient: ${req.item}`);
+      }
+    });
+  });
+}
+check('All craft recipe outputs & ingredients exist in ALL_GAME_ITEMS', missingRecipeItems.length === 0, missingRecipeItems.join(' | '));
+
+// 8. Boss & Monster Drops Integrity
+console.log('\n--- 8. MONSTER & BOSS DROP INTEGRITY AUDIT ---');
+let missingDropItems = [];
+const bossPresetsMatch = serverCode.match(/const BOSS_PRESETS = \{([\s\S]*?)\n\};/);
+if (bossPresetsMatch && serverItems) {
+  const dropMatches = [...bossPresetsMatch[1].matchAll(/itemId:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
+  dropMatches.forEach(itemId => {
+    if (!serverItems[itemId]) missingDropItems.push(`Boss drop: ${itemId}`);
+  });
+}
+const fieldMobDrops = [...worldCode.matchAll(/itemId:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
+if (serverItems) {
+  fieldMobDrops.forEach(itemId => {
+    if (!serverItems[itemId]) missingDropItems.push(`Field mob drop: ${itemId}`);
+  });
+}
+check('All boss and field monster drop items exist in ALL_GAME_ITEMS', missingDropItems.length === 0, missingDropItems.join(' | '));
+
+// 9. Quiz Questions Integrity Audit
+console.log('\n--- 9. QUIZ QUESTIONS & ANSWERS AUDIT ---');
+let questionErrors = [];
+let totalQuestionsChecked = 0;
+['questions_grade1.json', 'questions_grade2.json', 'questions_grade3.json'].forEach(qFile => {
+  const qList = JSON.parse(fs.readFileSync('data/' + qFile, 'utf8'));
+  qList.forEach((q, idx) => {
+    totalQuestionsChecked++;
+    if (!q.question || !Array.isArray(q.options) || q.options.length < 2) {
+      questionErrors.push(`${qFile}[#${idx}] invalid structure`);
+    } else if (!q.options.includes(q.answer)) {
+      questionErrors.push(`${qFile}[#${idx}] answer "${q.answer}" not in options`);
+    }
+  });
+});
+check(`All curriculum quiz questions (${totalQuestionsChecked} Qs) have valid answers matching options`, questionErrors.length === 0, questionErrors.join(' | '));
+
 console.log('\n====================================================');
 console.log(` AUDIT RESULT: ${passedChecks} / ${totalChecks} PASSED`);
 if (errors.length > 0) {

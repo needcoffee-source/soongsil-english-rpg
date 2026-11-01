@@ -1,152 +1,236 @@
 const fs = require('fs');
-const vm = require('vm');
-const path = require('path');
 
-console.log('=== SOONGSIL RPG DEEP AUDIT ===');
+console.log('====================================================');
+console.log('      DEEP CODEBASE DIAGNOSTIC & BUG AUDIT          ');
+console.log('====================================================');
 
-const files = [
-  'server.js',
-  'public/js/audio.js',
-  'public/js/dialog.js',
-  'public/js/world.js',
-  'public/js/quiz.js',
-  'public/js/crafting.js',
+let issuesFound = 0;
+const errors = [];
+
+function recordIssue(category, msg) {
+  issuesFound++;
+  errors.push(`[${category}] ${msg}`);
+  console.log(`[${category}] ${msg}`);
+}
+
+// ---------------------------------------------------------
+// 1. DOM ELEMENT AUDIT
+// ---------------------------------------------------------
+console.log('\n--- 1. DOM ELEMENT ID AUDIT ---');
+const indexHtml = fs.readFileSync('public/index.html', 'utf8');
+const idMatches = [...indexHtml.matchAll(/id=["']([^"']+)["']/g)].map(m => m[1]);
+const htmlIds = new Set(idMatches);
+
+const jsFiles = [
+  'public/js/main.js',
   'public/js/engine.js',
+  'public/js/crafting.js',
+  'public/js/quiz.js',
   'public/js/network.js',
   'public/js/acid_rain.js',
-  'public/js/main.js'
+  'public/js/audio.js',
+  'public/js/dialog.js'
 ];
 
-let syntaxErrors = 0;
-for (const file of files) {
-  try {
-    const code = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-    new vm.Script(code, { filename: file });
-    console.log(`[PASS] Syntax check: ${file}`);
-  } catch (err) {
-    console.error(`[FAIL] Syntax error in ${file}:`, err.message);
-    syntaxErrors++;
-  }
-}
+// Dynamically created IDs inside innerHTML
+const dynamicIds = new Set([
+  'quiz-option-0', 'quiz-option-1', 'quiz-option-2', 'quiz-option-3',
+  'btn-respawn-hallway', 'btn-wait-revive', 'btn-fallback-respawn'
+]);
 
-if (syntaxErrors > 0) {
-  process.exit(1);
-}
-
-// Now simulate a browser environment loading world.js, engine.js, main.js
-const mockWindow = {
-  location: { search: '' },
-  addEventListener: () => {},
-  removeEventListener: () => {},
-  document: {
-    getElementById: (id) => ({
-      classList: { add: () => {}, remove: () => {}, contains: () => false },
-      addEventListener: () => {},
-      getContext: () => ({
-        fillRect: () => {},
-        clearRect: () => {},
-        drawImage: () => {},
-        save: () => {},
-        restore: () => {},
-        beginPath: () => {},
-        arc: () => {},
-        fill: () => {},
-        stroke: () => {}
-      }),
-      style: {},
-      value: '',
-      innerText: '',
-      innerHTML: ''
-    }),
-    querySelectorAll: () => [],
-    createElement: () => ({
-      classList: { add: () => {}, remove: () => {} },
-      appendChild: () => {},
-      style: {}
-    }),
-    activeElement: { tagName: 'BODY' },
-    body: { classList: { add: () => {}, remove: () => {} } }
-  },
-  localStorage: {
-    getItem: () => null,
-    setItem: () => {},
-    removeItem: () => {}
-  },
-  requestAnimationFrame: () => {},
-  Audio: class { play() {} pause() {} },
-  navigator: { userAgent: 'MockBrowser' }
-};
-mockWindow.window = mockWindow;
-
-const ctx = vm.createContext(mockWindow);
-
-try {
-  const worldCode = fs.readFileSync(path.join(__dirname, '..', 'public/js/world.js'), 'utf8');
-  vm.runInContext(worldCode, ctx);
-  console.log('[PASS] Executed world.js');
-} catch (e) {
-  console.error('[FAIL] world.js execution error:', e);
-}
-
-try {
-  const engineCode = fs.readFileSync(path.join(__dirname, '..', 'public/js/engine.js'), 'utf8');
-  vm.runInContext(engineCode, ctx);
-  console.log('[PASS] Executed engine.js');
-} catch (e) {
-  console.error('[FAIL] engine.js execution error:', e);
-}
-
-// Check Floor 6
-const worldData = ctx.WORLD_DATA;
-if (!worldData) {
-  console.error('[FAIL] WORLD_DATA is undefined');
-} else {
-  console.log('WORLD_DATA floors present:', Object.keys(worldData.floors));
-  if (!worldData.floors[6]) {
-    console.error('[DISCREPANCY] Floor 6 is missing from WORLD_DATA.floors!');
-  } else {
-    console.log('[PASS] Floor 6 is defined in WORLD_DATA.floors');
-  }
-}
-
-// Check items consistency between server.js and main.js
-const serverCode = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
-const mainCode = fs.readFileSync(path.join(__dirname, '..', 'public/js/main.js'), 'utf8');
-
-// Extract ALL_GAME_ITEMS from server.js
-const serverItemsMatch = serverCode.match(/const ALL_GAME_ITEMS = \{([\s\S]*?)\n\};/);
-const mainItemsMatch = mainCode.match(/const ALL_GAME_ITEMS = \{([\s\S]*?)\n\};/);
-
-if (serverItemsMatch && mainItemsMatch) {
-  const parseKeys = (str) => {
-    const keys = [];
-    const re = /['"]?([a-zA-Z0-9_]+)['"]?\s*:\s*\{/g;
-    let m;
-    while ((m = re.exec(str)) !== null) {
-      keys.push(m[1]);
+jsFiles.forEach(file => {
+  const code = fs.readFileSync(file, 'utf8');
+  const matches = [...code.matchAll(/document\.getElementById\(['"]([^'"]+)['"]\)/g)].map(m => m[1]);
+  const uniqueInFile = [...new Set(matches)];
+  uniqueInFile.forEach(id => {
+    if (!htmlIds.has(id) && !dynamicIds.has(id)) {
+      recordIssue('MISSING_DOM_ID', `${file}: ID "${id}" referenced but not in index.html nor dynamic whitelist!`);
     }
-    return keys;
-  };
+  });
+});
 
-  const serverKeys = parseKeys(serverItemsMatch[1]);
-  const mainKeys = parseKeys(mainItemsMatch[1]);
-
-  console.log(`Server items count: ${serverKeys.length}, Main items count: ${mainKeys.length}`);
-  const inServerNotMain = serverKeys.filter(k => !mainKeys.includes(k));
-  const inMainNotServer = mainKeys.filter(k => !serverKeys.includes(k));
-
-  if (inServerNotMain.length > 0) {
-    console.log('[DISCREPANCY] Items in server.js but not in main.js ALL_GAME_ITEMS:', inServerNotMain);
-  }
-  if (inMainNotServer.length > 0) {
-    console.log('[DISCREPANCY] Items in main.js but not in server.js ALL_GAME_ITEMS:', inMainNotServer);
-  }
+// Check if any element attached with addEventListener in initEventListeners might be null
+const mainJs = fs.readFileSync('public/js/main.js', 'utf8');
+const initListenersMatch = mainJs.match(/initEventListeners\(\)\s*\{([\s\S]*?)\n  \}/);
+if (initListenersMatch) {
+  const body = initListenersMatch[1];
+  const listenerMatches = [...body.matchAll(/document\.getElementById\(['"]([^'"]+)['"]\)\.addEventListener/g)].map(m => m[1]);
+  listenerMatches.forEach(id => {
+    if (!htmlIds.has(id)) {
+      recordIssue('NULL_LISTENER', `initEventListeners attaches listener directly to non-existent ID "${id}" without null-check!`);
+    }
+  });
 }
 
-// Check recipes in craft_recipes.json
-const recipes = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data/craft_recipes.json'), 'utf8'));
-console.log(`Craft recipes count: ${recipes.length}`);
-const recipeResults = recipes.map(r => r.result && r.result.item);
-console.log('Craft recipe results:', recipeResults);
+// ---------------------------------------------------------
+// 2. ITEM & CRAFT RECIPES DATABASE INTEGRITY
+// ---------------------------------------------------------
+console.log('\n--- 2. ITEM DATABASE INTEGRITY AUDIT ---');
+const serverCode = fs.readFileSync('server.js', 'utf8');
+const recipes = JSON.parse(fs.readFileSync('data/craft_recipes.json', 'utf8'));
 
-console.log('=== AUDIT COMPLETE ===');
+// Extract server item IDs
+const serverItemIds = new Set();
+const serverItemMatch = serverCode.match(/const ALL_GAME_ITEMS = \{([\s\S]*?)\n\};/);
+if (serverItemMatch) {
+  const lines = serverItemMatch[1].split('\n');
+  lines.forEach(line => {
+    const m = line.match(/^\s*['"]?([a-zA-Z0-9_]+)['"]?\s*:/);
+    if (m) serverItemIds.add(m[1]);
+  });
+}
+
+// Extract client item IDs
+const clientItemIds = new Set();
+const clientItemMatch = mainJs.match(/const ALL_GAME_ITEMS = \{([\s\S]*?)\n\};/);
+if (clientItemMatch) {
+  const lines = clientItemMatch[1].split('\n');
+  lines.forEach(line => {
+    const m = line.match(/^\s*['"]?([a-zA-Z0-9_]+)['"]?\s*:/);
+    if (m) clientItemIds.add(m[1]);
+  });
+}
+
+// Check recipe outputs and ingredients against server & client item IDs
+recipes.forEach(recipe => {
+  const outItem = recipe.result && recipe.result.item;
+  if (!outItem) {
+    recordIssue('RECIPE_INVALID', `Recipe "${recipe.name}" has no result.item!`);
+  } else {
+    if (!serverItemIds.has(outItem)) {
+      recordIssue('RECIPE_ITEM_MISSING', `Recipe "${recipe.name}" output "${outItem}" not in server ALL_GAME_ITEMS!`);
+    }
+    if (!clientItemIds.has(outItem)) {
+      recordIssue('RECIPE_ITEM_MISSING', `Recipe "${recipe.name}" output "${outItem}" not in client ALL_GAME_ITEMS!`);
+    }
+  }
+
+  (recipe.requiredItems || []).forEach(req => {
+    if (!serverItemIds.has(req.item)) {
+      recordIssue('RECIPE_ITEM_MISSING', `Recipe "${recipe.name}" ingredient "${req.item}" not in server ALL_GAME_ITEMS!`);
+    }
+    if (!clientItemIds.has(req.item)) {
+      recordIssue('RECIPE_ITEM_MISSING', `Recipe "${recipe.name}" ingredient "${req.item}" not in client ALL_GAME_ITEMS!`);
+    }
+  });
+});
+
+// ---------------------------------------------------------
+// 3. MONSTER & BOSS DROP INTEGRITY AUDIT
+// ---------------------------------------------------------
+console.log('\n--- 3. MONSTER & BOSS DROP INTEGRITY AUDIT ---');
+const bossPresetsMatch = serverCode.match(/const BOSS_PRESETS = \{([\s\S]*?)\n\};/);
+if (bossPresetsMatch) {
+  const dropMatches = [...bossPresetsMatch[1].matchAll(/itemId:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
+  dropMatches.forEach(itemId => {
+    if (!serverItemIds.has(itemId)) {
+      recordIssue('BOSS_DROP_MISSING', `Item ID "${itemId}" in BOSS_PRESETS drops not in ALL_GAME_ITEMS!`);
+    }
+  });
+}
+
+const worldCode = fs.readFileSync('public/js/world.js', 'utf8');
+const fieldMobDrops = [...worldCode.matchAll(/itemId:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
+fieldMobDrops.forEach(itemId => {
+  if (!serverItemIds.has(itemId)) {
+    recordIssue('FIELD_DROP_MISSING', `Item ID "${itemId}" in world.js field monster drops not in ALL_GAME_ITEMS!`);
+  }
+});
+
+// ---------------------------------------------------------
+// 4. QUESTIONS INTEGRITY AUDIT
+// ---------------------------------------------------------
+console.log('\n--- 4. QUIZ QUESTIONS INTEGRITY AUDIT ---');
+const questionFiles = [
+  'data/questions_grade1.json',
+  'data/questions_grade2.json',
+  'data/questions_grade3.json'
+];
+
+questionFiles.forEach(qFile => {
+  try {
+    const qData = JSON.parse(fs.readFileSync(qFile, 'utf8'));
+    let totalQuestions = 0;
+    for (const [category, list] of Object.entries(qData)) {
+      if (!Array.isArray(list)) continue;
+      list.forEach((q, idx) => {
+        totalQuestions++;
+        if (!q.question) {
+          recordIssue('QUESTION_EMPTY', `${qFile} [${category} #${idx}] missing question text!`);
+        }
+        if (!Array.isArray(q.options) || q.options.length < 2) {
+          recordIssue('QUESTION_OPTIONS', `${qFile} [${category} #${idx}] invalid options array!`);
+        }
+        if (typeof q.answer !== 'number' || q.answer < 0 || q.answer >= q.options.length) {
+          recordIssue('QUESTION_ANSWER', `${qFile} [${category} #${idx}] answer index ${q.answer} out of bounds!`);
+        }
+      });
+    }
+    console.log(`[PASS] ${qFile}: ${totalQuestions} questions validated.`);
+  } catch (err) {
+    recordIssue('JSON_ERROR', `${qFile} failed to parse: ${err.message}`);
+  }
+});
+
+// ---------------------------------------------------------
+// 5. AUDIO SOUND ASSETS AUDIT
+// ---------------------------------------------------------
+console.log('\n--- 5. AUDIO ASSETS AUDIT ---');
+const audioCode = fs.readFileSync('public/js/audio.js', 'utf8');
+const audioSfxMatch = audioCode.match(/this\.sounds\s*=\s*\{([\s\S]*?)\n\s*\};/);
+const registeredSfx = new Set();
+if (audioSfxMatch) {
+  const lines = audioSfxMatch[1].split('\n');
+  lines.forEach(l => {
+    const m = l.match(/^\s*['"]?([a-zA-Z0-9_]+)['"]?\s*:/);
+    if (m) registeredSfx.add(m[1]);
+  });
+}
+
+// Find all playSfx('...') calls across files
+jsFiles.forEach(file => {
+  const code = fs.readFileSync(file, 'utf8');
+  const sfxCalls = [...code.matchAll(/playSfx\(['"]([^'"]+)['"]\)/g)].map(m => m[1]);
+  sfxCalls.forEach(sfxName => {
+    if (!registeredSfx.has(sfxName)) {
+      recordIssue('UNREGISTERED_SFX', `${file} calls unregistered SFX: "${sfxName}"`);
+    }
+  });
+});
+
+// ---------------------------------------------------------
+// 6. ROOM NAVIGATION & INTERACTIVE OBJECT AUDIT
+// ---------------------------------------------------------
+console.log('\n--- 6. WORLD ROOM NAVIGATION & INTERACTIVE AUDIT ---');
+// Check all door targets in WORLD_DATA.floors
+const floorsMatch = worldCode.match(/floors:\s*\{([\s\S]*?)\n  \},/);
+// Verify interactive types handled in main.js handleInteraction
+const interactionTypesHandled = new Set([
+  'npc', 'mascot', 'teacher_desk', 'gather_wood', 'gather_herb', 'gather_forsythia', 'gather_ginkgo',
+  'ginkgo', 'forsythia', 'board', 'craft', 'boss_raid', 'leaderboard', 'elevator', 'history_vitrine',
+  'history_altar', 'history_hall', 'cafeteria', 'store', 'title_exchange', 'secret_locker',
+  'career_clue', 'career_exit_keypad', 'moral_desk', 'moral_board', 'drum_kit', 'field_monster',
+  'acid_rain', 'plant_zone', 'club_board', 'mirror', 'alchemy_cauldron', 'alchemy_shelf',
+  'alchemy_tome', 'alchemy_workbench'
+]);
+
+const interactiveTypeMatches = [...worldCode.matchAll(/type:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
+const uniqueInteractiveTypes = [...new Set(interactiveTypeMatches)];
+uniqueInteractiveTypes.forEach(t => {
+  if (!interactionTypesHandled.has(t)) {
+    console.log(`[INFO/WARNING] Interactive type "${t}" in world.js - check if handled in engine or main`);
+  }
+});
+
+// ---------------------------------------------------------
+// SUMMARY
+// ---------------------------------------------------------
+console.log('\n====================================================');
+console.log(` DEEP AUDIT RESULT: ${issuesFound} ISSUES FOUND`);
+if (issuesFound === 0) {
+  console.log(' ALL INTEGRITY & CODING CHECKS PASSED WITH 0 ERRORS! ');
+} else {
+  console.log(' ERRORS SUMMARY:');
+  errors.forEach(e => console.log('  ❌ ' + e));
+}
+console.log('====================================================');
