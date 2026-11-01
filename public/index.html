@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=98">
+  <link rel="stylesheet" href="css/style.css?v=99">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -807,7 +807,98 @@
     </div>
   </div>
 
-  <!-- 4-C. Season 1 Boss Raid Modal (1학년 2반 보스 레이드 전투창) -->
+    <!-- 4-J. Alchemy Transmutation Modal (1학년 5반 졍경슉 선생님의 연금술 연구실) -->
+  <div id="modal-alchemy" class="modal-overlay hidden" style="z-index: 120;">
+    <div class="modal-card" style="max-width: 650px; width: 94%; border: 2.5px solid #a855f7; box-shadow: 0 10px 30px rgba(88, 28, 135, 0.4); background: #0f172a;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #581c87, #3b0764); border-bottom: 2px solid #c084fc; padding: 12px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 28px;">⚗️</span>
+          <div>
+            <h3 style="margin:0; font-size:18px; color:#f3e8ff; font-weight:800;">졍경슉 선생님의 연금술 연구실</h3>
+            <span style="font-size: 11.5px; color:#d8b4fe;">1학년 5반 · 골드로 목재, 허브, 개나리 꽃잎을 신비롭게 연성하세요!</span>
+          </div>
+        </div>
+        <button class="btn-modal-close" id="btn-close-alchemy-x" style="color:#f3e8ff;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px; background: #18181b;">
+        <!-- Teacher Intro Dialogue Banner -->
+        <div style="background: linear-gradient(135deg, rgba(88, 28, 135, 0.3), rgba(30, 27, 75, 0.5)); border: 1.5px solid #a855f7; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 32px; line-height: 1;">👩‍🏫</span>
+          <div style="flex: 1;">
+            <div style="font-size: 12.5px; color: #e9d5ff; font-weight: 700; line-height: 1.45;">
+              "어머, 안녕! 1학년 5반 담임이자 신비한 연금술을 연구하는 <b>졍경슉 선생님</b>이란다! ⚗️✨<br>
+              <span style="color:#c084fc; font-weight: normal; font-size: 11.5px;">모험에 필요한 <b>목재, 허브, 개나리 꽃잎</b>이 부족하니? 골드를 솥에 넣으면 즉시 연성해 줄게!"</span>
+            </div>
+          </div>
+          <div style="text-align: right; background: #0f172a; padding: 6px 12px; border-radius: 8px; border: 1px solid #6b21a8;">
+            <div style="font-size: 10.5px; color: #cbd5e1;">내 보유 골드</div>
+            <div id="alchemy-player-gold" style="font-size: 15px; font-weight: 900; color: #fde047;">0 G</div>
+          </div>
+        </div>
+
+        <!-- Transmutation Item Cards Container -->
+        <div id="alchemy-recipes-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- 1. 단단한 목재 -->
+          <div style="background: #27272a; border: 1.5px solid #3f3f46; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 30px;">🪵</span>
+              <div>
+                <div style="font-size: 14px; font-weight: 800; color: #f4f4f5;">단단한 목재 <span style="font-size: 11px; color: #a1a1aa; font-weight: normal;">(1개당 2G)</span></div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">나무 장비 및 기초 도구 제작의 핵심 필수 재료</div>
+                <div style="font-size: 11px; color: #ca8a04; font-weight: 700; margin-top: 2px;">내 가방 보유: <span id="alchemy-count-wood">0</span>개</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_wood" data-name="단단한 목재" data-icon="🪵" data-count="1" data-cost="2" style="padding: 6px 10px; font-size: 11.5px; background: #7c3aed; border-color: #6d28d9;">+1개 (2G)</button>
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_wood" data-name="단단한 목재" data-icon="🪵" data-count="10" data-cost="20" style="padding: 6px 10px; font-size: 11.5px; background: #7c3aed; border-color: #6d28d9;">+10개 (20G)</button>
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_wood" data-name="단단한 목재" data-icon="🪵" data-count="50" data-cost="100" style="padding: 6px 10px; font-size: 11.5px; background: #7c3aed; border-color: #6d28d9;">+50개 (100G)</button>
+            </div>
+          </div>
+
+          <!-- 2. 향긋한 허브 -->
+          <div style="background: #27272a; border: 1.5px solid #3f3f46; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 30px;">🌿</span>
+              <div>
+                <div style="font-size: 14px; font-weight: 800; color: #f4f4f5;">향긋한 허브 <span style="font-size: 11px; color: #a1a1aa; font-weight: normal;">(1개당 2G)</span></div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">체력 회복 물약 및 포션 조제의 핵심 약초</div>
+                <div style="font-size: 11px; color: #16a34a; font-weight: 700; margin-top: 2px;">내 가방 보유: <span id="alchemy-count-herb">0</span>개</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_herb" data-name="향긋한 허브" data-icon="🌿" data-count="1" data-cost="2" style="padding: 6px 10px; font-size: 11.5px; background: #059669; border-color: #047857;">+1개 (2G)</button>
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_herb" data-name="향긋한 허브" data-icon="🌿" data-count="10" data-cost="20" style="padding: 6px 10px; font-size: 11.5px; background: #059669; border-color: #047857;">+10개 (20G)</button>
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_herb" data-name="향긋한 허브" data-icon="🌿" data-count="50" data-cost="100" style="padding: 6px 10px; font-size: 11.5px; background: #059669; border-color: #047857;">+50개 (100G)</button>
+            </div>
+          </div>
+
+          <!-- 3. 노란 개나리 꽃잎 -->
+          <div style="background: #27272a; border: 1.5px solid #3f3f46; border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 30px;">🌼</span>
+              <div>
+                <div style="font-size: 14px; font-weight: 800; color: #f4f4f5;">노란 개나리 꽃잎 <span style="font-size: 11px; color: #a1a1aa; font-weight: normal;">(1개당 5G)</span></div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">개나리 반지 및 주홍 물약 조제용 신비의 촉매</div>
+                <div style="font-size: 11px; color: #eab308; font-weight: 700; margin-top: 2px;">내 가방 보유: <span id="alchemy-count-forsythia">0</span>개</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_forsythia" data-name="노란 개나리 꽃잎" data-icon="🌼" data-count="1" data-cost="5" style="padding: 6px 10px; font-size: 11.5px; background: #d97706; border-color: #b45309;">+1개 (5G)</button>
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_forsythia" data-name="노란 개나리 꽃잎" data-icon="🌼" data-count="10" data-cost="50" style="padding: 6px 10px; font-size: 11.5px; background: #d97706; border-color: #b45309;">+10개 (50G)</button>
+              <button class="btn-alchemy-transmute btn-primary" data-item="item_forsythia" data-name="노란 개나리 꽃잎" data-icon="🌼" data-count="20" data-cost="100" style="padding: 6px 10px; font-size: 11.5px; background: #d97706; border-color: #b45309;">+20개 (100G)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 10px 16px; justify-content: flex-end; background: #0f172a; border-top: 1px solid #334155;">
+        <button id="btn-close-alchemy" class="btn-secondary">연구실 나가기</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 4-C. Season 1 Boss Raid Modal (1학년 2반 보스 레이드 전투창) -->
   <div id="modal-boss-raid" class="modal-overlay hidden">
     <div class="modal-card quiz-card boss-raid-card">
       <div class="modal-header boss-raid-header">
@@ -1613,17 +1704,17 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=98"></script>
-  <script src="js/dialog.js?v=98"></script>
+  <script src="js/audio.js?v=99"></script>
+  <script src="js/dialog.js?v=99"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=98"></script>
-  <script src="js/engine.js?v=98"></script>
-  <script src="js/quiz.js?v=98"></script>
-  <script src="js/crafting.js?v=98"></script>
-  <script src="js/network.js?v=98"></script>
-  <script src="js/acid_rain.js?v=98"></script>
-  <script src="js/main.js?v=98"></script>
+  <script src="js/world.js?v=99"></script>
+  <script src="js/engine.js?v=99"></script>
+  <script src="js/quiz.js?v=99"></script>
+  <script src="js/crafting.js?v=99"></script>
+  <script src="js/network.js?v=99"></script>
+  <script src="js/acid_rain.js?v=99"></script>
+  <script src="js/main.js?v=99"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

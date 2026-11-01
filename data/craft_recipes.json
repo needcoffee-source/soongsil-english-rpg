@@ -174,42 +174,6 @@
     }
   },
   {
-    "id": "recipe_leather_shoes",
-    "name": "날렵한 가죽 축구화",
-    "category": "equipment",
-    "materials": [
-      {
-        "item": "item_boss_leather",
-        "count": 1,
-        "name": "질긴 보스의 가죽"
-      },
-      {
-        "item": "item_basketball_leather",
-        "count": 10,
-        "name": "농구공 가죽 조각"
-      },
-      {
-        "item": "item_futsal_leather",
-        "count": 10,
-        "name": "탄력있는 풋살공 가죽"
-      }
-    ],
-    "gold": 40,
-    "result": {
-      "item": "equip_leather_shoes",
-      "name": "날렵한 가죽 축구화",
-      "icon": "👟",
-      "type": "equipment",
-      "slot": "shoes",
-      "stats": {
-        "atk": 5,
-        "def": 8,
-        "hp": 25
-      },
-      "effect": "2티어 고급 신발 · 공격력 +5, 방어력 +8, 체력 +25"
-    }
-  },
-  {
     "id": "recipe_leather_helmet",
     "name": "가죽투구 (Leather Helmet)",
     "category": "equipment",

@@ -267,8 +267,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 신발',
     tierColor: '#b45309',
     effect: '공격력 +5, 방어력 +8, 체력 +25 · 질주(B) 가능',
-    source: '장비 제작대(C)에서 제작 또는 기말고사 파멸신 전리품 드랍',
-    recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 40G'
+    source: '기말고사 파멸신 레이드 전리품 드랍 (제작 불가)',
+    recipe: '제작 불가 (보스 레이드 전용 드랍)'
   },
 
   // 5. Tier 3 Bronze Equipment (3티어 청동 장비 - craft_recipes.json 공식 레시피)
@@ -1090,6 +1090,12 @@ class MainApp {
         } else {
           alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
         }
+        return;
+      }
+
+      // 1학년 5반 담임 졍경슉 선생님 (신비한 연금술 연구실)
+      if (npc.id === 'npc_teacher_kyungsook' || (npc.name && (npc.name.includes('졍경슉') || npc.name.includes('정경숙')))) {
+        this.openAlchemyModal();
         return;
       }
 
@@ -6643,6 +6649,80 @@ class MainApp {
     this.showToast('호칭을 해제했습니다.', 'info');
     this.saveProgress();
     this.renderTitleExchangeModal();
+  }
+
+  // =========================================================================
+  // ⚗️ 졍경슉 선생님의 연금술 연구실 (1학년 5반) - 골드로 기초 재료 연성
+  // =========================================================================
+  openAlchemyModal() {
+    const modal = document.getElementById('modal-alchemy');
+    if (!modal) return;
+
+    this.renderAlchemyModal();
+    modal.classList.remove('hidden');
+
+    if (!this._alchemyInitialized) {
+      this._alchemyInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-alchemy-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+      const btnClose = document.getElementById('btn-close-alchemy');
+      if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+
+      modal.querySelectorAll('.btn-alchemy-transmute').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const itemKey = btn.dataset.item;
+          const itemName = btn.dataset.name;
+          const icon = btn.dataset.icon;
+          const count = parseInt(btn.dataset.count) || 1;
+          const cost = parseInt(btn.dataset.cost) || 0;
+          this.transmuteAlchemyItem(itemKey, itemName, icon, count, cost);
+        });
+      });
+    }
+  }
+
+  renderAlchemyModal() {
+    const goldDisplay = document.getElementById('alchemy-player-gold');
+    if (goldDisplay) goldDisplay.innerText = `${this.playerData.gold || 0} G`;
+
+    const getInvCount = (k) => {
+      const it = (this.playerData.inventory || []).find(i => i.item === k);
+      return it ? it.count : 0;
+    };
+
+    const woodEl = document.getElementById('alchemy-count-wood');
+    if (woodEl) woodEl.innerText = getInvCount('item_wood');
+
+    const herbEl = document.getElementById('alchemy-count-herb');
+    if (herbEl) herbEl.innerText = getInvCount('item_herb');
+
+    const forsythiaEl = document.getElementById('alchemy-count-forsythia');
+    if (forsythiaEl) forsythiaEl.innerText = getInvCount('item_forsythia');
+  }
+
+  transmuteAlchemyItem(itemKey, itemName, icon, count, cost) {
+    if ((this.playerData.gold || 0) < cost) {
+      this.showToast(`골드가 부족합니다! (필요: ${cost}G / 보유: ${this.playerData.gold || 0}G)`, 'error');
+      if (window.AudioManager && window.AudioManager.playWrong) window.AudioManager.playWrong();
+      return;
+    }
+
+    this.playerData.gold -= cost;
+    if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
+
+    let meta = { type: 'material' };
+    if (itemKey === 'item_wood') meta.effect = '단단한 목재 · 기본 장비 제작 재료';
+    else if (itemKey === 'item_herb') meta.effect = '향긋한 허브 · 포션 조제 재료';
+    else if (itemKey === 'item_forsythia') meta.effect = '노란 개나리 꽃잎 · 개나리 반지 및 주홍 물약 재료';
+
+    this.addItem(itemKey, itemName, count, icon, meta);
+    this.saveProgress();
+    this.renderAlchemyModal();
+
+    if (window.AudioManager && window.AudioManager.playCollect) {
+      window.AudioManager.playCollect();
+    }
+    this.showToast(`⚗️ [연금술 성공] 졍경슉 선생님의 연금술로 [${icon} ${itemName} x${count}개]를 연성했습니다! (-${cost}G)`, 'success');
   }
 
   startLoop() {
