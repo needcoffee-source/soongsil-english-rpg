@@ -622,7 +622,7 @@
   },
   {
     "id": "recipe_return_scroll",
-    "name": "귀환 주문서 (Return Scroll)",
+    "name": "귀환 주문서",
     "category": "potion",
     "description": "[주문서] 숭실의 마력이 깃든 비전 주문서입니다. 사용 시 현재 위치가 어디든 상관없이 안전한 7층 복도로 즉시 공간 이동합니다.",
     "icon": "📜",
@@ -664,7 +664,7 @@
   },
   {
     "id": "recipe_green_potion",
-    "name": "초록 물약 (Green Potion)",
+    "name": "초록 물약",
     "category": "potion",
     "description": "[소비품] 싱그러운 약초 진액으로 조제한 비전 물약입니다. 마시면 1분 동안 질주 속도가 10% 증가합니다.",
     "icon": "🧪",
@@ -707,7 +707,7 @@
   },
   {
     "id": "recipe_courage_potion",
-    "name": "용기의 물약 (Courage Potion)",
+    "name": "용기의 물약",
     "category": "potion",
     "description": "[소비품] 불타는 투지를 북돋워주는 비약입니다. 마시면 3분 동안 공격력(ATK)이 +5 증가합니다.",
     "icon": "🧪",
@@ -748,9 +748,9 @@
   },
   {
     "id": "recipe_heritage_sword",
-    "name": "⚔️ 1897 숭실 헤리티지 소드 (The 1897 Heritage Blade)",
+    "name": "⚔️ 1897 숭실 헤리티지 소드",
     "category": "equipment",
-    "description": "[4티어 전설 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
+    "description": "[4티어 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
     "icon": "⚔️",
     "gradeLevel": 1,
     "requiredGold": 150,
@@ -792,14 +792,14 @@
         "def": 0,
         "hp": 35
       },
-      "effect": "4티어 전설 무기 · 공격력 +45, 체력 +35"
+      "effect": "4티어 무기 · 공격력 +45, 체력 +35"
     }
   },
   {
     "id": "recipe_heritage_helmet",
-    "name": "👑 1897 숭실 헤리티지 투구 (The 1897 Heritage Helmet)",
+    "name": "👑 1897 숭실 헤리티지 투구",
     "category": "equipment",
-    "description": "[4티어 전설 방어구] 숭실 127년의 역사와 선배들의 지혜가 깃든 성스러운 투구입니다.",
+    "description": "[4티어 투구] 숭실 120년의 유구한 민족정신과 신앙의 가호가 깃든 성스러운 투구입니다.",
     "icon": "👑",
     "gradeLevel": 1,
     "requiredGold": 120,
@@ -840,14 +840,14 @@
         "def": 20,
         "hp": 35
       },
-      "effect": "4티어 전설 투구 · 방어력 +20, 체력 +35"
+      "effect": "4티어 투구 · 방어력 +20, 체력 +35"
     }
   },
   {
     "id": "recipe_heritage_armor",
-    "name": "🛡️ 1897 숭실 헤리티지 갑옷 (The 1897 Heritage Armor)",
+    "name": "🛡️ 1897 숭실 헤리티지 갑옷",
     "category": "equipment",
-    "description": "[4티어 전설 방어구] 어떤 시련에도 꺾이지 않는 숭실의 숭고한 사명이 깃든 성스러운 갑옷입니다.",
+    "description": "[4티어 갑옷] 어떠한 탄압과 시련에도 굴하지 않는 불굴의 숭실 혼이 깃든 전설의 갑옷입니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
     "requiredGold": 140,
@@ -890,7 +890,7 @@
         "def": 30,
         "hp": 45
       },
-      "effect": "4티어 전설 갑옷 · 방어력 +30, 체력 +45"
+      "effect": "4티어 갑옷 · 방어력 +30, 체력 +45"
     }
   }
 ]

@@ -22,7 +22,7 @@ const WORLD_DATA = {
     5: {
       name: "5층 복도 (진로 & 선배 구역)",
       rooms: [
-        { id: "room_career", name: "🌟 진로상담실 (Career Center)", doorX: 13, doorY: 5, targetX: 30, targetY: 13, locked: false },
+        { id: "room_career", name: "🌟 진로상담실", doorX: 13, doorY: 5, targetX: 30, targetY: 13, locked: false },
         { id: "room_501", name: "2학년 1반", doorX: 25, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 1반 자율학습 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_502", name: "2학년 2반", doorX: 32, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 2반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_503", name: "2학년 3반", doorX: 39, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 3반 수업 시간입니다. (현재 준비 중 🚧)" },
@@ -66,7 +66,7 @@ const WORLD_DATA = {
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_704", name: "1학년 4반", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: false },
-        { id: "room_705", name: "1학년 5반 (⚗️ 연금과학실)", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: false },
+        { id: "room_705", name: "1학년 5반", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: false },
         { id: "room_706", name: "1학년 6반", doorX: 49, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" }
       ],
       elevator: { x: 56, y: 3 },
@@ -112,7 +112,7 @@ const WORLD_DATA = {
 
   // 5층 대형 진로상담실 (진로 방탈출 6대 단서 & 직업 패시브 아카데미)
   classroom_career: {
-    name: "🌟 진로상담실 (Career Center)",
+    name: "🌟 진로상담실",
     exitDoor: { x: 30, y: 17 },
     blackboard: {
       x: 30,
@@ -352,7 +352,7 @@ const WORLD_DATA = {
 
   // 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어전)
   classroom_703: {
-    name: "1학년 3반 (영어 타자 컴퓨터실)",
+    name: "1학년 3반",
     exitDoor: { x: 15, y: 17 },
     blackboard: {
       x: 15,
@@ -426,7 +426,7 @@ const WORLD_DATA = {
 
   // 1학년 5반: 연금술 연구실 (담임: 졍경슉 선생님)
   classroom_705: {
-    name: "1학년 5반 (연금술 연구실)",
+    name: "1학년 5반",
     exitDoor: { x: 15, y: 17 },
     blackboard: {
       x: 15,
@@ -445,8 +445,8 @@ const WORLD_DATA = {
     npcs: [
       {
         id: "npc_teacher_kyungsook",
-        name: "⚗️ 졍경슉 선생님",
-        x: 18,
+        name: "졍경슉 선생님",
+        x: 19,
         y: 7,
         avatar: "teacher",
         prompt: "연금술 재료 연성하기 (SPACE)",

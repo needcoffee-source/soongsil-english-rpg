@@ -684,7 +684,7 @@ class GameEngine {
         this.player.room = 'room_history';
         this.player.x = 15 * 32;
         this.player.y = 13 * 32;
-        this.player.roomName = '🏛️ 숭실역사관 (History Hall)';
+        this.player.roomName = '🏛️ 숭실역사관';
       } else {
         this.player.room = room || 'room_701';
         this.player.x = 15 * 32;
@@ -1720,7 +1720,7 @@ class GameEngine {
       this.ctx.fillRect(px + panelW + 6, py + 28, 3, 16);
 
       // 대형 명패
-      const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실 (Career Center)';
+      const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실';
       const plaqueBg = isStaffOffice ? 'rgba(88, 28, 135, 0.95)' : 'rgba(30, 58, 138, 0.95)';
       const plaqueBorder = isStaffOffice ? '#c084fc' : '#fbbf24';
       this.drawSharpLabel(px + dw / 2, py - 4, plaqueTitle, {
@@ -8495,16 +8495,16 @@ class GameEngine {
   renderAlchemyLabClassroom(cr) {
     const now = Date.now();
 
-    // 1. Velvet Alchemical Runner Carpet (From Door at 15, 17 up to Magic Circle at 15, 9)
+    // 1. Velvet Alchemical Runner Carpet (From Door at 15, 17 up to Magic Circle border at y: 10)
     this.ctx.fillStyle = '#3b0764'; // Deep royal amethyst velvet
-    this.ctx.fillRect(13.5 * 32, 9 * 32, 3 * 32, 8.2 * 32);
+    this.ctx.fillRect(13.5 * 32, 10 * 32, 3 * 32, 7.2 * 32);
     this.ctx.strokeStyle = '#c084fc';
     this.ctx.lineWidth = 2;
-    this.ctx.strokeRect(13.5 * 32, 9 * 32, 3 * 32, 8.2 * 32);
+    this.ctx.strokeRect(13.5 * 32, 10 * 32, 3 * 32, 7.2 * 32);
 
     // Golden fringe trim along runner edges
     this.ctx.fillStyle = '#f59e0b';
-    for (let gy = 9.2 * 32; gy < 17 * 32; gy += 16) {
+    for (let gy = 10.2 * 32; gy < 17 * 32; gy += 16) {
       this.ctx.fillRect(13.5 * 32 - 1, gy, 2, 4);
       this.ctx.fillRect(16.5 * 32 - 1, gy, 2, 4);
     }
@@ -8726,7 +8726,7 @@ class GameEngine {
     this.ctx.stroke();
 
     // Sharp Label
-    this.drawSharpLabel(cx, cy - 36, '⚗️ 끓어오르는 연금술 가마솥 (재료 연성)', {
+    this.drawSharpLabel(cx, cy - 36, '⚗️ 끓어오르는 연금술 가마솥', {
       bgColor: 'rgba(59, 7, 100, 0.94)',
       borderColor: '#c084fc',
       textColor: '#fef08a',

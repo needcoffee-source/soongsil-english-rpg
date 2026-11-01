@@ -168,16 +168,16 @@ check('No stale "자진폐교관" title in engine vitrine draw', !engineCode.inc
 check('History Altar in world.js is "✨ 숭실 역사관 신비한 제단"', worldCode.includes('✨ 숭실 역사관 신비한 제단'));
 check('History Altar in engine.js has correct unlock/lock titles', engineCode.includes("const altarTitle = unlocked ? '✨ 숭실 역사관 신비한 제단' : '🔒 숭실 역사관 신비한 제단';"));
 
-check('Staff office plaque is "🏛️ 교무실"', engineCode.includes("const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실 (Career Center)';"));
+check('Staff office plaque is "🏛️ 교무실"', engineCode.includes("const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실';"));
 check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', !worldCode.includes('숭실역사관 입장 (SPACE)'));
 
 // 5. Version Cache-Buster Consistency
 console.log('\n--- 5. CACHE BUSTER CONSISTENCY AUDIT ---');
 const indexHtml = fs.readFileSync('public/index.html', 'utf8');
 const vOldMatches = (indexHtml.match(/v=107/g) || []).length;
-const vCurMatches = (indexHtml.match(/v=109/g) || []).length;
+const vCurMatches = (indexHtml.match(/v=110/g) || []).length;
 check('No stale v=107 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
-check('All assets use v=109 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=109 tags`);
+check('All assets use v=110 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=110 tags`);
 
 // 6. DOM Element ID Integrity Audit
 console.log('\n--- 6. DOM ELEMENT ID INTEGRITY AUDIT ---');

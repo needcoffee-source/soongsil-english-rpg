@@ -2360,6 +2360,11 @@ body, html {
   background: #6d28d9;
 }
 
+.icon-orange-potion {
+  display: inline-block;
+  filter: hue-rotate(255deg) saturate(2.8) brightness(1.12);
+}
+
 .icon-purple-potion {
   display: inline-block;
   filter: hue-rotate(155deg) saturate(1.8) brightness(1.05);

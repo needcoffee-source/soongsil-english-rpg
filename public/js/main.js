@@ -191,10 +191,10 @@ window.ITEM_CODEX_DATABASE = [
   },
   {
     id: 'item_return_scroll',
-    name: '귀환 주문서 (Return Scroll)',
+    name: '귀환 주문서',
     icon: '📜',
     category: 'consumable',
-    tierBadge: '공간 이동',
+    tierBadge: '주문서',
     tierColor: '#0284c7',
     effect: '사용 시 어디서든 안전한 7층 복도로 즉시 공간 이동',
     source: '포션·주문서 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 10G)',
@@ -202,10 +202,10 @@ window.ITEM_CODEX_DATABASE = [
   },
   {
     id: 'item_green_potion',
-    name: '초록 물약 (Green Potion)',
+    name: '초록 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '신속 버프',
+    tierBadge: '특수 물약',
     tierColor: '#16a34a',
     effect: '사용 시 1분간 질주(대시) 속도 +10% 증가',
     source: '포션·주문서 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 15G)',
@@ -213,10 +213,10 @@ window.ITEM_CODEX_DATABASE = [
   },
   {
     id: 'item_courage_potion',
-    name: '용기의 물약 (Courage Potion)',
+    name: '용기의 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '전투 버프',
+    tierBadge: '특수 물약',
     tierColor: '#9333ea',
     effect: '사용 시 3분간 공격력(ATK) +5 증가',
     source: '포션·주문서 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 20G)',
@@ -310,7 +310,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '청동검 (Bronze Sword)',
     icon: '⚔️',
     category: 'equip',
-    tierBadge: '3티어 최고급 무기',
+    tierBadge: '3티어 무기',
     tierColor: '#047857',
     effect: '공격력(ATK) +30 증가',
     source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G)',
@@ -321,7 +321,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '청동투구 (Bronze Helmet)',
     icon: '🪖',
     category: 'equip',
-    tierBadge: '3티어 최고급 투구',
+    tierBadge: '3티어 투구',
     tierColor: '#047857',
     effect: '방어력(DEF) +14, 체력(HP) +35 증가',
     source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G)',
@@ -332,7 +332,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '청동갑옷 (Bronze Armor)',
     icon: '🛡️',
     category: 'equip',
-    tierBadge: '3티어 최고급 갑옷',
+    tierBadge: '3티어 갑옷',
     tierColor: '#047857',
     effect: '방어력(DEF) +22, 체력(HP) +25 증가',
     source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G)',
@@ -399,34 +399,34 @@ window.ITEM_CODEX_DATABASE = [
   },
   {
     id: 'equip_heritage_blade',
-    name: '1897 숭실 헤리티지 소드 (Heritage Blade)',
+    name: '1897 숭실 헤리티지 소드',
     icon: '⚔️',
     category: 'equip',
-    tierBadge: '4티어 전설 무기',
+    tierBadge: '4티어 무기',
     tierColor: '#6366f1',
-    effect: '공격력 +45, 체력 +35 (기말고사 파멸신 정복의 핵심 성검)',
+    effect: '공격력 +45, 체력 +35',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 150G)',
     recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 150G'
   },
   {
     id: 'equip_heritage_helmet',
-    name: '1897 숭실 헤리티지 투구 (Heritage Helmet)',
+    name: '1897 숭실 헤리티지 투구',
     icon: '👑',
     category: 'equip',
-    tierBadge: '4티어 전설 투구',
+    tierBadge: '4티어 투구',
     tierColor: '#6366f1',
-    effect: '방어력 +20, 체력 +35 (숭실 120년 역사의 가호)',
+    effect: '방어력 +20, 체력 +35',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 4개 + 사명석 2개 + 120G)',
     recipe: '숭실 역사의 정수 4개 + 불굴의 사명석 2개 + 120G'
   },
   {
     id: 'equip_heritage_armor',
-    name: '1897 숭실 헤리티지 갑옷 (Heritage Armor)',
+    name: '1897 숭실 헤리티지 갑옷',
     icon: '🛡️',
     category: 'equip',
-    tierBadge: '4티어 전설 갑옷',
+    tierBadge: '4티어 갑옷',
     tierColor: '#6366f1',
-    effect: '방어력 +30, 체력 +45 (불굴의 신앙과 정신으로 빚어낸 성갑)',
+    effect: '방어력 +30, 체력 +45',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 140G)',
     recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 140G'
   },
@@ -435,7 +435,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '삼디다스 실내화',
     icon: '👟',
     category: 'equip',
-    tierBadge: '특수 신발',
+    tierBadge: '1티어 신발',
     tierColor: '#059669',
     effect: '공격력 +2, 방어력 +2, 체력 +10 (Shift 키 질주 기능 활성화)',
     source: '🏅 호칭 교환소 특별 교환 (만점 시험지 1장)',
@@ -492,9 +492,9 @@ const ALL_GAME_ITEMS = {
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
 
   // 5. Tier 4 Heritage Equipment
-  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 전설 무기 · 공격력 +45, 체력 +35' } },
-  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 전설 투구 · 방어력 +20, 체력 +35' } },
-  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 전설 갑옷 · 방어력 +30, 체력 +45' } },
+  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
+  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
@@ -4203,7 +4203,7 @@ class MainApp {
     const orangeCount = orangePot ? orangePot.count : 0;
     const btnOrange = document.getElementById('btn-raid-use-orange-potion');
     if (btnOrange) {
-      btnOrange.innerText = `🧪 주홍 물약 (+25) ${orangeCount}개`;
+      btnOrange.innerHTML = `<span class="icon-orange-potion">🧪</span> 주홍 물약 (+25) ${orangeCount}개`;
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
@@ -4494,7 +4494,7 @@ class MainApp {
     const orangeCount = orangePot ? orangePot.count : 0;
     const btnOrange = document.getElementById('btn-battle-use-orange-potion');
     if (btnOrange) {
-      btnOrange.innerText = `🧪 주홍 물약 (+25) ${orangeCount}개`;
+      btnOrange.innerHTML = `<span class="icon-orange-potion">🧪</span> 주홍 물약 (+25) ${orangeCount}개`;
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
@@ -7398,7 +7398,8 @@ class MainApp {
       `;
 
       const isCourage = (item.id === 'item_courage_potion');
-      const iconDisplay = isCourage ? `<span class="icon-purple-potion">${item.icon}</span>` : item.icon;
+      const isOrange = (item.id === 'item_orange_potion');
+      const iconDisplay = isCourage ? `<span class="icon-purple-potion">${item.icon}</span>` : (isOrange ? `<span class="icon-orange-potion">${item.icon}</span>` : item.icon);
 
       card.innerHTML = `
         <div>
