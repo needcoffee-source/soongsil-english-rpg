@@ -375,7 +375,7 @@ const ALL_GAME_ITEMS = {
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
   'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
   'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_shoes': { name: '날렵한 가죽 농구화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 7, def: 10, hp: 0 }, effect: '2티어 고급 신발 · 공격력 +7, 방어력 +10, 고속 질주 가능' } },
+  'equip_leather_shoes': { name: '날렵한 가죽 농구화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 0 }, effect: '2티어 고급 신발 · 공격력 +3, 방어력 +3, 고속 질주 가능' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
