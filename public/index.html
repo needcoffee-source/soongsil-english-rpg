@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=105">
+  <link rel="stylesheet" href="css/style.css?v=106">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -136,6 +136,7 @@
               <span class="stat-pill atk-pill">⚔️ 공격력 <b id="hud-atk">10</b></span>
               <span class="stat-pill def-pill">🛡️ 방어력 <b id="hud-def">2</b></span>
             </div>
+            <div id="hud-active-buffs" style="display:none; flex-wrap:wrap; gap:4px; margin-top:6px;"></div>
           </div>
         </div>
         <!-- HP Bar -->
@@ -937,6 +938,7 @@
           <div class="raid-potion-group" style="display:flex; gap:6px; margin-top:8px;">
             <button id="btn-raid-use-red-potion" class="btn-potion-use" style="flex:1;">🍷 빨간 물약 (+10) 0개</button>
             <button id="btn-raid-use-orange-potion" class="btn-potion-use" style="flex:1; background:#c2410c; border-color:#fb923c;">🧪 주홍 물약 (+25) 0개</button>
+            <button id="btn-raid-use-hint-note" class="btn-potion-use" style="flex:1; background:#854d0e; border-color:#f59e0b;">🔖 힌트 쪽지 0개</button>
             <button id="btn-raid-use-revive-scroll" class="btn-potion-use" style="flex:1; background:#4338ca; border-color:#818cf8;">📜 부활 주문서 0개</button>
           </div>
         </div>
@@ -989,6 +991,7 @@
           <div class="raid-potion-group" style="display:flex; gap:6px; margin-top:8px;">
             <button id="btn-battle-use-red-potion" class="btn-potion-use" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:#991b1b; color:#fff; border:1px solid #f87171; cursor:pointer;">🍷 빨간 물약 (+10) 0개</button>
             <button id="btn-battle-use-orange-potion" class="btn-potion-use" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:#c2410c; color:#fff; border:1px solid #fb923c; cursor:pointer;">🧪 주홍 물약 (+25) 0개</button>
+            <button id="btn-battle-use-hint-note" class="btn-potion-use" style="flex:1; padding:6px 8px; font-size:12px; font-weight:700; border-radius:6px; background:#854d0e; color:#fff; border:1px solid #f59e0b; cursor:pointer;">🔖 힌트 쪽지 0개</button>
           </div>
         </div>
 
@@ -1410,6 +1413,9 @@
                       <option value="item_red_potion">🍷 빨간 물약 (+10 HP)</option>
                       <option value="item_revive_scroll">📜 부활 주문서 (50% 부활)</option>
                       <option value="item_return_scroll">🌀 귀환 주문서 (7층 복도 즉시 귀환)</option>
+                      <option value="item_green_potion">🧪 초록 물약 (1분간 질주 +10%)</option>
+                      <option value="item_courage_potion">🔥 용기의 물약 (3분간 공격력 +5)</option>
+                      <option value="item_word_hint_note">🔖 영단어 힌트 쪽지 (오답 2개 제거)</option>
                       <option value="item_boss_leather">🟫 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
                       <option value="item_bronze_heart">🥉 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
                       <option value="equip_leather_sword">🗡️ 가죽손잡이 세이버 (공격력 +20)</option>
@@ -1497,6 +1503,9 @@
                     <option value="item_orange_potion">🧪 주홍 물약 (HP +25 회복)</option>
                     <option value="item_revive_scroll">📜 부활 주문서 (동료 50% 부활)</option>
                     <option value="item_return_scroll">🌀 귀환 주문서 (소비 · 7층 복도 즉시 귀환)</option>
+                    <option value="item_green_potion">🧪 초록 물약 (1분간 질주 +10%)</option>
+                    <option value="item_courage_potion">🔥 용기의 물약 (3분간 공격력 +5)</option>
+                    <option value="item_word_hint_note">🔖 영단어 힌트 쪽지 (오답 2개 제거)</option>
                   </optgroup>
                   <optgroup label="🥋 스포츠 가죽 장비 (농구장 & 풋살장)">
                     <option value="item_basketball_leather">🏀 농구공 가죽 조각 (재료)</option>
@@ -1706,17 +1715,17 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=105"></script>
-  <script src="js/dialog.js?v=105"></script>
+  <script src="js/audio.js?v=106"></script>
+  <script src="js/dialog.js?v=106"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=105"></script>
-  <script src="js/engine.js?v=105"></script>
-  <script src="js/quiz.js?v=105"></script>
-  <script src="js/crafting.js?v=105"></script>
-  <script src="js/network.js?v=105"></script>
-  <script src="js/acid_rain.js?v=105"></script>
-  <script src="js/main.js?v=105"></script>
+  <script src="js/world.js?v=106"></script>
+  <script src="js/engine.js?v=106"></script>
+  <script src="js/quiz.js?v=106"></script>
+  <script src="js/crafting.js?v=106"></script>
+  <script src="js/network.js?v=106"></script>
+  <script src="js/acid_rain.js?v=106"></script>
+  <script src="js/main.js?v=106"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

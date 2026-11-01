@@ -200,6 +200,39 @@ window.ITEM_CODEX_DATABASE = [
     source: '포션·주문서 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 10G)',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 10G'
   },
+  {
+    id: 'item_green_potion',
+    name: '초록 물약 (Green Potion)',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '신속 버프',
+    tierColor: '#16a34a',
+    effect: '사용 시 1분간 질주(대시) 속도 +10% 증가',
+    source: '포션·주문서 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 15G)',
+    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 15G'
+  },
+  {
+    id: 'item_courage_potion',
+    name: '용기의 물약 (Courage Potion)',
+    icon: '🔥',
+    category: 'consumable',
+    tierBadge: '전투 버프',
+    tierColor: '#ea580c',
+    effect: '사용 시 3분간 공격력(ATK) +5 증가',
+    source: '포션·주문서 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 20G)',
+    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
+  },
+  {
+    id: 'item_word_hint_note',
+    name: '영단어 힌트 쪽지 (Word Hint Note)',
+    icon: '🔖',
+    category: 'consumable',
+    tierBadge: '퀴즈 도우미',
+    tierColor: '#d97706',
+    effect: '필드 몬스터 배틀 및 보스 레이드 퀴즈에서 오답 보기 2개 즉시 제거 (50:50 찬스)',
+    source: '포션·주문서 제작대(C)에서 제작 (목재 1개 + 허브 1개 + 10G)',
+    recipe: '단단한 목재 1개 + 향긋한 허브 1개 + 10G'
+  },
 
   // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
   {
@@ -447,6 +480,9 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
+  'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 질주 속도 +10% 증가' } },
+  'item_courage_potion': { name: '용기의 물약', icon: '🔥', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
+  'item_word_hint_note': { name: '영단어 힌트 쪽지', icon: '🔖', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '퀴즈 풀이 시 오답 보기 2개 즉시 제거 (50:50 찬스)' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
 
@@ -841,6 +877,9 @@ class MainApp {
     this.invAtkDisplay = document.getElementById('inv-atk-display');
     this.invDefDisplay = document.getElementById('inv-def-display');
     this.invGrid = document.getElementById('inv-items-grid');
+
+    this.activeBuffs = {};
+    this.buffInterval = null;
 
     this.initControls();
     this.initModals();
@@ -3024,6 +3063,13 @@ class MainApp {
       });
     }
 
+    const btnRaidHint = document.getElementById('btn-raid-use-hint-note');
+    if (btnRaidHint) {
+      btnRaidHint.addEventListener('click', () => {
+        this.useWordHintNote();
+      });
+    }
+
     // Revival Offer Modal buttons (부활 주문서 수락 / 대기 유지)
     const btnAcceptRevive = document.getElementById('btn-accept-revive');
     if (btnAcceptRevive) {
@@ -3064,6 +3110,12 @@ class MainApp {
         if (this.usePotion('item_orange_potion')) {
           this.updateFieldBattleUI();
         }
+      });
+    }
+    const btnBattleHint = document.getElementById('btn-battle-use-hint-note');
+    if (btnBattleHint) {
+      btnBattleHint.addEventListener('click', () => {
+        this.useWordHintNote();
       });
     }
 
@@ -3239,6 +3291,11 @@ class MainApp {
     if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
       bonusAtk += 10;
       bonusHp += 30;
+    }
+
+    // 🔥 용기의 물약 버프 (공격력 +5 증가)
+    if (this.isBuffActive && this.isBuffActive('courage_boost')) {
+      bonusAtk += 5;
     }
 
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
@@ -3517,9 +3574,12 @@ class MainApp {
     } else {
       filteredItems.forEach(item => {
         const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
-        const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
+        const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('note'));
         const isScroll = (item.item === 'item_revive_scroll');
         const isReturnScroll = (item.item === 'item_return_scroll');
+        const isGreenPotion = (item.item === 'item_green_potion');
+        const isCouragePotion = (item.item === 'item_courage_potion');
+        const isWordHintNote = (item.item === 'item_word_hint_note');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
 
         const card = document.createElement('div');
@@ -3546,6 +3606,12 @@ class MainApp {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;">🌀 7층 복도로 즉시 공간 이동</span>`;
           } else if (isScroll) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">💫 쓰러진 친구 50% 체력 부활</span>`;
+          } else if (isGreenPotion) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#4ade80;">⚡ 1분간 질주 속도 +10%</span>`;
+          } else if (isCouragePotion) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#f87171;">🔥 3분간 공격력(ATK) +5</span>`;
+          } else if (isWordHintNote) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#f59e0b;">🔖 퀴즈 오답 2개 제거 (50:50)</span>`;
           } else {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
@@ -3590,27 +3656,39 @@ class MainApp {
           actionArea.appendChild(btn);
         } else if (isPotion) {
           const btn = document.createElement('button');
-          btn.className = 'btn-inv-action ' + (isReturnScroll ? 'btn-inv-return' : (isScroll ? 'btn-inv-scroll' : 'btn-inv-potion'));
-          btn.innerText = isReturnScroll ? '귀환' : (isScroll ? '사용' : '마시기');
+          let btnClass = 'btn-inv-potion';
+          let btnText = '마시기';
+
+          if (isReturnScroll) {
+            btnClass = 'btn-inv-return';
+            btnText = '귀환';
+          } else if (isScroll || isWordHintNote) {
+            btnClass = 'btn-inv-scroll';
+            btnText = '사용';
+          } else if (isCouragePotion) {
+            btnClass = 'btn-inv-courage';
+            btnText = '마시기';
+          }
+
+          btn.className = 'btn-inv-action ' + btnClass;
+          btn.innerText = btnText;
+
+          const handleUse = () => {
+            if (isReturnScroll) this.useReturnScroll();
+            else if (isScroll) this.attemptUseReviveScroll();
+            else if (isGreenPotion) this.useGreenPotion();
+            else if (isCouragePotion) this.useCouragePotion();
+            else if (isWordHintNote) this.useWordHintNote();
+            else this.usePotion(item.item);
+          };
+
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (isReturnScroll) {
-              this.useReturnScroll();
-            } else if (isScroll) {
-              this.attemptUseReviveScroll();
-            } else {
-              this.usePotion(item.item);
-            }
+            handleUse();
           });
           card.style.cursor = 'pointer';
           card.addEventListener('click', () => {
-            if (isReturnScroll) {
-              this.useReturnScroll();
-            } else if (isScroll) {
-              this.attemptUseReviveScroll();
-            } else {
-              this.usePotion(item.item);
-            }
+            handleUse();
           });
           actionArea.appendChild(btn);
         } else {
@@ -4154,6 +4232,14 @@ class MainApp {
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
+    const hintNote = this.playerData.inventory.find(i => i.item === 'item_word_hint_note');
+    const hintCount = hintNote ? hintNote.count : 0;
+    const btnHint = document.getElementById('btn-raid-use-hint-note');
+    if (btnHint) {
+      btnHint.innerText = `🔖 힌트 쪽지 ${hintCount}개`;
+      btnHint.disabled = (hintCount <= 0 || this.playerData.isFallen);
+    }
+
     const scroll = this.playerData.inventory.find(i => i.item === 'item_revive_scroll');
     const scrollCount = scroll ? scroll.count : 0;
     const btnScroll = document.getElementById('btn-raid-use-revive-scroll');
@@ -4443,6 +4529,14 @@ class MainApp {
     if (btnOrange) {
       btnOrange.innerText = `🧪 주홍 물약 (+25) ${orangeCount}개`;
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
+    }
+
+    const hintNote = this.playerData.inventory.find(i => i.item === 'item_word_hint_note');
+    const hintCount = hintNote ? hintNote.count : 0;
+    const btnHint = document.getElementById('btn-battle-use-hint-note');
+    if (btnHint) {
+      btnHint.innerText = `🔖 힌트 쪽지 ${hintCount}개`;
+      btnHint.disabled = (hintCount <= 0 || this.playerData.isFallen);
     }
 
     const isFutsal = (mob.court === 'futsal');
@@ -4918,6 +5012,239 @@ class MainApp {
     } else if (confirm('귀환 주문서를 사용하여 7층 복도로 즉시 공간 이동하시겠습니까?')) {
       executeReturn();
     }
+  }
+
+  isBuffActive(buffKey) {
+    if (!this.activeBuffs || !this.activeBuffs[buffKey]) return false;
+    if (Date.now() > this.activeBuffs[buffKey].expireAt) {
+      delete this.activeBuffs[buffKey];
+      this.recalcCombatStats();
+      if (this.engine && this.engine.player) {
+        this.engine.setDashing(this.engine.player.isDashing);
+      }
+      this.updateBuffBar();
+      return false;
+    }
+    return true;
+  }
+
+  getBuffRemainingSec(buffKey) {
+    if (!this.isBuffActive(buffKey)) return 0;
+    return Math.max(0, Math.ceil((this.activeBuffs[buffKey].expireAt - Date.now()) / 1000));
+  }
+
+  applyBuff(buffKey, durationMs, buffName, icon = '✨') {
+    if (!this.activeBuffs) this.activeBuffs = {};
+    this.activeBuffs[buffKey] = {
+      name: buffName,
+      icon: icon,
+      expireAt: Date.now() + durationMs
+    };
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const durationSec = Math.round(durationMs / 1000);
+    this.showToast(`${icon} [${buffName}] 효과 발동! (${durationSec}초 지속)`, 'success');
+
+    this.recalcCombatStats();
+    if (this.engine && this.engine.player) {
+      this.engine.setDashing(this.engine.player.isDashing);
+    }
+    this.updateBuffBar();
+
+    if (!this.buffInterval) {
+      this.buffInterval = setInterval(() => {
+        this.tickBuffs();
+      }, 1000);
+    }
+  }
+
+  tickBuffs() {
+    if (!this.activeBuffs) return;
+    const keys = Object.keys(this.activeBuffs);
+    if (keys.length === 0) {
+      if (this.buffInterval) {
+        clearInterval(this.buffInterval);
+        this.buffInterval = null;
+      }
+      this.updateBuffBar();
+      return;
+    }
+
+    let changed = false;
+    keys.forEach(k => {
+      if (Date.now() > this.activeBuffs[k].expireAt) {
+        const b = this.activeBuffs[k];
+        delete this.activeBuffs[k];
+        changed = true;
+        this.showToast(`⌛ [${b.name}] 지속시간이 만료되었습니다.`, 'info');
+      }
+    });
+
+    if (changed) {
+      this.recalcCombatStats();
+      if (this.engine && this.engine.player) {
+        this.engine.setDashing(this.engine.player.isDashing);
+      }
+    }
+    this.updateBuffBar();
+  }
+
+  updateBuffBar() {
+    const el = document.getElementById('hud-active-buffs');
+    if (!el) return;
+    if (!this.activeBuffs || Object.keys(this.activeBuffs).length === 0) {
+      el.innerHTML = '';
+      el.style.display = 'none';
+      return;
+    }
+
+    el.style.display = 'flex';
+    el.innerHTML = '';
+    Object.keys(this.activeBuffs).forEach(k => {
+      const b = this.activeBuffs[k];
+      const remSec = Math.max(0, Math.ceil((b.expireAt - Date.now()) / 1000));
+      const badge = document.createElement('span');
+      badge.className = 'hud-buff-pill';
+      badge.style.cssText = 'font-size:11px; font-weight:800; padding:2px 7px; border-radius:10px; background:rgba(30,41,59,0.9); border:1px solid #38bdf8; color:#38bdf8; display:inline-flex; align-items:center; gap:3px;';
+      if (k === 'speed_boost') {
+        badge.style.borderColor = '#4ade80';
+        badge.style.color = '#4ade80';
+      } else if (k === 'courage_boost') {
+        badge.style.borderColor = '#f87171';
+        badge.style.color = '#f87171';
+      }
+      badge.innerText = `${b.icon} ${b.name} ${remSec}s`;
+      el.appendChild(badge);
+    });
+  }
+
+  useGreenPotion() {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 물약을 마실 수 없습니다!');
+      return false;
+    }
+    const pot = this.playerData.inventory.find(i => i.item === 'item_green_potion');
+    if (!pot || pot.count <= 0) {
+      alert('보유 중인 초록 물약이 없습니다.');
+      return false;
+    }
+    this.removeItem('item_green_potion', 1);
+    this.applyBuff('speed_boost', 60000, '신속 질주 (+10%)', '⚡');
+    this.saveProgress();
+    if (!this.modalInventory.classList.contains('hidden')) {
+      this.openInventory();
+    }
+    return true;
+  }
+
+  useCouragePotion() {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 물약을 마실 수 없습니다!');
+      return false;
+    }
+    const pot = this.playerData.inventory.find(i => i.item === 'item_courage_potion');
+    if (!pot || pot.count <= 0) {
+      alert('보유 중인 용기의 물약이 없습니다.');
+      return false;
+    }
+    this.removeItem('item_courage_potion', 1);
+    this.applyBuff('courage_boost', 180000, '용기의 투지 (+5 ATK)', '🔥');
+    this.saveProgress();
+    if (!this.modalInventory.classList.contains('hidden')) {
+      this.openInventory();
+    }
+    this.updateBossRaidUI();
+    this.updateFieldBattleUI();
+    return true;
+  }
+
+  useWordHintNote() {
+    const note = this.playerData.inventory.find(i => i.item === 'item_word_hint_note');
+    if (!note || note.count <= 0) {
+      alert('🔖 보유 중인 영단어 힌트 쪽지가 없습니다.\n포션·주문서 제작대(C)에서 제작할 수 있습니다.');
+      return false;
+    }
+
+    const isBattleOpen = this.modalFieldBattle && !this.modalFieldBattle.classList.contains('hidden');
+    const isRaidOpen = this.modalBossRaid && !this.modalBossRaid.classList.contains('hidden');
+
+    if (!isBattleOpen && !isRaidOpen) {
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '🔖 영단어 힌트 쪽지 사용 안내',
+          '이 아이템은 [필드 몬스터 배틀]이나 [보스 레이드] 퀴즈 중에 사용하면\n4지선다 보기 중 오답 2개를 즉시 지워줍니다! (50:50 찬스)\n\n전투 화면 상단의 [🔖 힌트 쪽지] 버튼을 눌러 위기 상황에서 사용해보세요!',
+          '💡'
+        );
+      } else {
+        alert('🔖 [영단어 힌트 쪽지]\n\n이 아이템은 필드 몬스터 배틀이나 보스 레이드 퀴즈 중에 사용하면 오답 2개를 즉시 지워줍니다 (50:50 찬스)!\n전투 화면의 [힌트 쪽지] 버튼을 눌러 사용해보세요!');
+      }
+      return false;
+    }
+
+    // Identify active quiz options and question
+    let optionsContainer = null;
+    let currentQuestion = null;
+
+    if (isBattleOpen) {
+      optionsContainer = document.getElementById('battle-quiz-options');
+      currentQuestion = this.fieldBattleQuestion;
+    } else if (isRaidOpen) {
+      optionsContainer = document.getElementById('raid-quiz-options');
+      currentQuestion = this.bossState && this.bossState.currentQuestion;
+    }
+
+    if (!optionsContainer || !currentQuestion) {
+      this.showToast('현재 진행 중인 문제가 없습니다.', 'warning');
+      return false;
+    }
+
+    const buttons = Array.from(optionsContainer.querySelectorAll('.quiz-opt-btn'));
+    if (buttons.length === 0) {
+      this.showToast('보기 버튼이 준비되지 않았습니다.', 'warning');
+      return false;
+    }
+
+    // Filter candidate wrong buttons (not already disabled/eliminated and not correct answer)
+    const wrongButtons = buttons.filter(btn => {
+      return !btn.disabled && !btn.dataset.eliminated && (btn.innerText.trim() !== currentQuestion.answer.trim());
+    });
+
+    if (wrongButtons.length === 0) {
+      this.showToast('이미 오답이 제외되었거나 정답만 남아있습니다!', 'info');
+      return false;
+    }
+
+    // Shuffle and pick up to 2 wrong buttons
+    const toEliminate = wrongButtons.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+    toEliminate.forEach(btn => {
+      btn.disabled = true;
+      btn.dataset.eliminated = 'true';
+      btn.style.opacity = '0.3';
+      btn.style.textDecoration = 'line-through';
+      btn.style.background = '#1e293b';
+      btn.style.borderColor = '#475569';
+      btn.style.cursor = 'not-allowed';
+      btn.innerHTML = `<span style="font-size:11px; color:#ef4444; font-weight:800;">❌ 제외</span> ${btn.innerText}`;
+    });
+
+    this.removeItem('item_word_hint_note', 1);
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    this.showToast(`🔖 [영단어 힌트 쪽지] 오답 ${toEliminate.length}개를 지웠습니다! (50:50 찬스)`, 'success');
+    this.updateBossRaidUI();
+    this.updateFieldBattleUI();
+
+    if (!this.modalInventory.classList.contains('hidden')) {
+      this.openInventory();
+    }
+    return true;
   }
 
   onPlayerReviveOffered(data) {

@@ -367,6 +367,9 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
+  'item_green_potion': { name: '초록 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 질주 속도 +10% 증가' } },
+  'item_courage_potion': { name: '용기의 물약', icon: '🔥', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
+  'item_word_hint_note': { name: '영단어 힌트 쪽지', icon: '🔖', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '퀴즈 풀이 시 오답 보기 2개 즉시 제거 (50:50 찬스)' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
 
