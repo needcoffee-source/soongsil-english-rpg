@@ -283,25 +283,48 @@ class BrawlBallManager {
       this.myTeam = 'blue';
       this.aimDx = 0;
       this.aimDy = -1;
-      if (this.engine) {
-        this.engine.teleportTo(0, 'playground', bluePlayer.spawnX, bluePlayer.spawnY);
-      }
+      this.teleportMatchPlayer(bluePlayer.spawnX, bluePlayer.spawnY, 'up');
       this.showGoalBanner('🔵 블루팀 배정!', '남쪽 진영 (북쪽 RED 골대를 향해 공격하세요!)', 3);
     } else if (redPlayer) {
       this.myTeam = 'red';
       this.aimDx = 0;
       this.aimDy = 1;
-      if (this.engine) {
-        this.engine.teleportTo(0, 'playground', redPlayer.spawnX, redPlayer.spawnY);
-      }
+      this.teleportMatchPlayer(redPlayer.spawnX, redPlayer.spawnY, 'down');
       this.showGoalBanner('🔴 레드팀 배정!', '북쪽 진영 (남쪽 BLUE 골대를 향해 공격하세요!)', 3);
     } else {
       this.myTeam = null;
-      this.showGoalBanner('⚽ 3v3 브롤볼 경기 시작!', '관전 모드로 진행됩니다', 2.5);
+      this.showGoalBanner('⚽ 3대3 브롤볼 경기 시작!', '관전 모드로 진행됩니다', 2.5);
     }
 
     if (window.AudioManager) {
       window.AudioManager.playWhistle();
+    }
+  }
+
+  teleportMatchPlayer(targetX, targetY, dir = 'down') {
+    if (!this.engine || !this.engine.player) return;
+    const p = this.engine.player;
+    p.direction = dir;
+    if (p.room === 'playground') {
+      p.x = targetX;
+      p.y = targetY;
+      for (let i = 0; i < 16; i++) {
+        this.particles.push({
+          x: targetX,
+          y: targetY,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          color: '#38bdf8',
+          size: 4 + Math.random() * 4,
+          life: 0.45,
+          maxLife: 0.45
+        });
+      }
+      if (this.network && typeof this.network.sendMove === 'function') {
+        this.network.sendMove(p.x, p.y, p.direction);
+      }
+    } else {
+      this.engine.teleportTo(p.floor || 1, 'playground', targetX, targetY);
     }
   }
 
@@ -411,7 +434,7 @@ class BrawlBallManager {
   trySuper() {
     if (!this.engine || !this.engine.player) return false;
     const p = this.engine.player;
-    if (p.room !== 'playground' || !this.isPlayerInCourt(p.x, p.y)) return false;
+    if (p.room !== 'playground' || !this.isInsideCourtBox(p.x, p.y)) return false;
 
     const now = Date.now();
     if (now < this.stunnedUntil) {
@@ -595,6 +618,60 @@ class BrawlBallManager {
     return false;
   }
 
+  isInsideCourtBox(px, py) {
+    return (
+      px >= this.court.minX &&
+      px <= this.court.maxX &&
+      py >= this.court.minY &&
+      py <= this.court.maxY
+    );
+  }
+
+  isCollisionBlocked(curX, curY, nextX, nextY) {
+    // 1. Wooden Crate Obstacles inside the court
+    if (this.isObstacleBlocked(nextX, nextY) && !this.isObstacleBlocked(curX, curY)) {
+      return true;
+    }
+
+    // 2. 4-Sided Stadium Perimeter Wall around Brawl Ball Court (minX..maxX, minY..maxY)
+    const c = this.court;
+    const wallOuterMinX = c.minX - 12;
+    const wallOuterMaxX = c.maxX + 12;
+    const wallOuterMinY = c.minY - 12;
+    const wallOuterMaxY = c.maxY + 12;
+
+    const wallInnerMinX = c.minX + 14;
+    const wallInnerMaxX = c.maxX - 14;
+    const wallInnerMinY = c.minY + 14;
+    const wallInnerMaxY = c.maxY - 14;
+
+    const currentlyInside = this.isInsideCourtBox(curX, curY);
+
+    if (currentlyInside) {
+      // Players inside the court (during an active match) cannot walk out through the 4 walls
+      const wasSafelyInside = (curX >= wallInnerMinX && curX <= wallInnerMaxX && curY >= wallInnerMinY && curY <= wallInnerMaxY);
+      const nextSafelyInside = (nextX >= wallInnerMinX && nextX <= wallInnerMaxX && nextY >= wallInnerMinY && nextY <= wallInnerMaxY);
+      if (wasSafelyInside && !nextSafelyInside) {
+        return true;
+      }
+      if (nextX < c.minX + 8 || nextX > c.maxX - 8 || nextY < c.minY + 8 || nextY > c.maxY - 8) {
+        return true;
+      }
+    } else {
+      // Players outside the court cannot walk into the walled court area
+      const wasOutsideWall = (curX < wallOuterMinX || curX > wallOuterMaxX || curY < wallOuterMinY || curY > wallOuterMaxY);
+      const nextInsideWall = (nextX >= wallOuterMinX && nextX <= wallOuterMaxX && nextY >= wallOuterMinY && nextY <= wallOuterMaxY);
+      if (wasOutsideWall && nextInsideWall) {
+        return true;
+      }
+      if (this.isInsideCourtBox(nextX, nextY)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   checkBallObstacleCollisions() {
     const now = Date.now();
     const bx = this.ball.x;
@@ -759,7 +836,7 @@ class BrawlBallManager {
   tryTackle() {
     if (!this.engine || !this.engine.player) return;
     const p = this.engine.player;
-    if (p.room !== 'playground' || !this.isPlayerInCourt(p.x, p.y)) return;
+    if (p.room !== 'playground' || !this.isInsideCourtBox(p.x, p.y)) return;
 
     const now = Date.now();
     if (now < this.stunnedUntil) {
@@ -1074,7 +1151,7 @@ class BrawlBallManager {
   }
 
   onMatchRewards(data) {
-    const title = data.isWinner ? '🏆 [3v3 브롤볼 승리 보상]' : '⚽ [3v3 브롤볼 참가 보상]';
+    const title = data.isWinner ? '🏆 [3대3 브롤볼 승리 보상]' : '⚽ [3대3 브롤볼 참가 보상]';
     const toast = `${title}\n+${data.expGain} EXP & +${data.goldGain} Gold 획득!`;
     if (window.MainApp) {
       if (typeof window.MainApp.addExp === 'function' && data.expGain) {
@@ -1104,6 +1181,11 @@ class BrawlBallManager {
       this.hasShield = false;
       this.speedBuffUntil = 0;
       this.stunnedUntil = 0;
+      if (this.engine && this.engine.player && this.engine.player.room === 'playground' && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y)) {
+        const exitX = (41 + Math.floor(Math.random() * 5)) * 32;
+        const exitY = 20 * 32;
+        this.teleportMatchPlayer(exitX, exitY, 'up');
+      }
     }, 4500);
   }
 
@@ -1147,10 +1229,10 @@ class BrawlBallManager {
 
   isPlayerInCourt(px, py) {
     return (
-      px >= this.court.minX - 32 &&
-      px <= this.court.maxX + 32 &&
-      py >= this.court.minY - 32 &&
-      py <= this.court.maxY + 32
+      px >= this.court.minX - 64 &&
+      px <= this.court.maxX + 64 &&
+      py >= this.court.minY - 4 * 32 &&
+      py <= this.court.maxY + 64
     );
   }
 
@@ -1161,6 +1243,11 @@ class BrawlBallManager {
   update(dt) {
     if (!this.engine || !this.engine.player) return;
     if (this.engine.player.room !== 'playground') return;
+
+    // Ensure players cannot stay trapped inside the walled court when no active match is assigned to them
+    if ((!this.match || !this.myTeam) && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y)) {
+      this.teleportMatchPlayer(43 * 32, 20 * 32, 'up');
+    }
 
     const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
     const now = Date.now();
@@ -1468,31 +1555,63 @@ class BrawlBallManager {
     const c = this.court;
     ctx.save();
 
-    // 1. West Dividing LED Barrier Board
-    const barrierX = c.minX;
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(barrierX - 4, c.minY, 8, 11 * 32);
-    ctx.fillRect(barrierX - 4, c.minY + 15 * 32, 8, 11 * 32);
+    // 1. 4-Sided Enclosed Stadium LED Perimeter Wall (West, East, North, South)
+    const courtW = c.maxX - c.minX;
+    const courtH = c.maxY - c.minY;
 
+    ctx.fillStyle = '#0f172a';
+    // West & East full-height walls
+    ctx.fillRect(c.minX - 4, c.minY - 4, 8, courtH + 8);
+    ctx.fillRect(c.maxX - 4, c.minY - 4, 8, courtH + 8);
+    // North & South walls flanking the goals
+    ctx.fillRect(c.minX - 4, c.minY - 4, c.goalMinX - c.minX + 4, 8);
+    ctx.fillRect(c.goalMaxX, c.minY - 4, c.maxX - c.goalMaxX + 4, 8);
+    ctx.fillRect(c.minX - 4, c.maxY - 4, c.goalMinX - c.minX + 4, 8);
+    ctx.fillRect(c.goalMaxX, c.maxY - 4, c.maxX - c.goalMaxX + 4, 8);
+
+    // Glowing LED strips along West & East walls
     ctx.fillStyle = '#38bdf8';
     ctx.shadowColor = '#38bdf8';
     ctx.shadowBlur = 8;
-    for (let by = c.minY + 12; by < c.minY + 11 * 32; by += 24) {
-      ctx.fillRect(barrierX - 2, by, 4, 12);
+    for (let by = c.minY + 12; by < c.maxY - 8; by += 24) {
+      ctx.fillRect(c.minX - 2, by, 4, 12);
+      ctx.fillRect(c.maxX - 2, by, 4, 12);
     }
-    for (let by = c.minY + 15 * 32 + 12; by < c.maxY; by += 24) {
-      ctx.fillRect(barrierX - 2, by, 4, 12);
+
+    // Glowing Red LED strips along North wall
+    ctx.fillStyle = '#ef4444';
+    ctx.shadowColor = '#ef4444';
+    for (let bx = c.minX + 12; bx < c.goalMinX - 8; bx += 24) {
+      ctx.fillRect(bx, c.minY - 2, 12, 4);
+    }
+    for (let bx = c.goalMaxX + 8; bx < c.maxX - 8; bx += 24) {
+      ctx.fillRect(bx, c.minY - 2, 12, 4);
+    }
+
+    // Glowing Blue LED strips along South wall
+    ctx.fillStyle = '#3b82f6';
+    ctx.shadowColor = '#3b82f6';
+    for (let bx = c.minX + 12; bx < c.goalMinX - 8; bx += 24) {
+      ctx.fillRect(bx, c.maxY - 2, 12, 4);
+    }
+    for (let bx = c.goalMaxX + 8; bx < c.maxX - 8; bx += 24) {
+      ctx.fillRect(bx, c.maxY - 2, 12, 4);
     }
     ctx.shadowBlur = 0;
 
-    if (this.engine && this.engine.drawSharpLabel) {
-      this.engine.drawSharpLabel(barrierX, c.midY, '🚪 브롤볼 전장 입구', {
-        bgColor: 'rgba(15, 23, 42, 0.95)',
-        borderColor: '#38bdf8',
-        textColor: '#38bdf8',
-        fontSize: 11,
-        height: 20
-      });
+    // 4 Corner Stadium Pillars
+    const corners = [
+      [c.minX, c.minY],
+      [c.maxX, c.minY],
+      [c.minX, c.maxY],
+      [c.maxX, c.maxY]
+    ];
+    for (const [cx, cy] of corners) {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(cx - 6, cy - 6, 12, 12);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cx - 6, cy - 6, 12, 12);
     }
 
     // 2. High-Res North Goal (Red Team)
@@ -2151,15 +2270,12 @@ class BrawlBallManager {
     ctx.textAlign = 'center';
     ctx.fillStyle = canTackle ? '#4ade80' : '#f59e0b';
 
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
-    const isCarrier = (this.ball.carrierId === myId);
-    const carrierPrompt = isCarrier ? ' | ⚽ A키: 슛 / Q키: 필살슛' : '';
     let teamText = '⚽ 자유 연습 중 (코치에게 3v3 신청)';
     if (this.match) {
       teamText = this.myTeam ? (this.myTeam === 'blue' ? '🔵 내 팀: 블루' : '🔴 내 팀: 레드') : '👀 관전 중';
     }
 
-    ctx.fillText(`${teamText} | ⚡ B키 태클 [${tackleRemaining}]${carrierPrompt}${buffStr ? ` | ${buffStr}` : ''}`, hudX + hudW / 2, hudY + hudH + 15);
+    ctx.fillText(`${teamText} | ⚡ SHIFT/B키 태클 [${tackleRemaining}] | ⚽ SPACE키: 슛 / Q키: 필살슛${buffStr ? ` | ${buffStr}` : ''}`, hudX + hudW / 2, hudY + hudH + 15);
 
     ctx.restore();
   }

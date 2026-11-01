@@ -377,7 +377,7 @@ class GameEngine {
     if (tileY < 1) return true;
 
     if (this.player.room === 'playground') {
-      if (window.BrawlBall && window.BrawlBall.isObstacleBlocked(x, y) && !window.BrawlBall.isObstacleBlocked(this.player.x, this.player.y)) return true;
+      if (window.BrawlBall && window.BrawlBall.isCollisionBlocked(this.player.x, this.player.y, x, y)) return true;
       if (tileY >= curMapHeight - 1) return true; // bottom fence
       if (tileY <= 2) {
         // Top boundary: Elevator area (x: 78~82, y: 3) and Cafeteria door (x: 84~88, y: 3) are passable
@@ -653,7 +653,7 @@ class GameEngine {
       } else if (room === 'playground_soccer') {
         this.player.room = 'playground';
         this.player.roomName = '숭실 운동장 (축구장)';
-        this.player.x = 31 * 32; // 천연잔디 축구장 센터서클
+        this.player.x = 22 * 32; // 천연잔디 축구장 서쪽 구역
         this.player.y = 35 * 32;
       } else if (room === 'playground_basketball') {
         this.player.room = 'playground';
