@@ -159,7 +159,7 @@ window.ITEM_CODEX_DATABASE = [
   {
     id: 'item_red_potion',
     name: '빨간 물약',
-    icon: '🍷',
+    icon: '🧪',
     category: 'consumable',
     tierBadge: '회복 물약',
     tierColor: '#e11d48',
@@ -467,7 +467,7 @@ const ALL_GAME_ITEMS = {
   'item_unyielding_stone': { name: '💎 꺾이지 않는 사명석', icon: '💎', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료' } },
 
   // 2. Potions & Scrolls
-  'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
+  'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 질주 속도 +10% 증가' } },
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
@@ -1995,7 +1995,7 @@ class MainApp {
     this.addGold(50);
     this.addExp(30);
     this.addItem('item_orange_potion', '주홍 물약', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
-    this.addItem('item_red_potion', '빨간 물약', 2, '🍷', { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' });
+    this.addItem('item_red_potion', '빨간 물약', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' });
     this.saveProgress();
 
     if (window.AudioManager) {
@@ -2013,7 +2013,7 @@ class MainApp {
       `• 🪙 골드 +50G 획득!\n` +
       `• 🌟 경험치 +30 EXP 획득!\n` +
       `• 🧪 주홍 물약 x2개 획득! (HP +25 회복)\n` +
-      `• 🍷 빨간 물약 x2개 획득! (HP +10 회복)\n\n` +
+      `• 🧪 빨간 물약 x2개 획득! (HP +10 회복)\n\n` +
       `(우측 상단 가방(🎒)을 열어 획득한 물약을 확인할 수 있습니다.)`
     );
   }
@@ -3994,7 +3994,7 @@ class MainApp {
       for (let i = 0; i < potCount; i++) {
         if (Math.random() < 0.5) {
           droppedRed++;
-          this.addItem('item_red_potion', '빨간 물약', 1, '🍷', { type: 'consumable', heal: 10, effect: '체력 +10 회복' });
+          this.addItem('item_red_potion', '빨간 물약', 1, '🧪', { type: 'consumable', heal: 10, effect: '체력 +10 회복' });
         } else {
           droppedOrange++;
           this.addItem('item_orange_potion', '주홍 물약', 1, '🧪', { type: 'consumable', heal: 25, effect: '체력 +25 회복' });
@@ -4002,7 +4002,7 @@ class MainApp {
       }
 
       const rewardItemsList = [];
-      if (droppedRed > 0) rewardItemsList.push(`🍷 빨간 물약 x${droppedRed}`);
+      if (droppedRed > 0) rewardItemsList.push(`🧪 빨간 물약 x${droppedRed}`);
       if (droppedOrange > 0) rewardItemsList.push(`🧪 주홍 물약 x${droppedOrange}`);
 
       // 2. 개나리 반지 (5% 확률)
@@ -4195,7 +4195,7 @@ class MainApp {
     const redCount = redPot ? redPot.count : 0;
     const btnRed = document.getElementById('btn-raid-use-red-potion');
     if (btnRed) {
-      btnRed.innerText = `🍷 빨간 물약 (+10) ${redCount}개`;
+      btnRed.innerHTML = `<span class="icon-red-potion">🧪</span> 빨간 물약 (+10) ${redCount}개`;
       btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
@@ -4486,7 +4486,7 @@ class MainApp {
     const redCount = redPot ? redPot.count : 0;
     const btnRed = document.getElementById('btn-battle-use-red-potion');
     if (btnRed) {
-      btnRed.innerText = `🍷 빨간 물약 (+10) ${redCount}개`;
+      btnRed.innerHTML = `<span class="icon-red-potion">🧪</span> 빨간 물약 (+10) ${redCount}개`;
       btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
@@ -7399,7 +7399,18 @@ class MainApp {
 
       const isCourage = (item.id === 'item_courage_potion');
       const isOrange = (item.id === 'item_orange_potion');
-      const iconDisplay = isCourage ? `<span class="icon-purple-potion">${item.icon}</span>` : (isOrange ? `<span class="icon-orange-potion">${item.icon}</span>` : item.icon);
+      const isRed = (item.id === 'item_red_potion');
+      const isGreen = (item.id === 'item_green_potion');
+      let iconDisplay = item.icon;
+      if (isCourage) {
+        iconDisplay = `<span class="icon-purple-potion">${item.icon}</span>`;
+      } else if (isOrange) {
+        iconDisplay = `<span class="icon-orange-potion">${item.icon}</span>`;
+      } else if (isRed) {
+        iconDisplay = `<span class="icon-red-potion">${item.icon}</span>`;
+      } else if (isGreen) {
+        iconDisplay = `<span class="icon-green-potion">${item.icon}</span>`;
+      }
 
       card.innerHTML = `
         <div>

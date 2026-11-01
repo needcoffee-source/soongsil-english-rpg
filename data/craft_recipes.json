@@ -503,7 +503,7 @@
   },
   {
     "id": "recipe_red_potion",
-    "name": "빨간 물약 (Red Potion)",
+    "name": "빨간 물약",
     "category": "potion",
     "description": "[포션] 향긋한 허브를 달여 만든 기본 회복 물약입니다.",
     "icon": "🧪",

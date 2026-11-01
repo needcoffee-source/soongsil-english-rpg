@@ -2360,9 +2360,19 @@ body, html {
   background: #6d28d9;
 }
 
+.icon-red-potion {
+  display: inline-block;
+  filter: hue-rotate(220deg) saturate(3.2) brightness(1.08);
+}
+
 .icon-orange-potion {
   display: inline-block;
   filter: hue-rotate(255deg) saturate(2.8) brightness(1.12);
+}
+
+.icon-green-potion {
+  display: inline-block;
+  filter: hue-rotate(0deg) saturate(1.6) brightness(1.05);
 }
 
 .icon-purple-potion {
