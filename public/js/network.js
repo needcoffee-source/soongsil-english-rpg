@@ -313,6 +313,12 @@ class NetworkManager {
       }
     });
 
+    this.socket.on('brawl_powerup_spawned_event', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onPowerupSpawned) {
+        window.BrawlBall.onPowerupSpawned(data);
+      }
+    });
+
     this.socket.on('brawl_powerup_collected_event', (data) => {
       if (window.BrawlBall && window.BrawlBall.onPowerupCollected) {
         window.BrawlBall.onPowerupCollected(data);
@@ -333,7 +339,7 @@ class NetworkManager {
 
     this.socket.on('brawl_ball_reset', (data) => {
       if (window.BrawlBall && window.BrawlBall.onBallReset) {
-        window.BrawlBall.onBallReset(data.ball);
+        window.BrawlBall.onBallReset(data.ball, data.kickoffUntil);
       }
     });
 

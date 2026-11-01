@@ -430,9 +430,11 @@ function startBrawlMatchFromQueue(forceBots = false) {
     matchId: 'brawl_' + Date.now(),
     status: 'playing',
     startedAt: Date.now(),
+    kickoffUntil: Date.now() + 3000,
     timeRemaining: 150, // 2분 30초
     score: { blue: 0, red: 0 },
     teams: { blue: blueTeam, red: redTeam },
+    powerups: [],
     ball: {
       x: 43 * 32,
       y: 35 * 32,
@@ -453,11 +455,42 @@ function startBrawlMatchFromQueue(forceBots = false) {
     if (brawlMatch.status !== 'playing') {
       return; // Pause countdown during goal celebration
     }
+    if (brawlMatch.kickoffUntil && Date.now() < brawlMatch.kickoffUntil) {
+      return; // Pause match timer during 3-2-1 kickoff countdown
+    }
     brawlMatch.timeRemaining--;
     io.emit('brawl_match_tick', {
       timeRemaining: brawlMatch.timeRemaining,
       score: brawlMatch.score
     });
+
+    // Server-synchronized field power-up drink spawn (every 14s, starting at 142s remaining)
+    if (
+      brawlMatch.timeRemaining > 0 &&
+      brawlMatch.timeRemaining <= 142 &&
+      (142 - brawlMatch.timeRemaining) % 14 === 0 &&
+      Array.isArray(brawlMatch.powerups) &&
+      brawlMatch.powerups.length < 2
+    ) {
+      const spawnPoints = [
+        { x: 36 * 32, y: 29 * 32 },
+        { x: 50 * 32, y: 29 * 32 },
+        { x: 36 * 32, y: 41 * 32 },
+        { x: 50 * 32, y: 41 * 32 }
+      ];
+      const available = spawnPoints.filter(sp => !brawlMatch.powerups.some(pw => Math.hypot(pw.x - sp.x, pw.y - sp.y) < 20));
+      if (available.length > 0) {
+        const spot = available[Math.floor(Math.random() * available.length)];
+        const newDrink = {
+          id: 'pw_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          type: Math.random() < 0.5 ? 'speed' : 'shield',
+          x: spot.x,
+          y: spot.y
+        };
+        brawlMatch.powerups.push(newDrink);
+        io.emit('brawl_powerup_spawned_event', newDrink);
+      }
+    }
 
     if (brawlMatch.timeRemaining <= 0) {
       clearInterval(brawlTimerInterval);
@@ -489,10 +522,11 @@ function endBrawlMatch(winnerTeam, reason = '경기 종료') {
     reason
   });
 
+  const resetDelay = (winnerTeam === 'aborted') ? 2500 : 4000;
   setTimeout(() => {
     brawlMatch = null;
     broadcastBrawlQueue();
-  }, 4000);
+  }, resetDelay);
 }
 
 // Boss Raid Event State (Teacher Controlled)
@@ -739,6 +773,21 @@ io.on('connection', (socket) => {
     player.room = data.room || 'hallway';
     player.x = data.x || 400;
     player.y = data.y || 300;
+
+    if (player.room !== 'playground') {
+      const bqIdx = brawlQueue.findIndex(p => p.socketId === socket.id);
+      if (bqIdx !== -1) {
+        brawlQueue.splice(bqIdx, 1);
+        broadcastBrawlQueue();
+      }
+      if (brawlMatch && brawlMatch.status !== 'ended') {
+        const allMatchPlayers = [...(brawlMatch.teams.blue || []), ...(brawlMatch.teams.red || [])];
+        const leaver = allMatchPlayers.find(p => !p.isBot && p.socketId === socket.id);
+        if (leaver) {
+          endBrawlMatch('aborted', `⚠️ 참가자(${leaver.name || '선수'}) 이탈로 경기가 종료되었습니다.`);
+        }
+      }
+    }
 
     const newRoom = `server_${player.grade}_f${player.floor}_${player.room}`;
     socket.join(newRoom);
@@ -1323,6 +1372,12 @@ setInterval(() => {
   });
 
   socket.on('brawl_powerup_collected', (data) => {
+    if (!data || !data.id) return;
+    if (brawlMatch && Array.isArray(brawlMatch.powerups)) {
+      const idx = brawlMatch.powerups.findIndex(pw => pw.id === data.id);
+      if (idx === -1) return;
+      brawlMatch.powerups.splice(idx, 1);
+    }
     io.emit('brawl_powerup_collected_event', data);
   });
 
@@ -1351,6 +1406,7 @@ setInterval(() => {
         setTimeout(() => {
           if (brawlMatch && brawlMatch.status !== 'ended') {
             brawlMatch.status = 'playing';
+            brawlMatch.kickoffUntil = Date.now() + 3000;
             brawlMatch.ball = {
               x: 43 * 32,
               y: 35 * 32,
@@ -1360,7 +1416,11 @@ setInterval(() => {
               carrierName: '',
               carrierTeam: null
             };
-            io.emit('brawl_ball_reset', { ball: brawlMatch.ball, status: 'playing' });
+            io.emit('brawl_ball_reset', {
+              ball: brawlMatch.ball,
+              status: 'playing',
+              kickoffUntil: brawlMatch.kickoffUntil
+            });
           }
         }, 2500);
       }
@@ -1372,6 +1432,13 @@ setInterval(() => {
     if (bqIdx !== -1) {
       brawlQueue.splice(bqIdx, 1);
       broadcastBrawlQueue();
+    }
+    if (brawlMatch && brawlMatch.status !== 'ended') {
+      const allMatchPlayers = [...(brawlMatch.teams.blue || []), ...(brawlMatch.teams.red || [])];
+      const leaver = allMatchPlayers.find(p => !p.isBot && p.socketId === socket.id);
+      if (leaver) {
+        endBrawlMatch('aborted', `⚠️ 참가자(${leaver.name || '선수'}) 이탈로 경기가 종료되었습니다.`);
+      }
     }
     if (activeAcidRainPlayers.has(socket.id)) {
       activeAcidRainPlayers.delete(socket.id);

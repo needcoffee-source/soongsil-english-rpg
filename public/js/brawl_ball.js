@@ -20,7 +20,7 @@ class BrawlBallManager {
     this.particles = [];
     this.floatingTexts = [];
     this.goalBanner = { text: '', subtext: '', timer: 0 };
-    this.practiceGoalResetTimer = null;
+    this.kickoffUntil = 0;
 
     // 8-Directional & Trick-Shot Aiming Vector
     this.aimDx = 0;
@@ -239,10 +239,6 @@ class BrawlBallManager {
   }
 
   onMatchStarted(match) {
-    if (this.practiceGoalResetTimer) {
-      clearTimeout(this.practiceGoalResetTimer);
-      this.practiceGoalResetTimer = null;
-    }
     this.match = match;
     this.closeQueueModal();
     this.inQueue = false;
@@ -252,8 +248,8 @@ class BrawlBallManager {
     this.speedBuffUntil = 0;
     this.stunnedUntil = 0;
     this.stunImmuneUntil = 0;
-    this.powerups = [];
-    this.nextPowerupSpawnTime = Date.now() + 8000;
+    this.powerups = Array.isArray(match.powerups) ? [...match.powerups] : [];
+    this.kickoffUntil = match.kickoffUntil || (Date.now() + 3000);
 
     // Reset obstacles
     this.obstacles.forEach(obs => { obs.brokenUntil = 0; });
@@ -437,6 +433,7 @@ class BrawlBallManager {
     if (p.room !== 'playground' || !this.isInsideCourtBox(p.x, p.y)) return false;
 
     const now = Date.now();
+    if (this.kickoffUntil && now < this.kickoffUntil) return false;
     if (now < this.stunnedUntil) {
       if (window.MainApp && window.MainApp.showToast) {
         window.MainApp.showToast('💫 기절 상태여서 슈퍼를 사용할 수 없습니다!', 'warning');
@@ -632,6 +629,11 @@ class BrawlBallManager {
   }
 
   isCollisionBlocked(curX, curY, nextX, nextY) {
+    // 0. Freeze matched players at kickoff spot during 3-2-1 countdown
+    if (this.match && this.myTeam && this.kickoffUntil && Date.now() < this.kickoffUntil) {
+      return true;
+    }
+
     // 1. Wooden Crate Obstacles inside the court
     if (this.isObstacleBlocked(nextX, nextY) && !this.isObstacleBlocked(curX, curY)) {
       return true;
@@ -758,40 +760,22 @@ class BrawlBallManager {
   }
 
   // ========================================================
-  // RANDOM POWER-UP DRINKS (Feature 5)
+  // SERVER-SYNCHRONIZED POWER-UP DRINKS (Feature 5)
   // ========================================================
+
+  onPowerupSpawned(drink) {
+    if (!drink || !drink.id) return;
+    if (!this.powerups.some(p => p.id === drink.id)) {
+      this.powerups.push(drink);
+    }
+  }
 
   updatePowerupSpawns() {
     const now = Date.now();
-    if (now >= this.nextPowerupSpawnTime && this.powerups.length < 2) {
-      this.nextPowerupSpawnTime = now + 18000 + Math.random() * 6000;
-
-      const spawnPoints = [
-        { x: 36 * 32, y: 29 * 32 },
-        { x: 50 * 32, y: 29 * 32 },
-        { x: 36 * 32, y: 41 * 32 },
-        { x: 50 * 32, y: 41 * 32 }
-      ];
-
-      // Pick an unoccupied point
-      const available = spawnPoints.filter(sp => !this.powerups.some(p => Math.hypot(p.x - sp.x, p.y - sp.y) < 20));
-      if (available.length > 0) {
-        const spot = available[Math.floor(Math.random() * available.length)];
-        const type = Math.random() < 0.5 ? 'speed' : 'shield';
-        const newDrink = {
-          id: 'pw_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-          type,
-          x: spot.x,
-          y: spot.y,
-          spawnedAt: now
-        };
-        this.powerups.push(newDrink);
-      }
-    }
-
-    // Check pickup by local player
+    // Check pickup by local player inside court
     if (!this.engine || !this.engine.player) return;
     const p = this.engine.player;
+    if (!this.isInsideCourtBox(p.x, p.y)) return;
 
     for (let i = this.powerups.length - 1; i >= 0; i--) {
       const pw = this.powerups[i];
@@ -843,6 +827,7 @@ class BrawlBallManager {
     if (p.room !== 'playground' || !this.isInsideCourtBox(p.x, p.y)) return;
 
     const now = Date.now();
+    if (this.kickoffUntil && now < this.kickoffUntil) return;
     if (now < this.stunnedUntil) {
       if (window.MainApp && window.MainApp.showToast) {
         window.MainApp.showToast('💫 기절 상태여서 행동할 수 없습니다!', 'warning');
@@ -983,6 +968,7 @@ class BrawlBallManager {
   tryKick() {
     if (!this.engine || !this.engine.player) return false;
     const p = this.engine.player;
+    if (this.kickoffUntil && Date.now() < this.kickoffUntil) return false;
     const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
 
     if (this.ball.carrierId !== myId) return false;
@@ -1110,26 +1096,7 @@ class BrawlBallManager {
     }
   }
 
-  triggerPracticeGoal(goalTeamLabel) {
-    if (this.practiceGoalResetTimer) return;
-    const pName = (this.engine && this.engine.player && this.engine.player.name) ? this.engine.player.name : '선수';
-    this.showGoalBanner(`⚽ 연습 골!! (${goalTeamLabel} 골대 돌파!)`, `${pName} 선수의 나이스 슈팅! 1.5초 후 중앙에서 공이 리셋됩니다`, 2.0);
-    this.addSuperGauge(50);
-    this.spawnGoalConfetti();
-
-    if (window.AudioManager) {
-      window.AudioManager.playWhistle();
-    }
-
-    this.practiceGoalResetTimer = setTimeout(() => {
-      this.practiceGoalResetTimer = null;
-      if (!this.match) {
-        this.onBallReset({ x: this.court.midX, y: this.court.midY });
-      }
-    }, 1500);
-  }
-
-  onBallReset(ball) {
+  onBallReset(ball, kickoffUntil) {
     this.ball.x = (ball && ball.x !== undefined) ? ball.x : this.court.midX;
     this.ball.y = (ball && ball.y !== undefined) ? ball.y : this.court.midY;
     this.ball.vx = 0;
@@ -1144,6 +1111,7 @@ class BrawlBallManager {
     // Restore match playing state & kickoff positions for players and AI bots!
     if (this.match) {
       this.match.status = 'playing';
+      this.kickoffUntil = kickoffUntil || (Date.now() + 3000);
       const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
       const allMembers = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])];
       for (const m of allMembers) {
@@ -1171,10 +1139,18 @@ class BrawlBallManager {
     if (this.match) {
       this.match.status = 'ended';
     }
-    const isDraw = data.winnerTeam === 'draw';
-    const winnerText = isDraw ? '무승부!' : (data.winnerTeam === 'blue' ? '🔵 블루팀 최종 승리!' : '🔴 레드팀 최종 승리!');
-    this.showGoalBanner(`🏁 경기 종료! ${winnerText}`, `최종 스코어 [블루 ${data.score.blue} : ${data.score.red} 레드]`, 4);
+    this.kickoffUntil = 0;
+    this.powerups = [];
 
+    if (data.winnerTeam === 'aborted') {
+      this.showGoalBanner('⚠️ 경기 중단! 참가자 이탈로 종료', data.reason || '참가자 중 한 명이 경기를 이탈하여 매치가 종료되었습니다', 3.5);
+    } else {
+      const isDraw = data.winnerTeam === 'draw';
+      const winnerText = isDraw ? '무승부!' : (data.winnerTeam === 'blue' ? '🔵 블루팀 최종 승리!' : '🔴 레드팀 최종 승리!');
+      this.showGoalBanner(`🏁 경기 종료! ${winnerText}`, `최종 스코어 [블루 ${data.score.blue} : ${data.score.red} 레드]`, 4);
+    }
+
+    const cleanupDelay = (data.winnerTeam === 'aborted') ? 2200 : 4500;
     setTimeout(() => {
       this.match = null;
       this.myTeam = null;
@@ -1187,7 +1163,7 @@ class BrawlBallManager {
         const exitY = 20 * 32;
         this.teleportMatchPlayer(exitX, exitY, 'up');
       }
-    }, 4500);
+    }, cleanupDelay);
   }
 
   showGoalBanner(text, subtext, durationSec = 3) {
@@ -1276,10 +1252,18 @@ class BrawlBallManager {
       if (ft.life <= 0) this.floatingTexts.splice(i, 1);
     }
 
-    // 4. Stun freeze
-    if (now < this.stunnedUntil) {
+    // 4. Stun & Kickoff Countdown freeze
+    if (now < this.stunnedUntil || (this.match && this.myTeam && this.kickoffUntil && now < this.kickoffUntil)) {
       this.engine.player.vx = 0;
       this.engine.player.vy = 0;
+      if (this.match && this.myTeam && this.kickoffUntil && now < this.kickoffUntil) {
+        const allMembers = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])];
+        const me = allMembers.find(m => m.socketId === myId);
+        if (me && me.spawnX !== undefined && me.spawnY !== undefined) {
+          this.engine.player.x = me.spawnX;
+          this.engine.player.y = me.spawnY;
+        }
+      }
     }
 
     // 5. Passive Dribble Super Charge
@@ -1347,14 +1331,10 @@ class BrawlBallManager {
         if (this.ball.x >= this.court.goalMinX && this.ball.x <= this.court.goalMaxX) {
           this.ball.vy = 0;
           this.ball.vx = 0;
-          if (this.match) {
-            if (this.match.status === 'playing' && this.network) {
-              const scorer = this.ball.carrierName || this.ball.lastTouchName || '블루팀';
-              this.match.status = 'goal_celebration';
-              this.network.notifyBrawlGoal('blue', scorer);
-            }
-          } else {
-            this.triggerPracticeGoal('북쪽 RED');
+          if (this.match && this.match.status === 'playing' && this.network) {
+            const scorer = this.ball.carrierName || this.ball.lastTouchName || '블루팀';
+            this.match.status = 'goal_celebration';
+            this.network.notifyBrawlGoal('blue', scorer);
           }
         } else {
           this.ball.y = this.court.northGoalY + 8;
@@ -1367,14 +1347,10 @@ class BrawlBallManager {
         if (this.ball.x >= this.court.goalMinX && this.ball.x <= this.court.goalMaxX) {
           this.ball.vy = 0;
           this.ball.vx = 0;
-          if (this.match) {
-            if (this.match.status === 'playing' && this.network) {
-              const scorer = this.ball.carrierName || this.ball.lastTouchName || '레드팀';
-              this.match.status = 'goal_celebration';
-              this.network.notifyBrawlGoal('red', scorer);
-            }
-          } else {
-            this.triggerPracticeGoal('남쪽 BLUE');
+          if (this.match && this.match.status === 'playing' && this.network) {
+            const scorer = this.ball.carrierName || this.ball.lastTouchName || '레드팀';
+            this.match.status = 'goal_celebration';
+            this.network.notifyBrawlGoal('red', scorer);
           }
         } else {
           this.ball.y = this.court.southGoalY - 8;
@@ -1383,8 +1359,8 @@ class BrawlBallManager {
       }
 
       // Ball pickup by local player
-      const canPickupMatch = !this.match || this.match.status === 'playing';
-      if (canPickupMatch && now >= this.ball.pickupCooldown && now >= this.stunnedUntil && !this.practiceGoalResetTimer) {
+      const canPickupMatch = this.match && this.match.status === 'playing' && (!this.kickoffUntil || now >= this.kickoffUntil);
+      if (canPickupMatch && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y) && now >= this.ball.pickupCooldown && now >= this.stunnedUntil) {
         const dist = Math.hypot(this.engine.player.x - this.ball.x, this.engine.player.y - this.ball.y);
         if (dist < 26) {
           this.ball.carrierId = myId;
@@ -1448,8 +1424,9 @@ class BrawlBallManager {
 
   updateBotAI(dt) {
     if (!this.match || this.match.status !== 'playing') return;
-    const allBots = [...this.match.teams.blue, ...this.match.teams.red].filter(p => p.isBot);
     const now = Date.now();
+    if (this.kickoffUntil && now < this.kickoffUntil) return;
+    const allBots = [...this.match.teams.blue, ...this.match.teams.red].filter(p => p.isBot);
 
     for (const bot of allBots) {
       if (bot.stunnedUntil && now < bot.stunnedUntil) continue;
@@ -1484,6 +1461,8 @@ class BrawlBallManager {
 
           if (this.network) {
             this.network.sendBrawlKick({
+              x: this.ball.x,
+              y: this.ball.y,
               vx: this.ball.vx,
               vy: this.ball.vy,
               shooterId: bot.socketId,
@@ -1814,6 +1793,9 @@ class BrawlBallManager {
 
     ctx.save();
 
+    // 0. Render Team Floor Aura Rings & Badges under all 6 match participants (Item 1)
+    this.renderTeamRings(ctx);
+
     // 1. Render Power-up Drinks (Feature 5)
     this.renderPowerups(ctx);
 
@@ -1825,7 +1807,7 @@ class BrawlBallManager {
       }
     }
 
-    // 3. Render Aiming Trajectory Guide (Feature 2)
+    // 3. Render Aiming Trajectory Guide Arrow (Item 2)
     this.renderAimingTrajectory(ctx);
 
     // 4. Render Soccer Ball (Normal or Blazing Super)
@@ -1870,7 +1852,63 @@ class BrawlBallManager {
     ctx.restore();
   }
 
-  // 2-Segment Raycast Trajectory Dashed Aiming Line (Feature 2)
+  // Team Color Aura Rings under all 6 match participants (Item 1)
+  renderTeamRings(ctx) {
+    if (!this.match || !this.match.teams) return;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
+    const pulse = 1 + Math.sin(Date.now() * 0.008) * 0.08;
+    const allMembers = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])];
+
+    for (const member of allMembers) {
+      const live = this.getEntityLiveState(member);
+      if (!live || live.x === undefined || live.y === undefined) continue;
+
+      const isBlue = (member.team === 'blue');
+      const isMe = (member.socketId === myId);
+      const rx = live.x;
+      const ry = live.y + 14;
+
+      ctx.save();
+
+      // Highlight outer ring for local player
+      if (isMe) {
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(rx, ry, 21 * pulse, 9 * pulse, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Glowing Team Floor Ring (Blue vs Red)
+      ctx.fillStyle = isBlue ? 'rgba(37, 99, 235, 0.34)' : 'rgba(220, 38, 38, 0.34)';
+      ctx.strokeStyle = isBlue ? '#60a5fa' : '#f87171';
+      ctx.lineWidth = 2.8;
+      ctx.shadowColor = isBlue ? '#3b82f6' : '#ef4444';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.ellipse(rx, ry, 16, 6.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Team Badge above human players (since human players wear custom school uniforms)
+      if (!member.isBot && this.engine && this.engine.drawSharpLabel) {
+        const badgeText = isBlue ? '🔵 BLUE' : '🔴 RED';
+        this.engine.drawSharpLabel(rx, live.y - 42, badgeText, {
+          bgColor: isBlue ? 'rgba(30, 58, 138, 0.92)' : 'rgba(153, 27, 27, 0.92)',
+          borderColor: isBlue ? '#60a5fa' : '#f87171',
+          textColor: '#ffffff',
+          fontSize: 9.5,
+          height: 16,
+          paddingX: 5
+        });
+      }
+
+      ctx.restore();
+    }
+  }
+
+  // 2-Segment Raycast Trajectory Dashed Aiming Arrow (Item 2)
   renderAimingTrajectory(ctx) {
     const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
     if (this.ball.carrierId !== myId) return;
@@ -1881,12 +1919,9 @@ class BrawlBallManager {
     let dy = vec.dy;
 
     ctx.save();
-    ctx.setLineDash([8, 6]);
-    ctx.lineWidth = 3;
     const isSuperReady = (this.superGauge >= 100);
-    ctx.strokeStyle = isSuperReady ? 'rgba(249, 115, 22, 0.88)' : 'rgba(56, 189, 248, 0.85)';
-    ctx.shadowColor = ctx.strokeStyle;
-    ctx.shadowBlur = 8;
+    const mainColor = isSuperReady ? '#f97316' : '#38bdf8';
+    const glowColor = isSuperReady ? 'rgba(249, 115, 22, 0.3)' : 'rgba(56, 189, 248, 0.25)';
 
     const startX = p.x;
     const startY = p.y;
@@ -1939,6 +1974,24 @@ class BrawlBallManager {
       curY = nextY;
     }
 
+    // 1. Soft outer directional track
+    ctx.strokeStyle = glowColor;
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    if (bouncePoint) ctx.lineTo(bouncePoint.x, bouncePoint.y);
+    ctx.lineTo(curX, curY);
+    ctx.stroke();
+
+    // 2. Animated marching dashed guide line
+    ctx.setLineDash([9, 6]);
+    ctx.lineDashOffset = -((now * 0.045) % 15);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = mainColor;
+    ctx.shadowColor = mainColor;
+    ctx.shadowBlur = 8;
+
     ctx.beginPath();
     ctx.moveTo(startX, startY);
     if (bouncePoint) {
@@ -1946,11 +1999,32 @@ class BrawlBallManager {
     }
     ctx.lineTo(curX, curY);
     ctx.stroke();
+    ctx.setLineDash([]);
 
-    // Target circle at end of trajectory
+    // 3. Bounce indicator ring if trajectory ricochets off wall/crate
+    if (bouncePoint) {
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(bouncePoint.x, bouncePoint.y, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 4. Crisp Directional Arrowhead (▶) at trajectory tip
+    const endAngle = Math.atan2(dy, dx);
+    const headLen = 14;
+    ctx.fillStyle = isSuperReady ? '#fde047' : '#38bdf8';
     ctx.beginPath();
-    ctx.arc(curX, curY, 8, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.moveTo(curX + Math.cos(endAngle) * 4, curY + Math.sin(endAngle) * 4);
+    ctx.lineTo(
+      curX - headLen * Math.cos(endAngle - Math.PI / 6),
+      curY - headLen * Math.sin(endAngle - Math.PI / 6)
+    );
+    ctx.lineTo(
+      curX - headLen * Math.cos(endAngle + Math.PI / 6),
+      curY - headLen * Math.sin(endAngle + Math.PI / 6)
+    );
+    ctx.closePath();
+    ctx.fill();
 
     ctx.restore();
   }
@@ -2169,6 +2243,51 @@ class BrawlBallManager {
     ctx.restore();
   }
 
+  renderKickoffCountdown(ctx) {
+    if (!this.match || this.match.status !== 'playing' || !this.kickoffUntil) return;
+    const remMs = this.kickoffUntil - Date.now();
+    if (remMs <= -650) return;
+
+    let label = '';
+    let color = '#fde047';
+    if (remMs > 2000) {
+      label = '⏳ 킥오프 3';
+      color = '#38bdf8';
+    } else if (remMs > 1000) {
+      label = '⏳ 킥오프 2';
+      color = '#fde047';
+    } else if (remMs > 0) {
+      label = '⏳ 킥오프 1';
+      color = '#f97316';
+    } else {
+      label = '⚽ START!!';
+      color = '#4ade80';
+    }
+
+    const screenW = (this.engine && this.engine.width) ? this.engine.width : 860;
+    const boxW = 220;
+    const boxH = 48;
+    const boxX = (screenW - boxW) / 2;
+    const boxY = (this.goalBanner.timer > 0) ? 222 : 128;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+    ctx.beginPath();
+    ctx.roundRect(boxX, boxY, boxW, boxH, 24);
+    ctx.fill();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.font = '900 24px "Pretendard", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, screenW / 2, boxY + boxH / 2 + 1);
+    ctx.restore();
+  }
+
   // Scoreboard HUD at top of screen (with Super Gauge Bar, Buff Icons & Screen-Space Goal Banner)
   renderHUD(ctx) {
     if (!this.engine || !this.engine.player) return;
@@ -2181,6 +2300,9 @@ class BrawlBallManager {
     }
 
     if (!this.isPlayerInCourt(p.x, p.y)) return;
+
+    // Render 3-2-1 Kickoff Countdown overlay (Item 3)
+    this.renderKickoffCountdown(ctx);
 
     ctx.save();
 
@@ -2271,7 +2393,7 @@ class BrawlBallManager {
     ctx.textAlign = 'center';
     ctx.fillStyle = canTackle ? '#4ade80' : '#f59e0b';
 
-    let teamText = '⚽ 자유 연습 중 (코치에게 3v3 신청)';
+    let teamText = '⚽ 매치 대기 중 (코치에게 3v3 신청)';
     if (this.match) {
       teamText = this.myTeam ? (this.myTeam === 'blue' ? '🔵 내 팀: 블루' : '🔴 내 팀: 레드') : '👀 관전 중';
     }
