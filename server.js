@@ -1300,11 +1300,13 @@ setInterval(() => {
 
   socket.on('brawl_queue_start_test', (data = {}) => {
     const p = players[socket.id];
-    const studentId = data.studentId || (p && p.studentId) || 'player_' + socket.id.substring(0, 5);
-    const name = data.name || (p && p.name) || '학생';
-    const avatar = data.avatar || (p && p.avatar) || 'boy_blue';
+    if (!p || !p.isTeacher) return;
 
-    if (!brawlQueue.some(q => q.socketId === socket.id)) {
+    if (brawlQueue.length === 0) {
+      const studentId = data.studentId || p.studentId || 'teacher';
+      const name = data.name || p.name || '선생님';
+      const avatar = data.avatar || p.avatar || 'teacher';
+
       brawlQueue.push({
         socketId: socket.id,
         studentId,

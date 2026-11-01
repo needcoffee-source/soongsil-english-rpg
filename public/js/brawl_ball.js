@@ -156,15 +156,28 @@ class BrawlBallManager {
     if (window.AudioManager) window.AudioManager.playSelect();
   }
 
+  isTeacherUser() {
+    return !!(
+      (this.engine && this.engine.player && this.engine.player.isTeacher) ||
+      (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.isTeacher)
+    );
+  }
+
   startTestMatch() {
     if (!this.network || !this.engine || !this.engine.player) return;
+    if (!this.isTeacherUser()) {
+      if (window.MainApp && window.MainApp.showToast) {
+        window.MainApp.showToast('⚠️ 교사만 사용할 수 있는 기능입니다.', 'warning');
+      }
+      return;
+    }
     const p = this.engine.player;
     const userData = {
-      studentId: p.studentId || 'std_' + Math.floor(Math.random() * 1000),
-      name: p.name || '학생',
-      avatar: p.avatar || 'boy_blue'
+      studentId: p.studentId || 'teacher',
+      name: p.name || '선생님',
+      avatar: p.avatar || 'teacher'
     };
-    if (!this.inQueue) {
+    if (this.queue.length === 0 && !this.inQueue) {
       this.network.joinBrawlQueue(userData);
       this.inQueue = true;
     }
@@ -182,6 +195,11 @@ class BrawlBallManager {
   renderQueueUI() {
     const countEl = document.getElementById('brawl-queue-count');
     if (countEl) countEl.innerText = `${this.queue.length} / 6명`;
+
+    const btnTest = document.getElementById('btn-brawl-start-test');
+    if (btnTest) {
+      btnTest.style.display = this.isTeacherUser() ? 'inline-block' : 'none';
+    }
 
     const toggleBtn = document.getElementById('btn-brawl-queue-toggle');
     if (toggleBtn) {
@@ -1510,7 +1528,7 @@ class BrawlBallManager {
     ctx.strokeRect(c.midX - penW / 2, c.southGoalY - penH, penW, penH);
 
     if (this.engine && this.engine.drawSharpLabel) {
-      this.engine.drawSharpLabel(c.midX, c.midY + 48, '⚡ 숭실 3v3 브롤볼 하프코트 ARENA ⚽', {
+      this.engine.drawSharpLabel(c.midX, c.midY + 48, '⚡ 3대3 브롤볼 ARENA ⚽', {
         bgColor: 'rgba(15, 23, 42, 0.92)',
         borderColor: '#f59e0b',
         textColor: '#fde047',
