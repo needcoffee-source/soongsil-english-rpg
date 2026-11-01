@@ -810,7 +810,7 @@ class GameEngine {
               type: 'history_hall',
               data: pg.historyHall,
               name: pg.historyHall.name || '🏛️ 숭실역사관',
-              prompt: pg.historyHall.prompt || '숭실역사관 입장 (SPACE)'
+              prompt: pg.historyHall.prompt || '🏛️ 숭실역사관'
             };
             minDist = hDist;
           }
@@ -8130,8 +8130,8 @@ class GameEngine {
     // Vitrine 1 (x: 6, y: 7) - 1897 평양 창립관
     this.drawMuseumVitrine(6 * 32, 7 * 32, 1, '1897 평양 창립관', '📜', clues[0]);
 
-    // Vitrine 2 (x: 6, y: 13) - 1938 신사참배 거부와 자진폐교관
-    this.drawMuseumVitrine(6 * 32, 13 * 32, 2, '1938 신사참배 거부와 자진폐교관', '🕊️', clues[1]);
+    // Vitrine 2 (x: 6, y: 13) - 1938 민족신앙 수호관
+    this.drawMuseumVitrine(6 * 32, 13 * 32, 2, '1938 민족신앙 수호관', '🕊️', clues[1]);
 
     // Vitrine 3 (x: 24, y: 7) - 1954 서울 재건관
     this.drawMuseumVitrine(24 * 32, 7 * 32, 3, '1954 서울 재건관', '🧱', clues[2]);

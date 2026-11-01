@@ -12,7 +12,7 @@ const SOONGSIL_HISTORY_VITRINES = [
   {
     index: 2,
     id: 'hist_vitrine_2',
-    title: '🕊️ [제2전시관] 1938 신사참배 거부와 자진폐교관',
+    title: '🕊️ [제2전시관] 1938 민족신앙 수호관',
     era: '1930년대 ~ 1938년',
     heading: '신앙과 민족의 지조를 지킨 눈물의 자진 폐교',
     story: '일제강점기 말기, 일제는 학생들에게 신사참배를 강요하며 민족정신을 말살하려 했습니다.\n\n숭실은 불의와의 타협을 거부하고 당당히 외쳤습니다:\n"신앙의 양심을 버리고 일제에 굴복하느니, 차라리 학교 문을 닫겠다!"\n\n1938년 3월, 숭실은 민족의 절개와 신념을 지키기 위해 스스로 폐교의 길을 택했습니다.',
@@ -233,7 +233,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '2티어 무기',
     tierColor: '#b45309',
-    effect: '공격력(ATK) +20 증가',
+    effect: '공격력(ATK) +22 증가',
     source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 농구가죽 10개 + 풋살가죽 10개 + 35G)',
     recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 35G'
   },
@@ -268,7 +268,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '3티어 최고급 무기',
     tierColor: '#047857',
-    effect: '공격력(ATK) +25 증가',
+    effect: '공격력(ATK) +30 증가',
     source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G)',
     recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G'
   },
@@ -371,7 +371,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '4티어 전설 투구',
     tierColor: '#6366f1',
-    effect: '방어력 +28, 체력 +60 (숭실 120년 역사의 가호)',
+    effect: '방어력 +20, 체력 +35 (숭실 120년 역사의 가호)',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 4개 + 사명석 2개 + 120G)',
     recipe: '숭실 역사의 정수 4개 + 불굴의 사명석 2개 + 120G'
   },
@@ -382,7 +382,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '4티어 전설 갑옷',
     tierColor: '#6366f1',
-    effect: '방어력 +38, 체력 +70 (불굴의 신앙과 정신으로 빚어낸 성갑)',
+    effect: '방어력 +30, 체력 +45 (불굴의 신앙과 정신으로 빚어낸 성갑)',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 140G)',
     recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 140G'
   },
@@ -433,27 +433,27 @@ const ALL_GAME_ITEMS = {
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
   'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
   'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' } },
+  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
-  'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' } },
+  'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
 
   // 5. Tier 4 Heritage Equipment
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 전설 무기 · 공격력 +45, 체력 +35' } },
-  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 28, hp: 60 }, effect: '4티어 전설 투구 · 방어력 +28, 체력 +60' } },
-  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 38, hp: 70 }, effect: '4티어 전설 갑옷 · 방어력 +38, 체력 +70' } },
+  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 전설 투구 · 방어력 +20, 체력 +35' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 전설 갑옷 · 방어력 +30, 체력 +45' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
-  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
 
 };
 
@@ -2189,8 +2189,8 @@ class MainApp {
         desc: '1897년 10월 10일, 미국 선교사 윌리엄 베어드(W. M. Baird, 배위량) 박사가 평양 신양동 사택에서 13명의 학생으로 숭실학당을 설립했습니다.\n\n• 건학 이념: \'진리와 봉사 (Truth and Service)\'\n• 한국 근대 교육의 요람이자 최초의 근대 대학 교육의 출발점입니다.'
       },
       {
-        title: '🕊️ [제2전시관] 1938 신사참배 거부와 자진폐교관',
-        desc: '1938년 일제의 강압적인 신사참배 요구에 끝까지 굴복하지 않고, 기독교 신앙과 민족의 자주정기를 지키기 위해 숭실은 스스로 학교 문을 닫는 \'자진 폐교\'를 결단했습니다.\n\n• 신사참배 거부: 일제의 우상숭배 강요를 단호히 배격한 숭고한 신앙의 절개\n• 자진 폐교의 결단: 불의에 타협하지 않고 학교 문을 닫는 비장한 결단을 내렸으나, 숭실의 정신은 1954년 서울 재건으로 부활했습니다.'
+        title: '🕊️ [제2전시관] 1938 민족신앙 수호관',
+        desc: '1938년 일제의 강압적인 신사참배 요구에 끝까지 굴복하지 않고, 기독교 신앙과 민족의 자주정기를 지키기 위해 숭실은 스스로 학교 문을 닫는 \'자진 폐교\'를 결단했습니다.\n\n• 신사참배 거부: 일제의 우상숭배 강요를 단호히 배격한 숭고한 신앙의 절개\n• 자진 폐교의 결단: 불의에 타협하지 않고 학교 문을 닫는 비장한 결단을 내렸으나, 숭실의 굳은 신념은 1954년 서울 재건으로 부활했습니다.'
       },
       {
         title: '🌱 [제3전시관] 1954 서울 재건관',
@@ -2363,27 +2363,38 @@ class MainApp {
 
     const previewCanvas = document.getElementById('custom-char-preview');
     const updatePreview = () => {
-      if (!previewCanvas || !this.engine) return;
-      const ctx = previewCanvas.getContext('2d');
-      ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-      // Soft round shadow at the feet
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-      ctx.beginPath();
-      ctx.ellipse(28, 67, 18, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
+      try {
+        if (!previewCanvas || !this.engine) return;
+        const ctx = previewCanvas.getContext('2d');
+        if (!ctx) return;
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        // Soft round shadow at the feet
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath();
+        if (ctx.ellipse) {
+          ctx.ellipse(28, 67, 18, 5, 0, 0, Math.PI * 2);
+        } else {
+          ctx.arc(28, 67, 12, 0, Math.PI * 2);
+        }
+        ctx.fill();
 
-      // Draw crisp character sprite (48x64)
-      const spr = this.engine.getCharacterSprite({
-        dir: 'down',
-        frame: 0,
-        teacher: false,
-        hairColor: selectedHair,
-        outfitColor: selectedOutfit,
-        blink: false,
-        ko: false,
-        gear: {}
-      });
-      ctx.drawImage(spr, 4, 5);
+        // Draw crisp character sprite (48x64)
+        const spr = this.engine.getCharacterSprite({
+          dir: 'down',
+          frame: 0,
+          teacher: false,
+          hairColor: selectedHair,
+          outfitColor: selectedOutfit,
+          blink: false,
+          ko: false,
+          gear: {}
+        });
+        if (spr) {
+          ctx.drawImage(spr, 4, 5);
+        }
+      } catch (err) {
+        console.warn('Character preview render warning:', err);
+      }
     };
 
     const hairGroup = document.getElementById('hair-color-options');
@@ -2479,8 +2490,10 @@ class MainApp {
       console.warn('LocalStorage access warning:', e);
     }
 
-    // 초기 캐릭터 실시간 미리보기 렌더링
+    // 초기 캐릭터 실시간 미리보기 렌더링 (안정적인 렌더링을 위해 즉시 및 지연 렌더링 보장)
     updatePreview();
+    setTimeout(updatePreview, 60);
+    setTimeout(updatePreview, 250);
 
     // Tablet & Desktop Fullscreen Helper Functions
     const requestFullscreenSafe = () => {
@@ -3945,7 +3958,7 @@ class MainApp {
         const roll = Math.random() * 100;
         if (roll < 20) {
           const leatherGears = [
-            { item: 'equip_leather_sword', name: '가죽손잡이 세이버', icon: '🗡️', slot: 'weapon', stats: { atk: 20, def: 0, hp: 0 }, effect: '공격력 +20' },
+            { item: 'equip_leather_sword', name: '가죽손잡이 세이버', icon: '🗡️', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' },
             { item: 'equip_leather_helmet', name: '가죽투구', icon: '⛑️', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' },
             { item: 'equip_leather_armor', name: '가죽갑옷', icon: '🥋', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' }
           ];
@@ -3967,7 +3980,7 @@ class MainApp {
         const roll = Math.random() * 100;
         if (roll < 35) {
           const bronzeGears = [
-            { item: 'equip_bronze_sword', name: '청동검', icon: '⚔️', slot: 'weapon', stats: { atk: 25, def: 0, hp: 0 }, effect: '공격력 +25' },
+            { item: 'equip_bronze_sword', name: '청동검', icon: '⚔️', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' },
             { item: 'equip_bronze_helmet', name: '청동투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' },
             { item: 'equip_bronze_armor', name: '청동갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' }
           ];
@@ -3999,7 +4012,7 @@ class MainApp {
           this.addItem('equip_laurel_crown', '종강의 황금 월계관', 1, '👑', { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '방어력 +25, 체력 +80' });
           rewardItemsList.push('👑 종강의 황금 월계관 (대박 드랍!)');
         } else {
-          this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '공격력 +45, 방어력 +10' });
+          this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '공격력 +45, 방어력 +5' });
           rewardItemsList.push('🖊️ 컴싸 마법봉 (희귀 무기!)');
         }
       }
@@ -4575,8 +4588,8 @@ class MainApp {
         this.addItem('equip_leather_sword', '가죽손잡이 세이버', 1, '🗡️', {
           type: 'equipment',
           slot: 'weapon',
-          stats: { atk: 20, def: 0, hp: 0 },
-          effect: '공격력 +20'
+          stats: { atk: 22, def: 0, hp: 0 },
+          effect: '공격력 +22'
         });
         dropsList.push('🗡️ 가죽손잡이 세이버 (5% 대박 완제품 드랍!)');
       }

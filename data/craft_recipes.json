@@ -268,11 +268,11 @@
       "type": "equipment",
       "slot": "weapon",
       "stats": {
-        "atk": 20,
+        "atk": 22,
         "def": 0,
         "hp": 0
       },
-      "effect": "공격력(ATK) +20"
+      "effect": "공격력(ATK) +22"
     }
   },
   {
@@ -316,11 +316,11 @@
       "type": "equipment",
       "slot": "weapon",
       "stats": {
-        "atk": 25,
+        "atk": 30,
         "def": 0,
         "hp": 0
       },
-      "effect": "공격력(ATK) +25"
+      "effect": "공격력(ATK) +30"
     }
   },
   {
@@ -711,10 +711,10 @@
       "slot": "helmet",
       "stats": {
         "atk": 0,
-        "def": 28,
-        "hp": 60
+        "def": 20,
+        "hp": 35
       },
-      "effect": "4티어 전설 투구 · 방어력 +28, 체력 +60"
+      "effect": "4티어 전설 투구 · 방어력 +20, 체력 +35"
     }
   },
   {
@@ -761,10 +761,10 @@
       "slot": "armor",
       "stats": {
         "atk": 0,
-        "def": 38,
-        "hp": 70
+        "def": 30,
+        "hp": 45
       },
-      "effect": "4티어 전설 갑옷 · 방어력 +38, 체력 +70"
+      "effect": "4티어 전설 갑옷 · 방어력 +30, 체력 +45"
     }
   }
 ]

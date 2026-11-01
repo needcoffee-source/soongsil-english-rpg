@@ -153,7 +153,7 @@ const WORLD_DATA = {
     npcs: [],
     interactive: [
       { id: "hist_vitrine_1", type: "history_vitrine", vitrineIndex: 1, x: 6, y: 7, name: "🏛️ [제1전시관] 1897 평양 창립관", prompt: "전시관 관람 (SPACE)" },
-      { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 신사참배 거부와 자진폐교관", prompt: "전시관 관람 (SPACE)" },
+      { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 민족신앙 수호관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_4", type: "history_vitrine", vitrineIndex: 4, x: 24, y: 13, name: "🌟 [제4전시관] 숭실의 위인관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "장비 제작 (SPACE)" }
@@ -489,8 +489,8 @@ const WORLD_DATA = {
       type: "history_hall",
       x: 87,
       y: 52,
-      name: "🏛️ 숭실역사관 입구",
-      prompt: "숭실역사관 입장 (SPACE)"
+      name: "🏛️ 숭실역사관",
+      prompt: "🏛️ 숭실역사관"
     },
     store: {
       id: "store_canteen",
