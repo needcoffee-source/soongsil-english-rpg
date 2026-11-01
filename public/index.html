@@ -14,7 +14,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=112">
+  <link rel="stylesheet" href="css/style.css?v=113">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -44,10 +44,16 @@
       <div id="canvas-wrapper">
         <canvas id="game-canvas"></canvas>
 
-        <!-- Floating Semi-Transparent D-Pad for Tablet & Touch -->
+        <!-- Floating Semi-Transparent D-Pad (Left Thumb) -->
         <div id="dpad-container">
           <div class="dpad-btn dpad-up" data-dir="up">▲</div>
-        <!-- Floating Mobile Action Buttons (A / B) -->
+          <div class="dpad-btn dpad-left" data-dir="left">◀</div>
+          <div class="dpad-btn dpad-center">●</div>
+          <div class="dpad-btn dpad-right" data-dir="right">▶</div>
+          <div class="dpad-btn dpad-down" data-dir="down">▼</div>
+        </div>
+
+        <!-- Floating Mobile Action Buttons (Right Thumb) -->
         <div id="mobile-actions-container">
           <button id="btn-mobile-b" class="mobile-action-btn mobile-btn-b btn-b-locked" title="질주 (SHIFT)" type="button">
             <span class="mobile-btn-key">B</span>
@@ -57,12 +63,6 @@
             <span class="mobile-btn-key">A</span>
             <span class="mobile-btn-label">조사</span>
           </button>
-        </div>
-
-          <div class="dpad-btn dpad-left" data-dir="left">◀</div>
-          <div class="dpad-btn dpad-center">●</div>
-          <div class="dpad-btn dpad-right" data-dir="right">▶</div>
-          <div class="dpad-btn dpad-down" data-dir="down">▼</div>
         </div>
 
         <!-- Retro RPG In-Game Dialogue Box (Pokemon Style) -->
@@ -1724,17 +1724,17 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=112"></script>
-  <script src="js/dialog.js?v=112"></script>
+  <script src="js/audio.js?v=113"></script>
+  <script src="js/dialog.js?v=113"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=112"></script>
-  <script src="js/engine.js?v=112"></script>
-  <script src="js/quiz.js?v=112"></script>
-  <script src="js/crafting.js?v=112"></script>
-  <script src="js/network.js?v=112"></script>
-  <script src="js/acid_rain.js?v=112"></script>
-  <script src="js/main.js?v=112"></script>
+  <script src="js/world.js?v=113"></script>
+  <script src="js/engine.js?v=113"></script>
+  <script src="js/quiz.js?v=113"></script>
+  <script src="js/crafting.js?v=113"></script>
+  <script src="js/network.js?v=113"></script>
+  <script src="js/acid_rain.js?v=113"></script>
+  <script src="js/main.js?v=113"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
