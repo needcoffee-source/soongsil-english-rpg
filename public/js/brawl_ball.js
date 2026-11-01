@@ -483,6 +483,8 @@ class BrawlBallManager {
 
       if (this.network) {
         this.network.sendBrawlSuperShot({
+          x: this.ball.x,
+          y: this.ball.y,
           vx,
           vy,
           shooterId: myId,
@@ -569,6 +571,8 @@ class BrawlBallManager {
   }
 
   onSuperShot(data) {
+    if (data.x !== undefined) this.ball.x = data.x;
+    if (data.y !== undefined) this.ball.y = data.y;
     this.ball.vx = data.vx;
     this.ball.vy = data.vy;
     this.ball.lastTouchName = data.shooterName || this.ball.lastTouchName || '선수';
@@ -1003,6 +1007,8 @@ class BrawlBallManager {
 
     if (this.network) {
       this.network.sendBrawlKick({
+        x: this.ball.x,
+        y: this.ball.y,
         vx,
         vy,
         shooterId: myId,
@@ -1019,6 +1025,8 @@ class BrawlBallManager {
   }
 
   onBallKicked(data) {
+    if (data.x !== undefined) this.ball.x = data.x;
+    if (data.y !== undefined) this.ball.y = data.y;
     this.ball.vx = data.vx;
     this.ball.vy = data.vy;
     this.ball.lastTouchName = data.shooterName || this.ball.lastTouchName || '선수';
@@ -1051,11 +1059,16 @@ class BrawlBallManager {
   }
 
   onBallSynced(data) {
-    if (!this.ball.carrierId) {
-      this.ball.x = data.x;
-      this.ball.y = data.y;
-      this.ball.vx = data.vx;
-      this.ball.vy = data.vy;
+    if (data.x !== undefined) this.ball.x = data.x;
+    if (data.y !== undefined) this.ball.y = data.y;
+    if (data.vx !== undefined) this.ball.vx = data.vx;
+    if (data.vy !== undefined) this.ball.vy = data.vy;
+    if (data.carrierId !== undefined) {
+      this.ball.carrierId = data.carrierId;
+      this.ball.carrierName = data.carrierName || '';
+      this.ball.carrierTeam = data.carrierTeam || null;
+      if (data.carrierName) this.ball.lastTouchName = data.carrierName;
+      if (data.carrierTeam) this.ball.lastTouchTeam = data.carrierTeam;
     }
   }
 
@@ -1150,20 +1163,8 @@ class BrawlBallManager {
     }
   }
 
-  onMatchRewards(data) {
-    const title = data.isWinner ? '🏆 [3대3 브롤볼 승리 보상]' : '⚽ [3대3 브롤볼 참가 보상]';
-    const toast = `${title}\n+${data.expGain} EXP & +${data.goldGain} Gold 획득!`;
-    if (window.MainApp) {
-      if (typeof window.MainApp.addExp === 'function' && data.expGain) {
-        window.MainApp.addExp(data.expGain);
-      }
-      if (typeof window.MainApp.addGold === 'function' && data.goldGain) {
-        window.MainApp.addGold(data.goldGain);
-      }
-      if (typeof window.MainApp.showToast === 'function') {
-        window.MainApp.showToast(toast, data.isWinner ? 'success' : 'info');
-      }
-    }
+  onMatchRewards() {
+    // 브롤볼은 보상(EXP/Gold) 없이 순수 미니게임으로 진행
   }
 
   onMatchEnded(data) {

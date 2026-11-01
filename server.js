@@ -482,26 +482,6 @@ function endBrawlMatch(winnerTeam, reason = '경기 종료') {
   brawlMatch.status = 'ended';
 
   const finalScore = { ...brawlMatch.score };
-  const allMatchPlayers = [...brawlMatch.teams.blue, ...brawlMatch.teams.red];
-
-  // Distribute rewards to real human players
-  allMatchPlayers.forEach(p => {
-    if (p.isBot) return;
-    const isWinner = (p.team === winnerTeam);
-    const expGain = isWinner ? 30 : 15;
-    const goldGain = isWinner ? 30 : 10;
-
-    const targetSocket = io.sockets.sockets.get(p.socketId);
-    if (targetSocket) {
-      targetSocket.emit('brawl_match_rewards', {
-        winnerTeam,
-        isWinner,
-        expGain,
-        goldGain,
-        reason
-      });
-    }
-  });
 
   io.emit('brawl_match_ended', {
     winnerTeam,
