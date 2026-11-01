@@ -156,7 +156,11 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    this.player.speed = (isDashing ? 4.37 : 3.8) * runnerMult; // 1티어 신발: 기본 3.8 -> 달리기 4.37 (러너 전직 시 15% 추가)
+    // 신발 종류 확인: 날렵한 가죽 농구화 착용 시 실내화(4.37, +15%)보다 소폭 빠른 고속 질주(4.75, +25%) 적용
+    const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
+    const isBasketballShoes = !!(equippedShoes && (equippedShoes.item === 'equip_leather_shoes'));
+    const dashSpeed = isBasketballShoes ? 4.75 : 4.37;
+    this.player.speed = (isDashing ? dashSpeed : 3.8) * runnerMult;
   }
 
   // ========================================================
