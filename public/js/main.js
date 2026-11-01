@@ -259,6 +259,17 @@ window.ITEM_CODEX_DATABASE = [
     source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 농구가죽 30개 + 50G)',
     recipe: '보스의 가죽 1개 + 농구공 가죽 30개 + 50G'
   },
+  {
+    id: 'equip_leather_shoes',
+    name: '날렵한 가죽 축구화 (Leather Cleats)',
+    icon: '👟',
+    category: 'equip',
+    tierBadge: '2티어 신발',
+    tierColor: '#b45309',
+    effect: '공격력 +5, 방어력 +8, 체력 +25 · 질주(B) 가능',
+    source: '장비 제작대(C)에서 제작 또는 기말고사 파멸신 전리품 드랍',
+    recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 40G'
+  },
 
   // 5. Tier 3 Bronze Equipment (3티어 청동 장비 - craft_recipes.json 공식 레시피)
   {
@@ -433,6 +444,7 @@ const ALL_GAME_ITEMS = {
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
   'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
   'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
+  'equip_leather_shoes': { name: '날렵한 가죽 축구화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 8, hp: 25 }, effect: '공격력 +5, 방어력 +8, 체력 +25' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
@@ -486,6 +498,7 @@ const ITEM_SELL_PRICES = {
   'equip_leather_sword': 7, // 제작비 35G -> 20% = 7G
   'equip_leather_helmet': 8, // 제작비 40G -> 20% = 8G
   'equip_leather_armor': 10, // 제작비 50G -> 20% = 10G
+  'equip_leather_shoes': 8, // 제작비 40G -> 20% = 8G
   'equip_forsythia_ring': 6, // 제작비 30G -> 20% = 6G
 
   // 5. 3티어 청동 / 은행잎 장비 (제작비의 20% 환급)
@@ -4006,11 +4019,11 @@ class MainApp {
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
       }
 
-      // 7. 기말고사 파멸신 전용 드랍
+      // 7. 기말고사 파멸신 전용 드랍 (월계관 삭제 -> 2티어 신발 또는 컴싸 마법봉)
       if (bName.includes('파멸신') || bName.includes('기말고사')) {
         if (Math.random() < 0.5) {
-          this.addItem('equip_laurel_crown', '종강의 황금 월계관', 1, '👑', { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '방어력 +25, 체력 +80' });
-          rewardItemsList.push('👑 종강의 황금 월계관 (대박 드랍!)');
+          this.addItem('equip_leather_shoes', '날렵한 가죽 축구화', 1, '👟', { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 8, hp: 25 }, effect: '공격력 +5, 방어력 +8, 체력 +25' });
+          rewardItemsList.push('👟 날렵한 가죽 축구화 (2티어 신발 전리품 드랍!)');
         } else {
           this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '공격력 +45, 방어력 +5' });
           rewardItemsList.push('🖊️ 컴싸 마법봉 (희귀 무기!)');
@@ -4915,11 +4928,11 @@ class MainApp {
           expEl.value = 400;
         } else if (val === 'final_god') {
           nameEl.value = '💀 기말고사 파멸신';
-          hpEl.value = 99999;
-          atkEl.value = 9999;
-          defEl.value = 9999;
-          goldEl.value = 0;
-          expEl.value = 0;
+          hpEl.value = 10000;
+          atkEl.value = 95;
+          defEl.value = 35;
+          goldEl.value = 400;
+          expEl.value = 800;
         } else if (val === 'sloth_titan') {
           nameEl.value = '🦥 방학 직전 나태의 거인';
           hpEl.value = 99999;
