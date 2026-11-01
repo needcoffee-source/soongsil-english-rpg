@@ -258,6 +258,73 @@ class NetworkManager {
       }
     });
 
+    // 3v3 Brawl Ball Listeners
+    this.socket.on('brawl_queue_updated', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onQueueUpdated) {
+        window.BrawlBall.onQueueUpdated(data);
+      }
+    });
+
+    this.socket.on('brawl_match_started', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onMatchStarted) {
+        window.BrawlBall.onMatchStarted(data.match);
+      }
+    });
+
+    this.socket.on('brawl_match_tick', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onMatchTick) {
+        window.BrawlBall.onMatchTick(data);
+      }
+    });
+
+    this.socket.on('brawl_ball_kicked', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onBallKicked) {
+        window.BrawlBall.onBallKicked(data);
+      }
+    });
+
+    this.socket.on('brawl_player_tackled', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onPlayerTackled) {
+        window.BrawlBall.onPlayerTackled(data);
+      }
+    });
+
+    this.socket.on('brawl_tackle_hit_event', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onTackleHit) {
+        window.BrawlBall.onTackleHit(data);
+      }
+    });
+
+    this.socket.on('brawl_ball_synced', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onBallSynced) {
+        window.BrawlBall.onBallSynced(data);
+      }
+    });
+
+    this.socket.on('brawl_goal_scored_event', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onGoalScored) {
+        window.BrawlBall.onGoalScored(data);
+      }
+    });
+
+    this.socket.on('brawl_ball_reset', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onBallReset) {
+        window.BrawlBall.onBallReset(data.ball);
+      }
+    });
+
+    this.socket.on('brawl_match_rewards', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onMatchRewards) {
+        window.BrawlBall.onMatchRewards(data);
+      }
+    });
+
+    this.socket.on('brawl_match_ended', (data) => {
+      if (window.BrawlBall && window.BrawlBall.onMatchEnded) {
+        window.BrawlBall.onMatchEnded(data);
+      }
+    });
+
     this.socket.on('field_monster_defeated_sync', (data) => {
       if (window.MainApp && window.MainApp.onFieldMonsterDefeatedSync) {
         window.MainApp.onFieldMonsterDefeatedSync(data);
@@ -483,6 +550,55 @@ class NetworkManager {
   leaveAcidRainSeat() {
     if (this.socket && this.socket.connected) {
       this.socket.emit('leave_acid_rain_seat');
+    }
+  }
+
+  // 3v3 Brawl Ball Emitters
+  joinBrawlQueue(userData) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_queue_join', userData);
+    }
+  }
+
+  leaveBrawlQueue() {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_queue_leave');
+    }
+  }
+
+  startBrawlTest() {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_queue_start_test');
+    }
+  }
+
+  sendBrawlKick(kickData) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_ball_kick', kickData);
+    }
+  }
+
+  sendBrawlTackle(tackleData) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_player_tackle', tackleData);
+    }
+  }
+
+  sendBrawlTackleHit(hitData) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_tackle_hit', hitData);
+    }
+  }
+
+  sendBrawlBallSync(ballData) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_ball_sync', ballData);
+    }
+  }
+
+  notifyBrawlGoal(team, scorerName) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('brawl_goal_scored', { team, scorerName });
     }
   }
 

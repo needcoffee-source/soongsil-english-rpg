@@ -322,6 +322,196 @@ function broadcastAcidRainSeats() {
   });
 }
 
+// ========================================================
+// 숭실 3v3 브롤볼 (Brawl Ball) 실시간 큐 & 매칭 상태
+// ========================================================
+let brawlQueue = []; // array of { socketId, studentId, name, avatar, joinedAt }
+let brawlMatch = null;
+let brawlTimerInterval = null;
+
+const BRAWL_BOT_PRESETS = [
+  { name: '번개 슈터', avatar: 'boy_blue', role: 'striker' },
+  { name: '철벽 수비수', avatar: 'girl_yellow', role: 'defender' },
+  { name: '스피드 윙어', avatar: 'boy_green', role: 'winger' },
+  { name: '골든 키커', avatar: 'girl_pink', role: 'striker' },
+  { name: '불꽃 태클러', avatar: 'boy_purple', role: 'defender' },
+  { name: '바람 패서', avatar: 'girl_orange', role: 'midfielder' }
+];
+
+function broadcastBrawlQueue() {
+  io.emit('brawl_queue_updated', {
+    queue: brawlQueue.map(p => ({
+      socketId: p.socketId,
+      name: p.name,
+      studentId: p.studentId,
+      avatar: p.avatar
+    })),
+    count: brawlQueue.length,
+    maxCount: 6,
+    activeMatch: brawlMatch ? {
+      matchId: brawlMatch.matchId,
+      status: brawlMatch.status,
+      score: brawlMatch.score,
+      timeRemaining: brawlMatch.timeRemaining
+    } : null
+  });
+}
+
+function startBrawlMatchFromQueue(forceBots = false) {
+  if (brawlMatch && brawlMatch.status === 'playing') return;
+
+  let candidates = [...brawlQueue];
+  if (candidates.length < 6 && forceBots) {
+    let botIdx = 0;
+    while (candidates.length < 6) {
+      const preset = BRAWL_BOT_PRESETS[botIdx % BRAWL_BOT_PRESETS.length];
+      candidates.push({
+        socketId: 'bot_' + Math.random().toString(36).substring(2, 8),
+        studentId: 'bot_' + (botIdx + 1),
+        name: `🤖 ${preset.name}`,
+        avatar: preset.avatar,
+        role: preset.role,
+        isBot: true
+      });
+      botIdx++;
+    }
+  }
+
+  if (candidates.length < 6) return;
+
+  // Select 6 players and remove real players from queue
+  const matchPlayers = candidates.slice(0, 6);
+  const matchedSocketIds = new Set(matchPlayers.filter(p => !p.isBot).map(p => p.socketId));
+  brawlQueue = brawlQueue.filter(p => !matchedSocketIds.has(p.socketId));
+
+  // Fisher-Yates random shuffle for 3:3 random team assignment
+  for (let i = matchPlayers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [matchPlayers[i], matchPlayers[j]] = [matchPlayers[j], matchPlayers[i]];
+  }
+
+  // Blue Team (South, attacks North goal)
+  const blueTeam = matchPlayers.slice(0, 3).map((p, idx) => {
+    const spawns = [
+      { x: 43 * 32, y: 44 * 32 },
+      { x: 38 * 32, y: 42 * 32 },
+      { x: 48 * 32, y: 42 * 32 }
+    ];
+    return {
+      ...p,
+      team: 'blue',
+      teamIdx: idx,
+      spawnX: spawns[idx].x,
+      spawnY: spawns[idx].y,
+      x: spawns[idx].x,
+      y: spawns[idx].y
+    };
+  });
+
+  // Red Team (North, attacks South goal)
+  const redTeam = matchPlayers.slice(3, 6).map((p, idx) => {
+    const spawns = [
+      { x: 43 * 32, y: 26 * 32 },
+      { x: 38 * 32, y: 28 * 32 },
+      { x: 48 * 32, y: 28 * 32 }
+    ];
+    return {
+      ...p,
+      team: 'red',
+      teamIdx: idx,
+      spawnX: spawns[idx].x,
+      spawnY: spawns[idx].y,
+      x: spawns[idx].x,
+      y: spawns[idx].y
+    };
+  });
+
+  brawlMatch = {
+    matchId: 'brawl_' + Date.now(),
+    status: 'playing',
+    startedAt: Date.now(),
+    timeRemaining: 150, // 2분 30초
+    score: { blue: 0, red: 0 },
+    teams: { blue: blueTeam, red: redTeam },
+    ball: {
+      x: 43 * 32,
+      y: 35 * 32,
+      vx: 0,
+      vy: 0,
+      carrierId: null,
+      carrierName: '',
+      carrierTeam: null
+    }
+  };
+
+  clearInterval(brawlTimerInterval);
+  brawlTimerInterval = setInterval(() => {
+    if (!brawlMatch || brawlMatch.status !== 'playing') {
+      clearInterval(brawlTimerInterval);
+      return;
+    }
+    brawlMatch.timeRemaining--;
+    io.emit('brawl_match_tick', {
+      timeRemaining: brawlMatch.timeRemaining,
+      score: brawlMatch.score
+    });
+
+    if (brawlMatch.timeRemaining <= 0) {
+      clearInterval(brawlTimerInterval);
+      let winner = 'draw';
+      if (brawlMatch.score.blue > brawlMatch.score.red) winner = 'blue';
+      else if (brawlMatch.score.red > brawlMatch.score.blue) winner = 'red';
+      endBrawlMatch(winner, '⏱️ 경기 시간 종료!');
+    }
+  }, 1000);
+
+  // Broadcast match start
+  io.emit('brawl_match_started', {
+    match: brawlMatch
+  });
+
+  broadcastBrawlQueue();
+}
+
+function endBrawlMatch(winnerTeam, reason = '경기 종료') {
+  if (!brawlMatch) return;
+  clearInterval(brawlTimerInterval);
+  brawlMatch.status = 'ended';
+
+  const finalScore = { ...brawlMatch.score };
+  const allMatchPlayers = [...brawlMatch.teams.blue, ...brawlMatch.teams.red];
+
+  // Distribute rewards to real human players
+  allMatchPlayers.forEach(p => {
+    if (p.isBot) return;
+    const isWinner = (p.team === winnerTeam);
+    const expGain = isWinner ? 30 : 15;
+    const goldGain = isWinner ? 30 : 10;
+
+    const targetSocket = io.sockets.sockets.get(p.socketId);
+    if (targetSocket) {
+      targetSocket.emit('brawl_match_rewards', {
+        winnerTeam,
+        isWinner,
+        expGain,
+        goldGain,
+        reason
+      });
+    }
+  });
+
+  io.emit('brawl_match_ended', {
+    winnerTeam,
+    score: finalScore,
+    reason
+  });
+
+  setTimeout(() => {
+    brawlMatch = null;
+    broadcastBrawlQueue();
+  }, 4000);
+}
+
 // Boss Raid Event State (Teacher Controlled)
 let bossRaidEvent = {
   active: false,
@@ -1069,7 +1259,99 @@ setInterval(() => {
   });
 
 
+  // ========================================================
+  // 숭실 3v3 브롤볼 (Brawl Ball) 소켓 핸들러
+  // ========================================================
+  socket.on('brawl_queue_join', (data = {}) => {
+    const studentId = data.studentId || (socket.player && socket.player.studentId) || 'player_' + socket.id.substring(0, 5);
+    const name = data.name || (socket.player && socket.player.name) || '학생';
+    const avatar = data.avatar || (socket.player && socket.player.avatar) || 'boy_blue';
+
+    if (!brawlQueue.some(p => p.socketId === socket.id)) {
+      brawlQueue.push({
+        socketId: socket.id,
+        studentId,
+        name,
+        avatar,
+        joinedAt: Date.now()
+      });
+    }
+    broadcastBrawlQueue();
+
+    if (brawlQueue.length >= 6) {
+      startBrawlMatchFromQueue(false);
+    }
+  });
+
+  socket.on('brawl_queue_leave', () => {
+    const idx = brawlQueue.findIndex(p => p.socketId === socket.id);
+    if (idx !== -1) {
+      brawlQueue.splice(idx, 1);
+      broadcastBrawlQueue();
+    }
+  });
+
+  socket.on('brawl_queue_start_test', () => {
+    startBrawlMatchFromQueue(true);
+  });
+
+  socket.on('brawl_ball_kick', (data) => {
+    io.emit('brawl_ball_kicked', data);
+  });
+
+  socket.on('brawl_player_tackle', (data) => {
+    io.emit('brawl_player_tackled', data);
+  });
+
+  socket.on('brawl_tackle_hit', (data) => {
+    io.emit('brawl_tackle_hit_event', data);
+  });
+
+  socket.on('brawl_ball_sync', (data) => {
+    if (brawlMatch) {
+      brawlMatch.ball = { ...brawlMatch.ball, ...data };
+    }
+    socket.broadcast.emit('brawl_ball_synced', data);
+  });
+
+  socket.on('brawl_goal_scored', (data) => {
+    if (!brawlMatch || brawlMatch.status !== 'playing') return;
+    const scoringTeam = data.team;
+    if (scoringTeam === 'blue' || scoringTeam === 'red') {
+      brawlMatch.score[scoringTeam]++;
+      io.emit('brawl_goal_scored_event', {
+        team: scoringTeam,
+        scorerName: data.scorerName || '선수',
+        score: brawlMatch.score
+      });
+
+      if (brawlMatch.score[scoringTeam] >= 2) {
+        endBrawlMatch(scoringTeam, '🔥 2골 선승 달성! 승리!');
+      } else {
+        setTimeout(() => {
+          if (brawlMatch && brawlMatch.status === 'playing') {
+            brawlMatch.ball = {
+              x: 43 * 32,
+              y: 35 * 32,
+              vx: 0,
+              vy: 0,
+              carrierId: null,
+              carrierName: '',
+              carrierTeam: null
+            };
+            io.emit('brawl_ball_reset', { ball: brawlMatch.ball });
+          }
+        }, 2500);
+      }
+    }
+  });
+
   socket.on('disconnect', () => {
+    const bqIdx = brawlQueue.findIndex(p => p.socketId === socket.id);
+    if (bqIdx !== -1) {
+      brawlQueue.splice(bqIdx, 1);
+      broadcastBrawlQueue();
+    }
     if (activeAcidRainPlayers.has(socket.id)) {
       activeAcidRainPlayers.delete(socket.id);
       broadcastAcidRainSeats();

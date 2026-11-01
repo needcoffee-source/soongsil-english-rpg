@@ -517,6 +517,15 @@ const WORLD_DATA = {
       name: "🏅 호칭 교환소",
       prompt: "호칭 교환소 이용하기"
     },
+    brawlCoach: {
+      id: "npc_brawl_ball_coach",
+      type: "brawl_coach",
+      x: 43,
+      y: 19,
+      name: "⚽ 브롤볼 코치",
+      prompt: "3v3 브롤볼 참가 신청 (SPACE)",
+      dialogue: "안녕! 이곳은 숭실 3v3 브롤볼 전용 하프코트란다! ⚽🔥\n\n공을 몰고 상대 골대에 슛을 꽂아 넣거나, B키로 시원한 슬라이딩 태클을 날려 공을 빼앗아보렴!\n\n6명이 모이면 3명씩 블루/레드팀으로 랜덤 배정되어 2골 선승제 경기가 시작된단다!"
+    },
     lostBox: {
       id: "lost_found_box",
       type: "lost_box",

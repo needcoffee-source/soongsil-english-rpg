@@ -220,8 +220,9 @@ class GameEngine {
       return;
     }
 
-    // 기절(isFallen) 상태 시 이동 및 애니메이션 전면 정지
-    if (this.player.isFallen) {
+    // 기절(isFallen 또는 brawl stunned) 상태 시 이동 및 애니메이션 전면 정지
+    const isBrawlStunned = (window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
+    if (this.player.isFallen || isBrawlStunned) {
       this.player.isMoving = false;
       this.keys.up = false;
       this.keys.down = false;
@@ -298,6 +299,11 @@ class GameEngine {
     this.updateBasketballMonsters();
     this.updateFutsalMonsters();
     this.updateHistoryMonsters();
+
+    // 3v3 Brawl Ball Logic Update
+    if (window.BrawlBall) {
+      window.BrawlBall.update(0.016);
+    }
 
     // Check nearby interactable
     this.checkNearbyInteractable();
@@ -845,6 +851,19 @@ class GameEngine {
             minDist = tDist;
           }
         }
+        // 2-D. Brawl Ball Coach (3v3 브롤볼 코치)
+        if (pg.brawlCoach) {
+          const bcDist = Math.hypot(pg.brawlCoach.x * 32 - this.player.x, (pg.brawlCoach.y + 0.5) * 32 - this.player.y);
+          if (bcDist < 64 && bcDist < minDist) {
+            closest = {
+              type: 'brawl_coach',
+              data: pg.brawlCoach,
+              name: pg.brawlCoach.name || '⚽ 브롤볼 코치',
+              prompt: pg.brawlCoach.prompt || '3v3 브롤볼 참가 신청'
+            };
+            minDist = bcDist;
+          }
+        }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -1155,6 +1174,14 @@ class GameEngine {
         if (pg.titleExchange && Math.hypot(pg.titleExchange.x * 32 - x, (pg.titleExchange.y + 0.5) * 32 - y) < 56) {
           return { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
         }
+        if (pg.brawlCoach && Math.hypot(pg.brawlCoach.x * 32 - x, (pg.brawlCoach.y + 0.5) * 32 - y) < 56) {
+          return {
+            type: 'brawl_coach',
+            data: pg.brawlCoach,
+            name: pg.brawlCoach.name || '⚽ 브롤볼 코치',
+            prompt: pg.brawlCoach.prompt || '3v3 브롤볼 참가 신청'
+          };
+        }
         if (pg.lostBox) {
           const boxCenterX = pg.lostBox.x * 32 + 16;
           const boxCenterY = pg.lostBox.y * 32 + 16;
@@ -1415,6 +1442,11 @@ class GameEngine {
     }
 
     this.ctx.restore();
+
+    // 3v3 Brawl Ball Scoreboard HUD
+    if (window.BrawlBall) {
+      window.BrawlBall.renderHUD(this.ctx);
+    }
 
     // ========================================================
     // RENDER POKEMON FADE TO BLACK (암전 오버레이)
@@ -5193,46 +5225,34 @@ class GameEngine {
     this.ctx.arc(lSpotX, midY, 50, -0.9, 0.9);
     this.ctx.stroke();
 
-    // Right Penalty Box (East 18-yard box)
-    this.ctx.strokeRect(pitchX + pitchW - penW, penY, penW, penH);
-
-    // Right Goal Area (East 6-yard box)
-    this.ctx.strokeRect(pitchX + pitchW - gAreaW, gAreaY, gAreaW, gAreaH);
-
-    // Right Penalty Spot & Arc
-    const rSpotX = pitchX + pitchW - 5.5 * 32;
-    this.ctx.beginPath();
-    this.ctx.arc(rSpotX, midY, 4, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.arc(rSpotX, midY, 50, Math.PI - 0.9, Math.PI + 0.9);
-    this.ctx.stroke();
-
-    // 4 Corner Arcs & Checkered Corner Flags
+    // West Corner Arcs & Checkered Corner Flags
     const cornerR = 14;
     this.ctx.beginPath(); this.ctx.arc(pitchX, pitchY, cornerR, 0, Math.PI / 2); this.ctx.stroke();
     this.ctx.beginPath(); this.ctx.arc(pitchX, pitchY + pitchH, cornerR, -Math.PI / 2, 0); this.ctx.stroke();
-    this.ctx.beginPath(); this.ctx.arc(pitchX + pitchW, pitchY, cornerR, Math.PI / 2, Math.PI); this.ctx.stroke();
-    this.ctx.beginPath(); this.ctx.arc(pitchX + pitchW, pitchY + pitchH, cornerR, Math.PI, Math.PI * 1.5); this.ctx.stroke();
 
     this.drawCornerFlag(pitchX - 2, pitchY - 2);
     this.drawCornerFlag(pitchX - 2, pitchY + pitchH + 2);
-    this.drawCornerFlag(pitchX + pitchW + 2, pitchY - 2);
-    this.drawCornerFlag(pitchX + pitchW + 2, pitchY + pitchH + 2);
 
-    // High-Res Goalposts (West & East)
+    // High-Res Goalpost (West)
     this.drawHighResGoalPost(pitchX, midY - 60, true);
-    this.drawHighResGoalPost(pitchX + pitchW, midY - 60, false);
 
-    // Soccer Field Center Label
-    this.drawSharpLabel(midX, midY + 54, '⚽ 숭실 천연잔디 축구장', {
+    // Soccer Field West Label
+    this.drawSharpLabel(pitchX + penW, midY + 54, '⚽ 숭실 천연잔디 축구장 (서쪽)', {
       bgColor: 'rgba(21, 128, 61, 0.94)',
       borderColor: '#86efac',
       textColor: '#ffffff',
-      fontSize: 13,
+      fontSize: 12.5,
       paddingX: 12,
       height: 24
     });
+
+    // ========================================================
+    // 6-B. RIGHT HALF-COURT: 3v3 BRAWL BALL ARENA (남북방향 x: 31~55, y: 22~48)
+    // ========================================================
+    if (window.BrawlBall) {
+      window.BrawlBall.renderCourt(this.ctx);
+      window.BrawlBall.renderEntities(this.ctx);
+    }
 
     // ========================================================
     // 7. NEW BOSS RAID ARENA: 서쪽 골대 앞 신규 보스 레이드 전장 (x: 13, y: 35)

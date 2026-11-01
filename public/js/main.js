@@ -791,6 +791,10 @@ class MainApp {
 
     window.NetworkManager = this.networkManager;
 
+    if (window.BrawlBall) {
+      window.BrawlBall.init(this.engine, this.networkManager);
+    }
+
     this.playerData = {
       name: '',
       studentId: '',
@@ -952,6 +956,12 @@ class MainApp {
 
     this.startDash = () => {
       if (!this.engine || !this.engine.player) return;
+
+      // 3v3 Brawl Ball Sliding Tackle
+      if (window.BrawlBall && this.engine.player.room === 'playground' && window.BrawlBall.isPlayerInCourt(this.engine.player.x, this.engine.player.y)) {
+        window.BrawlBall.tryTackle();
+      }
+
       const isTeacher = !!this.engine.player.isTeacher;
       const hasShoes = !!this.engine.player.hasRunningShoes;
 
@@ -1033,6 +1043,9 @@ class MainApp {
         window.RPGDialog.advance();
         return;
       }
+      if (window.BrawlBall && window.BrawlBall.tryKick()) {
+        return;
+      }
       this.engine.interact();
     });
 
@@ -1059,6 +1072,9 @@ class MainApp {
         if (window.AudioManager) window.AudioManager.playSelect();
         if (window.RPGDialog && window.RPGDialog.isOpen) {
           window.RPGDialog.advance();
+          return;
+        }
+        if (window.BrawlBall && window.BrawlBall.tryKick()) {
           return;
         }
         this.engine.interact();
@@ -1096,6 +1112,9 @@ class MainApp {
         e.preventDefault();
         if (window.RPGDialog && window.RPGDialog.isOpen) {
           window.RPGDialog.advance();
+          return;
+        }
+        if (window.BrawlBall && window.BrawlBall.tryKick()) {
           return;
         }
         this.engine.interact();
@@ -1242,6 +1261,10 @@ class MainApp {
       this.handleCareerClueInteraction(target.data);
     } else if (target.type === 'career_exit_keypad') {
       this.openCareerKeypadModal();
+    } else if (target.type === 'brawl_coach') {
+      if (window.BrawlBall) {
+        window.BrawlBall.openQueueModal();
+      }
     } else if (target.type === 'moral_desk' || target.type === 'moral_board') {
       this.handleMoralClassroomInteraction();
     } else if (target.type === 'drum_kit') {
