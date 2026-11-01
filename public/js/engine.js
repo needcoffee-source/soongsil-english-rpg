@@ -981,8 +981,8 @@ class GameEngine {
         }
         if (cr.interactive) {
           for (const item of cr.interactive) {
-            const dist = Math.hypot(item.x * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
-            if (dist < 56 && dist < minDist) {
+            const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
+            if (dist < 64 && dist < minDist) {
               closest = {
                 type: item.type,
                 data: item,
@@ -996,8 +996,8 @@ class GameEngine {
       }
       if (this.player.room === 'room_career' && cr.interactive) {
         for (const item of cr.interactive) {
-          const dist = Math.hypot(item.x * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
-          if (dist < 56 && dist < minDist) {
+          const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
+          if (dist < 64 && dist < minDist) {
             closest = {
               type: item.type,
               data: item,
@@ -1228,7 +1228,7 @@ class GameEngine {
         }
         if (cr.interactive) {
           for (const item of cr.interactive) {
-            if (Math.hypot(item.x * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
+            if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
               return { type: item.type, data: item, name: item.name };
             }
           }
@@ -1236,7 +1236,7 @@ class GameEngine {
       }
       if (this.player.room === 'room_career' && cr.interactive) {
         for (const item of cr.interactive) {
-          if (Math.hypot(item.x * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
+          if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
             return { type: item.type, data: item, name: item.name };
           }
         }

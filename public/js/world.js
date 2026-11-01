@@ -41,6 +41,24 @@ const WORLD_DATA = {
       npcs: []
     },
 
+    // 6층: 본관 교무실 및 2학년 구역
+    6: {
+      name: "6층 복도 (본관 교무실 & 2학년 구역)",
+      rooms: [
+        { id: "room_staff_office", name: "🏛️ 본관 교무실 (Staff Office)", doorX: 13, doorY: 5, targetX: 45, targetY: 13, locked: false },
+        { id: "room_204", name: "2학년 4반", doorX: 30, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 4반 수업 시간입니다. (현재 준비 중 🚧)" },
+        { id: "room_205", name: "2학년 5반", doorX: 38, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 5반 수업 시간입니다. (현재 준비 중 🚧)" },
+        { id: "room_206", name: "2학년 6반", doorX: 46, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 6반 수업 시간입니다. (현재 준비 중 🚧)" }
+      ],
+      elevator: { x: 56, y: 3 },
+      interactive: [
+        { id: "board_leaderboard_6", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
+        { id: "mirror_hallway_6", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
+        { id: "water_purifier_hallway_6", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+      ],
+      npcs: []
+    },
+
     7: {
       name: "7층 복도 (1학년 구역)",
       rooms: [
@@ -791,3 +809,5 @@ const WORLD_DATA = {
     ]
   }
 };
+
+window.WORLD_DATA = WORLD_DATA;

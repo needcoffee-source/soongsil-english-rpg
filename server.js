@@ -384,6 +384,7 @@ const ALL_GAME_ITEMS = {
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 10, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +10' } },
+  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
 
 };
 

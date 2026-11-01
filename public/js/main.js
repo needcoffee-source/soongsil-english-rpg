@@ -328,6 +328,74 @@ window.ITEM_CODEX_DATABASE = [
     effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
     source: '1학년 2반 가죽 골렘 토벌 시 100% 획득',
     recipe: '가죽 골렘 토벌'
+  },
+
+  // 7. Tier 4 Heritage Equipment & Materials (4티어 숭실 헤리티지 세트)
+  {
+    id: 'item_history_essence',
+    name: '숭실 역사의 정수',
+    icon: '🏛️',
+    category: 'material',
+    tierBadge: '4티어 역사 재료',
+    tierColor: '#4f46e5',
+    effect: '4대 역사관 탐구와 시련을 통해 정제된 영광의 숨결 (4티어 헤리티지 무기·방어구 필수 재료)',
+    source: '숭실역사관 몬스터(일제 순사 등) 토벌 시 드랍',
+    recipe: '역사관 몬스터 전투 드랍'
+  },
+  {
+    id: 'item_unyielding_stone',
+    name: '불굴의 사명석',
+    icon: '💎',
+    category: 'material',
+    tierBadge: '4티어 역사 재료',
+    tierColor: '#0284c7',
+    effect: '1938 신사참배 거부와 폐교의 아픔을 견뎌낸 굳은 의지 (4티어 헤리티지 무기·방어구 핵심 재료)',
+    source: '숭실역사관 몬스터 토벌 시 드랍',
+    recipe: '역사관 몬스터 전투 드랍'
+  },
+  {
+    id: 'equip_heritage_blade',
+    name: '1897 숭실 헤리티지 소드 (Heritage Blade)',
+    icon: '⚔️',
+    category: 'equip',
+    tierBadge: '4티어 전설 무기',
+    tierColor: '#6366f1',
+    effect: '공격력 +42, 방어력 +12, 체력 +35 (기말고사 파멸신 정복의 핵심 성검)',
+    source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 150G)',
+    recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 150G'
+  },
+  {
+    id: 'equip_heritage_helmet',
+    name: '1897 숭실 헤리티지 투구 (Heritage Helmet)',
+    icon: '👑',
+    category: 'equip',
+    tierBadge: '4티어 전설 투구',
+    tierColor: '#6366f1',
+    effect: '공격력 +8, 방어력 +26, 체력 +55 (숭실 120년 역사의 가호)',
+    source: '숭실역사관 제단(C)에서 제작 (역사의 정수 4개 + 사명석 2개 + 120G)',
+    recipe: '숭실 역사의 정수 4개 + 불굴의 사명석 2개 + 120G'
+  },
+  {
+    id: 'equip_heritage_armor',
+    name: '1897 숭실 헤리티지 갑옷 (Heritage Armor)',
+    icon: '🛡️',
+    category: 'equip',
+    tierBadge: '4티어 전설 갑옷',
+    tierColor: '#6366f1',
+    effect: '공격력 +10, 방어력 +35, 체력 +60 (불굴의 신앙과 정신으로 빚어낸 성갑)',
+    source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 140G)',
+    recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 140G'
+  },
+  {
+    id: 'equip_shoes_samdidas',
+    name: '삼디다스 실내화',
+    icon: '👟',
+    category: 'equip',
+    tierBadge: '특수 신발',
+    tierColor: '#059669',
+    effect: '공격력 +2, 방어력 +2, 체력 +10 (Shift 키 질주 기능 활성화)',
+    source: '🏅 호칭 교환소 특별 교환 (만점 시험지 1장)',
+    recipe: '백점만점 시험지 또는 수행평가지 교환'
   }
 ];
 
@@ -351,6 +419,8 @@ const ALL_GAME_ITEMS = {
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
+  'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
+  'item_unyielding_stone': { name: '💎 꺾이지 않는 사명석', icon: '💎', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🍷', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
@@ -373,7 +443,13 @@ const ALL_GAME_ITEMS = {
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
 
-  // 5. Legendary Season Boss Artifacts & Rewards
+  // 5. Tier 4 Heritage Equipment
+  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 42, def: 12, hp: 35 }, effect: '4티어 전설 무기 · 공격력 +42, 방어력 +12, 체력 +35' } },
+  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 8, def: 26, hp: 55 }, effect: '4티어 전설 투구 · 공격력 +8, 방어력 +26, 체력 +55' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 10, def: 35, hp: 60 }, effect: '4티어 전설 갑옷 · 공격력 +10, 방어력 +35, 체력 +60' } },
+  'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
+
+  // 6. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
@@ -418,7 +494,14 @@ const ITEM_SELL_PRICES = {
   'equip_bronze_armor': 14, // 제작비 70G -> 20% = 14G
   'equip_ginkgo_talisman': 10, // 제작비 50G -> 20% = 10G
 
-  // 6. 최상위 엔드 레이드 전리품
+  // 6. 4티어 헤리티지 장비 및 역사관 재료 (제작비의 20% 환급)
+  'item_history_essence': 5,
+  'item_unyielding_stone': 10,
+  'equip_heritage_blade': 30, // 제작비 150G -> 20% = 30G
+  'equip_heritage_helmet': 24, // 제작비 120G -> 20% = 24G
+  'equip_heritage_armor': 28, // 제작비 140G -> 20% = 28G
+
+  // 7. 최상위 엔드 레이드 전리품
   'equip_laurel_crown': 20,
   'equip_omr_wand': 20,
     'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
@@ -2090,6 +2173,86 @@ class MainApp {
     );
   }
 
+  // 🏛️ 숭실역사관 4대 전시관 상호작용 및 특별 칭호 지급
+  handleHistoryVitrineInteraction(target) {
+    if (!target) return;
+    const idx = parseInt(target.vitrineIndex) || 1;
+    this.playerData.historyVitrines = this.playerData.historyVitrines || [false, false, false, false];
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const exhibits = [
+      {
+        title: '🏛️ [제1전시관] 1897 평양 창립관',
+        desc: '1897년 10월 10일, 미국 선교사 윌리엄 베어드(W. M. Baird, 배위량) 박사가 평양 신양동 사택에서 13명의 학생으로 숭실학당을 설립했습니다.\n\n• 건학 이념: \'진리와 봉사 (Truth and Service)\'\n• 한국 근대 교육의 요람이자 최초의 근대 대학 교육의 출발점입니다.'
+      },
+      {
+        title: '🕊️ [제2전시관] 1938 신사참배 거부관',
+        desc: '1938년 일제의 강압적인 신사참배 요구에 끝까지 굴복하지 않고, 기독교 신앙과 민족정기를 지키기 위해 자진 폐교를 결단했습니다.\n\n• 굳은 신앙과 자주정신: 불의에 타협하지 않고 학교 문을 닫는 아픔을 겪었으나, 숭실의 정신은 결코 꺼지지 않았습니다.'
+      },
+      {
+        title: '🌱 [제3전시관] 1954 서울 재건관',
+        desc: '광복 후 1954년 서울 용산구 청파동에서 숭실대학을 재건하고, 은평구 신사동 교정으로 터를 옮겨 숭실중·고등학교가 새롭게 웅비했습니다.\n\n• 민족의 폐허 속에서 다시 일어선 불굴의 부활과 도약의 역사입니다.'
+      },
+      {
+        title: '🌟 [제4전시관] 숭실의 위인관',
+        desc: '민족의 시인 윤동주, 독립운동가 조만식 선생, 애국가를 작곡한 안익태 등 수많은 겨레의 등불들이 숭실의 교정에서 꿈을 키웠습니다.\n\n• \'죽는 날까지 하늘을 우러러 한 점 부끄럼이 없기를...\' 숭실의 선배들이 남긴 고귀한 뜻이 오늘날 우리 가슴에 살아 숨쉽니다.'
+      }
+    ];
+
+    const currentExhibit = exhibits[idx - 1] || exhibits[0];
+    const wasExplored = !!this.playerData.historyVitrines[idx - 1];
+    this.playerData.historyVitrines[idx - 1] = true;
+
+    const totalExplored = this.playerData.historyVitrines.filter(Boolean).length;
+    this.saveProgress();
+
+    const titleName = '🏛️ 역사를 기억하는 자';
+    this.playerData.titles = this.playerData.titles || [];
+    const alreadyHasTitle = this.playerData.titles.includes(titleName);
+
+    if (totalExplored >= 4 && !alreadyHasTitle) {
+      this.playerData.titles.push(titleName);
+      this.equipTitle(titleName);
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+      alert(
+        `${currentExhibit.title}\n\n"${currentExhibit.desc}"\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `🎉 [숭실역사관 4대 전시관 완벽 답사 달성!]\n` +
+        `숭실 127년의 유구한 역사와 숭고한 정신을 모두 마음에 새겼습니다!\n\n` +
+        `🏛️ 특별 한정 칭호 [${titleName}]를 획득 및 자동 착용했습니다!\n` +
+        `• 칭호 효과: 공격력 +10, 체력 +30 및 기말고사 파멸신 추가 타격 혜택!`
+      );
+      return;
+    }
+
+    if (!wasExplored) {
+      alert(
+        `${currentExhibit.title}\n\n"${currentExhibit.desc}"\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `🏛️ [전시관 답사 기록 완료]\n` +
+        `(현재 답사 현황: ${totalExplored} / 4개)\n` +
+        `💡 4대 전시관을 모두 조사하면 특별 칭호 [${titleName}]를 획득할 수 있습니다!`
+      );
+    } else {
+      alert(
+        `${currentExhibit.title}\n\n"${currentExhibit.desc}"\n\n` +
+        `(현재 답사 현황: ${totalExplored} / 4개)`
+      );
+    }
+  }
+
+  // 🔨 4티어 헤리티지 무기·방어구 제작 제단
+  handleHistoryAltarInteraction() {
+    if (this.craftingManager) {
+      this.craftingManager.open('equipment');
+    }
+  }
+
   // 마스코트 숭실이 첫 대화 입학 축하 선물 이벤트
   handleMascotInteraction() {
     const giftKey = 'soongsil_gift_' + (this.playerData.studentId || 'default');
@@ -3006,6 +3169,12 @@ class MainApp {
       bonusHp += 40; // 의사: 최대 체력 +40
     } else if (this.playerData.job === 'mentor' || this.playerData.job === 'guardian') {
       bonusDef += 8; // 상담교사/멘토: 방어력 +8
+    }
+
+    // 🏛️ 역사관 특별 칭호 보너스
+    if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
+      bonusAtk += 10;
+      bonusHp += 30;
     }
 
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
@@ -6325,6 +6494,10 @@ class MainApp {
         canAfford = (myGold >= t.costAmount);
         costText = `황금 ${t.costAmount} G`;
         progressText = `(보유: ${myGold} / ${t.costAmount} G)`;
+      } else if (t.costType === 'quest') {
+        canAfford = false;
+        costText = '특별 퀘스트 달성 필요';
+        progressText = '(숭실역사관 4대 전시관 답사)';
       }
 
       const card = document.createElement('div');
