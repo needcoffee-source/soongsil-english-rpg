@@ -1,7 +1,7 @@
 /**
  * Soongsil RPG - 3v3 Brawl Ball (브롤볼) Enhanced Engine
  * 1. Super Skill (궁극기 게이지 0~100%, 불꽃 하이퍼 슛, 메가 바디체크)
- * 2. Obstacles & Trick Shots (골대 앞 목재 상자, 벽 반사 트릭샷, 점선 조준 가이드)
+ * 2. Obstacles & Trick Shots (골대 앞 목재 상자, 벽/상자 반사 트릭샷, 2단 반사 점선 조준 가이드)
  * 5. Random Power-up Drinks (⚡ 신속 드링크, 🛡️ 무적 실드)
  */
 
@@ -15,10 +15,16 @@ class BrawlBallManager {
     this.match = null;
     this.tackleCooldown = 0;
     this.stunnedUntil = 0;
+    this.stunImmuneUntil = 0;
     this.lastKickTime = 0;
     this.particles = [];
     this.floatingTexts = [];
     this.goalBanner = { text: '', subtext: '', timer: 0 };
+    this.practiceGoalResetTimer = null;
+
+    // 8-Directional & Trick-Shot Aiming Vector
+    this.aimDx = 0;
+    this.aimDy = -1;
 
     // 1. Super Gauge (0 ~ 100)
     this.superGauge = 0;
@@ -68,6 +74,8 @@ class BrawlBallManager {
       carrierId: null,
       carrierName: '',
       carrierTeam: null,
+      lastTouchName: '',
+      lastTouchTeam: null,
       pickupCooldown: 0,
       isSuper: false // Blazing Hyper Shot flag
     };
@@ -149,8 +157,18 @@ class BrawlBallManager {
   }
 
   startTestMatch() {
-    if (!this.network) return;
-    this.network.startBrawlTest();
+    if (!this.network || !this.engine || !this.engine.player) return;
+    const p = this.engine.player;
+    const userData = {
+      studentId: p.studentId || 'std_' + Math.floor(Math.random() * 1000),
+      name: p.name || '학생',
+      avatar: p.avatar || 'boy_blue'
+    };
+    if (!this.inQueue) {
+      this.network.joinBrawlQueue(userData);
+      this.inQueue = true;
+    }
+    this.network.startBrawlTest(userData);
     if (window.AudioManager) window.AudioManager.playFanfare();
   }
 
@@ -203,6 +221,10 @@ class BrawlBallManager {
   }
 
   onMatchStarted(match) {
+    if (this.practiceGoalResetTimer) {
+      clearTimeout(this.practiceGoalResetTimer);
+      this.practiceGoalResetTimer = null;
+    }
     this.match = match;
     this.closeQueueModal();
     this.inQueue = false;
@@ -210,6 +232,8 @@ class BrawlBallManager {
     this.superChargedNotified = false;
     this.hasShield = false;
     this.speedBuffUntil = 0;
+    this.stunnedUntil = 0;
+    this.stunImmuneUntil = 0;
     this.powerups = [];
     this.nextPowerupSpawnTime = Date.now() + 8000;
 
@@ -218,13 +242,17 @@ class BrawlBallManager {
 
     // Reset ball
     if (match.ball) {
-      this.ball = { ...this.ball, ...match.ball, isSuper: false };
+      this.ball = { ...this.ball, ...match.ball, lastTouchName: '', lastTouchTeam: null, isSuper: false };
     } else {
       this.ball.x = this.court.midX;
       this.ball.y = this.court.midY;
       this.ball.vx = 0;
       this.ball.vy = 0;
       this.ball.carrierId = null;
+      this.ball.carrierName = '';
+      this.ball.carrierTeam = null;
+      this.ball.lastTouchName = '';
+      this.ball.lastTouchTeam = null;
       this.ball.isSuper = false;
     }
 
@@ -235,16 +263,20 @@ class BrawlBallManager {
 
     if (bluePlayer) {
       this.myTeam = 'blue';
+      this.aimDx = 0;
+      this.aimDy = -1;
       if (this.engine) {
         this.engine.teleportTo(0, 'playground', bluePlayer.spawnX, bluePlayer.spawnY);
       }
-      this.showGoalBanner('🔵 블루팀 배정!', '남쪽 진영 (North 골대를 향해 공격!)', 3);
+      this.showGoalBanner('🔵 블루팀 배정!', '남쪽 진영 (북쪽 RED 골대를 향해 공격하세요!)', 3);
     } else if (redPlayer) {
       this.myTeam = 'red';
+      this.aimDx = 0;
+      this.aimDy = 1;
       if (this.engine) {
         this.engine.teleportTo(0, 'playground', redPlayer.spawnX, redPlayer.spawnY);
       }
-      this.showGoalBanner('🔴 레드팀 배정!', '북쪽 진영 (South 골대를 향해 공격!)', 3);
+      this.showGoalBanner('🔴 레드팀 배정!', '북쪽 진영 (남쪽 BLUE 골대를 향해 공격하세요!)', 3);
     } else {
       this.myTeam = null;
       this.showGoalBanner('⚽ 3v3 브롤볼 경기 시작!', '관전 모드로 진행됩니다', 2.5);
@@ -263,6 +295,84 @@ class BrawlBallManager {
   }
 
   // ========================================================
+  // HELPER: AIMING VECTOR, SAFE DASH & LIVE ENTITY LOOKUP
+  // ========================================================
+
+  getShotDirectionVector() {
+    const p = (this.engine && this.engine.player) ? this.engine.player : null;
+    if (!p) return { dx: 0, dy: -1 };
+
+    const keys = (this.engine && this.engine.keys) ? this.engine.keys : {};
+    let kx = 0, ky = 0;
+    if (keys.left) kx -= 1;
+    if (keys.right) kx += 1;
+    if (keys.up) ky -= 1;
+    if (keys.down) ky += 1;
+
+    // 1. Diagonal keyboard input held (e.g., Up+Left, Up+Right, Down+Left, Down+Right)
+    if (kx !== 0 && ky !== 0) {
+      const len = Math.hypot(kx, ky);
+      return { dx: kx / len, dy: ky / len };
+    }
+
+    const dir = p.direction || 'up';
+    if (dir === 'up') return { dx: 0, dy: -1 };
+    if (dir === 'down') return { dx: 0, dy: 1 };
+
+    // 2. Facing Left or Right: angle bank shot (~28 deg) toward target goal so wall-bounce trick shots work on both keyboard & mobile D-pad!
+    let attackGoalSign = -1; // Default: North goal
+    if (this.myTeam === 'red') {
+      attackGoalSign = 1; // Red attacks South goal
+    } else if (this.myTeam === 'blue') {
+      attackGoalSign = -1; // Blue attacks North goal
+    } else {
+      attackGoalSign = (p.y < this.court.midY) ? -1 : 1;
+    }
+
+    const rawDx = (dir === 'left') ? -0.88 : 0.88;
+    const rawDy = attackGoalSign * 0.47;
+    const norm = Math.hypot(rawDx, rawDy);
+    return { dx: rawDx / norm, dy: rawDy / norm };
+  }
+
+  safeDashMove(entity, totalDx, totalDy) {
+    if (!entity) return;
+    const steps = 8;
+    const stepX = totalDx / steps;
+    const stepY = totalDy / steps;
+
+    for (let i = 0; i < steps; i++) {
+      const nextX = Math.max(this.court.minX + 16, Math.min(this.court.maxX - 16, entity.x + stepX));
+      const nextY = Math.max(this.court.minY + 16, Math.min(this.court.maxY - 16, entity.y + stepY));
+      if (!this.isObstacleBlocked(nextX, entity.y)) {
+        entity.x = nextX;
+      }
+      if (!this.isObstacleBlocked(entity.x, nextY)) {
+        entity.y = nextY;
+      }
+    }
+  }
+
+  getEntityLiveState(member) {
+    if (!member) return null;
+    if (member.isBot) return member;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    if (member.socketId === myId && this.engine && this.engine.player) {
+      member.x = this.engine.player.x;
+      member.y = this.engine.player.y;
+      member.direction = this.engine.player.direction;
+      return member;
+    }
+    if (this.engine && this.engine.otherPlayers && this.engine.otherPlayers[member.socketId]) {
+      const liveOther = this.engine.otherPlayers[member.socketId];
+      member.x = liveOther.x;
+      member.y = liveOther.y;
+      member.direction = liveOther.direction;
+    }
+    return member;
+  }
+
+  // ========================================================
   // SUPER GAUGE SYSTEM (Feature 1)
   // ========================================================
 
@@ -274,7 +384,9 @@ class BrawlBallManager {
       if (window.AudioManager) {
         window.AudioManager.playSuperReady();
       }
-      this.addFloatingText('⚡ SUPER READY!! (Q키)', this.engine.player.x, this.engine.player.y - 28, '#fde047');
+      if (this.engine && this.engine.player) {
+        this.addFloatingText('⚡ SUPER READY!! (Q키)', this.engine.player.x, this.engine.player.y - 28, '#fde047');
+      }
     }
   }
 
@@ -298,7 +410,7 @@ class BrawlBallManager {
       return false;
     }
 
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
     const isCarrier = (this.ball.carrierId === myId);
 
     // Consume 100% Super Gauge
@@ -306,16 +418,15 @@ class BrawlBallManager {
 
     if (isCarrier) {
       // 1-A. [🔥 HYPER SUPER SHOT] (Blazing fireball kick)
-      const dir = p.direction || 'up';
-      let vx = 0, vy = 0;
-      const speed = 25; // Super high speed (vs 14 normal)
-      if (dir === 'up') vy = -speed;
-      else if (dir === 'down') vy = speed;
-      else if (dir === 'left') vx = -speed;
-      else if (dir === 'right') vx = speed;
+      const vec = this.getShotDirectionVector();
+      const speed = 24; // Super high speed (vs 14 normal)
+      const vx = vec.dx * speed;
+      const vy = vec.dy * speed;
 
       this.ball.vx = vx;
       this.ball.vy = vy;
+      this.ball.lastTouchName = p.name || '선수';
+      this.ball.lastTouchTeam = this.myTeam;
       this.ball.carrierId = null;
       this.ball.carrierName = '';
       this.ball.carrierTeam = null;
@@ -348,8 +459,7 @@ class BrawlBallManager {
       else if (dir === 'left') dx = -dashDist;
       else if (dir === 'right') dx = dashDist;
 
-      p.x = Math.max(this.court.minX + 16, Math.min(this.court.maxX - 16, p.x + dx));
-      p.y = Math.max(this.court.minY + 16, Math.min(this.court.maxY - 16, p.y + dy));
+      this.safeDashMove(p, dx, dy);
 
       if (window.AudioManager) {
         window.AudioManager.playTackleHit();
@@ -371,7 +481,7 @@ class BrawlBallManager {
         });
       }
 
-      // Knock back & stun all nearby enemies in 68px radius
+      // Knock back & stun all nearby enemies in 72px radius
       this.executeMegaTackleHits(p.x, p.y);
 
       if (this.network) {
@@ -393,20 +503,25 @@ class BrawlBallManager {
     const enemyTeamKey = (this.myTeam === 'blue') ? 'red' : 'blue';
     const enemies = this.match.teams[enemyTeamKey] || [];
 
-    for (const enemy of enemies) {
+    for (const rawEnemy of enemies) {
+      const enemy = this.getEntityLiveState(rawEnemy);
+      if (!enemy) continue;
       const dist = Math.hypot(enemy.x - tx, enemy.y - ty);
-      if (dist < 68) {
-        if (this.network) {
-          this.network.sendBrawlTackleHit({
-            tacklerId: (this.network.socket ? this.network.socket.id : 'me'),
-            tacklerName: this.engine.player.name,
-            victimId: enemy.socketId,
-            victimName: enemy.name,
-            ballX: enemy.x,
-            ballY: enemy.y,
-            ballVx: (enemy.x - tx) * 0.25,
-            ballVy: (enemy.y - ty) * 0.25
-          });
+      if (dist < 72) {
+        const hitPayload = {
+          tacklerId: (this.network && this.network.socket) ? this.network.socket.id : 'me',
+          tacklerName: this.engine.player.name,
+          victimId: enemy.socketId,
+          victimName: enemy.name,
+          ballX: enemy.x,
+          ballY: enemy.y,
+          ballVx: (enemy.x - tx) * 0.25,
+          ballVy: (enemy.y - ty) * 0.25
+        };
+        if (this.network && this.network.socket && this.network.socket.connected) {
+          this.network.sendBrawlTackleHit(hitPayload);
+        } else {
+          this.onTackleHit(hitPayload);
         }
       }
     }
@@ -415,6 +530,8 @@ class BrawlBallManager {
   onSuperShot(data) {
     this.ball.vx = data.vx;
     this.ball.vy = data.vy;
+    this.ball.lastTouchName = data.shooterName || this.ball.lastTouchName || '선수';
+    this.ball.lastTouchTeam = data.team || this.ball.lastTouchTeam;
     this.ball.carrierId = null;
     this.ball.carrierName = '';
     this.ball.carrierTeam = null;
@@ -453,7 +570,7 @@ class BrawlBallManager {
     const now = Date.now();
     for (const obs of this.obstacles) {
       if (obs.brokenUntil && now < obs.brokenUntil) continue;
-      if (px >= obs.x && px <= obs.x + obs.w && py >= obs.y && py <= obs.y + obs.h) {
+      if (px >= obs.x - 10 && px <= obs.x + obs.w + 10 && py >= obs.y - 10 && py <= obs.y + obs.h + 10) {
         return true;
       }
     }
@@ -493,11 +610,11 @@ class BrawlBallManager {
 
         if (overlapX < overlapY) {
           // Horizontal bounce
-          this.ball.vx = -this.ball.vx * 0.85;
+          this.ball.vx = -this.ball.vx * 0.88;
           this.ball.x += (bx > obs.x + obs.w / 2 ? overlapX : -overlapX);
         } else {
           // Vertical bounce
-          this.ball.vy = -this.ball.vy * 0.85;
+          this.ball.vy = -this.ball.vy * 0.88;
           this.ball.y += (by > obs.y + obs.h / 2 ? overlapY : -overlapY);
         }
 
@@ -642,7 +759,7 @@ class BrawlBallManager {
       return;
     }
 
-    // Execute Tackle Dash: 48px dash in facing direction
+    // Execute Safe Tackle Dash: 48px dash in facing direction without getting stuck in crates
     this.tackleCooldown = now + 3000;
     const dir = p.direction || 'down';
     let dx = 0, dy = 0;
@@ -651,8 +768,7 @@ class BrawlBallManager {
     else if (dir === 'left') dx = -48;
     else if (dir === 'right') dx = 48;
 
-    p.x = Math.max(this.court.minX + 16, Math.min(this.court.maxX - 16, p.x + dx));
-    p.y = Math.max(this.court.minY + 16, Math.min(this.court.maxY - 16, p.y + dy));
+    this.safeDashMove(p, dx, dy);
 
     if (this.network) {
       this.network.sendBrawlTackle({
@@ -670,10 +786,15 @@ class BrawlBallManager {
 
   checkTackleCollision(tacklerX, tacklerY) {
     if (!this.match) return;
+    const now = Date.now();
     const enemyTeamKey = (this.myTeam === 'blue') ? 'red' : 'blue';
     const enemies = this.match.teams[enemyTeamKey] || [];
 
-    for (const enemy of enemies) {
+    for (const rawEnemy of enemies) {
+      const enemy = this.getEntityLiveState(rawEnemy);
+      if (!enemy) continue;
+      if (enemy.stunImmuneUntil && now < enemy.stunImmuneUntil) continue;
+
       const dist = Math.hypot(enemy.x - tacklerX, enemy.y - tacklerY);
       if (dist < 52) {
         // Successful tackle! Charges 35% Super Gauge
@@ -681,20 +802,24 @@ class BrawlBallManager {
 
         let scatterVx = (enemy.x - tacklerX) * 0.15;
         let scatterVy = (enemy.y - tacklerY) * 0.15;
-        if (Math.abs(scatterVx) < 2) scatterVx = 4;
-        if (Math.abs(scatterVy) < 2) scatterVy = 4;
+        if (Math.abs(scatterVx) < 2) scatterVx = (enemy.x >= tacklerX ? 4 : -4);
+        if (Math.abs(scatterVy) < 2) scatterVy = (enemy.y >= tacklerY ? 4 : -4);
 
-        if (this.network) {
-          this.network.sendBrawlTackleHit({
-            tacklerId: (this.network.socket ? this.network.socket.id : 'me'),
-            tacklerName: this.engine.player.name,
-            victimId: enemy.socketId,
-            victimName: enemy.name,
-            ballX: enemy.x,
-            ballY: enemy.y,
-            ballVx: scatterVx,
-            ballVy: scatterVy
-          });
+        const hitPayload = {
+          tacklerId: (this.network && this.network.socket) ? this.network.socket.id : 'me',
+          tacklerName: this.engine.player.name,
+          victimId: enemy.socketId,
+          victimName: enemy.name,
+          ballX: enemy.x,
+          ballY: enemy.y,
+          ballVx: scatterVx,
+          ballVy: scatterVy
+        };
+
+        if (this.network && this.network.socket && this.network.socket.connected) {
+          this.network.sendBrawlTackleHit(hitPayload);
+        } else {
+          this.onTackleHit(hitPayload);
         }
         break;
       }
@@ -702,12 +827,14 @@ class BrawlBallManager {
   }
 
   onTackleHit(data) {
+    const now = Date.now();
     if (window.AudioManager) {
       window.AudioManager.playTackleHit();
     }
 
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
 
+    // 1. Check if victim is local player
     if (data.victimId === myId) {
       // 🛡️ Check if local player has Shield! (Feature 5)
       if (this.hasShield) {
@@ -715,42 +842,69 @@ class BrawlBallManager {
         this.addFloatingText('🛡️ SHIELD DEFLECT!! 상대 태클 반사!', this.engine.player.x, this.engine.player.y - 20, '#38bdf8');
         return; // Deflected! No stun, doesn't drop ball
       }
+      if (now < this.stunImmuneUntil) return;
 
-      this.stunnedUntil = Date.now() + 1200; // 1.2s stun
+      this.stunnedUntil = now + 1200; // 1.2s stun
+      this.stunImmuneUntil = now + 2700; // 1.5s post-stun immunity
       this.addFloatingText('💫 기절 (1.2초)!', this.engine.player.x, this.engine.player.y - 20, '#ef4444');
+    }
+
+    // 2. Apply stun & slight knockback to victim in match.teams (AI bots & other players)
+    if (this.match && this.match.teams) {
+      const allMembers = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])];
+      const victim = allMembers.find(m => m.socketId === data.victimId);
+      if (victim) {
+        victim.stunnedUntil = now + 1200;
+        victim.stunImmuneUntil = now + 2700;
+        if (victim.isBot) {
+          this.safeDashMove(victim, (data.ballVx || 0) * 3, (data.ballVy || 0) * 3);
+        }
+      }
+    }
+    if (this.engine && this.engine.otherPlayers && this.engine.otherPlayers[data.victimId]) {
+      this.engine.otherPlayers[data.victimId].stunnedUntil = now + 1200;
     }
 
     this.addFloatingText('⚡ TACKLE! 상대 기절!', data.ballX || this.ball.x, data.ballY || this.ball.y, '#f59e0b');
 
-    // Ball scatters loose
-    this.ball.x = data.ballX || this.ball.x;
-    this.ball.y = data.ballY || this.ball.y;
-    this.ball.vx = data.ballVx || (Math.random() * 6 - 3);
-    this.ball.vy = data.ballVy || (Math.random() * 6 - 3);
-    this.ball.carrierId = null;
-    this.ball.carrierName = '';
-    this.ball.carrierTeam = null;
-    this.ball.isSuper = false;
-    this.ball.pickupCooldown = Date.now() + 500;
+    // 3. Ball scatters loose if the victim was carrying the ball (or if ball was already loose)
+    if (!this.ball.carrierId || this.ball.carrierId === data.victimId) {
+      this.ball.x = data.ballX || this.ball.x;
+      this.ball.y = data.ballY || this.ball.y;
+      this.ball.vx = data.ballVx || (Math.random() * 6 - 3);
+      this.ball.vy = data.ballVy || (Math.random() * 6 - 3);
+      this.ball.carrierId = null;
+      this.ball.carrierName = '';
+      this.ball.carrierTeam = null;
+      this.ball.isSuper = false;
+      this.ball.pickupCooldown = now + 500;
+    }
   }
 
   tryKick() {
     if (!this.engine || !this.engine.player) return false;
     const p = this.engine.player;
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
 
     if (this.ball.carrierId !== myId) return false;
 
-    // Normal Shoot in facing direction with speed 14
-    const dir = p.direction || 'up';
-    let vx = 0, vy = 0;
+    // Shoot along 8-directional / tactical bank-shot vector with speed 14
+    const vec = this.getShotDirectionVector();
     const speed = 14;
-    if (dir === 'up') vy = -speed;
-    else if (dir === 'down') vy = speed;
-    else if (dir === 'left') vx = -speed;
-    else if (dir === 'right') vx = speed;
+    const vx = vec.dx * speed;
+    const vy = vec.dy * speed;
 
     this.addSuperGauge(15); // +15% Super gauge on shooting
+
+    this.ball.vx = vx;
+    this.ball.vy = vy;
+    this.ball.lastTouchName = p.name || '선수';
+    this.ball.lastTouchTeam = this.myTeam;
+    this.ball.carrierId = null;
+    this.ball.carrierName = '';
+    this.ball.carrierTeam = null;
+    this.ball.isSuper = false;
+    this.ball.pickupCooldown = Date.now() + 400;
 
     if (this.network) {
       this.network.sendBrawlKick({
@@ -762,14 +916,6 @@ class BrawlBallManager {
       });
     }
 
-    this.ball.vx = vx;
-    this.ball.vy = vy;
-    this.ball.carrierId = null;
-    this.ball.carrierName = '';
-    this.ball.carrierTeam = null;
-    this.ball.isSuper = false;
-    this.ball.pickupCooldown = Date.now() + 400;
-
     if (window.AudioManager) {
       window.AudioManager.playBallKick();
     }
@@ -780,6 +926,8 @@ class BrawlBallManager {
   onBallKicked(data) {
     this.ball.vx = data.vx;
     this.ball.vy = data.vy;
+    this.ball.lastTouchName = data.shooterName || this.ball.lastTouchName || '선수';
+    this.ball.lastTouchTeam = data.team || this.ball.lastTouchTeam;
     this.ball.carrierId = null;
     this.ball.carrierName = '';
     this.ball.carrierTeam = null;
@@ -817,11 +965,15 @@ class BrawlBallManager {
   }
 
   onGoalScored(data) {
+    if (this.match && data.score) {
+      this.match.score = data.score;
+      this.match.status = 'goal_celebration';
+    }
     const isBlue = (data.team === 'blue');
     const teamName = isBlue ? '🔵 블루팀' : '🔴 레드팀';
     const sub = `${data.scorerName} 선수의 환상적인 골! (스코어 ${data.score.blue} : ${data.score.red})`;
 
-    this.showGoalBanner(`⚽ GOAL!! ${teamName} 득점! 🔥`, sub, 3);
+    this.showGoalBanner(`⚽ GOAL!! ${teamName} 득점! 🔥`, sub, 2.5);
     this.addSuperGauge(50); // Scoring or being on field awards super energy!
 
     if (window.AudioManager) {
@@ -832,6 +984,10 @@ class BrawlBallManager {
     }
 
     // Confetti celebration
+    this.spawnGoalConfetti();
+  }
+
+  spawnGoalConfetti() {
     for (let i = 0; i < 40; i++) {
       this.particles.push({
         x: this.court.midX + (Math.random() - 0.5) * 300,
@@ -846,9 +1002,28 @@ class BrawlBallManager {
     }
   }
 
+  triggerPracticeGoal(goalTeamLabel) {
+    if (this.practiceGoalResetTimer) return;
+    const pName = (this.engine && this.engine.player && this.engine.player.name) ? this.engine.player.name : '선수';
+    this.showGoalBanner(`⚽ 연습 골!! (${goalTeamLabel} 골대 돌파!)`, `${pName} 선수의 나이스 슈팅! 1.5초 후 중앙에서 공이 리셋됩니다`, 2.0);
+    this.addSuperGauge(50);
+    this.spawnGoalConfetti();
+
+    if (window.AudioManager) {
+      window.AudioManager.playWhistle();
+    }
+
+    this.practiceGoalResetTimer = setTimeout(() => {
+      this.practiceGoalResetTimer = null;
+      if (!this.match) {
+        this.onBallReset({ x: this.court.midX, y: this.court.midY });
+      }
+    }, 1500);
+  }
+
   onBallReset(ball) {
-    this.ball.x = ball.x;
-    this.ball.y = ball.y;
+    this.ball.x = (ball && ball.x !== undefined) ? ball.x : this.court.midX;
+    this.ball.y = (ball && ball.y !== undefined) ? ball.y : this.court.midY;
     this.ball.vx = 0;
     this.ball.vy = 0;
     this.ball.carrierId = null;
@@ -856,24 +1031,50 @@ class BrawlBallManager {
     this.ball.carrierTeam = null;
     this.ball.isSuper = false;
     this.ball.pickupCooldown = Date.now() + 500;
+    this.stunnedUntil = 0;
+
+    // Restore match playing state & kickoff positions for players and AI bots!
+    if (this.match) {
+      this.match.status = 'playing';
+      const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+      const allMembers = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])];
+      for (const m of allMembers) {
+        if (m.spawnX !== undefined && m.spawnY !== undefined) {
+          m.x = m.spawnX;
+          m.y = m.spawnY;
+        }
+        m.stunnedUntil = 0;
+        if (m.socketId === myId && this.engine && this.engine.player && this.engine.player.room === 'playground') {
+          this.engine.player.x = m.spawnX;
+          this.engine.player.y = m.spawnY;
+        }
+      }
+      if (window.AudioManager) {
+        window.AudioManager.playWhistle();
+      }
+    }
   }
 
   onMatchRewards(data) {
     const title = data.isWinner ? '🏆 [3v3 브롤볼 승리 보상]' : '⚽ [3v3 브롤볼 참가 보상]';
     const toast = `${title}\n+${data.expGain} EXP & +${data.goldGain} Gold 획득!`;
-    if (window.MainApp && window.MainApp.showToast) {
-      window.MainApp.showToast(toast, data.isWinner ? 'success' : 'info');
-    }
-    if (this.engine && this.engine.player) {
-      this.engine.player.exp = (this.engine.player.exp || 0) + data.expGain;
-      this.engine.player.gold = (this.engine.player.gold || 0) + data.goldGain;
-      if (window.MainApp && window.MainApp.updateHUD) {
-        window.MainApp.updateHUD();
+    if (window.MainApp) {
+      if (typeof window.MainApp.addExp === 'function' && data.expGain) {
+        window.MainApp.addExp(data.expGain);
+      }
+      if (typeof window.MainApp.addGold === 'function' && data.goldGain) {
+        window.MainApp.addGold(data.goldGain);
+      }
+      if (typeof window.MainApp.showToast === 'function') {
+        window.MainApp.showToast(toast, data.isWinner ? 'success' : 'info');
       }
     }
   }
 
   onMatchEnded(data) {
+    if (this.match) {
+      this.match.status = 'ended';
+    }
     const isDraw = data.winnerTeam === 'draw';
     const winnerText = isDraw ? '무승부!' : (data.winnerTeam === 'blue' ? '🔵 블루팀 최종 승리!' : '🔴 레드팀 최종 승리!');
     this.showGoalBanner(`🏁 경기 종료! ${winnerText}`, `최종 스코어 [블루 ${data.score.blue} : ${data.score.red} 레드]`, 4);
@@ -884,6 +1085,7 @@ class BrawlBallManager {
       this.superGauge = 0;
       this.hasShield = false;
       this.speedBuffUntil = 0;
+      this.stunnedUntil = 0;
     }, 4500);
   }
 
@@ -942,7 +1144,7 @@ class BrawlBallManager {
     if (!this.engine || !this.engine.player) return;
     if (this.engine.player.room !== 'playground') return;
 
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
     const now = Date.now();
 
     // 1. Goal banner timer
@@ -989,7 +1191,8 @@ class BrawlBallManager {
         carrierObj = this.engine.player;
       } else if (this.match) {
         const all = [...this.match.teams.blue, ...this.match.teams.red];
-        carrierObj = all.find(p => p.socketId === this.ball.carrierId);
+        const found = all.find(p => p.socketId === this.ball.carrierId);
+        carrierObj = this.getEntityLiveState(found);
       }
 
       if (carrierObj) {
@@ -1015,8 +1218,11 @@ class BrawlBallManager {
       this.ball.vx *= 0.965;
       this.ball.vy *= 0.965;
 
-      if (Math.abs(this.ball.vx) < 0.05) this.ball.vx = 0;
-      if (Math.abs(this.ball.vy) < 0.05) this.ball.vy = 0;
+      if (Math.abs(this.ball.vx) < 0.08 && Math.abs(this.ball.vy) < 0.08) {
+        this.ball.vx = 0;
+        this.ball.vy = 0;
+        this.ball.isSuper = false;
+      }
 
       // Obstacle bounces & Super shot destruction
       this.checkBallObstacleCollisions();
@@ -1024,49 +1230,62 @@ class BrawlBallManager {
       // Side wall bounces (West: 31*32, East: 55*32)
       if (this.ball.x <= this.court.minX + 12) {
         this.ball.x = this.court.minX + 12;
-        this.ball.vx = -this.ball.vx * 0.8;
+        this.ball.vx = -this.ball.vx * 0.85;
       } else if (this.ball.x >= this.court.maxX - 12) {
         this.ball.x = this.court.maxX - 12;
-        this.ball.vx = -this.ball.vx * 0.8;
+        this.ball.vx = -this.ball.vx * 0.85;
       }
 
       // North Goal Check (Red Team Net: x: 40~46*32, y: 22*32)
       if (this.ball.y <= this.court.northGoalY + 8) {
         if (this.ball.x >= this.court.goalMinX && this.ball.x <= this.court.goalMaxX) {
-          if (this.network && this.match && this.match.status === 'playing') {
-            this.network.notifyBrawlGoal('blue', this.ball.carrierName || '블루팀');
-            this.match.status = 'goal_celebration';
-          }
           this.ball.vy = 0;
           this.ball.vx = 0;
+          if (this.match) {
+            if (this.match.status === 'playing' && this.network) {
+              const scorer = this.ball.carrierName || this.ball.lastTouchName || '블루팀';
+              this.match.status = 'goal_celebration';
+              this.network.notifyBrawlGoal('blue', scorer);
+            }
+          } else {
+            this.triggerPracticeGoal('북쪽 RED');
+          }
         } else {
           this.ball.y = this.court.northGoalY + 8;
-          this.ball.vy = -this.ball.vy * 0.7;
+          this.ball.vy = -this.ball.vy * 0.75;
         }
       }
 
       // South Goal Check (Blue Team Net: x: 40~46*32, y: 48*32)
       if (this.ball.y >= this.court.southGoalY - 8) {
         if (this.ball.x >= this.court.goalMinX && this.ball.x <= this.court.goalMaxX) {
-          if (this.network && this.match && this.match.status === 'playing') {
-            this.network.notifyBrawlGoal('red', this.ball.carrierName || '레드팀');
-            this.match.status = 'goal_celebration';
-          }
           this.ball.vy = 0;
           this.ball.vx = 0;
+          if (this.match) {
+            if (this.match.status === 'playing' && this.network) {
+              const scorer = this.ball.carrierName || this.ball.lastTouchName || '레드팀';
+              this.match.status = 'goal_celebration';
+              this.network.notifyBrawlGoal('red', scorer);
+            }
+          } else {
+            this.triggerPracticeGoal('남쪽 BLUE');
+          }
         } else {
           this.ball.y = this.court.southGoalY - 8;
-          this.ball.vy = -this.ball.vy * 0.7;
+          this.ball.vy = -this.ball.vy * 0.75;
         }
       }
 
       // Ball pickup by local player
-      if (now >= this.ball.pickupCooldown && now >= this.stunnedUntil) {
+      const canPickupMatch = !this.match || this.match.status === 'playing';
+      if (canPickupMatch && now >= this.ball.pickupCooldown && now >= this.stunnedUntil && !this.practiceGoalResetTimer) {
         const dist = Math.hypot(this.engine.player.x - this.ball.x, this.engine.player.y - this.ball.y);
         if (dist < 26) {
           this.ball.carrierId = myId;
-          this.ball.carrierName = this.engine.player.name;
+          this.ball.carrierName = this.engine.player.name || '선수';
           this.ball.carrierTeam = this.myTeam;
+          this.ball.lastTouchName = this.engine.player.name || '선수';
+          this.ball.lastTouchTeam = this.myTeam;
           this.ball.vx = 0;
           this.ball.vy = 0;
           this.ball.isSuper = false;
@@ -1105,6 +1324,22 @@ class BrawlBallManager {
     }
   }
 
+  moveBotWithObstacleAvoidance(bot, moveDx, moveDy) {
+    const nextX = bot.x + moveDx;
+    const nextY = bot.y + moveDy;
+    if (!this.isObstacleBlocked(nextX, bot.y)) {
+      bot.x = nextX;
+    } else {
+      bot.x += (bot.x < this.court.midX ? -2.0 : 2.0);
+    }
+    if (!this.isObstacleBlocked(bot.x, nextY)) {
+      bot.y = nextY;
+    } else {
+      // Steer laterally around goal/midfield crates
+      bot.x += (bot.x < this.court.midX ? -2.2 : 2.2);
+    }
+  }
+
   updateBotAI(dt) {
     if (!this.match || this.match.status !== 'playing') return;
     const allBots = [...this.match.teams.blue, ...this.match.teams.red].filter(p => p.isBot);
@@ -1118,26 +1353,28 @@ class BrawlBallManager {
       const isCarrier = (this.ball.carrierId === bot.socketId);
 
       if (isCarrier) {
+        // Aim through open gap between the two goal crates (43*32 is open between 41*32 and 45*32)
         const targetX = this.court.midX;
         const targetY = targetGoalY;
         const angle = Math.atan2(targetY - bot.y, targetX - bot.x);
-        const speed = 1.6;
-        bot.x += Math.cos(angle) * speed;
-        bot.y += Math.sin(angle) * speed;
+        const speed = 1.65;
+        this.moveBotWithObstacleAvoidance(bot, Math.cos(angle) * speed, Math.sin(angle) * speed);
 
         bot.direction = Math.abs(targetY - bot.y) > Math.abs(targetX - bot.x)
           ? (targetY > bot.y ? 'down' : 'up')
           : (targetX > bot.x ? 'right' : 'left');
 
         const distToGoal = Math.hypot(targetX - bot.x, targetY - bot.y);
-        if (distToGoal < 170) {
+        if (distToGoal < 165) {
           const shootSpeed = 13;
           this.ball.vx = Math.cos(angle) * shootSpeed;
           this.ball.vy = Math.sin(angle) * shootSpeed;
+          this.ball.lastTouchName = bot.name;
+          this.ball.lastTouchTeam = bot.team;
           this.ball.carrierId = null;
           this.ball.carrierName = '';
           this.ball.carrierTeam = null;
-          this.ball.pickupCooldown = now + 400;
+          this.ball.pickupCooldown = now + 450;
 
           if (this.network) {
             this.network.sendBrawlKick({
@@ -1154,14 +1391,15 @@ class BrawlBallManager {
         if (!this.ball.carrierId) {
           const angle = Math.atan2(this.ball.y - bot.y, this.ball.x - bot.x);
           const speed = 1.8;
-          bot.x += Math.cos(angle) * speed;
-          bot.y += Math.sin(angle) * speed;
+          this.moveBotWithObstacleAvoidance(bot, Math.cos(angle) * speed, Math.sin(angle) * speed);
 
           const distToBall = Math.hypot(this.ball.x - bot.x, this.ball.y - bot.y);
           if (distToBall < 24 && now >= this.ball.pickupCooldown) {
             this.ball.carrierId = bot.socketId;
             this.ball.carrierName = bot.name;
             this.ball.carrierTeam = bot.team;
+            this.ball.lastTouchName = bot.name;
+            this.ball.lastTouchTeam = bot.team;
             this.ball.vx = 0;
             this.ball.vy = 0;
           }
@@ -1170,28 +1408,31 @@ class BrawlBallManager {
           if (carrierTeam && carrierTeam !== bot.team) {
             const angle = Math.atan2(this.ball.y - bot.y, this.ball.x - bot.x);
             const speed = 1.7;
-            bot.x += Math.cos(angle) * speed;
-            bot.y += Math.sin(angle) * speed;
+            this.moveBotWithObstacleAvoidance(bot, Math.cos(angle) * speed, Math.sin(angle) * speed);
 
             const dist = Math.hypot(this.ball.x - bot.x, this.ball.y - bot.y);
-            if (dist < 44 && (!bot.tackleCooldown || now >= bot.tackleCooldown)) {
-              bot.tackleCooldown = now + 4000;
-              if (this.network) {
-                this.network.sendBrawlTackleHit({
-                  tacklerId: bot.socketId,
-                  tacklerName: bot.name,
-                  victimId: this.ball.carrierId,
-                  victimName: this.ball.carrierName,
-                  ballX: this.ball.x,
-                  ballY: this.ball.y,
-                  ballVx: (Math.random() - 0.5) * 8,
-                  ballVy: (Math.random() - 0.5) * 8
-                });
+            if (dist < 42 && (!bot.tackleCooldown || now >= bot.tackleCooldown)) {
+              bot.tackleCooldown = now + 4200;
+              const hitPayload = {
+                tacklerId: bot.socketId,
+                tacklerName: bot.name,
+                victimId: this.ball.carrierId,
+                victimName: this.ball.carrierName,
+                ballX: this.ball.x,
+                ballY: this.ball.y,
+                ballVx: (Math.random() - 0.5) * 8,
+                ballVy: (Math.random() - 0.5) * 8
+              };
+              if (this.network && this.network.socket && this.network.socket.connected) {
+                this.network.sendBrawlTackleHit(hitPayload);
+              } else {
+                this.onTackleHit(hitPayload);
               }
             }
           } else {
             const forwardY = isBlue ? (bot.y - 1.2) : (bot.y + 1.2);
-            bot.y = Math.max(this.court.minY + 32, Math.min(this.court.maxY - 32, forwardY));
+            const clampedY = Math.max(this.court.minY + 32, Math.min(this.court.maxY - 32, forwardY));
+            this.moveBotWithObstacleAvoidance(bot, 0, clampedY - bot.y);
           }
         }
       }
@@ -1463,10 +1704,18 @@ class BrawlBallManager {
       ctx.fill();
     }
 
-    // 7. Render Stun Stars
+    // 7. Render Stun Stars on local player & other human players
     const now = Date.now();
     if (now < this.stunnedUntil) {
       this.drawStunStars(ctx, this.engine.player.x, this.engine.player.y - 28);
+    }
+    if (this.engine.otherPlayers) {
+      for (const id in this.engine.otherPlayers) {
+        const op = this.engine.otherPlayers[id];
+        if (op && op.room === 'playground' && op.stunnedUntil && now < op.stunnedUntil) {
+          this.drawStunStars(ctx, op.x, op.y - 28);
+        }
+      }
     }
 
     // 8. Render Floating Texts
@@ -1480,78 +1729,90 @@ class BrawlBallManager {
       ctx.fillText(ft.text, ft.x, ft.y);
     }
 
-    // 9. Big Goal Announcement Banner
-    if (this.goalBanner.timer > 0) {
-      this.renderGoalBanner(ctx);
-    }
-
     ctx.restore();
   }
 
-  // Trajectory Dashed Aiming Line (Feature 2)
+  // 2-Segment Raycast Trajectory Dashed Aiming Line (Feature 2)
   renderAimingTrajectory(ctx) {
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
     if (this.ball.carrierId !== myId) return;
 
     const p = this.engine.player;
-    const dir = p.direction || 'up';
-    let dx = 0, dy = 0;
-    if (dir === 'up') dy = -1;
-    else if (dir === 'down') dy = 1;
-    else if (dir === 'left') dx = -1;
-    else if (dir === 'right') dx = 1;
+    const vec = this.getShotDirectionVector();
+    let dx = vec.dx;
+    let dy = vec.dy;
 
     ctx.save();
     ctx.setLineDash([8, 6]);
     ctx.lineWidth = 3;
     const isSuperReady = (this.superGauge >= 100);
-    ctx.strokeStyle = isSuperReady ? 'rgba(249, 115, 22, 0.85)' : 'rgba(56, 189, 248, 0.8)';
+    ctx.strokeStyle = isSuperReady ? 'rgba(249, 115, 22, 0.88)' : 'rgba(56, 189, 248, 0.85)';
     ctx.shadowColor = ctx.strokeStyle;
     ctx.shadowBlur = 8;
 
-    let startX = p.x;
-    let startY = p.y;
-    let endX = startX + dx * 190;
-    let endY = startY + dy * 190;
+    const startX = p.x;
+    const startY = p.y;
+    const now = Date.now();
+    const totalDist = isSuperReady ? 230 : 195;
+    const stepSize = 4;
+    const maxSteps = Math.floor(totalDist / stepSize);
 
-    // Check bounce against side borders (x: 31*32 or 55*32)
-    let hasBounce = false;
-    let bounceX = endX, bounceY = endY;
-    let reflectDx = dx, reflectDy = dy;
+    let curX = startX;
+    let curY = startY;
+    let bouncePoint = null;
 
-    if (endX <= this.court.minX + 12) {
-      hasBounce = true;
-      bounceX = this.court.minX + 12;
-      bounceY = startY + dy * Math.abs(bounceX - startX);
-      reflectDx = -dx;
-    } else if (endX >= this.court.maxX - 12) {
-      hasBounce = true;
-      bounceX = this.court.maxX - 12;
-      bounceY = startY + dy * Math.abs(bounceX - startX);
-      reflectDx = -dx;
+    for (let s = 0; s < maxSteps; s++) {
+      const nextX = curX + dx * stepSize;
+      const nextY = curY + dy * stepSize;
+
+      // Check side walls
+      if (!bouncePoint && (nextX <= this.court.minX + 12 || nextX >= this.court.maxX - 12)) {
+        bouncePoint = { x: nextX, y: nextY };
+        dx = -dx;
+        curX = nextX;
+        curY = nextY;
+        continue;
+      }
+
+      // Check obstacle crate bounce (only when not Super, since Super breaks crates!)
+      if (!bouncePoint && !isSuperReady) {
+        let hitObs = null;
+        for (const obs of this.obstacles) {
+          if (obs.brokenUntil && now < obs.brokenUntil) continue;
+          if (nextX >= obs.x - 8 && nextX <= obs.x + obs.w + 8 && nextY >= obs.y - 8 && nextY <= obs.y + obs.h + 8) {
+            hitObs = obs;
+            break;
+          }
+        }
+        if (hitObs) {
+          bouncePoint = { x: curX, y: curY };
+          const cx = hitObs.x + hitObs.w / 2;
+          const cy = hitObs.y + hitObs.h / 2;
+          if (Math.abs(curX - cx) > Math.abs(curY - cy)) {
+            dx = -dx;
+          } else {
+            dy = -dy;
+          }
+          continue;
+        }
+      }
+
+      curX = nextX;
+      curY = nextY;
     }
 
     ctx.beginPath();
-    if (hasBounce) {
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(bounceX, bounceY);
-      ctx.lineTo(bounceX + reflectDx * 80, bounceY + reflectDy * 80);
-      ctx.stroke();
-
-      // Target circle
-      ctx.beginPath();
-      ctx.arc(bounceX + reflectDx * 80, bounceY + reflectDy * 80, 8, 0, Math.PI * 2);
-      ctx.stroke();
-    } else {
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
-
-      // Target circle
-      ctx.beginPath();
-      ctx.arc(endX, endY, 8, 0, Math.PI * 2);
-      ctx.stroke();
+    ctx.moveTo(startX, startY);
+    if (bouncePoint) {
+      ctx.lineTo(bouncePoint.x, bouncePoint.y);
     }
+    ctx.lineTo(curX, curY);
+    ctx.stroke();
+
+    // Target circle at end of trajectory
+    ctx.beginPath();
+    ctx.arc(curX, curY, 8, 0, Math.PI * 2);
+    ctx.stroke();
 
     ctx.restore();
   }
@@ -1612,17 +1873,24 @@ class BrawlBallManager {
       ctx.restore();
     }
 
-    // Speed Wind Trail
+    // Speed Wind Trail (computed from p.direction so coordinates are never NaN)
     if (now < this.speedBuffUntil) {
       ctx.save();
       ctx.strokeStyle = '#4ade80';
       ctx.lineWidth = 2;
+      const dir = p.direction || 'down';
+      let trailX = 0, trailY = 0;
+      if (dir === 'up') trailY = 14;
+      else if (dir === 'down') trailY = -14;
+      else if (dir === 'left') trailX = 14;
+      else if (dir === 'right') trailX = -14;
+
       for (let i = 0; i < 3; i++) {
         ctx.beginPath();
         const ox = (Math.random() - 0.5) * 16;
         const oy = (Math.random() - 0.5) * 16;
         ctx.moveTo(p.x + ox, p.y + oy);
-        ctx.lineTo(p.x + ox - p.vx * 3, p.y + oy - p.vy * 3);
+        ctx.lineTo(p.x + ox + trailX, p.y + oy + trailY);
         ctx.stroke();
       }
       ctx.restore();
@@ -1734,47 +2002,55 @@ class BrawlBallManager {
   }
 
   renderGoalBanner(ctx) {
-    const canvasW = ctx.canvas.width;
+    const screenW = (this.engine && this.engine.width) ? this.engine.width : 860;
     const bannerH = 90;
     const bannerY = 120;
 
     ctx.save();
     ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
-    ctx.fillRect(0, bannerY, canvasW, bannerH);
+    ctx.fillRect(0, bannerY, screenW, bannerH);
 
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(0, bannerY);
-    ctx.lineTo(canvasW, bannerY);
+    ctx.lineTo(screenW, bannerY);
     ctx.moveTo(0, bannerY + bannerH);
-    ctx.lineTo(canvasW, bannerY + bannerH);
+    ctx.lineTo(screenW, bannerY + bannerH);
     ctx.stroke();
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fde047';
-    ctx.font = '900 28px "Pretendard", sans-serif';
-    ctx.fillText(this.goalBanner.text, canvasW / 2, bannerY + 38);
+    ctx.font = '900 26px "Pretendard", sans-serif';
+    ctx.fillText(this.goalBanner.text, screenW / 2, bannerY + 38);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '600 15px "Pretendard", sans-serif';
-    ctx.fillText(this.goalBanner.subtext, canvasW / 2, bannerY + 70);
+    ctx.font = '600 14.5px "Pretendard", sans-serif';
+    ctx.fillText(this.goalBanner.subtext, screenW / 2, bannerY + 68);
 
     ctx.restore();
   }
 
-  // Scoreboard HUD at top of screen (with Super Gauge Bar & Buff Icons)
+  // Scoreboard HUD at top of screen (with Super Gauge Bar, Buff Icons & Screen-Space Goal Banner)
   renderHUD(ctx) {
     if (!this.engine || !this.engine.player) return;
     const p = this.engine.player;
-    if (p.room !== 'playground' || !this.isPlayerInCourt(p.x, p.y)) return;
+    if (p.room !== 'playground') return;
+
+    // Always render goal/announcement banner in screen-space if active on playground
+    if (this.goalBanner.timer > 0) {
+      this.renderGoalBanner(ctx);
+    }
+
+    if (!this.isPlayerInCourt(p.x, p.y)) return;
 
     ctx.save();
 
+    const screenW = this.engine.width || 860;
     const hudW = 490;
-    const hudH = 58;
-    const hudX = (ctx.canvas.width - hudW) / 2;
-    const hudY = 14;
+    const hudH = 66;
+    const hudX = (screenW - hudW) / 2;
+    const hudY = 12;
 
     // Dark container
     ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
@@ -1796,25 +2072,33 @@ class BrawlBallManager {
     ctx.fillStyle = '#60a5fa';
     ctx.font = '900 16px "Pretendard", sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(`🔵 블루 ${score.blue}`, hudX + 16, hudY + 26);
+    ctx.fillText(`🔵 블루 ${score.blue}`, hudX + 16, hudY + 24);
 
     // Timer
     ctx.fillStyle = '#fde047';
     ctx.font = '900 16px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`⏱️ ${timeStr}`, hudX + hudW / 2, hudY + 26);
+    ctx.fillText(`⏱️ ${timeStr}`, hudX + hudW / 2, hudY + 24);
 
     // Red Team Score
     ctx.fillStyle = '#f87171';
     ctx.font = '900 16px "Pretendard", sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(`${score.red} 레드 🔴`, hudX + hudW - 16, hudY + 26);
+    ctx.fillText(`${score.red} 레드 🔴`, hudX + hudW - 16, hudY + 24);
 
     // Super Gauge Progress Bar (Feature 1)
-    const gaugeW = 140;
+    const gaugeW = 150;
     const gaugeH = 10;
     const gaugeX = hudX + (hudW - gaugeW) / 2;
-    const gaugeY = hudY + 38;
+    const gaugeY = hudY + 46;
+
+    // Super Label (above progress bar with clean vertical clearance)
+    ctx.font = '800 10.5px "Pretendard", sans-serif';
+    ctx.textAlign = 'center';
+    const isSuperReady = (this.superGauge >= 100);
+    ctx.fillStyle = isSuperReady ? '#fde047' : '#94a3b8';
+    const superText = isSuperReady ? '⚡ SUPER READY! (Q키)' : `⚡ 궁극기 ${Math.floor(this.superGauge)}%`;
+    ctx.fillText(superText, gaugeX + gaugeW / 2, gaugeY - 4);
 
     ctx.fillStyle = '#334155';
     ctx.beginPath();
@@ -1831,14 +2115,6 @@ class BrawlBallManager {
       ctx.roundRect(gaugeX, gaugeY, fillW, gaugeH, 5);
       ctx.fill();
     }
-
-    // Super Label
-    ctx.font = '800 10.5px "Pretendard", sans-serif';
-    ctx.textAlign = 'center';
-    const isSuperReady = (this.superGauge >= 100);
-    ctx.fillStyle = isSuperReady ? '#fde047' : '#94a3b8';
-    const superText = isSuperReady ? '⚡ SUPER READY! (Q키)' : `⚡ 궁극기 ${Math.floor(this.superGauge)}%`;
-    ctx.fillText(superText, gaugeX + gaugeW / 2, gaugeY - 2);
 
     // Active Buffs Indicators (Feature 5)
     const now = Date.now();
@@ -1857,12 +2133,15 @@ class BrawlBallManager {
     ctx.textAlign = 'center';
     ctx.fillStyle = canTackle ? '#4ade80' : '#f59e0b';
 
-    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
     const isCarrier = (this.ball.carrierId === myId);
-    const carrierPrompt = isCarrier ? ' | ⚽ A키: 강슛' : '';
-    const teamText = this.myTeam ? (this.myTeam === 'blue' ? '🔵 내 팀: 블루' : '🔴 내 팀: 레드') : '👀 관전 중';
+    const carrierPrompt = isCarrier ? ' | ⚽ A키: 슛 / Q키: 필살슛' : '';
+    let teamText = '⚽ 자유 연습 중 (코치에게 3v3 신청)';
+    if (this.match) {
+      teamText = this.myTeam ? (this.myTeam === 'blue' ? '🔵 내 팀: 블루' : '🔴 내 팀: 레드') : '👀 관전 중';
+    }
 
-    ctx.fillText(`${teamText} | ⚡ B키 태클 [${tackleRemaining}]${carrierPrompt}${buffStr ? ` | ${buffStr}` : ''}`, hudX + hudW / 2, hudY + hudH + 16);
+    ctx.fillText(`${teamText} | ⚡ B키 태클 [${tackleRemaining}]${carrierPrompt}${buffStr ? ` | ${buffStr}` : ''}`, hudX + hudW / 2, hudY + hudH + 15);
 
     ctx.restore();
   }

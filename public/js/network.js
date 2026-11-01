@@ -590,9 +590,9 @@ class NetworkManager {
     }
   }
 
-  startBrawlTest() {
+  startBrawlTest(userData = {}) {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('brawl_queue_start_test');
+      this.socket.emit('brawl_queue_start_test', userData);
     }
   }
 

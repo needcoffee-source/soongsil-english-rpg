@@ -377,7 +377,7 @@ class GameEngine {
     if (tileY < 1) return true;
 
     if (this.player.room === 'playground') {
-      if (window.BrawlBall && window.BrawlBall.isObstacleBlocked(x, y)) return true;
+      if (window.BrawlBall && window.BrawlBall.isObstacleBlocked(x, y) && !window.BrawlBall.isObstacleBlocked(this.player.x, this.player.y)) return true;
       if (tileY >= curMapHeight - 1) return true; // bottom fence
       if (tileY <= 2) {
         // Top boundary: Elevator area (x: 78~82, y: 3) and Cafeteria door (x: 84~88, y: 3) are passable

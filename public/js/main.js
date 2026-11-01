@@ -348,7 +348,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교화 장신구',
     tierColor: '#ca8a04',
     effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
-    source: '장비 제작대(C)에서 제작 (개나리 꽃잎 20개 + 30G)',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작 (개나리 꽃잎 20개 + 30G)',
     recipe: '노란 개나리 꽃잎 20개 + 30G'
   },
   {
@@ -359,7 +359,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교목 장신구',
     tierColor: '#d97706',
     effect: '공격력 +20, 방어력 +12, 체력 +40 증가',
-    source: '장비 제작대(C)에서 제작 (황금 은행잎 10개 + 50G)',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작 (황금 은행잎 10개 + 50G)',
     recipe: '황금 은행잎 10개 + 50G'
   },
   {
@@ -759,7 +759,7 @@ const TITLE_DEFINITIONS = [
   { id: 'title_job_scout', name: '🎨 영감을 주는 디자이너', desc: '5층 진로 방탈출을 통과하고 디자이너로 전직한 시각 예술가!', costType: 'quest', costAmount: 0 },
   { id: 'title_job_guardian', name: '🤝 마음을 보듬는 멘토', desc: '5층 진로 방탈출을 통과하고 상담 멘토로 전직한 교육 상담가!', costType: 'quest', costAmount: 0 },
   {
-
+    id: 'title_drummer',
     name: '🥁 영혼의 드러머',
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
@@ -5771,9 +5771,9 @@ class MainApp {
 
         let rewardItemName = '';
         let rewardItemIcon = '🎁';
-        if (rewardItemKey !== 'none' && ITEM_DEFINITIONS[rewardItemKey]) {
-          rewardItemName = ITEM_DEFINITIONS[rewardItemKey].name;
-          rewardItemIcon = ITEM_DEFINITIONS[rewardItemKey].icon || '🎁';
+        if (rewardItemKey !== 'none' && ALL_GAME_ITEMS[rewardItemKey]) {
+          rewardItemName = ALL_GAME_ITEMS[rewardItemKey].name;
+          rewardItemIcon = ALL_GAME_ITEMS[rewardItemKey].icon || '🎁';
         }
 
         const quizData = {
@@ -7466,14 +7466,24 @@ class MainApp {
     grid.innerHTML = '';
 
     const db = window.ITEM_CODEX_DATABASE || [];
-    const inv = (this.playerData && this.playerData.inventory) ? this.playerData.inventory : {};
+    const inv = (this.playerData && this.playerData.inventory) ? this.playerData.inventory : [];
     const equip = (this.playerData && this.playerData.equipment) ? this.playerData.equipment : {};
+
+    const checkInInv = (itemId) => {
+      if (Array.isArray(inv)) {
+        return inv.some(i => i && (i.item === itemId || i.id === itemId) && i.count > 0);
+      }
+      return !!(inv[itemId] && inv[itemId].count > 0);
+    };
+    const checkIsEquipped = (itemId) => {
+      return Object.values(equip).some(eq => eq && (eq.item === itemId || eq.id === itemId));
+    };
 
     // Count collected items
     let collectedCount = 0;
     db.forEach(item => {
-      const inInv = inv[item.id] && inv[item.id].count > 0;
-      const isEquipped = Object.values(equip).some(eq => eq && eq.id === item.id);
+      const inInv = checkInInv(item.id);
+      const isEquipped = checkIsEquipped(item.id);
       if (inInv || isEquipped) collectedCount++;
     });
 
@@ -7490,8 +7500,8 @@ class MainApp {
     const filtered = (tab === 'all') ? db : db.filter(item => item.category === tab);
 
     filtered.forEach(item => {
-      const inInv = inv[item.id] && inv[item.id].count > 0;
-      const isEquipped = Object.values(equip).some(eq => eq && eq.id === item.id);
+      const inInv = checkInInv(item.id);
+      const isEquipped = checkIsEquipped(item.id);
       const isOwned = inInv || isEquipped;
 
       const card = document.createElement('div');

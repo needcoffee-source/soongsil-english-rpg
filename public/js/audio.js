@@ -522,6 +522,14 @@ class AudioManager {
     } catch (e) {}
   }
 
+  playCollect() {
+    this.playPowerup();
+  }
+
+  playDeny() {
+    this.playWrong();
+  }
+
   playTackleHit() {
     if (this.muted) return;
     this.init();
