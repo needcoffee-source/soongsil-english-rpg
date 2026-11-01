@@ -394,19 +394,63 @@ class BrawlBallManager {
     if (!member) return null;
     if (member.isBot) return member;
     const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
-    if (member.socketId === myId && this.engine && this.engine.player) {
+    const myStudentId = (this.engine && this.engine.player) ? this.engine.player.studentId : null;
+    if (
+      this.engine &&
+      this.engine.player &&
+      ((myId && member.socketId === myId) || (myStudentId && member.studentId === myStudentId))
+    ) {
       member.x = this.engine.player.x;
       member.y = this.engine.player.y;
       member.direction = this.engine.player.direction;
       return member;
     }
-    if (this.engine && this.engine.otherPlayers && this.engine.otherPlayers[member.socketId]) {
-      const liveOther = this.engine.otherPlayers[member.socketId];
-      member.x = liveOther.x;
-      member.y = liveOther.y;
-      member.direction = liveOther.direction;
+    if (this.engine && this.engine.otherPlayers) {
+      let liveOther = this.engine.otherPlayers[member.socketId];
+      if (!liveOther && member.studentId) {
+        liveOther = Object.values(this.engine.otherPlayers).find(op => op && op.studentId === member.studentId);
+      }
+      if (liveOther) {
+        member.x = liveOther.x;
+        member.y = liveOther.y;
+        member.direction = liveOther.direction;
+      }
     }
     return member;
+  }
+
+  // Exact visual center & feet coordinates matching engine.renderPlayer (px + 12, py + 29) vs renderBot (bx, by + 14)
+  getEntityVisualPos(entity) {
+    if (!entity) return { cx: 0, cy: 0, feetY: 0, headY: 0 };
+    if (entity.isBot) {
+      return {
+        cx: entity.x,
+        cy: entity.y,
+        feetY: entity.y + 14,
+        headY: entity.y - 26
+      };
+    }
+    return {
+      cx: entity.x + 12,
+      cy: entity.y + 15,
+      feetY: entity.y + 29,
+      headY: entity.y - 18
+    };
+  }
+
+  getPlayerTeam(p, isLocal = false) {
+    if (!this.match || !this.match.teams || !p) return null;
+    if (isLocal && this.myTeam) return this.myTeam;
+    const pid = p.socketId || p.id || ((isLocal && this.network && this.network.socket) ? this.network.socket.id : null);
+    if (pid) {
+      if ((this.match.teams.blue || []).some(m => m.socketId === pid)) return 'blue';
+      if ((this.match.teams.red || []).some(m => m.socketId === pid)) return 'red';
+    }
+    if (p.studentId) {
+      if ((this.match.teams.blue || []).some(m => m.studentId && m.studentId === p.studentId)) return 'blue';
+      if ((this.match.teams.red || []).some(m => m.studentId && m.studentId === p.studentId)) return 'red';
+    }
+    return null;
   }
 
   // ========================================================
@@ -422,7 +466,7 @@ class BrawlBallManager {
         window.AudioManager.playSuperReady();
       }
       if (this.engine && this.engine.player) {
-        this.addFloatingText('⚡ SUPER READY!! (Q키)', this.engine.player.x, this.engine.player.y - 28, '#fde047');
+        this.addFloatingText('⚡ SUPER READY!! (Q키)', this.engine.player.x + 12, this.engine.player.y - 28, '#fde047');
       }
     }
   }
@@ -475,7 +519,7 @@ class BrawlBallManager {
         window.AudioManager.playSuperShot();
       }
 
-      this.addFloatingText('🔥 HYPER SUPER SHOT!!', p.x, p.y - 24, '#f97316');
+      this.addFloatingText('🔥 HYPER SUPER SHOT!!', p.x + 12, p.y - 24, '#f97316');
       this.createSuperFireParticles(this.ball.x, this.ball.y);
 
       if (this.network) {
@@ -500,18 +544,22 @@ class BrawlBallManager {
       else if (dir === 'right') dx = dashDist;
 
       this.safeDashMove(p, dx, dy);
+      if (this.network && typeof this.network.sendMove === 'function') {
+        this.network.sendMove(Math.round(p.x), Math.round(p.y), p.direction);
+      }
 
       if (window.AudioManager) {
         window.AudioManager.playTackleHit();
       }
 
-      this.addFloatingText('⚡ MEGA BODY-CHECK!!', p.x, p.y - 24, '#eab308');
+      const pos = this.getEntityVisualPos(p);
+      this.addFloatingText('⚡ MEGA BODY-CHECK!!', pos.cx, p.y - 24, '#eab308');
 
       // Golden shockwave particles
       for (let i = 0; i < 20; i++) {
         this.particles.push({
-          x: p.x,
-          y: p.y,
+          x: pos.cx,
+          y: pos.cy,
           vx: (Math.random() - 0.5) * 8,
           vy: (Math.random() - 0.5) * 8,
           color: '#fde047',
@@ -522,14 +570,14 @@ class BrawlBallManager {
       }
 
       // Knock back & stun all nearby enemies in 72px radius
-      this.executeMegaTackleHits(p.x, p.y);
+      this.executeMegaTackleHits(pos.cx, pos.cy);
 
       if (this.network) {
         this.network.sendBrawlMegaTackle({
           tacklerId: myId,
           tacklerName: p.name,
-          x: p.x,
-          y: p.y,
+          x: pos.cx,
+          y: pos.cy,
           team: this.myTeam
         });
       }
@@ -546,17 +594,18 @@ class BrawlBallManager {
     for (const rawEnemy of enemies) {
       const enemy = this.getEntityLiveState(rawEnemy);
       if (!enemy) continue;
-      const dist = Math.hypot(enemy.x - tx, enemy.y - ty);
+      const ePos = this.getEntityVisualPos(enemy);
+      const dist = Math.hypot(ePos.cx - tx, ePos.cy - ty);
       if (dist < 72) {
         const hitPayload = {
           tacklerId: (this.network && this.network.socket) ? this.network.socket.id : 'me',
           tacklerName: this.engine.player.name,
           victimId: enemy.socketId,
           victimName: enemy.name,
-          ballX: enemy.x,
-          ballY: enemy.y,
-          ballVx: (enemy.x - tx) * 0.25,
-          ballVy: (enemy.y - ty) * 0.25
+          ballX: ePos.cx,
+          ballY: ePos.cy,
+          ballVx: (ePos.cx - tx) * 0.25,
+          ballVy: (ePos.cy - ty) * 0.25
         };
         if (this.network && this.network.socket && this.network.socket.connected) {
           this.network.sendBrawlTackleHit(hitPayload);
@@ -776,22 +825,23 @@ class BrawlBallManager {
     if (!this.engine || !this.engine.player) return;
     const p = this.engine.player;
     if (!this.isInsideCourtBox(p.x, p.y)) return;
+    const pos = this.getEntityVisualPos(p);
 
     for (let i = this.powerups.length - 1; i >= 0; i--) {
       const pw = this.powerups[i];
-      const dist = Math.hypot(p.x - pw.x, p.y - pw.y);
+      const dist = Math.hypot(pos.cx - pw.x, pos.cy - pw.y);
 
-      if (dist < 26) {
+      if (dist < 28) {
         // Collect!
         this.powerups.splice(i, 1);
         this.addSuperGauge(25); // +25% Super charge on drink pickup!
 
         if (pw.type === 'speed') {
           this.speedBuffUntil = now + 6000; // 6s speed boost
-          this.addFloatingText('⚡ 신속 버프 획득 (+35% 속도)!', p.x, p.y - 20, '#4ade80');
+          this.addFloatingText('⚡ 신속 버프 획득 (+35% 속도)!', pos.cx, p.y - 20, '#4ade80');
         } else {
           this.hasShield = true;
-          this.addFloatingText('🛡️ 무적 실드 획득 (태클 1회 반사)!', p.x, p.y - 20, '#38bdf8');
+          this.addFloatingText('🛡️ 무적 실드 획득 (태클 1회 반사)!', pos.cx, p.y - 20, '#38bdf8');
         }
 
         if (window.AudioManager) {
@@ -853,11 +903,15 @@ class BrawlBallManager {
     else if (dir === 'right') dx = 48;
 
     this.safeDashMove(p, dx, dy);
+    if (this.network && typeof this.network.sendMove === 'function') {
+      this.network.sendMove(Math.round(p.x), Math.round(p.y), p.direction);
+    }
 
+    const pos = this.getEntityVisualPos(p);
     if (this.network) {
       this.network.sendBrawlTackle({
-        x: p.x,
-        y: p.y,
+        x: pos.cx,
+        y: pos.cy,
         dir,
         tacklerId: this.network.socket ? this.network.socket.id : 'me',
         tacklerName: p.name,
@@ -865,7 +919,7 @@ class BrawlBallManager {
       });
     }
 
-    this.checkTackleCollision(p.x, p.y);
+    this.checkTackleCollision(pos.cx, pos.cy);
   }
 
   checkTackleCollision(tacklerX, tacklerY) {
@@ -879,23 +933,24 @@ class BrawlBallManager {
       if (!enemy) continue;
       if (enemy.stunImmuneUntil && now < enemy.stunImmuneUntil) continue;
 
-      const dist = Math.hypot(enemy.x - tacklerX, enemy.y - tacklerY);
+      const ePos = this.getEntityVisualPos(enemy);
+      const dist = Math.hypot(ePos.cx - tacklerX, ePos.cy - tacklerY);
       if (dist < 52) {
         // Successful tackle! Charges 35% Super Gauge
         this.addSuperGauge(35);
 
-        let scatterVx = (enemy.x - tacklerX) * 0.15;
-        let scatterVy = (enemy.y - tacklerY) * 0.15;
-        if (Math.abs(scatterVx) < 2) scatterVx = (enemy.x >= tacklerX ? 4 : -4);
-        if (Math.abs(scatterVy) < 2) scatterVy = (enemy.y >= tacklerY ? 4 : -4);
+        let scatterVx = (ePos.cx - tacklerX) * 0.15;
+        let scatterVy = (ePos.cy - tacklerY) * 0.15;
+        if (Math.abs(scatterVx) < 2) scatterVx = (ePos.cx >= tacklerX ? 4 : -4);
+        if (Math.abs(scatterVy) < 2) scatterVy = (ePos.cy >= tacklerY ? 4 : -4);
 
         const hitPayload = {
           tacklerId: (this.network && this.network.socket) ? this.network.socket.id : 'me',
           tacklerName: this.engine.player.name,
           victimId: enemy.socketId,
           victimName: enemy.name,
-          ballX: enemy.x,
-          ballY: enemy.y,
+          ballX: ePos.cx,
+          ballY: ePos.cy,
           ballVx: scatterVx,
           ballVy: scatterVy
         };
@@ -923,14 +978,14 @@ class BrawlBallManager {
       // 🛡️ Check if local player has Shield! (Feature 5)
       if (this.hasShield) {
         this.hasShield = false; // Shield pops!
-        this.addFloatingText('🛡️ SHIELD DEFLECT!! 상대 태클 반사!', this.engine.player.x, this.engine.player.y - 20, '#38bdf8');
+        this.addFloatingText('🛡️ SHIELD DEFLECT!! 상대 태클 반사!', this.engine.player.x + 12, this.engine.player.y - 20, '#38bdf8');
         return; // Deflected! No stun, doesn't drop ball
       }
       if (now < this.stunImmuneUntil) return;
 
       this.stunnedUntil = now + 1200; // 1.2s stun
       this.stunImmuneUntil = now + 2700; // 1.5s post-stun immunity
-      this.addFloatingText('💫 기절 (1.2초)!', this.engine.player.x, this.engine.player.y - 20, '#ef4444');
+      this.addFloatingText('💫 기절 (1.2초)!', this.engine.player.x + 12, this.engine.player.y - 20, '#ef4444');
     }
 
     // 2. Apply stun & slight knockback to victim in match.teams (AI bots & other players)
@@ -1286,19 +1341,20 @@ class BrawlBallManager {
       }
 
       if (carrierObj) {
+        const pos = this.getEntityVisualPos(carrierObj);
         const dir = carrierObj.direction || 'down';
         if (dir === 'up') {
-          this.ball.x = carrierObj.x;
-          this.ball.y = carrierObj.y - 18;
+          this.ball.x = pos.cx;
+          this.ball.y = pos.cy - 18;
         } else if (dir === 'down') {
-          this.ball.x = carrierObj.x;
-          this.ball.y = carrierObj.y + 20;
+          this.ball.x = pos.cx;
+          this.ball.y = pos.feetY + 6;
         } else if (dir === 'left') {
-          this.ball.x = carrierObj.x - 18;
-          this.ball.y = carrierObj.y;
+          this.ball.x = pos.cx - 18;
+          this.ball.y = pos.feetY - 4;
         } else if (dir === 'right') {
-          this.ball.x = carrierObj.x + 18;
-          this.ball.y = carrierObj.y;
+          this.ball.x = pos.cx + 18;
+          this.ball.y = pos.feetY - 4;
         }
       }
     } else {
@@ -1361,8 +1417,9 @@ class BrawlBallManager {
       // Ball pickup by local player
       const canPickupMatch = this.match && this.match.status === 'playing' && (!this.kickoffUntil || now >= this.kickoffUntil);
       if (canPickupMatch && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y) && now >= this.ball.pickupCooldown && now >= this.stunnedUntil) {
-        const dist = Math.hypot(this.engine.player.x - this.ball.x, this.engine.player.y - this.ball.y);
-        if (dist < 26) {
+        const pPos = this.getEntityVisualPos(this.engine.player);
+        const dist = Math.hypot(pPos.cx - this.ball.x, pPos.cy - this.ball.y);
+        if (dist < 28) {
           this.ball.carrierId = myId;
           this.ball.carrierName = this.engine.player.name || '선수';
           this.ball.carrierTeam = this.myTeam;
@@ -1827,13 +1884,15 @@ class BrawlBallManager {
     // 7. Render Stun Stars on local player & other human players
     const now = Date.now();
     if (now < this.stunnedUntil) {
-      this.drawStunStars(ctx, this.engine.player.x, this.engine.player.y - 28);
+      const myPos = this.getEntityVisualPos(this.engine.player);
+      this.drawStunStars(ctx, myPos.cx, myPos.headY);
     }
     if (this.engine.otherPlayers) {
       for (const id in this.engine.otherPlayers) {
         const op = this.engine.otherPlayers[id];
         if (op && op.room === 'playground' && op.stunnedUntil && now < op.stunnedUntil) {
-          this.drawStunStars(ctx, op.x, op.y - 28);
+          const opPos = this.getEntityVisualPos(op);
+          this.drawStunStars(ctx, opPos.cx, opPos.headY);
         }
       }
     }
@@ -1856,6 +1915,7 @@ class BrawlBallManager {
   renderTeamRings(ctx) {
     if (!this.match || !this.match.teams) return;
     const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
+    const myStudentId = (this.engine && this.engine.player) ? this.engine.player.studentId : null;
     const pulse = 1 + Math.sin(Date.now() * 0.008) * 0.08;
     const allMembers = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])];
 
@@ -1864,45 +1924,33 @@ class BrawlBallManager {
       if (!live || live.x === undefined || live.y === undefined) continue;
 
       const isBlue = (member.team === 'blue');
-      const isMe = (member.socketId === myId);
-      const rx = live.x;
-      const ry = live.y + 14;
+      const isMe = (member.socketId === myId) || !!(myStudentId && member.studentId === myStudentId);
+      const pos = this.getEntityVisualPos(live);
+      const rx = pos.cx;
+      const ry = pos.feetY;
 
       ctx.save();
 
       // Highlight outer ring for local player
       if (isMe) {
         ctx.strokeStyle = '#fde047';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.2;
         ctx.beginPath();
-        ctx.ellipse(rx, ry, 21 * pulse, 9 * pulse, 0, 0, Math.PI * 2);
+        ctx.ellipse(rx, ry, 22 * pulse, 8.5 * pulse, 0, 0, Math.PI * 2);
         ctx.stroke();
       }
 
-      // Glowing Team Floor Ring (Blue vs Red)
-      ctx.fillStyle = isBlue ? 'rgba(37, 99, 235, 0.34)' : 'rgba(220, 38, 38, 0.34)';
+      // Glowing Team Floor Ring (Blue vs Red) locked to character's exact ground shadow
+      ctx.fillStyle = isBlue ? 'rgba(37, 99, 235, 0.38)' : 'rgba(220, 38, 38, 0.38)';
       ctx.strokeStyle = isBlue ? '#60a5fa' : '#f87171';
-      ctx.lineWidth = 2.8;
+      ctx.lineWidth = 3;
       ctx.shadowColor = isBlue ? '#3b82f6' : '#ef4444';
       ctx.shadowBlur = 8;
       ctx.beginPath();
-      ctx.ellipse(rx, ry, 16, 6.5, 0, 0, Math.PI * 2);
+      ctx.ellipse(rx, ry, 17, 6.5, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
-
-      // Team Badge above human players (since human players wear custom school uniforms)
-      if (!member.isBot && this.engine && this.engine.drawSharpLabel) {
-        const badgeText = isBlue ? '🔵 BLUE' : '🔴 RED';
-        this.engine.drawSharpLabel(rx, live.y - 42, badgeText, {
-          bgColor: isBlue ? 'rgba(30, 58, 138, 0.92)' : 'rgba(153, 27, 27, 0.92)',
-          borderColor: isBlue ? '#60a5fa' : '#f87171',
-          textColor: '#ffffff',
-          fontSize: 9.5,
-          height: 16,
-          paddingX: 5
-        });
-      }
 
       ctx.restore();
     }
@@ -1914,6 +1962,7 @@ class BrawlBallManager {
     if (this.ball.carrierId !== myId) return;
 
     const p = this.engine.player;
+    const pPos = this.getEntityVisualPos(p);
     const vec = this.getShotDirectionVector();
     let dx = vec.dx;
     let dy = vec.dy;
@@ -1923,8 +1972,8 @@ class BrawlBallManager {
     const mainColor = isSuperReady ? '#f97316' : '#38bdf8';
     const glowColor = isSuperReady ? 'rgba(249, 115, 22, 0.3)' : 'rgba(56, 189, 248, 0.25)';
 
-    const startX = p.x;
-    const startY = p.y;
+    const startX = pPos.cx;
+    const startY = pPos.cy;
     const now = Date.now();
     const totalDist = isSuperReady ? 230 : 195;
     const stepSize = 4;
@@ -2068,6 +2117,7 @@ class BrawlBallManager {
 
   renderPlayerAuras(ctx) {
     const p = this.engine.player;
+    const pPos = this.getEntityVisualPos(p);
     const now = Date.now();
 
     // Golden Shield Bubble
@@ -2079,7 +2129,7 @@ class BrawlBallManager {
       ctx.shadowColor = '#fde047';
       ctx.shadowBlur = 12;
       ctx.beginPath();
-      ctx.arc(p.x, p.y + 8, 22, 0, Math.PI * 2);
+      ctx.arc(pPos.cx, pPos.cy - 3, 24, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
       ctx.restore();
@@ -2101,8 +2151,8 @@ class BrawlBallManager {
         ctx.beginPath();
         const ox = (Math.random() - 0.5) * 16;
         const oy = (Math.random() - 0.5) * 16;
-        ctx.moveTo(p.x + ox, p.y + oy);
-        ctx.lineTo(p.x + ox + trailX, p.y + oy + trailY);
+        ctx.moveTo(pPos.cx + ox, pPos.cy + oy);
+        ctx.lineTo(pPos.cx + ox + trailX, pPos.cy + oy + trailY);
         ctx.stroke();
       }
       ctx.restore();

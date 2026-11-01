@@ -268,9 +268,11 @@ class GameEngine {
       // Check warp tiles / doors
       this.checkWarps();
 
-      // Emit movement with throttling (~15 FPS / every 66ms) to eliminate network lag
+      // Emit movement with throttling (~30 FPS / 33ms inside Brawl Ball arena, ~15 FPS / 66ms elsewhere)
       const now = performance.now();
-      if (!this.lastMoveEmitTime || now - this.lastMoveEmitTime >= 66 || this.lastMoveDir !== this.player.direction) {
+      const inBrawlCourt = (this.player.room === 'playground' && window.BrawlBall && window.BrawlBall.isInsideCourtBox(this.player.x, this.player.y));
+      const emitInterval = inBrawlCourt ? 33 : 66;
+      if (!this.lastMoveEmitTime || now - this.lastMoveEmitTime >= emitInterval || this.lastMoveDir !== this.player.direction) {
         this.lastMoveEmitTime = now;
         this.lastMoveDir = this.player.direction;
         if (this.onMoveCallback) {
@@ -6552,10 +6554,28 @@ class GameEngine {
     const plateY = py - 32;
     const title = p.equippedTitle;
     const displayName = isFallen ? `💀 [기절] ${name}` : (title ? `[${title}] ${name}` : name);
+    const brawlTeam = (this.player.room === 'playground' && window.BrawlBall && typeof window.BrawlBall.getPlayerTeam === 'function')
+      ? window.BrawlBall.getPlayerTeam(p, isLocal)
+      : null;
+    const finalDisplayName = brawlTeam ? `${brawlTeam === 'blue' ? '🔵' : '🔴'} ${displayName}` : displayName;
+    const plateBgColor = isFallen
+      ? 'rgba(153, 27, 27, 0.96)'
+      : (brawlTeam === 'blue'
+        ? 'rgba(30, 58, 138, 0.96)'
+        : (brawlTeam === 'red'
+          ? 'rgba(153, 27, 27, 0.96)'
+          : (isTeacher ? 'rgba(180, 83, 9, 0.96)' : (isLocal ? 'rgba(185, 28, 28, 0.96)' : 'rgba(15, 23, 42, 0.92)'))));
+    const plateBorderColor = isFallen
+      ? '#f87171'
+      : (brawlTeam === 'blue'
+        ? '#60a5fa'
+        : (brawlTeam === 'red'
+          ? '#f87171'
+          : (isTeacher ? '#fde047' : (isLocal ? '#fca5a5' : '#94a3b8'))));
 
-    this.drawSharpLabel(px + 12, plateY, displayName, {
-      bgColor: isFallen ? 'rgba(153, 27, 27, 0.96)' : (isTeacher ? 'rgba(180, 83, 9, 0.96)' : (isLocal ? 'rgba(185, 28, 28, 0.96)' : 'rgba(15, 23, 42, 0.92)')),
-      borderColor: isFallen ? '#f87171' : (isTeacher ? '#fde047' : (isLocal ? '#fca5a5' : '#94a3b8')),
+    this.drawSharpLabel(px + 12, plateY, finalDisplayName, {
+      bgColor: plateBgColor,
+      borderColor: plateBorderColor,
       textColor: isFallen ? '#fca5a5' : '#ffffff',
       fontSize: 12.5,
       paddingX: 10,
