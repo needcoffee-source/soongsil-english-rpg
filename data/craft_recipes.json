@@ -710,7 +710,7 @@
     "name": "용기의 물약 (Courage Potion)",
     "category": "potion",
     "description": "[소비품] 불타는 투지를 북돋워주는 비약입니다. 마시면 3분 동안 공격력(ATK)이 +5 증가합니다.",
-    "icon": "🔥",
+    "icon": "🔮",
     "gradeLevel": 1,
     "requiredGold": 20,
     "requiredItems": [
@@ -739,54 +739,11 @@
     "result": {
       "item": "item_courage_potion",
       "name": "용기의 물약",
-      "icon": "🔥",
+      "icon": "🔮",
       "type": "consumable",
       "slot": "consumable",
       "heal": 0,
       "effect": "3분간 공격력(ATK) +5 증가"
-    }
-  },
-  {
-    "id": "recipe_word_hint_note",
-    "name": "영단어 힌트 쪽지 (Word Hint Note)",
-    "category": "potion",
-    "description": "[소비품] 숭실 영어 교사의 힌트가 적힌 비밀 쪽지입니다. 퀴즈 풀이 시 사용하면 4지선다 중 오답 2개를 즉시 지워줍니다.",
-    "icon": "🔖",
-    "gradeLevel": 1,
-    "requiredGold": 10,
-    "requiredItems": [
-      {
-        "item": "item_wood",
-        "name": "단단한 목재",
-        "count": 1
-      },
-      {
-        "item": "item_herb",
-        "name": "향긋한 허브",
-        "count": 1
-      }
-    ],
-    "unscramble": {
-      "korean": "좋은 힌트는 어떤 문제도 해결할 수 있다.",
-      "words": [
-        "A",
-        "good",
-        "hint",
-        "can",
-        "solve",
-        "any",
-        "problem."
-      ],
-      "correct": "A good hint can solve any problem."
-    },
-    "result": {
-      "item": "item_word_hint_note",
-      "name": "영단어 힌트 쪽지",
-      "icon": "🔖",
-      "type": "consumable",
-      "slot": "consumable",
-      "heal": 0,
-      "effect": "퀴즈 풀이 시 오답 보기 2개 즉시 제거 (50:50 찬스)"
     }
   },
   {
