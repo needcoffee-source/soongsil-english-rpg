@@ -1142,6 +1142,26 @@ class MainApp {
       });
     } else if (target.type === 'cafeteria') {
       alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
+    } else if (target.type === 'alchemy_cauldron') {
+      this.openAlchemyModal();
+    } else if (target.type === 'alchemy_shelf') {
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🧪 비전 시약 선반', '졍경슉 선생님이 엄선한 신비로운 연금술 시약들이 가지런히 정돈되어 있습니다.\n\n골드의 마력 파동과 공명하여 목재, 허브, 개나리 꽃잎을 완벽하게 재구성할 수 있는 비전 촉매가 푸른빛으로 은은하게 빛납니다.', '🧪');
+      } else {
+        alert('🧪 [비전 시약 선반]\n\n"졍경슉 선생님이 엄선한 신비로운 연금술 시약들이 보관되어 있습니다. 골드를 목재, 허브, 개나리로 연성할 때 필수적인 촉매들이 은은하게 빛납니다."');
+      }
+    } else if (target.type === 'alchemy_tome') {
+      if (window.RPGDialog) {
+        window.RPGDialog.show('📚 연금술 비전서', '『골드는 단순한 재물이 아니라 자연 만물의 근원적인 힘과 연결되어 있다. 순수한 마력의 도가니 속에서 골드는 굳건한 목재가 되고, 싱그러운 생명의 허브가 되며, 영원한 숭실의 개나리 꽃잎으로 승화된다.』\n\n- 1학년 5반 담임 연금술사 졍경슉 선생님 집필 -', '📚');
+      } else {
+        alert('📚 [연금술 비전서]\n\n"『골드는 자연의 힘과 공명하여 굳건한 목재가 되고, 생명의 허브가 되며, 영원한 개나리 꽃잎이 된다.』\n\n- 1학년 5반 담임 졍경슉 선생님 -');
+      }
+    } else if (target.type === 'alchemy_workbench') {
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🔬 정밀 연금술 실험대', '다채로운 화학 유리 플라스크와 증류관, 보랏빛 룬 마력 수정구가 정밀하게 연결되어 있습니다.\n\n불꽃 위에서 보글보글 거품을 내며 순수한 황금 파편이 자연 원소로 분해·재조합되는 신비한 연금과학의 현장입니다.', '🔬');
+      } else {
+        alert('🔬 [정밀 연금술 실험대]\n\n"유리 플라스크와 증류관, 보랏빛 룬 수정구가 반응하며 순수한 황금이 자연의 원소로 연성되는 과학 실험대입니다."');
+      }
     } else if (target.type === 'store') {
       this.openStoreModal();
     } else if (target.type === 'title_exchange') {

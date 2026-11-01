@@ -1808,8 +1808,49 @@ class GameEngine {
     });
 
     // 5층 및 진로실은 칠판을 완전히 빈 칸으로 유지
-    const isEmptyRoom = (this.player.floor === 5 || this.player.room === 'room_career' || (cr && cr.teacherDesk === null));
-    if (!isEmptyRoom) {
+    const isEmptyRoom = (this.player.floor === 5 || this.player.room === 'room_career' || (cr && cr.teacherDesk === null && this.player.room !== 'room_705'));
+    if (this.player.room === 'room_705') {
+      this.ctx.save();
+      this.ctx.font = '800 13px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.textAlign = 'left';
+      this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+      this.ctx.lineWidth = 2.5;
+      this.ctx.lineJoin = 'round';
+
+      this.ctx.strokeText('⚗️ 1-5 연금과학 연구실: 원소 변환의 법칙 ✨', bx + 16, by + 25);
+      this.ctx.fillStyle = '#c084fc';
+      this.ctx.fillText('⚗️ 1-5 연금과학 연구실: 원소 변환의 법칙 ✨', bx + 16, by + 25);
+
+      this.ctx.font = '700 11px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.strokeText('• 등가교환: Gold ➔ 목재(10G) / 허브(10G) / 개나리(25G)', bx + 18, by + 43);
+      this.ctx.fillStyle = '#fde047';
+      this.ctx.fillText('• 등가교환: Gold ➔ 목재(10G) / 허브(10G) / 개나리(25G)', bx + 18, by + 43);
+
+      this.ctx.strokeText('• 대형 연금술 솥과 졍경슉 선생님 앞에서 SPACE를 눌러 연성하세요!', bx + 18, by + 59);
+      this.ctx.fillStyle = '#67e8f9';
+      this.ctx.fillText('• 대형 연금술 솥과 졍경슉 선생님 앞에서 SPACE를 눌러 연성하세요!', bx + 18, by + 59);
+
+      // Right Side: Alchemy Crest Box
+      this.ctx.strokeStyle = '#c084fc';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.strokeRect(bx + bw - 144, by + 13, 128, 46);
+      this.ctx.fillStyle = 'rgba(88, 28, 135, 0.45)';
+      this.ctx.fillRect(bx + bw - 144, by + 13, 128, 46);
+
+      this.ctx.font = '800 11px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+      this.ctx.lineWidth = 2.5;
+      this.ctx.strokeText('[ ⚗️ 재료 연성실 ]', bx + bw - 80, by + 30);
+      this.ctx.fillStyle = '#fde047';
+      this.ctx.fillText('[ ⚗️ 재료 연성실 ]', bx + bw - 80, by + 30);
+
+      this.ctx.font = '700 10.5px "Pretendard", "Malgun Gothic", sans-serif';
+      this.ctx.strokeText('담임 졍경슉 👩‍🏫', bx + bw - 80, by + 48);
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillText('담임 졍경슉 👩‍🏫', bx + bw - 80, by + 48);
+      this.ctx.restore();
+    } else if (!isEmptyRoom) {
       // Crisp Chalk Writing on Blackboard for regular classrooms
       this.ctx.save();
       this.ctx.font = '800 13.5px "Pretendard", "Malgun Gothic", sans-serif';
@@ -4773,6 +4814,8 @@ class GameEngine {
           this.drawHighResWall(tx, ty, true);
         } else if (this.player.room === 'room_history') {
           this.drawHighResMarbleFloor(tx, ty);
+        } else if (this.player.room === 'room_705') {
+          this.drawHighResAlchemyFloor(tx, ty);
         } else {
           this.drawHighResWoodPlankFloor(tx, ty);
         }
@@ -4795,8 +4838,8 @@ class GameEngine {
     } else if (isCareerRoom) {
       this.drawHighResLockers(4, 17, 6);
       this.drawHighResLockers(50, 17, 6);
-    } else if (this.player.room === 'room_history') {
-      // Museum has no student lockers
+    } else if (this.player.room === 'room_history' || this.player.room === 'room_705') {
+      // Museum and Alchemy Lab have custom atmospheric layouts without standard school lockers
     } else {
       this.drawHighResLockers(3, 17, 5);
       this.drawHighResLockers(22, 17, 5);
@@ -4847,6 +4890,9 @@ class GameEngine {
     } else if (this.player.room === 'room_704') {
       // === 1학년 4반: 드럼 치는 도덕쌤의 락스피릿 교실 ===
       this.renderDrumMoralClassroom(cr);
+    } else if (this.player.room === 'room_705') {
+      // === 1학년 5반: 졍경슉 선생님의 신비한 연금과학 연구실 ===
+      this.renderAlchemyLabClassroom(cr);
     } else if (this.player.room === 'room_career') {
       // === 5층 대형 진로실: 진로 방탈출 6대 단서 & 직업 패시브 아카데미 ===
       this.renderCareerEscapeRoom(cr);
@@ -4877,7 +4923,7 @@ class GameEngine {
       }
     }
 
-    // 8-C. Classroom NPCs (e.g. 1학년 3반 컴퓨터실 김영훈 선생님)
+    // 8-C. Classroom NPCs (e.g. 1학년 3반 김영훈 선생님, 1학년 5반 졍경슉 선생님)
     if (cr.npcs && cr.npcs.length > 0) {
       for (const npc of cr.npcs) {
         const px = npc.x * 32;
@@ -4888,17 +4934,24 @@ class GameEngine {
         this.ctx.ellipse(px + 16, py + 26, 12, 6, 0, 0, Math.PI * 2);
         this.ctx.fill();
 
+        const isKyungsook = (npc.id === 'npc_teacher_kyungsook' || (npc.name && (npc.name.includes('졍경슉') || npc.name.includes('정경숙'))));
         const isTeacherNpc = (npc.avatar === 'teacher' || npc.name.includes('선생님'));
-        this.ctx.fillStyle = isTeacherNpc ? '#1e3a8a' : '#047857';
+        this.ctx.fillStyle = isKyungsook ? '#581c87' : (isTeacherNpc ? '#1e3a8a' : '#047857');
         this.ctx.beginPath();
         this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
         this.ctx.fill();
         this.ctx.fillRect(px + 8, py + 18, 16, 14);
 
-        const labelIcon = isTeacherNpc ? '👨‍🏫' : '💬';
+        // 연금술사 졍경슉 선생님 전용 신비한 룬 장식 펜던트
+        if (isKyungsook) {
+          this.ctx.fillStyle = '#f59e0b';
+          this.ctx.fillRect(px + 14, py + 22, 4, 4);
+        }
+
+        const labelIcon = isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : '💬');
         this.drawSharpLabel(px + 16, py + 38, `${labelIcon} ${npc.name}`, {
-          bgColor: isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)',
-          borderColor: isTeacherNpc ? '#60a5fa' : '#34d399',
+          bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)'),
+          borderColor: isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399'),
           textColor: '#fef08a',
           fontSize: 12,
           paddingX: 8,
@@ -8381,6 +8434,582 @@ class GameEngine {
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(mob.icon, px + 16, py + 12);
 
+    this.ctx.restore();
+  }
+
+  // ========================================================
+  // 1학년 5반 (연금과학 연구실) 전용 고해상도 렌더링
+  // - 졍경슉 선생님의 신비한 연금술 & 마법 과학 실험실
+  // - 흑요석/자수정 바닥 타일, 회전하는 연성 마법진
+  // - 보글보글 끓어오르는 대형 연금술 솥과 신비한 불꽃
+  // - 비전 시약 선반, 연금술 비전서, 정밀 과학 증류대, 룬 촉매 반응대
+  // ========================================================
+
+  drawHighResAlchemyFloor(tx, ty) {
+    const px = tx * 32;
+    const py = ty * 32;
+    const isDark = (tx + ty) % 2 === 0;
+
+    // Obsidian and Dark Amethyst stone foundation
+    this.ctx.fillStyle = isDark ? '#120e24' : '#1c1538';
+    this.ctx.fillRect(px, py, 32, 32);
+
+    // Stone tile border bevel
+    this.ctx.fillStyle = 'rgba(192, 132, 252, 0.08)';
+    this.ctx.fillRect(px, py, 32, 1);
+    this.ctx.fillRect(px, py, 1, 32);
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    this.ctx.fillRect(px, py + 31, 32, 1);
+    this.ctx.fillRect(px + 31, py, 1, 32);
+
+    // Subtle alchemical rune geometric etching on specific tiles
+    if ((tx * 7 + ty * 13) % 5 === 0) {
+      this.ctx.strokeStyle = 'rgba(168, 85, 247, 0.14)';
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeRect(px + 6, py + 6, 20, 20);
+      this.ctx.beginPath();
+      this.ctx.moveTo(px + 16, py + 6);
+      this.ctx.lineTo(px + 16, py + 26);
+      this.ctx.moveTo(px + 6, py + 16);
+      this.ctx.lineTo(px + 26, py + 16);
+      this.ctx.stroke();
+    }
+  }
+
+  renderAlchemyLabClassroom(cr) {
+    const now = Date.now();
+
+    // 1. Velvet Alchemical Runner Carpet (From Door at 15, 17 up to Magic Circle at 15, 9)
+    this.ctx.fillStyle = '#3b0764'; // Deep royal amethyst velvet
+    this.ctx.fillRect(13.5 * 32, 9 * 32, 3 * 32, 8.2 * 32);
+    this.ctx.strokeStyle = '#c084fc';
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(13.5 * 32, 9 * 32, 3 * 32, 8.2 * 32);
+
+    // Golden fringe trim along runner edges
+    this.ctx.fillStyle = '#f59e0b';
+    for (let gy = 9.2 * 32; gy < 17 * 32; gy += 16) {
+      this.ctx.fillRect(13.5 * 32 - 1, gy, 2, 4);
+      this.ctx.fillRect(16.5 * 32 - 1, gy, 2, 4);
+    }
+
+    // 2. Central Transmutation Magic Circle (Centered at Cauldron x: 15*32 + 16, y: 7*32 + 16)
+    this.drawAlchemicalTransmutationCircle(15 * 32 + 16, 7 * 32 + 16, now);
+
+    // 3. Left Wall & Shelf: 🧪 신비한 비전 시약 선반 (x: 7, y: 4)
+    this.drawAlchemicalShelf(7 * 32, 4 * 32);
+
+    // 4. Right Wall & Lectern: 📚 졍경슉 선생님의 연금술 비전서 (x: 23, y: 4)
+    this.drawAlchemicalTome(23 * 32, 4 * 32, now);
+
+    // 5. Left Distillation Workbench: 🔬 정밀 과학 증류 실험대 (x: 6, y: 11)
+    this.drawDistillationWorkbench(6 * 32, 11 * 32, now);
+
+    // 6. Right Runic Catalyst Workbench: ✨ 마법 룬 촉매 반응대 (x: 24, y: 11)
+    this.drawRunicCatalystWorkbench(24 * 32, 11 * 32, now);
+
+    // 7. Center: ⚗️ 끓어오르는 대형 연금술 가마솥 (x: 15, y: 7)
+    this.drawAlchemicalCauldron(15 * 32 + 16, 7 * 32 + 16, now);
+
+    // 8. Floating Ambient Mana Motes & Alchemical Sparkles
+    this.drawAlchemyLabAtmosphere(now);
+  }
+
+  // Draw Glowing Transmutation Magic Circle on Floor
+  drawAlchemicalTransmutationCircle(cx, cy, now) {
+    this.ctx.save();
+
+    // Pulsating ambient aura
+    const pulse = 0.5 + 0.5 * Math.sin(now / 700);
+    const grad = this.ctx.createRadialGradient(cx, cy, 10, cx, cy, 95);
+    grad.addColorStop(0, `rgba(168, 85, 247, ${0.28 + pulse * 0.12})`);
+    grad.addColorStop(0.6, `rgba(99, 102, 241, ${0.12 + pulse * 0.08})`);
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    this.ctx.fillStyle = grad;
+    this.ctx.beginPath();
+    this.ctx.arc(cx, cy, 95, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Outer & Inner concentric circles
+    this.ctx.strokeStyle = `rgba(192, 132, 252, ${0.65 + pulse * 0.25})`;
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.arc(cx, cy, 76, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.beginPath();
+    this.ctx.arc(cx, cy, 68, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.arc(cx, cy, 48, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    // Rotating Runic Star (6-point Seal)
+    const rot = (now / 4500) % (Math.PI * 2);
+    this.ctx.translate(cx, cy);
+    this.ctx.rotate(rot);
+
+    this.ctx.strokeStyle = `rgba(192, 132, 252, ${0.5 + pulse * 0.3})`;
+    this.ctx.lineWidth = 1.5;
+
+    // Triangle 1
+    this.ctx.beginPath();
+    for (let i = 0; i < 3; i++) {
+      const angle = (i * 2 * Math.PI / 3) - Math.PI / 2;
+      const x = Math.cos(angle) * 48;
+      const y = Math.sin(angle) * 48;
+      if (i === 0) this.ctx.moveTo(x, y);
+      else this.ctx.lineTo(x, y);
+    }
+    this.ctx.closePath();
+    this.ctx.stroke();
+
+    // Triangle 2 (inverted)
+    this.ctx.beginPath();
+    for (let i = 0; i < 3; i++) {
+      const angle = (i * 2 * Math.PI / 3) + Math.PI / 2;
+      const x = Math.cos(angle) * 48;
+      const y = Math.sin(angle) * 48;
+      if (i === 0) this.ctx.moveTo(x, y);
+      else this.ctx.lineTo(x, y);
+    }
+    this.ctx.closePath();
+    this.ctx.stroke();
+
+    // Small glowing rune node dots
+    for (let i = 0; i < 6; i++) {
+      const angle = i * Math.PI / 3;
+      const rx = Math.cos(angle) * 48;
+      const ry = Math.sin(angle) * 48;
+      this.ctx.fillStyle = '#fde047';
+      this.ctx.beginPath();
+      this.ctx.arc(rx, ry, 2.5, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    this.ctx.restore();
+  }
+
+  // Draw The Great Alchemical Cauldron
+  drawAlchemicalCauldron(cx, cy, now) {
+    this.ctx.save();
+
+    // 1. Drop shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(cx, cy + 18, 28, 10, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. Crackling Fire Pit beneath
+    for (let f = -3; f <= 3; f++) {
+      const flameH = 12 + Math.sin(now / 120 + f * 1.5) * 6;
+      const fx = cx + f * 5;
+      const fy = cy + 16;
+      this.ctx.fillStyle = (f % 2 === 0) ? '#6366f1' : '#a855f7'; // mystical violet/blue flames
+      this.ctx.beginPath();
+      this.ctx.moveTo(fx - 4, fy);
+      this.ctx.lineTo(fx, fy - flameH);
+      this.ctx.lineTo(fx + 4, fy);
+      this.ctx.closePath();
+      this.ctx.fill();
+
+      // Golden core
+      this.ctx.fillStyle = '#fef08a';
+      this.ctx.beginPath();
+      this.ctx.moveTo(fx - 2, fy);
+      this.ctx.lineTo(fx, fy - flameH * 0.6);
+      this.ctx.lineTo(fx + 2, fy);
+      this.ctx.closePath();
+      this.ctx.fill();
+    }
+
+    // 3. Tripod Iron Legs
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(cx - 20, cy + 8, 4, 12);
+    this.ctx.fillRect(cx + 16, cy + 8, 4, 12);
+    this.ctx.fillRect(cx - 2, cy + 10, 4, 10);
+
+    // 4. Heavy Obsidian/Cast-Iron Cauldron Belly
+    const bellyGrad = this.ctx.createRadialGradient(cx - 6, cy - 2, 4, cx, cy, 26);
+    bellyGrad.addColorStop(0, '#475569');
+    bellyGrad.addColorStop(0.5, '#1e293b');
+    bellyGrad.addColorStop(1, '#090d16');
+    this.ctx.fillStyle = bellyGrad;
+    this.ctx.beginPath();
+    this.ctx.arc(cx, cy + 4, 24, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#64748b';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // Cauldron Bronze Rivets & Belt
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(cx - 23, cy + 2, 46, 3);
+    for (let r = -3; r <= 3; r++) {
+      this.ctx.fillStyle = '#fbbf24';
+      this.ctx.beginPath();
+      this.ctx.arc(cx + r * 6, cy + 3.5, 1.5, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    // Side Brass Rings / Handles
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.lineWidth = 2.5;
+    this.ctx.strokeRect(cx - 28, cy - 2, 5, 8);
+    this.ctx.strokeRect(cx + 23, cy - 2, 5, 8);
+
+    // 5. Cauldron Rim & Boiling Magical Potion
+    this.ctx.fillStyle = '#334155';
+    this.ctx.beginPath();
+    this.ctx.ellipse(cx, cy - 12, 22, 9, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.strokeStyle = '#94a3b8';
+    this.ctx.lineWidth = 2;
+    this.ctx.stroke();
+
+    // Boiling Glowing Liquid (Luminescent Emerald & Violet Swirl)
+    const liquidGrad = this.ctx.createLinearGradient(cx - 20, cy - 12, cx + 20, cy - 12);
+    liquidGrad.addColorStop(0, '#10b981');
+    liquidGrad.addColorStop(0.5, '#a855f7');
+    liquidGrad.addColorStop(1, '#06b6d4');
+    this.ctx.fillStyle = liquidGrad;
+    this.ctx.beginPath();
+    this.ctx.ellipse(cx, cy - 12, 19, 7, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // Rising Bubbles & Pops
+    for (let b = 0; b < 5; b++) {
+      const bProgress = ((now + b * 260) % 1200) / 1200;
+      const bx = cx - 12 + ((b * 7) % 24);
+      const by = (cy - 12) - (bProgress * 22);
+      const bRad = 1.5 + (1 - bProgress) * 2;
+      this.ctx.fillStyle = `rgba(254, 240, 138, ${1 - bProgress})`;
+      this.ctx.beginPath();
+      this.ctx.arc(bx, by, bRad, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
+
+    // Swirling Ethereal Vapor
+    const vaporOffset = Math.sin(now / 350) * 8;
+    this.ctx.strokeStyle = 'rgba(192, 132, 252, 0.45)';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx - 6, cy - 18);
+    this.ctx.quadraticCurveTo(cx + vaporOffset, cy - 30, cx - 4, cy - 44);
+    this.ctx.stroke();
+
+    this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx + 8, cy - 18);
+    this.ctx.quadraticCurveTo(cx - vaporOffset, cy - 32, cx + 6, cy - 46);
+    this.ctx.stroke();
+
+    // Sharp Label
+    this.drawSharpLabel(cx, cy - 36, '⚗️ 끓어오르는 연금술 가마솥 (재료 연성)', {
+      bgColor: 'rgba(59, 7, 100, 0.94)',
+      borderColor: '#c084fc',
+      textColor: '#fef08a',
+      fontSize: 11.5,
+      paddingX: 10,
+      height: 22
+    });
+
+    this.ctx.restore();
+  }
+
+  // Draw Alchemical Potion & Reagent Shelf
+  drawAlchemicalShelf(cx, cy) {
+    this.ctx.save();
+
+    // 2-Story Dark Mahogany Cabinet
+    this.ctx.fillStyle = '#27170a';
+    this.ctx.fillRect(cx - 16, cy - 24, 64, 52);
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(cx - 14, cy - 22, 60, 48);
+
+    // Shelves
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(cx - 14, cy - 4, 60, 4);
+    this.ctx.fillRect(cx - 14, cy + 18, 60, 4);
+
+    // Upper Shelf Potion Bottles
+    const bottleColors = ['#22c55e', '#06b6d4', '#ec4899', '#f59e0b', '#a855f7'];
+    for (let i = 0; i < 5; i++) {
+      const bx = cx - 10 + i * 11;
+      const by = cy - 18;
+      // Glass bottle
+      this.ctx.fillStyle = bottleColors[i];
+      this.ctx.fillRect(bx, by + 4, 8, 10);
+      this.ctx.fillStyle = '#f8fafc';
+      this.ctx.fillRect(bx + 2, by, 4, 4);
+      // Cork
+      this.ctx.fillStyle = '#b45309';
+      this.ctx.fillRect(bx + 2, by - 2, 4, 2);
+    }
+
+    // Lower Shelf: Grimoires and Crystal Cluster
+    this.ctx.fillStyle = '#1e1b4b'; // Book 1
+    this.ctx.fillRect(cx - 10, cy, 7, 18);
+    this.ctx.fillStyle = '#831843'; // Book 2
+    this.ctx.fillRect(cx - 2, cy + 2, 8, 16);
+    this.ctx.fillStyle = '#065f46'; // Book 3
+    this.ctx.fillRect(cx + 7, cy, 7, 18);
+
+    // Amethyst cluster in jar
+    this.ctx.fillStyle = 'rgba(224, 242, 254, 0.35)';
+    this.ctx.fillRect(cx + 18, cy + 2, 14, 16);
+    this.ctx.fillStyle = '#c084fc';
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx + 25, cy + 4);
+    this.ctx.lineTo(cx + 29, cy + 15);
+    this.ctx.lineTo(cx + 21, cy + 15);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Sharp Label
+    this.drawSharpLabel(cx + 16, cy - 32, '🧪 신비한 비전 시약 선반', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#a7f3d0',
+      fontSize: 11,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // Draw Alchemical Grimoire Lectern & Quill
+  drawAlchemicalTome(cx, cy, now) {
+    this.ctx.save();
+
+    // Antique dark wood pedestal stand
+    this.ctx.fillStyle = '#27170a';
+    this.ctx.fillRect(cx + 12, cy + 10, 8, 20);
+    this.ctx.fillStyle = '#451a03';
+    this.ctx.fillRect(cx + 4, cy + 26, 24, 6);
+
+    // Slanted book resting board
+    this.ctx.fillStyle = '#78350f';
+    this.ctx.fillRect(cx - 8, cy - 4, 48, 16);
+
+    // Open Ancient Grimoire Pages
+    this.ctx.fillStyle = '#fef3c7'; // Aged parchment
+    this.ctx.fillRect(cx - 6, cy - 8, 20, 15);
+    this.ctx.fillRect(cx + 16, cy - 8, 20, 15);
+    this.ctx.fillStyle = '#78350f'; // Book spine
+    this.ctx.fillRect(cx + 13, cy - 9, 4, 17);
+
+    // Glowing Runic Text on Pages
+    this.ctx.fillStyle = '#7c2d12';
+    for (let line = 0; line < 3; line++) {
+      this.ctx.fillRect(cx - 3, cy - 6 + line * 4, 14, 1.5);
+      this.ctx.fillRect(cx + 19, cy - 6 + line * 4, 14, 1.5);
+    }
+
+    // Floating Magical Glyph above book
+    const floatY = Math.sin(now / 300) * 3;
+    this.ctx.fillStyle = '#fde047';
+    this.ctx.font = 'bold 11px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('✨', cx + 15, cy - 14 + floatY);
+
+    // Golden Feather Quill & Inkwell
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(cx + 34, cy + 6, 6, 6);
+    this.ctx.strokeStyle = '#fbbf24';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx + 37, cy + 6);
+    this.ctx.lineTo(cx + 44, cy - 6);
+    this.ctx.stroke();
+
+    // Sharp Label
+    this.drawSharpLabel(cx + 16, cy - 32, '📚 졍경슉 선생님의 연금술 비전서', {
+      bgColor: 'rgba(88, 28, 135, 0.94)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
+      fontSize: 11,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // Draw High-Res Science Distillation Workbench
+  drawDistillationWorkbench(cx, cy, now) {
+    this.ctx.save();
+
+    // Sturdy Science Wooden Workbench
+    this.ctx.fillStyle = '#292524';
+    this.ctx.fillRect(cx - 12, cy + 8, 56, 18);
+    this.ctx.fillStyle = '#44403c';
+    this.ctx.fillRect(cx - 10, cy + 6, 52, 16);
+    this.ctx.fillStyle = '#78716c'; // Smooth stone tabletop
+    this.ctx.fillRect(cx - 14, cy + 2, 60, 5);
+
+    // Bunsen Burner & Stand (Left)
+    this.ctx.fillStyle = '#64748b';
+    this.ctx.fillRect(cx - 8, cy - 2, 12, 4);
+    // Flickering Blue Flame
+    const bFlameH = 5 + Math.sin(now / 100) * 2;
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx - 4, cy - 2);
+    this.ctx.lineTo(cx - 2, cy - 2 - bFlameH);
+    this.ctx.lineTo(cx, cy - 2);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Boiling Flask above flame
+    this.ctx.fillStyle = 'rgba(224, 242, 254, 0.4)';
+    this.ctx.beginPath();
+    this.ctx.arc(cx - 2, cy - 10, 7, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#f59e0b'; // Boiling amber liquid
+    this.ctx.beginPath();
+    this.ctx.arc(cx - 2, cy - 8, 5, 0, Math.PI);
+    this.ctx.fill();
+
+    // Glass Distillation Coil Tube
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx - 2, cy - 17);
+    this.ctx.lineTo(cx + 8, cy - 17);
+    this.ctx.lineTo(cx + 14, cy - 8);
+    this.ctx.lineTo(cx + 20, cy - 4);
+    this.ctx.stroke();
+
+    // Collecting Beaker (Right)
+    this.ctx.fillStyle = 'rgba(224, 242, 254, 0.4)';
+    this.ctx.fillRect(cx + 17, cy - 6, 9, 9);
+    this.ctx.fillStyle = '#10b981'; // Emerald distillate
+    this.ctx.fillRect(cx + 18, cy - 1, 7, 4);
+
+    // Test Tube Rack (Far Right)
+    this.ctx.fillStyle = '#a8a29e';
+    this.ctx.fillRect(cx + 30, cy - 2, 12, 5);
+    const tubeColors = ['#ef4444', '#3b82f6', '#10b981'];
+    for (let t = 0; t < 3; t++) {
+      this.ctx.fillStyle = tubeColors[t];
+      this.ctx.fillRect(cx + 31 + t * 4, cy - 10, 2.5, 9);
+    }
+
+    // Sharp Label
+    this.drawSharpLabel(cx + 16, cy - 26, '🔬 정밀 과학 증류 실험대', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#10b981',
+      textColor: '#a7f3d0',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // Draw Runic Catalyst Station Workbench
+  drawRunicCatalystWorkbench(cx, cy, now) {
+    this.ctx.save();
+
+    // Sturdy Science Wooden Workbench
+    this.ctx.fillStyle = '#292524';
+    this.ctx.fillRect(cx - 12, cy + 8, 56, 18);
+    this.ctx.fillStyle = '#44403c';
+    this.ctx.fillRect(cx - 10, cy + 6, 52, 16);
+    this.ctx.fillStyle = '#78716c'; // Smooth stone tabletop
+    this.ctx.fillRect(cx - 14, cy + 2, 60, 5);
+
+    // Left: Floating Amethyst Crystal Catalyst
+    const floatY = Math.sin(now / 250) * 3;
+    this.ctx.fillStyle = 'rgba(192, 132, 252, 0.35)'; // Crystal aura
+    this.ctx.beginPath();
+    this.ctx.arc(cx - 2, cy - 8 + floatY, 9, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#c084fc';
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx - 2, cy - 16 + floatY);
+    this.ctx.lineTo(cx + 4, cy - 7 + floatY);
+    this.ctx.lineTo(cx - 2, cy - 1 + floatY);
+    this.ctx.lineTo(cx - 8, cy - 7 + floatY);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Center: Stone Mortar & Pestle with Sparkles
+    this.ctx.fillStyle = '#334155';
+    this.ctx.beginPath();
+    this.ctx.arc(cx + 14, cy - 1, 6, 0, Math.PI);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#fde047'; // Gold dust
+    this.ctx.fillRect(cx + 11, cy - 3, 6, 2);
+    this.ctx.strokeStyle = '#64748b'; // Pestle
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx + 14, cy - 2);
+    this.ctx.lineTo(cx + 19, cy - 8);
+    this.ctx.stroke();
+
+    // Right: Brass Alchemy Balance Scale
+    this.ctx.fillStyle = '#b45309';
+    this.ctx.fillRect(cx + 28, cy - 10, 2, 12); // Pole
+    this.ctx.fillRect(cx + 24, cy + 1, 10, 2); // Base
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.moveTo(cx + 23, cy - 9);
+    this.ctx.lineTo(cx + 35, cy - 9); // Crossbar
+    this.ctx.stroke();
+    // Pans
+    this.ctx.fillStyle = '#fbbf24';
+    this.ctx.fillRect(cx + 21, cy - 3, 5, 2);
+    this.ctx.fillRect(cx + 33, cy - 3, 5, 2);
+
+    // Sharp Label
+    this.drawSharpLabel(cx + 16, cy - 26, '✨ 마법 룬 촉매 반응대', {
+      bgColor: 'rgba(88, 28, 135, 0.94)',
+      borderColor: '#c084fc',
+      textColor: '#fef08a',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // Draw Floating Ambient Mana Motes
+  drawAlchemyLabAtmosphere(now) {
+    this.ctx.save();
+    const sparkPositions = [
+      { x: 8 * 32, y: 7 * 32, speed: 800, color: 'rgba(192, 132, 252, 0.65)' },
+      { x: 22 * 32, y: 8 * 32, speed: 950, color: 'rgba(56, 189, 248, 0.65)' },
+      { x: 11 * 32, y: 13 * 32, speed: 1100, color: 'rgba(250, 204, 21, 0.6)' },
+      { x: 19 * 32, y: 13 * 32, speed: 750, color: 'rgba(52, 211, 153, 0.65)' },
+      { x: 14 * 32, y: 5 * 32, speed: 850, color: 'rgba(244, 114, 182, 0.65)' },
+      { x: 16 * 32, y: 5 * 32, speed: 900, color: 'rgba(192, 132, 252, 0.7)' }
+    ];
+
+    for (let i = 0; i < sparkPositions.length; i++) {
+      const sp = sparkPositions[i];
+      const offsetX = Math.sin((now + i * 400) / sp.speed) * 8;
+      const offsetY = Math.cos((now + i * 500) / sp.speed) * 8;
+      const px = sp.x + offsetX;
+      const py = sp.y + offsetY;
+      const rad = 1.5 + Math.sin((now + i * 200) / 300) * 0.8;
+
+      this.ctx.fillStyle = sp.color;
+      this.ctx.beginPath();
+      this.ctx.arc(px, py, rad, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
     this.ctx.restore();
   }
 }

@@ -66,7 +66,7 @@ const WORLD_DATA = {
         { id: "room_702", name: "1학년 2반", doorX: 20, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_703", name: "1학년 3반", doorX: 30, doorY: 5, targetX: 15, targetY: 14 },
         { id: "room_704", name: "1학년 4반", doorX: 37, doorY: 5, targetX: 15, targetY: 14, locked: false },
-        { id: "room_705", name: "1학년 5반", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" },
+        { id: "room_705", name: "1학년 5반 (⚗️ 연금과학실)", doorX: 43, doorY: 5, targetX: 15, targetY: 14, locked: false },
         { id: "room_706", name: "1학년 6반", doorX: 49, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 스포츠(체육) 시간입니다. 타반 학생은 출입금지입니다! ⚽" }
       ],
       elevator: { x: 56, y: 3 },
@@ -435,12 +435,19 @@ const WORLD_DATA = {
       prompt: "칠판 확인"
     },
     desks: [],
+    interactive: [
+      { id: "alch_cauldron", type: "alchemy_cauldron", x: 15, y: 7, name: "⚗️ 끓어오르는 연금술 가마솥", prompt: "골드로 재료 연성하기 (SPACE)" },
+      { id: "alch_shelf", type: "alchemy_shelf", x: 7, y: 4, name: "🧪 신비한 비전 시약 선반", prompt: "시약 관찰하기 (SPACE)" },
+      { id: "alch_tome", type: "alchemy_tome", x: 23, y: 4, name: "📚 졍경슉 선생님의 연금술 비전서", prompt: "비전서 읽기 (SPACE)" },
+      { id: "alch_workbench_left", type: "alchemy_workbench", x: 6, y: 11, name: "🔬 정밀 과학 증류 실험대", prompt: "실험대 살펴보기 (SPACE)" },
+      { id: "alch_workbench_right", type: "alchemy_workbench", x: 24, y: 11, name: "✨ 마법 룬 촉매 반응대", prompt: "반응대 살펴보기 (SPACE)" }
+    ],
     npcs: [
       {
         id: "npc_teacher_kyungsook",
         name: "⚗️ 졍경슉 선생님",
-        x: 15,
-        y: 8,
+        x: 18,
+        y: 7,
         avatar: "teacher",
         prompt: "연금술 재료 연성하기 (SPACE)",
         dialogue: "어머, 안녕! 1학년 5반 담임이자 신비한 연금술을 연구하는 졍경슉 선생님이란다! ⚗️✨\n\n모험 중에 목재, 허브, 개나리 꽃잎이 부족하면 언제든 선생님의 연금술 솥에서 골드로 연성해 가렴!"
