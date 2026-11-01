@@ -41,11 +41,11 @@ const WORLD_DATA = {
       npcs: []
     },
 
-    // 6층: 본관 교무실 및 2학년 구역
+    // 6층: 교무실 및 2학년 구역
     6: {
-      name: "6층 복도 (본관 교무실 & 2학년 구역)",
+      name: "6층 복도 (교무실 & 2학년 구역)",
       rooms: [
-        { id: "room_staff_office", name: "🏛️ 본관 교무실 (Staff Office)", doorX: 13, doorY: 5, targetX: 45, targetY: 13, locked: false },
+        { id: "room_staff_office", name: "🏛️ 교무실", doorX: 13, doorY: 5, targetX: 45, targetY: 13, locked: false },
         { id: "room_204", name: "2학년 4반", doorX: 30, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 4반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_205", name: "2학년 5반", doorX: 38, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 5반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_206", name: "2학년 6반", doorX: 46, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 6반 수업 시간입니다. (현재 준비 중 🚧)" }
@@ -153,10 +153,10 @@ const WORLD_DATA = {
     npcs: [],
     interactive: [
       { id: "hist_vitrine_1", type: "history_vitrine", vitrineIndex: 1, x: 6, y: 7, name: "🏛️ [제1전시관] 1897 평양 창립관", prompt: "전시관 관람 (SPACE)" },
-      { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 신사참배 거부관", prompt: "전시관 관람 (SPACE)" },
+      { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 신사참배 거부와 자진폐교관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_4", type: "history_vitrine", vitrineIndex: 4, x: 24, y: 13, name: "🌟 [제4전시관] 숭실의 위인관", prompt: "전시관 관람 (SPACE)" },
-      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "🔨 4티어 헤리티지 무기·방어구 제작 제단", prompt: "4티어 장비 제작 (SPACE)" }
+      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "장비 제작 (SPACE)" }
     ],
     historyMonsters: [
       {
@@ -240,7 +240,7 @@ const WORLD_DATA = {
 
   // 6층 대형 교무실 (교실 3개 사이즈: 90 x 20) & 2학년 교실
   classroom_staff_office: {
-    name: "🏛️ 본관 교무실 (Staff Office)",
+    name: "🏛️ 교무실",
     exitDoor: { x: 45, y: 17 },
     blackboard: { x: 45, y: 2, name: "🏛️ 교무실 상황판", prompt: "" },
     teacherDesk: null,

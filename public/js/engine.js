@@ -556,7 +556,7 @@ class GameEngine {
       const r = f6 && f6.rooms ? f6.rooms.find(rm => rm.id === 'room_staff_office') : null;
       const rx = r ? r.doorX * 32 : 13 * 32;
       const ry = r ? (r.doorY + 2) * 32 : 7 * 32;
-      this.warpToRoom('hallway', f6 ? f6.name : '6층 복도 (본관 교무실 & 2학년 구역)', rx, ry);
+      this.warpToRoom('hallway', f6 ? f6.name : '6층 복도 (교무실 & 2학년 구역)', rx, ry);
       return;
     }
     const floorData = WORLD_DATA.floors[this.player.floor] || WORLD_DATA.floors[7];
@@ -665,7 +665,7 @@ class GameEngine {
         this.player.room = 'room_staff_office';
         this.player.x = 45 * 32;
         this.player.y = 13 * 32;
-        this.player.roomName = '🏛️ 본관 교무실 (Staff Office)';
+        this.player.roomName = '🏛️ 교무실';
       } else if (room === 'room_history') {
         this.player.floor = 0;
         this.player.room = 'room_history';
@@ -1707,7 +1707,7 @@ class GameEngine {
       this.ctx.fillRect(px + panelW + 6, py + 28, 3, 16);
 
       // 대형 명패
-      const plaqueTitle = isStaffOffice ? '🏛️ 본관 교무실 (Staff Office)' : '🌟 진로상담실 (Career Center)';
+      const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실 (Career Center)';
       const plaqueBg = isStaffOffice ? 'rgba(88, 28, 135, 0.95)' : 'rgba(30, 58, 138, 0.95)';
       const plaqueBorder = isStaffOffice ? '#c084fc' : '#fbbf24';
       this.drawSharpLabel(px + dw / 2, py - 4, plaqueTitle, {
@@ -5662,7 +5662,7 @@ class GameEngine {
     this.ctx.fillRect(px - 10, py - 16, 20, 24);
 
     // Sharp badge label
-    this.drawSharpLabel(px, py - 36, '🏛️ 숭실역사관 (입장: SPACE)', {
+    this.drawSharpLabel(px, py - 36, '🏛️ 숭실역사관', {
       bgColor: 'rgba(15, 23, 42, 0.95)',
       borderColor: '#f59e0b',
       textColor: '#fef08a',
@@ -8130,8 +8130,8 @@ class GameEngine {
     // Vitrine 1 (x: 6, y: 7) - 1897 평양 창립관
     this.drawMuseumVitrine(6 * 32, 7 * 32, 1, '1897 평양 창립관', '📜', clues[0]);
 
-    // Vitrine 2 (x: 6, y: 13) - 1938 신사참배 거부관
-    this.drawMuseumVitrine(6 * 32, 13 * 32, 2, '1938 자진폐교관', '🕊️', clues[1]);
+    // Vitrine 2 (x: 6, y: 13) - 1938 신사참배 거부와 자진폐교관
+    this.drawMuseumVitrine(6 * 32, 13 * 32, 2, '1938 신사참배 거부와 자진폐교관', '🕊️', clues[1]);
 
     // Vitrine 3 (x: 24, y: 7) - 1954 서울 재건관
     this.drawMuseumVitrine(24 * 32, 7 * 32, 3, '1954 서울 재건관', '🧱', clues[2]);
@@ -8254,7 +8254,7 @@ class GameEngine {
     this.ctx.fillText('⚔️', px + 16, py - 10);
 
     // Label
-    const altarTitle = unlocked ? '🔨 4티어 헤리티지 무기·방어구 제단' : '🔒 4티어 제단 (4대 전시관 탐방 필요)';
+    const altarTitle = unlocked ? '✨ 숭실 역사관 신비한 제단' : '🔒 숭실 역사관 신비한 제단 (4대 전시관 탐방 필요)';
     this.drawSharpLabel(px + 16, py - 28, altarTitle, {
       bgColor: unlocked ? 'rgba(120, 53, 15, 0.95)' : 'rgba(30, 41, 59, 0.95)',
       borderColor: unlocked ? '#f59e0b' : '#64748b',

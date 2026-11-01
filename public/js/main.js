@@ -360,7 +360,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '4티어 전설 무기',
     tierColor: '#6366f1',
-    effect: '공격력 +42, 방어력 +12, 체력 +35 (기말고사 파멸신 정복의 핵심 성검)',
+    effect: '공격력 +45, 체력 +35 (기말고사 파멸신 정복의 핵심 성검)',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 150G)',
     recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 150G'
   },
@@ -371,7 +371,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '4티어 전설 투구',
     tierColor: '#6366f1',
-    effect: '공격력 +8, 방어력 +26, 체력 +55 (숭실 120년 역사의 가호)',
+    effect: '방어력 +28, 체력 +60 (숭실 120년 역사의 가호)',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 4개 + 사명석 2개 + 120G)',
     recipe: '숭실 역사의 정수 4개 + 불굴의 사명석 2개 + 120G'
   },
@@ -382,7 +382,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '4티어 전설 갑옷',
     tierColor: '#6366f1',
-    effect: '공격력 +10, 방어력 +35, 체력 +60 (불굴의 신앙과 정신으로 빚어낸 성갑)',
+    effect: '방어력 +38, 체력 +70 (불굴의 신앙과 정신으로 빚어낸 성갑)',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 140G)',
     recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 140G'
   },
@@ -444,9 +444,9 @@ const ALL_GAME_ITEMS = {
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
 
   // 5. Tier 4 Heritage Equipment
-  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 42, def: 12, hp: 35 }, effect: '4티어 전설 무기 · 공격력 +42, 방어력 +12, 체력 +35' } },
-  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 8, def: 26, hp: 55 }, effect: '4티어 전설 투구 · 공격력 +8, 방어력 +26, 체력 +55' } },
-  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 10, def: 35, hp: 60 }, effect: '4티어 전설 갑옷 · 공격력 +10, 방어력 +35, 체력 +60' } },
+  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 전설 무기 · 공격력 +45, 체력 +35' } },
+  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 28, hp: 60 }, effect: '4티어 전설 투구 · 방어력 +28, 체력 +60' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 38, hp: 70 }, effect: '4티어 전설 갑옷 · 방어력 +38, 체력 +70' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
@@ -2030,7 +2030,7 @@ class MainApp {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 6;
-        this.engine.warpToRoom('hallway', '6층 복도 (본관 교무실 & 2학년 구역)', 56 * 32, 6 * 32);
+        this.engine.warpToRoom('hallway', '6층 복도 (교무실 & 2학년 구역)', 56 * 32, 6 * 32);
       });
     } else if (target === 'floor_5') {
       if (window.AudioManager) window.AudioManager.playSelect();
@@ -2042,7 +2042,7 @@ class MainApp {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 7;
-        this.engine.warpToRoom('hallway', '1학년 복도', 56 * 32, 6 * 32);
+        this.engine.warpToRoom('hallway', '7층 복도 (1학년 구역)', 56 * 32, 6 * 32);
       });
     } else if (target === 'playground') {
       if (!this.playerData.isTeacher) {
@@ -2189,8 +2189,8 @@ class MainApp {
         desc: '1897년 10월 10일, 미국 선교사 윌리엄 베어드(W. M. Baird, 배위량) 박사가 평양 신양동 사택에서 13명의 학생으로 숭실학당을 설립했습니다.\n\n• 건학 이념: \'진리와 봉사 (Truth and Service)\'\n• 한국 근대 교육의 요람이자 최초의 근대 대학 교육의 출발점입니다.'
       },
       {
-        title: '🕊️ [제2전시관] 1938 신사참배 거부관',
-        desc: '1938년 일제의 강압적인 신사참배 요구에 끝까지 굴복하지 않고, 기독교 신앙과 민족정기를 지키기 위해 자진 폐교를 결단했습니다.\n\n• 굳은 신앙과 자주정신: 불의에 타협하지 않고 학교 문을 닫는 아픔을 겪었으나, 숭실의 정신은 결코 꺼지지 않았습니다.'
+        title: '🕊️ [제2전시관] 1938 신사참배 거부와 자진폐교관',
+        desc: '1938년 일제의 강압적인 신사참배 요구에 끝까지 굴복하지 않고, 기독교 신앙과 민족의 자주정기를 지키기 위해 숭실은 스스로 학교 문을 닫는 \'자진 폐교\'를 결단했습니다.\n\n• 신사참배 거부: 일제의 우상숭배 강요를 단호히 배격한 숭고한 신앙의 절개\n• 자진 폐교의 결단: 불의에 타협하지 않고 학교 문을 닫는 비장한 결단을 내렸으나, 숭실의 정신은 1954년 서울 재건으로 부활했습니다.'
       },
       {
         title: '🌱 [제3전시관] 1954 서울 재건관',
