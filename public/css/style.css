@@ -2730,3 +2730,24 @@ body, html {
   color: #4ade80 !important;
   box-shadow: 0 0 8px rgba(74, 222, 128, 0.45) !important;
 }
+
+/* 3v3 Brawl Ball Mobile Super Button */
+.mobile-btn-super {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 2.5px solid #fde047;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+  transition: all 0.2s ease;
+}
+
+.mobile-btn-super.super-ready {
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
+  border-color: #fde047 !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 10px #fde047 !important;
+  animation: superPulse 0.9s infinite alternate;
+}
+
+@keyframes superPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.08); filter: brightness(1.25); }
+}

@@ -247,8 +247,9 @@ class GameEngine {
         dy *= 0.7071;
       }
 
-      const nextX = this.player.x + dx * this.player.speed;
-      const nextY = this.player.y + dy * this.player.speed;
+      const speedMult = (window.BrawlBall && Date.now() < window.BrawlBall.speedBuffUntil) ? 1.35 : 1.0;
+      const nextX = this.player.x + dx * this.player.speed * speedMult;
+      const nextY = this.player.y + dy * this.player.speed * speedMult;
 
       if (!this.checkCollision(nextX, this.player.y)) {
         this.player.x = nextX;
@@ -376,6 +377,7 @@ class GameEngine {
     if (tileY < 1) return true;
 
     if (this.player.room === 'playground') {
+      if (window.BrawlBall && window.BrawlBall.isObstacleBlocked(x, y)) return true;
       if (tileY >= curMapHeight - 1) return true; // bottom fence
       if (tileY <= 2) {
         // Top boundary: Elevator area (x: 78~82, y: 3) and Cafeteria door (x: 84~88, y: 3) are passable

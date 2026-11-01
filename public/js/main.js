@@ -1108,6 +1108,11 @@ class MainApp {
       if (e.key === 'Shift' || e.key === 'b' || e.key === 'B') {
         this.startDash();
       }
+      if (e.key === 'q' || e.key === 'Q') {
+        if (window.BrawlBall && this.engine && this.engine.player && this.engine.player.room === 'playground') {
+          window.BrawlBall.trySuper();
+        }
+      }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         if (window.RPGDialog && window.RPGDialog.isOpen) {

@@ -1307,6 +1307,22 @@ setInterval(() => {
     io.emit('brawl_tackle_hit_event', data);
   });
 
+  socket.on('brawl_super_shot', (data) => {
+    io.emit('brawl_super_shot_event', data);
+  });
+
+  socket.on('brawl_mega_tackle', (data) => {
+    io.emit('brawl_mega_tackle_event', data);
+  });
+
+  socket.on('brawl_obstacle_break', (data) => {
+    io.emit('brawl_obstacle_break_event', data);
+  });
+
+  socket.on('brawl_powerup_collected', (data) => {
+    io.emit('brawl_powerup_collected_event', data);
+  });
+
   socket.on('brawl_ball_sync', (data) => {
     if (brawlMatch) {
       brawlMatch.ball = { ...brawlMatch.ball, ...data };
