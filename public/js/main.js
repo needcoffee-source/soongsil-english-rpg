@@ -2143,11 +2143,7 @@ class MainApp {
         btn.style.opacity = '1';
         btn.style.pointerEvents = 'auto';
         if (tag) {
-          if (target === 'playground') {
-            tag.innerText = (this.playerData && this.playerData.isTeacher) ? '이동 (무료)' : '10G 소모 ➔';
-          } else {
-            tag.innerText = '이동 ➔';
-          }
+          tag.innerText = (this.playerData && this.playerData.isTeacher) ? '이동 (무료)' : '10G 소모 ➔';
         }
       }
 
@@ -2172,7 +2168,23 @@ class MainApp {
     if (this._elevatorCooldown && Date.now() - this._elevatorCooldown < 1500) return;
     this._elevatorCooldown = Date.now() + 1500;
 
-    if (target === 'floor_6') {
+    // 엘리베이터 이용료 (무조건 1회 이용 시 10G 지출, 교사는 무료)
+    if (!this.playerData.isTeacher) {
+      if (this.playerData.gold < 10) {
+        alert(`❌ [엘리베이터 이용료 부족]\n\n엘리베이터를 이용하려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
+        return;
+      }
+      this.addGold(-10);
+      this.showToast('🛗 엘리베이터 이용료 10G를 지불했습니다.', 'info');
+    }
+
+    if (target === 'floor_7' || target === 'floor_1') {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 7;
+        this.engine.warpToRoom('hallway', '7층 복도 (1학년 구역)', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'floor_6') {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 6;
@@ -2184,20 +2196,7 @@ class MainApp {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
       });
-    } else if (target === 'floor_7' || target === 'floor_1') {
-      if (window.AudioManager) window.AudioManager.playSelect();
-      this.engine.triggerFadeWarp(() => {
-        this.engine.player.floor = 7;
-        this.engine.warpToRoom('hallway', '7층 복도 (1학년 구역)', 56 * 32, 6 * 32);
-      });
     } else if (target === 'playground') {
-      if (!this.playerData.isTeacher) {
-        if (this.playerData.gold < 10) {
-          alert(`❌ [엘리베이터 통행료 부족]\n\n운동장으로 내려가려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
-          return;
-        }
-        this.addGold(-10);
-      }
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
