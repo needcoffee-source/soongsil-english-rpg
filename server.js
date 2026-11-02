@@ -1024,7 +1024,7 @@ io.on('connection', (socket) => {
 
     if (opts.summonAll) {
       if (isSoccerBoss) {
-        io.emit('boss_raid_force_warp', { floor: 0, room: 'playground', x: 17 * 32, y: 35 * 32 });
+        io.emit('boss_raid_force_warp', { floor: 1, room: 'playground', x: 17 * 32, y: 35 * 32 });
       } else {
         io.emit('boss_raid_force_warp', { floor: 7, room: 'room_702' });
       }

@@ -563,6 +563,7 @@ const ITEM_SELL_PRICES = {
 const JOB_PASSIVE_DEFINITIONS = [
   {
     id: 'medic',
+    legacyId: 'doctor',
     name: '메딕 (Medic)',
     title: '🩺 수호의 메딕',
     icon: '👨‍⚕️',
@@ -573,6 +574,7 @@ const JOB_PASSIVE_DEFINITIONS = [
   },
   {
     id: 'runner',
+    legacyId: 'engineer',
     name: '러너 (Runner)',
     title: '⚡ 질주의 러너',
     icon: '🏃‍♂️',
@@ -583,6 +585,7 @@ const JOB_PASSIVE_DEFINITIONS = [
   },
   {
     id: 'scholar',
+    legacyId: 'researcher',
     name: '스칼라 (Scholar)',
     title: '📚 지혜의 스칼라',
     icon: '🧙‍♂️',
@@ -593,6 +596,7 @@ const JOB_PASSIVE_DEFINITIONS = [
   },
   {
     id: 'banker',
+    legacyId: 'scientist',
     name: '뱅커 (Banker)',
     title: '🪙 황금의 뱅커',
     icon: '💼',
@@ -603,6 +607,7 @@ const JOB_PASSIVE_DEFINITIONS = [
   },
   {
     id: 'scout',
+    legacyId: 'artist',
     name: '스카우트 (Scout)',
     title: '🍀 행운의 스카우트',
     icon: '🏹',
@@ -613,6 +618,7 @@ const JOB_PASSIVE_DEFINITIONS = [
   },
   {
     id: 'guardian',
+    legacyId: 'mentor',
     name: '가디언 (Guardian)',
     title: '🛡️ 철벽의 가디언',
     icon: '🛡️',
@@ -984,12 +990,14 @@ class MainApp {
       this.engine.setDashing(true);
 
       if (!isTeacher) {
+        const isSpeedJob = !!(this.playerData && (this.playerData.job === 'runner' || this.playerData.job === 'engineer'));
+        const effectiveDuration = this.dashState.durationMs + (isSpeedJob ? 1500 : 0);
         clearTimeout(this.dashState.durationTimeout);
         this.dashState.durationTimeout = setTimeout(() => {
           if (this.dashState.isDashing) {
             this.stopDash(true);
           }
-        }, this.dashState.durationMs);
+        }, effectiveDuration);
       }
     };
 
@@ -1983,8 +1991,8 @@ class MainApp {
       this.networkManager.waterPlant(1);
     }
 
-    if (this.audio && this.audio.playSelect) {
-      this.audio.playSelect();
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
     }
 
     // Check Milestone Celebrations
@@ -2191,7 +2199,7 @@ class MainApp {
       }
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
-        this.engine.player.floor = 0;
+        this.engine.player.floor = 1;
         this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
       });
     }
@@ -2790,6 +2798,7 @@ class MainApp {
           this.playerData.hasCheckedMirror = !!(saved.hasCheckedMirror || (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true'));
           this.playerData.hasOpenedLostBox = !!(saved.hasOpenedLostBox || (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true'));
           this.playerData.hasReadDevNote = !!(saved.hasReadDevNote || (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote2 = !!(saved.hasReadDevNote2 || (studentId && localStorage.getItem('soongsil_dev_note_2_' + studentId) === 'true'));
           this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
@@ -2803,6 +2812,7 @@ class MainApp {
               if (localClues) this.playerData.careerClues = JSON.parse(localClues);
             } catch (e) {}
           }
+          this.playerData.historyVitrines = Array.isArray(saved.historyVitrines) ? saved.historyVitrines : [false, false, false, false];
           this.playerData.solvedMoralQuestionIds = Array.isArray(saved.solvedMoralQuestionIds) ? saved.solvedMoralQuestionIds : [];
           if (this.playerData.solvedMoralQuestionIds.length === 0 && studentId) {
             try {
@@ -2819,6 +2829,7 @@ class MainApp {
           this.playerData.hasCheckedMirror = (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true');
           this.playerData.hasOpenedLostBox = (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true');
           this.playerData.hasReadDevNote = (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true');
+          this.playerData.hasReadDevNote2 = (studentId && localStorage.getItem('soongsil_dev_note_2_' + studentId) === 'true');
           this.playerData.hasClearedFirstBoss = !!(studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true');
           this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
           this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
@@ -2832,6 +2843,7 @@ class MainApp {
               if (localClues) this.playerData.careerClues = JSON.parse(localClues);
             } catch (e) {}
           }
+          this.playerData.historyVitrines = [false, false, false, false];
           this.playerData.solvedMoralQuestionIds = [];
           if (studentId) {
             try {
@@ -2922,6 +2934,7 @@ class MainApp {
               hasCheckedMirror: !!this.playerData.hasCheckedMirror,
               hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
               hasReadDevNote: !!this.playerData.hasReadDevNote,
+              hasReadDevNote2: !!this.playerData.hasReadDevNote2,
               hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
@@ -2929,9 +2942,7 @@ class MainApp {
               job: this.playerData.job || null,
               hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
               careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
-        job: this.playerData.job || null,
-        hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
-        careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
+              historyVitrines: Array.isArray(this.playerData.historyVitrines) ? this.playerData.historyVitrines : [false, false, false, false],
               solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
               titles: this.playerData.titles || [],
               equippedTitle: this.playerData.equippedTitle || null,
@@ -3327,6 +3338,7 @@ class MainApp {
 
     if (this.engine && this.engine.player) {
       this.engine.player.hasRunningShoes = !!(this.playerData.equipment && this.playerData.equipment.shoes) || !!this.playerData.isTeacher;
+      this.engine.setDashing(!!this.engine.player.isDashing);
     }
 
     const lvBonus = Math.max(0, (this.playerData.level || 1) - 1);
@@ -4052,7 +4064,9 @@ class MainApp {
       clearInterval(this.bossTimerInterval);
       this.bossTimerInterval = null;
     }
-    window.BOSS_CONFIG.active = false;
+    if (!data || !data.isSoloClear) {
+      window.BOSS_CONFIG.active = false;
+    }
     const bName = data.bossName || window.BOSS_CONFIG.name || '';
     const myId = (this.networkManager && this.networkManager.socket) ? this.networkManager.socket.id : null;
     const myStudentId = this.playerData ? this.playerData.studentId : null;
@@ -4374,7 +4388,11 @@ class MainApp {
     if (isCorrect) {
       btnEl.classList.add('correct');
       if (window.AudioManager) window.AudioManager.playCorrect();
-      const myDmg = Math.max(5, this.playerData.atk - bossDef);
+      let myDmg = Math.max(5, this.playerData.atk - bossDef);
+      const bNameCheck = window.BOSS_CONFIG.name || '';
+      if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자' && (bNameCheck.includes('파멸신') || bNameCheck.includes('기말고사'))) {
+        myDmg = Math.round(myDmg * 1.15);
+      }
       this.bossState.hasAttacked = true;
       this.bossState.damageDealt = (this.bossState.damageDealt || 0) + myDmg;
 
@@ -4384,35 +4402,16 @@ class MainApp {
       } else {
         this.bossState.currentHp = Math.max(0, this.bossState.currentHp - myDmg);
         if (this.bossState.currentHp <= 0) {
-          const bName = window.BOSS_CONFIG.name || '';
-          let clearNotice = '';
-          if (bName.includes('골렘') || bName.includes('golem')) {
-            this.playerData.hasClearedFirstBoss = true;
-            const studentId = this.playerData.studentId || '';
-            if (studentId) {
-              localStorage.setItem('soongsil_first_boss_cleared_' + studentId, 'true');
-            }
-            const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
-            this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
-            clearNotice = `\n\n🎉 중앙 엘리베이터 점검이 완료되었습니다! 이제 엘리베이터를 타고 지상 운동장으로 이동할 수 있습니다!\n📦 획득: [🟫 질긴 보스의 가죽 x${bossLeatherCount}개]`;
-            this.saveProgress(true);
-          } else if (bName.includes('드래곤') || bName.includes('dragon')) {
-            this.playerData.hasClearedDragonRaid = true;
-            const studentId = this.playerData.studentId || '';
-            if (studentId) {
-              localStorage.setItem('soongsil_dragon_cleared_' + studentId, 'true');
-            }
-            localStorage.setItem('soongsil_dragon_cleared_global', 'true');
-            this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 핵심 재료' });
-            clearNotice = '\n\n🏆 숭실 청동 드래곤 토벌 성공!\n📦 획득: [🥉 청동 드래곤의 심장] (3티어 청동 장비 제작 재료)';
-            this.saveProgress();
-          }
           this.updateBossRaidUI();
-          this.addGold(window.BOSS_CONFIG.rewardGold);
-          this.addExp(window.BOSS_CONFIG.rewardExp);
-          alert(`🏆 [${window.BOSS_CONFIG.name}] 처치!\n보상: 🪙 +${window.BOSS_CONFIG.rewardGold}G, 🌟 +${window.BOSS_CONFIG.rewardExp} EXP${clearNotice}`);
           this.bossState.currentHp = this.bossState.maxHp;
-          this.modalBossRaid.classList.add('hidden');
+          this.onBossRaidCleared({
+            bossName: window.BOSS_CONFIG.name,
+            rewardGold: window.BOSS_CONFIG.rewardGold,
+            rewardExp: window.BOSS_CONFIG.rewardExp,
+            isSoloClear: true,
+            participantIds: (this.networkManager && this.networkManager.socket) ? [this.networkManager.socket.id] : [],
+            participantStudentIds: this.playerData.studentId ? [this.playerData.studentId] : []
+          });
           return;
         }
       }
@@ -4738,9 +4737,20 @@ class MainApp {
       });
     }
 
-    // 1. Gold & EXP
-    this.addGold(mob.goldReward || 10);
-    this.addExp(mob.expReward || 20);
+    // 1. Gold & EXP (직업 패시브 보너스 반영)
+    let finalGold = mob.goldReward || 10;
+    let finalExp = mob.expReward || 20;
+    if (this.playerData && (this.playerData.job === 'scholar' || this.playerData.job === 'researcher')) {
+      finalExp += Math.round(finalExp * 0.3);
+    }
+    if (this.playerData && (this.playerData.job === 'banker' || this.playerData.job === 'scientist')) {
+      finalGold += Math.round(finalGold * 0.35);
+    }
+    const isScoutJob = !!(this.playerData && (this.playerData.job === 'scout' || this.playerData.job === 'artist'));
+    const scoutDropBonus = isScoutJob ? 20 : 0;
+
+    this.addGold(finalGold);
+    this.addExp(finalExp);
 
     const dropsList = [];
 
@@ -4753,8 +4763,8 @@ class MainApp {
       });
       dropsList.push(`🏛️ 숭실 역사의 정수 x${essenceCount}개`);
 
-      // 35% chance to drop unyielding stone
-      if (Math.random() * 100 < 35) {
+      // 35% chance to drop unyielding stone (+20%p for Scout)
+      if (Math.random() * 100 < (35 + scoutDropBonus)) {
         this.addItem('item_unyielding_stone', '💎 꺾이지 않는 사명석', 1, '💎', {
           type: 'material',
           effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료'
@@ -4769,8 +4779,8 @@ class MainApp {
       });
       dropsList.push(`⚽ 탄력있는 풋살공 가죽 x${fLeatherCount}개`);
 
-      // Forsythia Petal (15% drop rate for futsal monsters)
-      if (Math.random() * 100 < 15) {
+      // Forsythia Petal (15% drop rate for futsal monsters, +20%p for Scout)
+      if (Math.random() * 100 < (15 + scoutDropBonus)) {
         this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
           type: 'material',
           effect: '개나리 반지 및 주홍 물약 재료'
@@ -4808,8 +4818,8 @@ class MainApp {
       });
       dropsList.push(`🏀 농구공 가죽 조각 x${leatherCount}개`);
 
-      // Forsythia Petal (15% drop rate for basketball monsters)
-      if (Math.random() * 100 < 15) {
+      // Forsythia Petal (15% drop rate for basketball monsters, +20%p for Scout)
+      if (Math.random() * 100 < (15 + scoutDropBonus)) {
         this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
           type: 'material',
           effect: '개나리 반지 및 주홍 물약 재료'
@@ -4838,7 +4848,7 @@ class MainApp {
       : '(농구공 가죽 조각과 보스가죽을 모아 복도 장비 제작대에서 🥋 가죽갑옷과 🗡️ 가죽손잡이 세이버를 제작할 수 있습니다!)';
 
     alert(
-      `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${mob.goldReward}G, 🌟 경험치 +${mob.expReward} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n${craftGuide}`
+      `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${finalGold}G, 🌟 경험치 +${finalExp} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n${craftGuide}`
     );
   }
 
@@ -6104,10 +6114,15 @@ class MainApp {
         hasCheckedMirror: !!this.playerData.hasCheckedMirror,
         hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
         hasReadDevNote: !!this.playerData.hasReadDevNote,
+        hasReadDevNote2: !!this.playerData.hasReadDevNote2,
         hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
         hasClearedClass704: !!this.playerData.hasClearedClass704,
+        job: this.playerData.job || null,
+        hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
+        careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
+        historyVitrines: Array.isArray(this.playerData.historyVitrines) ? this.playerData.historyVitrines : [false, false, false, false],
         solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
         titles: this.playerData.titles || [],
         equippedTitle: this.playerData.equippedTitle || null,
@@ -6132,7 +6147,7 @@ class MainApp {
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${saveData.job}_${saveData.hasEscapedCareerRoom}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasReadDevNote2}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${saveData.job}_${saveData.hasEscapedCareerRoom}_${(saveData.careerClues || []).join(',')}_${(saveData.historyVitrines || []).join(',')}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
@@ -6621,14 +6636,18 @@ class MainApp {
   }
 
   getItemSellPrice(itemId) {
+    let basePrice = 1;
     if (this.ITEM_SELL_PRICES && this.ITEM_SELL_PRICES[itemId] !== undefined) {
-      return this.ITEM_SELL_PRICES[itemId];
+      basePrice = this.ITEM_SELL_PRICES[itemId];
+    } else if (itemId.startsWith('equip_bronze')) basePrice = 10;
+    else if (itemId.startsWith('equip_leather')) basePrice = 8;
+    else if (itemId.startsWith('equip_wood')) basePrice = 3;
+    else if (itemId.startsWith('item_')) basePrice = 2;
+
+    if (this.playerData && (this.playerData.job === 'banker' || this.playerData.job === 'scientist')) {
+      return Math.max(basePrice + 1, Math.round(basePrice * 1.1));
     }
-    if (itemId.startsWith('equip_bronze')) return 10;
-    if (itemId.startsWith('equip_leather')) return 8;
-    if (itemId.startsWith('equip_wood')) return 3;
-    if (itemId.startsWith('item_')) return 2;
-    return 1;
+    return basePrice;
   }
 
   renderStoreModal() {
@@ -6944,7 +6963,15 @@ class MainApp {
       } else if (t.costType === 'quest') {
         canAfford = false;
         costText = '특별 퀘스트 달성 필요';
-        progressText = '(숭실역사관 4대 전시관 답사)';
+        if (t.id === 'title_history_bearer') {
+          progressText = '(숭실역사관 4대 전시관 답사)';
+        } else if (t.id === 'title_drummer') {
+          progressText = '(1학년 4반 도덕 비트 20문제 완파)';
+        } else if (t.id && t.id.startsWith('title_job_')) {
+          progressText = '(5층 진로상담실 방탈출 & 전직)';
+        } else {
+          progressText = '(특별 퀘스트 달성 시 자동 지급)';
+        }
       }
 
       const card = document.createElement('div');
