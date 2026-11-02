@@ -169,7 +169,7 @@ check('No stale "자진폐교관" title in engine vitrine draw', !engineCode.inc
 check('History Altar in world.js is "✨ 숭실 역사관 신비한 제단"', worldCode.includes('✨ 숭실 역사관 신비한 제단'));
 check('History Altar in engine.js has correct unlock/lock titles', engineCode.includes("const altarTitle = unlocked ? '✨ 숭실 역사관 신비한 제단' : '🔒 숭실 역사관 신비한 제단';"));
 
-check('Staff office plaque is "🏛️ 교무실"', engineCode.includes("const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실';"));
+check('Staff office plaque is "🏛️ 교무실"', engineCode.includes("const plaqueTitle = r.plaqueName || (isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실');"));
 check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', !worldCode.includes('숭실역사관 입장 (SPACE)'));
 
 // 5. Version Cache-Buster Consistency

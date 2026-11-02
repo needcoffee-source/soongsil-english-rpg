@@ -415,9 +415,10 @@ class GameEngine {
       const cr = this.getCurrentClassroomData();
 
       if (this.player.room === 'room_staff_office') {
-        // 서쪽 입구(tx: 1..3, ty: 11..13) 및 동쪽 입구(tx: 86..88, ty: 11..13) 통행 허용
-        if ((tileX >= 1 && tileX <= 3 && tileY >= 11 && tileY <= 13) ||
-            (tileX >= 86 && tileX <= 88 && tileY >= 11 && tileY <= 13)) {
+        const mapW = this.getMapWidth();
+        // 서쪽 앞문 입구(tx: 1..4, ty: 11..13) 및 동쪽 뒷문 입구(tx: mapW-5..mapW-1, ty: 11..13) 통행 허용
+        if ((tileX >= 1 && tileX <= 4 && tileY >= 11 && tileY <= 13) ||
+            (tileX >= mapW - 5 && tileX <= mapW - 1 && tileY >= 11 && tileY <= 13)) {
           return false;
         }
         if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
@@ -551,10 +552,12 @@ class GameEngine {
     } else if (this.player.room && (this.player.room.startsWith('room_') || this.player.room.startsWith('classroom'))) {
       // 교실 내부에서만 출구 문 밟았을 때 복도로 나가기 실행
       if (this.player.room === 'room_staff_office') {
-        // 6층 교무실: 좌측 서문 입구(tx <= 2, ty 11..13) 또는 우측 동문 입구(tx >= 87, ty 11..13)로 퇴장
-        if ((tileX <= 2 || tileX >= 87) && tileY >= 11 && tileY <= 13) {
+        const mapW = this.getMapWidth();
+        // 6층 교무실: 좌측 앞문 입구(tx <= 2, ty 11..13) 또는 우측 뒷문 입구(tx >= mapW - 3, ty 11..13)로 퇴장
+        if ((tileX <= 2 || tileX >= mapW - 3) && tileY >= 11 && tileY <= 13) {
+          const exitDoorType = (tileX <= 2) ? 'west' : 'east';
           this.triggerFadeWarp(() => {
-            this.exitClassroom();
+            this.exitClassroom(exitDoorType);
           });
         }
       } else if (this.player.room === 'room_career') {
@@ -577,7 +580,7 @@ class GameEngine {
     }
   }
 
-  exitClassroom() {
+  exitClassroom(doorType = 'default') {
     if (this.player.isFallen) return; // 기절 상태에서는 교실 밖으로 걸어나갈 수 없음
     if (this.player.room === 'room_career') {
       if (window.MainApp && typeof window.MainApp.resetCareerEscapeProgress === 'function') {
@@ -599,8 +602,16 @@ class GameEngine {
     if (this.player.room === 'room_staff_office') {
       this.player.floor = 6;
       const f6 = WORLD_DATA.floors[6];
-      const r = f6 && f6.rooms ? f6.rooms.find(rm => rm.id === 'room_staff_office') : null;
-      const rx = r ? r.doorX * 32 : 13 * 32;
+      let r = null;
+      if (f6 && f6.rooms) {
+        if (doorType === 'east') {
+          r = f6.rooms.find(rm => rm.id === 'room_staff_office' && rm.doorId === 'east');
+        } else if (doorType === 'west') {
+          r = f6.rooms.find(rm => rm.id === 'room_staff_office' && rm.doorId === 'west');
+        }
+        if (!r) r = f6.rooms.find(rm => rm.id === 'room_staff_office');
+      }
+      const rx = r ? (r.doorX + 1) * 32 : 13 * 32;
       const ry = r ? (r.doorY + 2) * 32 : 7 * 32;
       this.warpToRoom('hallway', f6 ? f6.name : '6층 복도 (교무실 & 2학년 구역)', rx, ry);
       return;
@@ -1787,7 +1798,7 @@ class GameEngine {
       this.ctx.fillRect(px + panelW + 6, py + 28, 3, 16);
 
       // 대형 명패
-      const plaqueTitle = isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실';
+      const plaqueTitle = r.plaqueName || (isStaffOffice ? '🏛️ 교무실' : '🌟 진로상담실');
       const plaqueBg = isStaffOffice ? 'rgba(88, 28, 135, 0.95)' : 'rgba(30, 58, 138, 0.95)';
       const plaqueBorder = isStaffOffice ? '#c084fc' : '#fbbf24';
       this.drawSharpLabel(px + dw / 2, py - 4, plaqueTitle, {
@@ -9140,88 +9151,81 @@ class GameEngine {
   }
 
   // ========================================================
-  // 6층 교무실 (Staff Office) 인테리어 바닥 · 벽면 · 가구 · 교1~22 좌석 시스템
+  // 6층 교무실 (Staff Office) 인테리어 바닥 · 벽면 · 가구 · 교1~25 좌석 시스템
+  // - 맵 106 x 26 타일 / 좌측 앞문 · 우측 뒷문 2개 입구
+  // - 하단 교사석 6개 분단 (분단 간 간격 약 10타일)
   // ========================================================
+
+  getStaffOfficeLayout() {
+    if (this._staffOfficeLayout) return this._staffOfficeLayout;
+    this._staffOfficeLayout = {
+      topClusterLeft: 66, // 교1 · 교2 · 교3 T자 클러스터 (tx 66..69, ty 5..8)
+      counsel: { x1: 84, x2: 100, doorX1: 90, doorX2: 92 }, // 상담실
+      clusters: [
+        { type: 'five', left: 9, labels: { tl: '교4', tr: '교8', ml: '교5', mr: '교7', bottom: '교6' } },
+        { type: 'tee', left: 24, labels: { l: '교9', r: '교10', bottom: '교11' } },
+        { type: 'box', left: 39, labels: { l: '교13', r: '교14', bottom: '교12' } },
+        { type: 'tee', left: 56, labels: { l: '교23', r: '교24', bottom: '교25' } }, // 신규 T자 3석
+        { type: 'tee', left: 72, labels: { l: '교16', r: '교17', bottom: '교15' } },
+        { type: 'five', left: 87, labels: { tl: '교21', tr: '교22', ml: '교19', mr: '교20', bottom: '교18' } }
+      ]
+    };
+    return this._staffOfficeLayout;
+  }
 
   drawStaffOfficeFloorTile(tx, ty) {
     const px = tx * 32;
     const py = ty * 32;
+    const L = this.getStaffOfficeLayout();
 
     // 1. 소회의실 (Small Conference Room, tx: 7..28, ty: 3..10)
     if (tx >= 7 && tx <= 28 && ty >= 3 && ty <= 10) {
       const isDark = (tx + ty) % 2 === 0;
-      this.ctx.fillStyle = isDark ? '#78350f' : '#652b0d';
+      this.ctx.fillStyle = isDark ? '#78350f' : '#6b2f0e';
       this.ctx.fillRect(px, py, 32, 32);
 
-      this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.22)';
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(px + 1, py + 1, 30, 30);
-
-      // 중앙 회의 테이블 아래 고급 네이비·골드 러그 (tx: 11..23, ty: 4..8)
+      // 중앙 회의 테이블 아래 네이비 러그 (tx: 11..23, ty: 4..8)
       if (tx >= 11 && tx <= 23 && ty >= 4 && ty <= 8) {
         this.ctx.fillStyle = '#1e3a8a';
         this.ctx.fillRect(px, py, 32, 32);
-        this.ctx.strokeStyle = 'rgba(251, 191, 36, 0.35)';
-        this.ctx.strokeRect(px + 1, py + 1, 30, 30);
       }
       return;
     }
 
-    // 2. 탕비실 및 진입 통로 (Pantry & Passage, tx: 29..35, ty: 3..10 & tx: 36..52, ty: 3..5)
-    if ((tx >= 29 && tx <= 35 && ty >= 3 && ty <= 10) || (tx >= 36 && tx <= 52 && ty >= 3 && ty <= 5)) {
+    // 2. 탕비실 및 진입 통로 (tx: 29..35, ty: 3..10 & tx: 36..51, ty: 3..5)
+    if ((tx >= 29 && tx <= 35 && ty >= 3 && ty <= 10) || (tx >= 36 && tx <= 51 && ty >= 3 && ty <= 5)) {
       const isCheck = (tx + ty) % 2 === 0;
-      this.ctx.fillStyle = isCheck ? '#ffedd5' : '#fed7aa';
+      this.ctx.fillStyle = isCheck ? '#ffedd5' : '#fde4c8';
       this.ctx.fillRect(px, py, 32, 32);
-
-      this.ctx.strokeStyle = '#fdba74';
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(px + 0.5, py + 0.5, 31, 31);
-
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      this.ctx.fillRect(px + 2, py + 2, 8, 2);
       return;
     }
 
     // 3. 인쇄실 (Printing Room, tx: 36..52, ty: 6..10)
     if (tx >= 36 && tx <= 52 && ty >= 6 && ty <= 10) {
       const isEven = (tx + ty) % 2 === 0;
-      this.ctx.fillStyle = isEven ? '#f8fafc' : '#e2e8f0';
+      this.ctx.fillStyle = isEven ? '#f8fafc' : '#eef2f7';
       this.ctx.fillRect(px, py, 32, 32);
-
-      this.ctx.strokeStyle = '#cbd5e1';
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(px + 0.5, py + 0.5, 31, 31);
-
-      this.ctx.fillStyle = '#94a3b8';
-      this.ctx.fillRect(px + 2, py + 2, 2, 2);
       return;
     }
 
-    // 4. 상담실 (Counseling Room, tx: 68..82, ty: 3..10)
-    if (tx >= 68 && tx <= 82 && ty >= 3 && ty <= 10) {
+    // 4. 상담실 (Counseling Room)
+    if (tx >= L.counsel.x1 && tx <= L.counsel.x2 && ty >= 3 && ty <= 10) {
       const isAlt = (tx + ty) % 2 === 0;
-      this.ctx.fillStyle = isAlt ? '#ede0d4' : '#e6ccb2';
+      this.ctx.fillStyle = isAlt ? '#ede0d4' : '#e6d3bf';
       this.ctx.fillRect(px, py, 32, 32);
 
-      this.ctx.fillStyle = 'rgba(168, 124, 91, 0.14)';
-      this.ctx.fillRect(px + 4, py + 8, 24, 2);
-      this.ctx.fillRect(px + 4, py + 20, 24, 2);
-
-      // 상담 테이블 아래 따뜻한 세이지 그린 러그 (tx: 72..78, ty: 5..8)
-      if (tx >= 72 && tx <= 78 && ty >= 5 && ty <= 8) {
+      // 상담 테이블 아래 세이지 그린 러그
+      if (tx >= L.counsel.x1 + 4 && tx <= L.counsel.x1 + 10 && ty >= 5 && ty <= 8) {
         this.ctx.fillStyle = '#d1fae5';
         this.ctx.fillRect(px, py, 32, 32);
-        this.ctx.strokeStyle = '#6ee7b7';
-        this.ctx.strokeRect(px + 1, py + 1, 30, 30);
       }
       return;
     }
 
-    // 5. 중앙 가로 메인 통로 런너 ( West 입구 <---> East 입구 : ty: 11..13, tx: 1..88 )
-    if (ty >= 11 && ty <= 13 && tx >= 1 && tx <= 88) {
+    // 5. 중앙 가로 메인 통로 런너 (앞문 <---> 뒷문 : ty: 11..13)
+    if (ty >= 11 && ty <= 13) {
       this.ctx.fillStyle = '#1e293b';
       this.ctx.fillRect(px, py, 32, 32);
-
       if (ty === 11) {
         this.ctx.fillStyle = '#fbbf24';
         this.ctx.fillRect(px, py + 1, 32, 2);
@@ -9230,146 +9234,173 @@ class GameEngine {
         this.ctx.fillStyle = '#fbbf24';
         this.ctx.fillRect(px, py + 29, 32, 2);
       }
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-      this.ctx.fillRect(px + 8, py + 15, 16, 2);
       return;
     }
 
-    // 6. 교무실 본실 교사 집무 구역 모듈러 슬레이트 카페트
+    // 6. 교무실 본실 교사 집무 구역 슬레이트 카페트
     const isDarkSlate = (tx + ty) % 2 === 0;
-    this.ctx.fillStyle = isDarkSlate ? '#334155' : '#3b4b62';
+    this.ctx.fillStyle = isDarkSlate ? '#334155' : '#3a4a60';
     this.ctx.fillRect(px, py, 32, 32);
-
-    this.ctx.strokeStyle = '#1e293b';
-    this.ctx.lineWidth = 1;
-    this.ctx.strokeRect(px + 0.5, py + 0.5, 31, 31);
-
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-    this.ctx.fillRect(px + 6, py + 6, 20, 20);
   }
 
   isStaffOfficeWall(tx, ty) {
-    // 1. 소회의실 벽체 (좌: tx=7, 우: tx=28, 하: ty=10 / 우측 하단 문: tx 22..24, ty 10)
+    const L = this.getStaffOfficeLayout();
+
+    // 1. 소회의실 벽체 (좌 tx=7, 우 tx=28, 하 ty=10 / 우측 하단 문: tx 22..24)
     if ((tx === 7 || tx === 28) && ty >= 3 && ty <= 10) return true;
     if (ty === 10 && tx >= 7 && tx <= 28) {
-      if (tx >= 22 && tx <= 24) return false; // 소회의실 문
+      if (tx >= 22 && tx <= 24) return false;
       return true;
     }
-    // 소회의실 중앙 대형 회의 테이블 충돌 (tx: 13..21, ty: 5..7)
+    // 소회의실 회의 테이블
     if (tx >= 13 && tx <= 21 && ty >= 5 && ty <= 7) return true;
 
-    // 2. 탕비실 상단 조리대/냉장고 가구 충돌 (tx: 36..50, ty: 3)
+    // 2. 탕비실 조리대 · 냉장고 · 정수기 (tx: 36..50, ty: 3)
     if (ty === 3 && tx >= 36 && tx <= 50) return true;
 
-    // 3. 인쇄실 & 탕비실 우측 경계 벽체
-    // - 인쇄실 상단 가로벽 (탕비실과 분리): ty=6, tx: 36..52
-    if (ty === 6 && tx >= 36 && tx <= 52) return true;
-    // - 인쇄실 좌측 세로벽: tx=36, ty: 6..10
-    if (tx === 36 && ty >= 6 && ty <= 10) return true;
-    // - 탕비실+인쇄실 우측 세로벽 (교1~3 구역과 분리): tx=52, ty: 3..10
-    if (tx === 52 && ty >= 3 && ty <= 10) return true;
-    // - 인쇄실 하단 가로벽: ty=10, tx: 36..52 (중앙 문: tx 43..45)
-    if (ty === 10 && tx >= 36 && tx <= 52) {
-      if (tx >= 43 && tx <= 45) return false; // 인쇄실 문
+    // 3. 탕비실 / 인쇄실 벽체
+    if (ty === 6 && tx >= 36 && tx <= 52) return true;           // 인쇄실 상단벽
+    if (tx === 36 && ty >= 6 && ty <= 10) return true;           // 인쇄실 좌측벽
+    if (tx === 52 && ty >= 3 && ty <= 10) return true;           // 탕비실·인쇄실 우측벽
+    if (ty === 10 && tx >= 36 && tx <= 52) {                     // 인쇄실 하단벽 (문: tx 43..45)
+      if (tx >= 43 && tx <= 45) return false;
       return true;
     }
-    // 인쇄실 내부 대형 복사기/작업대 충돌 (tx: 38..49, ty: 7)
+    // 인쇄실 복합기 · 작업대
     if (ty === 7 && tx >= 38 && tx <= 49) return true;
 
-    // 4. 상담실 벽체 (좌: tx=68, 우: tx=82, 하: ty=10 / 하단 문: tx 74..76, ty 10)
-    if ((tx === 68 || tx === 82) && ty >= 3 && ty <= 10) return true;
-    if (ty === 10 && tx >= 68 && tx <= 82) {
-      if (tx >= 74 && tx <= 76) return false; // 상담실 출입구
+    // 4. 상담실 벽체
+    const C = L.counsel;
+    if ((tx === C.x1 || tx === C.x2) && ty >= 3 && ty <= 10) return true;
+    if (ty === 10 && tx >= C.x1 && tx <= C.x2) {
+      if (tx >= C.doorX1 && tx <= C.doorX2) return false;
       return true;
     }
-    // 상담실 중앙 원형 테이블 충돌 (tx: 74..76, ty: 6)
-    if (ty === 6 && tx >= 74 && tx <= 76) return true;
+    // 상담실 원형 테이블
+    if (ty === 6 && tx >= C.x1 + 6 && tx <= C.x1 + 8) return true;
 
-    // 5. 상단 우측 교사석 클러스터 (교1, 교2, 교3: tx 58..61, ty 5..8)
-    if (tx >= 58 && tx <= 61 && ty >= 5 && ty <= 8) return true;
+    // 5. 상단 교1 · 교2 · 교3 클러스터
+    const T = L.topClusterLeft;
+    if (tx >= T && tx <= T + 3 && ty >= 5 && ty <= 8) return true;
 
-    // 6. 하단 5개 분단 교사석 클러스터 (교4 ~ 교22)
-    // - 1분단 (교4, 교5, 교6, 교7, 교8: tx 12..16, ty 15..20)
-    if (tx >= 12 && tx <= 16 && ty >= 15 && ty <= 20) return true;
-    // - 2분단 (교9, 교10, 교11: tx 28..32, ty 17..20)
-    if (tx >= 28 && tx <= 32 && ty >= 17 && ty <= 20) return true;
-    // - 3분단 (교12, 교13, 교14: tx 43..47, ty 16..18 및 교12 박스석 tx 42..48, ty 19..20)
-    if (tx >= 43 && tx <= 47 && ty >= 16 && ty <= 18) return true;
-    if (tx >= 42 && tx <= 48 && ty >= 19 && ty <= 20) return true;
-    // - 4분단 (교15, 교16, 교17: tx 58..62, ty 17..20)
-    if (tx >= 58 && tx <= 62 && ty >= 17 && ty <= 20) return true;
-    // - 5분단 (교18, 교19, 교20, 교21, 교22: tx 73..77, ty 15..20)
-    if (tx >= 73 && tx <= 77 && ty >= 15 && ty <= 20) return true;
+    // 6. 하단 교사석 6개 분단
+    for (const c of L.clusters) {
+      const x = c.left;
+      if (c.type === 'five') {
+        if (tx >= x && tx <= x + 4 && ty >= 15 && ty <= 20) return true;
+      } else if (c.type === 'tee') {
+        if (tx >= x && tx <= x + 4 && ty >= 17 && ty <= 20) return true;
+      } else if (c.type === 'box') {
+        if (tx >= x + 1 && tx <= x + 5 && ty >= 16 && ty <= 18) return true;
+        if (tx >= x && tx <= x + 6 && ty >= 19 && ty <= 20) return true;
+      }
+    }
 
     return false;
   }
 
   renderStaffOffice(cr) {
-    // 1. 상단 부속실 내부 가구 및 소품 렌더링 (소회의실, 탕비실, 인쇄실, 상담실)
+    const L = this.getStaffOfficeLayout();
+    const C = L.counsel;
+
+    // 1. 상단 부속실 내부 가구 및 소품
     this.drawStaffOfficeRoomsInterior();
 
-    // 2. 상단 부속실 벽체 및 문(Doorway) 렌더링
-    // 2-A. 소회의실 벽체 (좌 tx=7, 우 tx=28, 하 ty=10, 문 tx=22..24)
-    for (let ty = 3; ty <= 10; ty++) {
-      this.drawStaffOfficePartitionWall(7, ty);
-      this.drawStaffOfficePartitionWall(28, ty);
-    }
-    for (let tx = 7; tx <= 28; tx++) {
-      if (tx >= 22 && tx <= 24) {
-        this.drawStaffOfficeDoorway(tx, 10, 'h');
-      } else {
-        this.drawStaffOfficePartitionWall(tx, 10);
-      }
-    }
+    // 2. 상단 부속실 벽체 — 겹침 없이 하나로 이어진 깔끔한 벽 (세로벽 먼저, 가로벽 나중)
+    // 2-A. 소회의실
+    this.drawStaffOfficeWallRun(7, 3, 7, 9);
+    this.drawStaffOfficeWallRun(28, 3, 28, 9);
+    this.drawStaffOfficeWallRun(7, 10, 21, 10);
+    this.drawStaffOfficeWallRun(25, 10, 28, 10);
+    this.drawStaffOfficeDoorRun(22, 24, 10);
 
-    // 2-B. 탕비실 & 인쇄실 벽체 (상단벽 ty=6 tx=36..52, 좌측벽 tx=36 ty=6..10, 우측벽 tx=52 ty=3..10, 하단벽 ty=10 tx=36..52 문 tx=43..45)
-    for (let tx = 36; tx <= 52; tx++) {
-      this.drawStaffOfficePartitionWall(tx, 6);
-    }
-    for (let ty = 6; ty <= 10; ty++) {
-      this.drawStaffOfficePartitionWall(36, ty);
-    }
-    for (let ty = 3; ty <= 10; ty++) {
-      this.drawStaffOfficePartitionWall(52, ty);
-    }
-    for (let tx = 36; tx <= 52; tx++) {
-      if (tx >= 43 && tx <= 45) {
-        this.drawStaffOfficeDoorway(tx, 10, 'h');
-      } else {
-        this.drawStaffOfficePartitionWall(tx, 10);
-      }
-    }
+    // 2-B. 탕비실 · 인쇄실
+    this.drawStaffOfficeWallRun(52, 3, 52, 10);
+    this.drawStaffOfficeWallRun(36, 7, 36, 9);
+    this.drawStaffOfficeWallRun(36, 6, 51, 6);
+    this.drawStaffOfficeWallRun(36, 10, 42, 10);
+    this.drawStaffOfficeWallRun(46, 10, 51, 10);
+    this.drawStaffOfficeDoorRun(43, 45, 10);
 
-    // 2-C. 상담실 벽체 (좌 tx=68, 우 tx=82, 하 ty=10, 문 tx=74..76)
-    for (let ty = 3; ty <= 10; ty++) {
-      this.drawStaffOfficePartitionWall(68, ty);
-      this.drawStaffOfficePartitionWall(82, ty);
-    }
-    for (let tx = 68; tx <= 82; tx++) {
-      if (tx >= 74 && tx <= 76) {
-        this.drawStaffOfficeDoorway(tx, 10, 'h');
-      } else {
-        this.drawStaffOfficePartitionWall(tx, 10);
-      }
-    }
+    // 2-C. 상담실
+    this.drawStaffOfficeWallRun(C.x1, 3, C.x1, 9);
+    this.drawStaffOfficeWallRun(C.x2, 3, C.x2, 9);
+    this.drawStaffOfficeWallRun(C.x1, 10, C.doorX1 - 1, 10);
+    this.drawStaffOfficeWallRun(C.doorX2 + 1, 10, C.x2, 10);
+    this.drawStaffOfficeDoorRun(C.doorX1, C.doorX2, 10);
 
-    // 3. 교1 ~ 교22 전체 교사 좌석 클러스터 및 파티션 렌더링
+    // 3. 교1 ~ 교25 교사 좌석 클러스터
     this.drawStaffOfficeAllTeacherClusters();
 
-    // 4. 양측 출입구 (서문 입구 & 동문 입구) 렌더링
+    // 4. 앞문 · 뒷문 입구
     this.drawStaffOfficeEntrances();
 
-    // 5. 각 구역 명패 (소회의실, 탕비실, 인쇄실, 상담실, 문, 입구) 렌더링
+    // 5. 실 이름표
     this.drawStaffOfficeSignage();
+  }
+
+  // 끊김 없는 단일 벽체 (타일마다 줄무늬가 생기지 않도록 한 번에 그림)
+  drawStaffOfficeWallRun(tx1, ty1, tx2, ty2) {
+    const ctx = this.ctx;
+    const x = tx1 * 32;
+    const y = ty1 * 32;
+    const w = (tx2 - tx1 + 1) * 32;
+    const h = (ty2 - ty1 + 1) * 32;
+    const vertical = (tx1 === tx2) && (ty2 > ty1);
+
+    ctx.save();
+    // 바닥 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+    ctx.fillRect(x + 3, y + 4, w, h);
+
+    if (vertical) {
+      // 위에서 내려다본 세로 벽: 양옆 테두리 + 밝은 상판 한 줄
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(x + 5, y, w - 10, h);
+    } else {
+      // 가로 벽: 상판 캡 + 벽면 + 걸레받이
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(x, y, w, 9);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(x, y + 9, w, h - 15);
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(x, y + h - 6, w, 6);
+    }
+
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x + 0.75, y + 0.75, w - 1.5, h - 1.5);
+    ctx.restore();
+  }
+
+  // 가로 문 (문틀 기둥 2개 + 문턱 한 줄)
+  drawStaffOfficeDoorRun(tx1, tx2, ty) {
+    const ctx = this.ctx;
+    const x = tx1 * 32;
+    const y = ty * 32;
+    const w = (tx2 - tx1 + 1) * 32;
+
+    ctx.save();
+    // 문턱 플레이트
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.55)';
+    ctx.fillRect(x, y + 12, w, 8);
+    // 문틀 기둥
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(x - 2, y + 2, 6, 28);
+    ctx.fillRect(x + w - 4, y + 2, 6, 28);
+    ctx.restore();
   }
 
   drawStaffOfficeRoomsInterior() {
     const ctx = this.ctx;
+    const C = this.getStaffOfficeLayout().counsel;
 
     // =========================================================
     // [1] 소회의실 (tx: 8..27, ty: 3..9)
     // =========================================================
-    // 북측 벽면 화이트보드 & 프로젝터 스크린 (tx: 13..21, ty: 2)
+    // 북측 벽면 화이트보드
     ctx.fillStyle = '#f8fafc';
     ctx.fillRect(13 * 32, 2 * 32 + 4, 9 * 32, 22);
     ctx.strokeStyle = '#475569';
@@ -9378,13 +9409,12 @@ class GameEngine {
     ctx.fillStyle = '#0284c7';
     ctx.fillRect(14 * 32, 2 * 32 + 9, 7 * 32, 3);
 
-    // 소회의실 대형 우드 회의 테이블 (tx: 13..21, ty: 5..7)
+    // 회의 테이블 (tx: 13..21, ty: 5..7)
     const confX = 13 * 32;
     const confY = 5 * 32;
     const confW = 9 * 32;
     const confH = 3 * 32;
 
-    // 회의용 의자 (상단 4석, 하단 4석, 좌/우 의장석)
     for (let cx = 14; cx <= 20; cx += 2) {
       this.drawStaffOfficeChair(cx * 32 + 16, 4 * 32 + 20, 'down');
       this.drawStaffOfficeChair(cx * 32 + 16, 8 * 32 + 12, 'up');
@@ -9392,7 +9422,6 @@ class GameEngine {
     this.drawStaffOfficeChair(12 * 32 + 18, 6 * 32 + 16, 'right');
     this.drawStaffOfficeChair(22 * 32 + 14, 6 * 32 + 16, 'left');
 
-    // 테이블 그림자 & 본체
     ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.fillRect(confX + 4, confY + 6, confW, confH);
     ctx.fillStyle = '#451a03';
@@ -9403,7 +9432,6 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(confX + 8, confY + 8, confW - 16, confH - 16);
 
-    // 회의 자료 및 노트북 소품
     for (let cx = 14; cx <= 20; cx += 2) {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(cx * 32 + 8, confY + 10, 14, 10);
@@ -9412,16 +9440,15 @@ class GameEngine {
     ctx.fillStyle = '#38bdf8';
     ctx.fillRect(17 * 32 + 4, confY + 36, 24, 18);
 
-    // 좌측 다과 사이드보드 & 화분 (tx: 9, ty: 4..7)
+    // 사이드보드 & 화분
     ctx.fillStyle = '#57534e';
     ctx.fillRect(8 * 32 + 10, 5 * 32, 24, 64);
     this.drawOfficePlantPot(9 * 32 + 16, 3 * 32 + 20);
     this.drawOfficePlantPot(26 * 32 + 16, 3 * 32 + 20);
 
     // =========================================================
-    // [2] 탕비실 (tx: 30..51, ty: 3..5)
+    // [2] 탕비실 (tx: 29..51, ty: 3..5)
     // =========================================================
-    // 상단 조리대 카운터 (tx: 36..47, ty: 3)
     const panX = 36 * 32;
     const panY = 3 * 32;
     ctx.fillStyle = '#e2e8f0';
@@ -9429,13 +9456,13 @@ class GameEngine {
     ctx.fillStyle = '#94a3b8';
     ctx.fillRect(panX, panY + 26, 12 * 32, 4);
 
-    // 싱크대 볼 & 수전 (tx: 37..38)
+    // 싱크대
     ctx.fillStyle = '#64748b';
     ctx.fillRect(37 * 32 + 6, panY + 5, 44, 18);
     ctx.fillStyle = '#cbd5e1';
     ctx.fillRect(37 * 32 + 24, panY + 2, 6, 8);
 
-    // 에스프레소 커피머신 & 전기포트 (tx: 40..42)
+    // 커피머신 & 전기포트
     ctx.fillStyle = '#1e293b';
     ctx.fillRect(40 * 32 + 6, panY + 3, 28, 20);
     ctx.fillStyle = '#ef4444';
@@ -9443,13 +9470,13 @@ class GameEngine {
     ctx.fillStyle = '#f59e0b';
     ctx.fillRect(41 * 32 + 14, panY + 5, 18, 16);
 
-    // 전자레인지 (tx: 44..45)
+    // 전자레인지
     ctx.fillStyle = '#334155';
     ctx.fillRect(44 * 32 + 4, panY + 4, 38, 20);
     ctx.fillStyle = '#38bdf8';
     ctx.fillRect(44 * 32 + 8, panY + 7, 22, 14);
 
-    // 양문형 대형 냉장고 (tx: 48..49, ty: 3) & 냉온 정수기 (tx: 50, ty: 3)
+    // 냉장고
     ctx.fillStyle = '#cbd5e1';
     ctx.fillRect(48 * 32 + 4, panY, 56, 32);
     ctx.strokeStyle = '#64748b';
@@ -9466,7 +9493,7 @@ class GameEngine {
     ctx.fillStyle = '#3b82f6';
     ctx.fillRect(50 * 32 + 18, panY + 10, 4, 6);
 
-    // 탕비실 티테이블 (tx: 32, ty: 4)
+    // 티테이블
     ctx.fillStyle = '#b45309';
     ctx.beginPath();
     ctx.arc(32 * 32 + 16, 4 * 32 + 16, 20, 0, Math.PI * 2);
@@ -9478,7 +9505,6 @@ class GameEngine {
     // =========================================================
     // [3] 인쇄실 (tx: 37..51, ty: 7..9)
     // =========================================================
-    // 대형 고속 복합기 2대 (tx: 38..40, ty: 7 & tx: 47..49, ty: 7)
     const drawCopier = (bx, by) => {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.fillRect(bx + 3, by + 4, 58, 30);
@@ -9495,50 +9521,53 @@ class GameEngine {
     drawCopier(38 * 32, 7 * 32);
     drawCopier(47 * 32, 7 * 32);
 
-    // 중앙 제본·분류 작업대 (tx: 41..46, ty: 7)
     ctx.fillStyle = '#cbd5e1';
     ctx.fillRect(41 * 32 + 6, 7 * 32 + 2, 5 * 32 - 12, 26);
     ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.5;
     ctx.strokeRect(41 * 32 + 6, 7 * 32 + 2, 5 * 32 - 12, 26);
-    // A4 복사용지 박스 더미 (tx: 38, ty: 9 & tx: 50, ty: 9)
+
     ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(37 * 32 + 8, 9 * 32 + 2, 24, 22);
     ctx.strokeStyle = '#3b82f6';
+    ctx.fillRect(37 * 32 + 8, 9 * 32 + 2, 24, 22);
     ctx.strokeRect(37 * 32 + 8, 9 * 32 + 2, 24, 22);
     ctx.fillRect(50 * 32 + 4, 9 * 32 + 2, 24, 22);
     ctx.strokeRect(50 * 32 + 4, 9 * 32 + 2, 24, 22);
 
     // =========================================================
-    // [4] 상담실 (tx: 69..81, ty: 3..9)
+    // [4] 상담실 (tx: C.x1+1 .. C.x2-1, ty: 3..9)
     // =========================================================
-    // 북측 책장 & 화분 (tx: 78..80, ty: 3)
+    const ox = C.x1; // 상담실 기준 좌표
+    // 책장
     ctx.fillStyle = '#78350f';
-    ctx.fillRect(78 * 32, 3 * 32 + 2, 3 * 32, 24);
+    ctx.fillRect((ox + 10) * 32, 3 * 32 + 2, 3 * 32, 24);
     ctx.fillStyle = '#fde047';
-    ctx.fillRect(78 * 32 + 8, 3 * 32 + 6, 20, 14);
+    ctx.fillRect((ox + 10) * 32 + 8, 3 * 32 + 6, 20, 14);
     ctx.fillStyle = '#60a5fa';
-    ctx.fillRect(79 * 32 + 4, 3 * 32 + 6, 24, 14);
-    this.drawOfficePlantPot(70 * 32 + 16, 3 * 32 + 20);
-    this.drawOfficePlantPot(80 * 32 + 16, 8 * 32 + 20);
+    ctx.fillRect((ox + 11) * 32 + 4, 3 * 32 + 6, 24, 14);
+    this.drawOfficePlantPot((ox + 2) * 32 + 16, 3 * 32 + 20);
+    this.drawOfficePlantPot((ox + 14) * 32 + 16, 8 * 32 + 20);
 
-    // 좌측 3인용 패브릭 소파 (tx: 70, ty: 5..7)
+    // 소파
     ctx.fillStyle = '#0f766e';
-    ctx.fillRect(69 * 32 + 10, 5 * 32, 28, 3 * 32);
+    ctx.fillRect((ox + 1) * 32 + 10, 5 * 32, 28, 3 * 32);
     ctx.fillStyle = '#14b8a6';
-    ctx.fillRect(69 * 32 + 16, 5 * 32 + 6, 20, 3 * 32 - 12);
+    ctx.fillRect((ox + 1) * 32 + 16, 5 * 32 + 6, 20, 3 * 32 - 12);
 
-    // 중앙 원형 상담 테이블 & 안락의자 (tx: 75, ty: 6)
-    this.drawStaffOfficeChair(73 * 32 + 20, 6 * 32 + 16, 'right');
-    this.drawStaffOfficeChair(77 * 32 + 12, 6 * 32 + 16, 'left');
-    this.drawStaffOfficeChair(75 * 32 + 16, 4 * 32 + 22, 'down');
+    // 원형 상담 테이블 & 의자
+    const tcx = (ox + 7) * 32 + 16;
+    const tcy = 6 * 32 + 16;
+    this.drawStaffOfficeChair(tcx - 60, tcy, 'right');
+    this.drawStaffOfficeChair(tcx + 60, tcy, 'left');
+    this.drawStaffOfficeChair(tcx, tcy - 42, 'down');
 
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.beginPath();
-    ctx.arc(75 * 32 + 18, 6 * 32 + 18, 28, 0, Math.PI * 2);
+    ctx.arc(tcx + 2, tcy + 2, 28, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#b45309';
     ctx.beginPath();
-    ctx.arc(75 * 32 + 16, 6 * 32 + 16, 28, 0, Math.PI * 2);
+    ctx.arc(tcx, tcy, 28, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#fef3c7';
     ctx.lineWidth = 2;
@@ -9571,7 +9600,6 @@ class GameEngine {
     ctx.arc(cx + 1, cy + 2, 11, 0, Math.PI * 2);
     ctx.fill();
 
-    // 의자 좌판
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
     ctx.arc(cx, cy, 10, 0, Math.PI * 2);
@@ -9580,7 +9608,6 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // 등받이 (플레이어가 앉는 방향의 반대편에 등받이 표시)
     ctx.fillStyle = '#0f172a';
     if (facing === 'right') {
       ctx.fillRect(cx - 11, cy - 8, 5, 16);
@@ -9598,7 +9625,7 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
 
-    // 1. 의자 먼저 그리기 (책상 바깥쪽)
+    // 1. 의자 (책상 바깥쪽)
     if (facing === 'right') {
       this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
     } else if (facing === 'left') {
@@ -9609,10 +9636,9 @@ class GameEngine {
       this.drawStaffOfficeChair(px + w / 2, py + h + 10, 'up');
     }
 
-    // 2. 책상 그림자 & 우드 상판
+    // 2. 책상 상판
     ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
     ctx.fillRect(px + 3, py + 4, w, h);
-
     ctx.fillStyle = '#d97706';
     ctx.fillRect(px, py, w, h);
     ctx.fillStyle = '#f59e0b';
@@ -9621,7 +9647,7 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(px + 0.5, py + 0.5, w - 1, h - 1);
 
-    // 3. 모니터 및 결재 서류 소품
+    // 3. 모니터 & 서류
     ctx.fillStyle = '#1e293b';
     if (facing === 'right') {
       ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
@@ -9649,7 +9675,7 @@ class GameEngine {
       ctx.fillRect(px + w - 28, py + h - 18, 16, 12);
     }
 
-    // 4. 좌석 번호 배지 (교1 ~ 교22)
+    // 4. 좌석 번호 배지
     const cx = px + w / 2;
     const cy = py + h / 2;
     ctx.font = 'bold 12px "Pretendard", "Noto Sans KR", sans-serif';
@@ -9670,26 +9696,19 @@ class GameEngine {
     ctx.restore();
   }
 
+  // 책상 사이 칸막이 (단색 · 깔끔한 라인)
   drawPartitionLine(x1, y1, x2, y2) {
     const ctx = this.ctx;
     ctx.save();
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 7;
     ctx.lineCap = 'round';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 6;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
-
-    ctx.strokeStyle = '#0d9488';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    ctx.strokeStyle = '#99f6e4';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -9698,77 +9717,52 @@ class GameEngine {
   }
 
   drawStaffOfficeAllTeacherClusters() {
-    // =========================================================
-    // [상단 우측] 교사 1 · 교2 · 교3 (T자형 3인 클러스터: tx 58..61, ty 5..8)
-    // =========================================================
-    // 교1 (상단 가로석)
-    this.drawStaffOfficeTeacherDesk(58 * 32, 5 * 32, 4 * 32, 32, '교사 1 (교1)', 'down');
-    // 교2 (좌측 세로석) & 교3 (우측 세로석)
-    this.drawStaffOfficeTeacherDesk(58 * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교2', 'right');
-    this.drawStaffOfficeTeacherDesk(60 * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교3', 'left');
-    // T자 파티션 라인
-    this.drawPartitionLine(58 * 32 - 4, 6 * 32 + 2, 62 * 32 + 4, 6 * 32 + 2);
-    this.drawPartitionLine(60 * 32, 6 * 32 + 2, 60 * 32, 9 * 32 + 2);
+    const L = this.getStaffOfficeLayout();
 
-    // =========================================================
-    // [하단 1분단] 서쪽 5인 클러스터: 교4, 교5, 교6, 교7, 교8 (tx 12..16, ty 15..20)
-    // =========================================================
-    this.drawStaffOfficeTeacherDesk(12 * 32, 15 * 32, 2 * 32, 2 * 32, '교4', 'right');
-    this.drawStaffOfficeTeacherDesk(15 * 32, 15 * 32, 2 * 32, 2 * 32, '교8', 'left');
-    this.drawStaffOfficeTeacherDesk(12 * 32, 17 * 32 + 4, 2 * 32, 2 * 32, '교5', 'right');
-    this.drawStaffOfficeTeacherDesk(15 * 32, 17 * 32 + 4, 2 * 32, 2 * 32, '교7', 'left');
-    this.drawStaffOfficeTeacherDesk(12 * 32, 20 * 32, 5 * 32, 36, '교6', 'up');
-    // 1분단 파티션 라인 (세로 중앙선 + 가로 중간선 + 하단 가로선)
-    this.drawPartitionLine(14.5 * 32, 14.8 * 32, 14.5 * 32, 19.3 * 32);
-    this.drawPartitionLine(12 * 32 - 4, 17 * 32 + 2, 17 * 32 + 4, 17 * 32 + 2);
-    this.drawPartitionLine(12 * 32 - 6, 19.7 * 32, 17 * 32 + 6, 19.7 * 32);
+    // [상단] 교사 1 · 교2 · 교3 (T자형)
+    const T = L.topClusterLeft;
+    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, '교사 1 (교1)', 'down');
+    this.drawStaffOfficeTeacherDesk(T * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교2', 'right');
+    this.drawStaffOfficeTeacherDesk((T + 2) * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교3', 'left');
+    this.drawPartitionLine(T * 32 - 4, 6 * 32 + 2, (T + 4) * 32 + 4, 6 * 32 + 2);
+    this.drawPartitionLine((T + 2) * 32, 6 * 32 + 2, (T + 2) * 32, 9 * 32 + 2);
 
-    // =========================================================
-    // [하단 2분단] 중서쪽 3인 클러스터: 교9, 교10, 교11 (tx 28..32, ty 17..20)
-    // =========================================================
-    this.drawStaffOfficeTeacherDesk(28 * 32, 17 * 32, 2 * 32, 2 * 32 + 12, '교9', 'right');
-    this.drawStaffOfficeTeacherDesk(31 * 32, 17 * 32, 2 * 32, 2 * 32 + 12, '교10', 'left');
-    this.drawStaffOfficeTeacherDesk(28 * 32, 20 * 32, 5 * 32, 36, '교11', 'up');
-    // 2분단 파티션 라인 (세로 중앙선 + 하단 가로선)
-    this.drawPartitionLine(30.5 * 32, 16.8 * 32, 30.5 * 32, 19.5 * 32);
-    this.drawPartitionLine(28 * 32 - 6, 19.7 * 32, 33 * 32 + 6, 19.7 * 32);
-
-    // =========================================================
-    // [하단 3분단] 중앙 3인 클러스터: 교12, 교13, 교14 (tx 42..48, ty 16..20)
-    // =========================================================
-    this.drawStaffOfficeTeacherDesk(43 * 32, 16 * 32, 2 * 32, 2 * 32 + 12, '교13', 'right');
-    this.drawStaffOfficeTeacherDesk(46 * 32, 16 * 32, 2 * 32, 2 * 32 + 12, '교14', 'left');
-    this.drawPartitionLine(45.5 * 32, 15.8 * 32, 45.5 * 32, 18.6 * 32);
-    // 교12 (하단 직사각형 박스 단독 데스크)
-    this.drawStaffOfficeTeacherDesk(42 * 32 + 8, 19 * 32 + 12, 7 * 32 - 16, 44, '교12', 'up');
-
-    // =========================================================
-    // [하단 4분단] 중동쪽 3인 클러스터: 교15, 교16, 교17 (tx 58..62, ty 17..20)
-    // =========================================================
-    this.drawStaffOfficeTeacherDesk(58 * 32, 17 * 32, 2 * 32, 2 * 32 + 12, '교16', 'right');
-    this.drawStaffOfficeTeacherDesk(61 * 32, 17 * 32, 2 * 32, 2 * 32 + 12, '교17', 'left');
-    this.drawStaffOfficeTeacherDesk(58 * 32, 20 * 32, 5 * 32, 36, '교15', 'up');
-    // 4분단 파티션 라인 (세로 중앙선 + 하단 가로선)
-    this.drawPartitionLine(60.5 * 32, 16.8 * 32, 60.5 * 32, 19.5 * 32);
-    this.drawPartitionLine(58 * 32 - 6, 19.7 * 32, 63 * 32 + 6, 19.7 * 32);
-
-    // =========================================================
-    // [하단 5분단] 동쪽 5인 클러스터: 교18, 교19, 교20, 교21, 교22 (tx 73..77, ty 15..20)
-    // =========================================================
-    this.drawStaffOfficeTeacherDesk(73 * 32, 15 * 32, 2 * 32, 2 * 32, '교21', 'right');
-    this.drawStaffOfficeTeacherDesk(76 * 32, 15 * 32, 2 * 32, 2 * 32, '교22', 'left');
-    this.drawStaffOfficeTeacherDesk(73 * 32, 17 * 32 + 4, 2 * 32, 2 * 32, '교19', 'right');
-    this.drawStaffOfficeTeacherDesk(76 * 32, 17 * 32 + 4, 2 * 32, 2 * 32, '교20', 'left');
-    this.drawStaffOfficeTeacherDesk(73 * 32, 20 * 32, 5 * 32, 36, '교18', 'up');
-    // 5분단 파티션 라인 (세로 중앙선 + 가로 중간선 + 하단 가로선)
-    this.drawPartitionLine(75.5 * 32, 14.8 * 32, 75.5 * 32, 19.3 * 32);
-    this.drawPartitionLine(73 * 32 - 4, 17 * 32 + 2, 78 * 32 + 4, 17 * 32 + 2);
-    this.drawPartitionLine(73 * 32 - 6, 19.7 * 32, 78 * 32 + 6, 19.7 * 32);
+    // [하단] 6개 분단
+    for (const c of L.clusters) {
+      const x = c.left;
+      const lb = c.labels;
+      if (c.type === 'five') {
+        // 좌/우 2열 x 2행 + 하단 가로석 (5인)
+        this.drawStaffOfficeTeacherDesk(x * 32, 15 * 32, 64, 64, lb.tl, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 15 * 32, 64, 64, lb.tr, 'left');
+        this.drawStaffOfficeTeacherDesk(x * 32, 17 * 32 + 4, 64, 64, lb.ml, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 17 * 32 + 4, 64, 64, lb.mr, 'left');
+        this.drawStaffOfficeTeacherDesk(x * 32, 20 * 32, 5 * 32, 36, lb.bottom, 'up');
+        this.drawPartitionLine((x + 2.5) * 32, 14.8 * 32, (x + 2.5) * 32, 19.3 * 32);
+        this.drawPartitionLine(x * 32 - 4, 17 * 32 + 2, (x + 5) * 32 + 4, 17 * 32 + 2);
+        this.drawPartitionLine(x * 32 - 6, 19.7 * 32, (x + 5) * 32 + 6, 19.7 * 32);
+      } else if (c.type === 'tee') {
+        // 좌/우 1석씩 + 하단 가로석 (T자 3인)
+        this.drawStaffOfficeTeacherDesk(x * 32, 17 * 32, 64, 76, lb.l, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 17 * 32, 64, 76, lb.r, 'left');
+        this.drawStaffOfficeTeacherDesk(x * 32, 20 * 32, 5 * 32, 36, lb.bottom, 'up');
+        this.drawPartitionLine((x + 2.5) * 32, 16.8 * 32, (x + 2.5) * 32, 19.5 * 32);
+        this.drawPartitionLine(x * 32 - 6, 19.7 * 32, (x + 5) * 32 + 6, 19.7 * 32);
+      } else if (c.type === 'box') {
+        // 좌/우 1석씩 + 하단 단독 박스석 (교12)
+        this.drawStaffOfficeTeacherDesk((x + 1) * 32, 16 * 32, 64, 76, lb.l, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 4) * 32, 16 * 32, 64, 76, lb.r, 'left');
+        this.drawPartitionLine((x + 3.5) * 32, 15.8 * 32, (x + 3.5) * 32, 18.6 * 32);
+        this.drawStaffOfficeTeacherDesk(x * 32 + 8, 19 * 32 + 12, 7 * 32 - 16, 44, lb.bottom, 'up');
+      }
+    }
   }
 
   drawStaffOfficeEntrances() {
     const ctx = this.ctx;
-    // 1. 좌측 서문 입구 (tx: 1..3, ty: 11..13)
+    const mapW = this.getMapWidth();
+
+    // 1. 좌측 앞문 (tx: 1..2, ty: 11..13)
     const wx = 1 * 32;
     const wy = 11 * 32;
     ctx.fillStyle = '#991b1b';
@@ -9777,7 +9771,7 @@ class GameEngine {
     ctx.lineWidth = 2;
     ctx.strokeRect(wx + 4, wy + 6, 56, 3 * 32 - 12);
 
-    this.drawSharpLabel(wx + 44, wy + 48, '🚪 ◀ 입구 (복도로 나가기)', {
+    this.drawSharpLabel(5 * 32, wy + 48, '🚪 ◀ 앞문 (복도로 나가기)', {
       bgColor: '#7f1d1d',
       borderColor: '#fef08a',
       textColor: '#ffffff',
@@ -9786,16 +9780,16 @@ class GameEngine {
       height: 22
     });
 
-    // 2. 우측 동문 입구 (tx: 86..88, ty: 11..13)
-    const ex = 87 * 32;
+    // 2. 우측 뒷문 (tx: mapW-3..mapW-2, ty: 11..13)
+    const ex = (mapW - 3) * 32;
     const ey = 11 * 32;
     ctx.fillStyle = '#991b1b';
-    ctx.fillRect(ex, ey + 4, 60, 3 * 32 - 8);
+    ctx.fillRect(ex + 2, ey + 4, 60, 3 * 32 - 8);
     ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 2;
-    ctx.strokeRect(ex + 2, ey + 6, 56, 3 * 32 - 12);
+    ctx.strokeRect(ex + 4, ey + 6, 56, 3 * 32 - 12);
 
-    this.drawSharpLabel(ex + 16, ey + 48, '🚪 입구 (복도로 나가기) ▶', {
+    this.drawSharpLabel((mapW - 5) * 32, ey + 48, '🚪 뒷문 (복도로 나가기) ▶', {
       bgColor: '#7f1d1d',
       borderColor: '#fef08a',
       textColor: '#ffffff',
@@ -9803,78 +9797,29 @@ class GameEngine {
       paddingX: 10,
       height: 22
     });
-  }
-
-  drawStaffOfficePartitionWall(tx, ty) {
-    const px = tx * 32;
-    const py = ty * 32;
-
-    // 벽체 본체 (모던 오피스 드라이월 / 라이트 슬레이트)
-    this.ctx.fillStyle = '#f1f5f9';
-    this.ctx.fillRect(px, py, 32, 32);
-
-    // 상단 캡 몰딩 (짙은 알루미늄 트림)
-    this.ctx.fillStyle = '#334155';
-    this.ctx.fillRect(px, py, 32, 4);
-    this.ctx.fillStyle = '#64748b';
-    this.ctx.fillRect(px, py, 32, 1);
-
-    // 중앙 패널 연결선 (타일 규격감)
-    this.ctx.fillStyle = '#cbd5e1';
-    this.ctx.fillRect(px + 15, py + 4, 1, 24);
-
-    // 하단 걸레받이 몰딩 (Baseboard)
-    this.ctx.fillStyle = '#1e293b';
-    this.ctx.fillRect(px, py + 27, 32, 5);
-    this.ctx.fillStyle = '#475569';
-    this.ctx.fillRect(px, py + 27, 32, 1);
-
-    // 우측 및 하단 부드러운 그림자
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
-    this.ctx.fillRect(px + 30, py, 2, 32);
-  }
-
-  drawStaffOfficeDoorway(tx, ty, orientation) {
-    const px = tx * 32;
-    const py = ty * 32;
-
-    // 바닥 문턱 트랜지션 메탈 플레이트
-    this.ctx.fillStyle = '#475569';
-    this.ctx.fillRect(px, py + 6, 32, 20);
-    this.ctx.fillStyle = '#94a3b8';
-    this.ctx.fillRect(px, py + 6, 32, 2);
-    this.ctx.fillStyle = '#1e293b';
-    this.ctx.fillRect(px, py + 24, 32, 2);
-
-    // 문틀 기둥 연출
-    this.ctx.fillStyle = '#334155';
-    if (orientation === 'v') {
-      this.ctx.fillRect(px + 2, py, 4, 32);
-      this.ctx.fillRect(px + 26, py, 4, 32);
-    } else {
-      this.ctx.fillRect(px, py + 2, 32, 4);
-      this.ctx.fillRect(px, py + 26, 32, 4);
-    }
   }
 
   drawStaffOfficeSignage() {
+    const C = this.getStaffOfficeLayout().counsel;
     this.ctx.save();
     this.ctx.font = 'bold 12px "Pretendard", "Noto Sans KR", sans-serif';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
 
+    const counselCenter = ((C.x1 + C.x2) / 2 + 0.5) * 32;
+    const counselDoorCenter = ((C.doorX1 + C.doorX2) / 2 + 0.5) * 32;
+
     const plaques = [
-      // 상단 4개 실 이름표 & 문 표시
       { text: '📋 소회의실', x: 17.5 * 32, y: 4 * 32 + 12, bg: '#1e3a8a', border: '#fbbf24', color: '#fef08a' },
       { text: '🚪 문', x: 23.5 * 32, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' },
 
-      { text: '☕ 탕비실', x: 35.5 * 32, y: 4.5 * 32, bg: '#7c2d12', border: '#fdba74', color: '#ffedd5' },
+      { text: '☕ 탕비실', x: 33 * 32, y: 6.5 * 32, bg: '#7c2d12', border: '#fdba74', color: '#ffedd5' },
 
-      { text: '🖨️ 인쇄실', x: 44 * 32, y: 8.3 * 32, bg: '#0f172a', border: '#94a3b8', color: '#f8fafc' },
+      { text: '🖨️ 인쇄실', x: 44 * 32, y: 8.4 * 32, bg: '#0f172a', border: '#94a3b8', color: '#f8fafc' },
       { text: '🚪 문', x: 44.5 * 32, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' },
 
-      { text: '💬 상담실', x: 75 * 32 + 16, y: 4 * 32 + 12, bg: '#065f46', border: '#6ee7b7', color: '#ecfdf5' },
-      { text: '🚪 문', x: 75.5 * 32, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' }
+      { text: '💬 상담실', x: counselCenter, y: 4 * 32 + 12, bg: '#065f46', border: '#6ee7b7', color: '#ecfdf5' },
+      { text: '🚪 문', x: counselDoorCenter, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' }
     ];
 
     for (const p of plaques) {

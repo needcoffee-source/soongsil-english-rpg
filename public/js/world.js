@@ -11,8 +11,8 @@ const WORLD_DATA = {
   HALLWAY_WIDTH: 60,
   CAREER_WIDTH: 60,
   CAREER_HEIGHT: 20,
-  STAFF_OFFICE_WIDTH: 90, // 교실 3개 사이즈 대형 본관 교무실 (90 x 26 타일)
-  STAFF_OFFICE_HEIGHT: 26, // 상단 부속실(소회의실·탕비실·인쇄실·교1~3·상담실) + 중앙 통로 + 하단 교4~22 5분단 수용
+  STAFF_OFFICE_WIDTH: 106, // 교실 3.5개 사이즈 대형 본관 교무실 (106 x 26 타일)
+  STAFF_OFFICE_HEIGHT: 26, // 상단 부속실(소회의실·탕비실·인쇄실·교1~3·상담실) + 중앙 통로 + 하단 교4~25 6분단 수용
   PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
   PLAYGROUND_HEIGHT: 54, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
   MAP_HEIGHT: 20,
@@ -45,7 +45,8 @@ const WORLD_DATA = {
     6: {
       name: "6층 복도 (교무실 & 2학년 구역)",
       rooms: [
-        { id: "room_staff_office", name: "🏛️ 교무실", doorX: 13, doorY: 5, targetX: 6, targetY: 12, locked: false },
+        { id: "room_staff_office", doorId: "west", name: "🏛️ 교무실", plaqueName: "🏛️ 교무실 (앞문)", doorX: 9, doorY: 5, targetX: 6, targetY: 12, locked: false },
+        { id: "room_staff_office", doorId: "east", name: "🏛️ 교무실", plaqueName: "🏛️ 교무실 (뒷문)", doorX: 20, doorY: 5, targetX: 99, targetY: 12, locked: false },
         { id: "room_204", name: "2학년 4반", doorX: 30, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 4반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_205", name: "2학년 5반", doorX: 38, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 5반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_206", name: "2학년 6반", doorX: 46, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 6반 수업 시간입니다. (현재 준비 중 🚧)" }
@@ -239,46 +240,50 @@ const WORLD_DATA = {
     ]
   },
 
-  // 6층 대형 교무실 (90 x 26) & 2학년 교실
+  // 6층 대형 교무실 (106 x 26) & 2학년 교실
   classroom_staff_office: {
     name: "🏛️ 교무실",
     exitDoor: { x: 2, y: 12 },
-    exitDoorEast: { x: 87, y: 12 },
+    exitDoorEast: { x: 103, y: 12 },
     blackboard: null,
     teacherDesk: null,
     gatherSpots: [],
     desks: [],
     npcs: [],
     interactive: [],
-    // 교1 ~ 교22 좌석 정의 (추후 교사 NPC 배치용)
+    // 교1 ~ 교25 좌석 정의 (추후 교사 NPC 배치용)
     seats: [
-      { id: 1, label: "교1", x: 60, y: 5, facing: "down", group: "top" },
-      { id: 2, label: "교2", x: 58, y: 7, facing: "right", group: "top" },
-      { id: 3, label: "교3", x: 61, y: 7, facing: "left", group: "top" },
+      { id: 1, label: "교1", x: 67, y: 5, facing: "down", group: "top" },
+      { id: 2, label: "교2", x: 66, y: 7, facing: "right", group: "top" },
+      { id: 3, label: "교3", x: 68, y: 7, facing: "left", group: "top" },
 
-      { id: 4, label: "교4", x: 12, y: 15, facing: "right", group: "cluster_1" },
-      { id: 5, label: "교5", x: 12, y: 18, facing: "right", group: "cluster_1" },
-      { id: 6, label: "교6", x: 14, y: 21, facing: "up", group: "cluster_1" },
-      { id: 7, label: "교7", x: 15, y: 18, facing: "left", group: "cluster_1" },
-      { id: 8, label: "교8", x: 15, y: 15, facing: "left", group: "cluster_1" },
+      { id: 4, label: "교4", x: 10, y: 15, facing: "right", group: "cluster_1" },
+      { id: 5, label: "교5", x: 10, y: 18, facing: "right", group: "cluster_1" },
+      { id: 6, label: "교6", x: 12, y: 21, facing: "up", group: "cluster_1" },
+      { id: 7, label: "교7", x: 13, y: 18, facing: "left", group: "cluster_1" },
+      { id: 8, label: "교8", x: 13, y: 15, facing: "left", group: "cluster_1" },
 
-      { id: 9, label: "교9", x: 28, y: 18, facing: "right", group: "cluster_2" },
-      { id: 10, label: "교10", x: 31, y: 18, facing: "left", group: "cluster_2" },
-      { id: 11, label: "교11", x: 30, y: 21, facing: "up", group: "cluster_2" },
+      { id: 9, label: "교9", x: 25, y: 18, facing: "right", group: "cluster_2" },
+      { id: 10, label: "교10", x: 28, y: 18, facing: "left", group: "cluster_2" },
+      { id: 11, label: "교11", x: 27, y: 21, facing: "up", group: "cluster_2" },
 
-      { id: 12, label: "교12", x: 45, y: 20, facing: "up", group: "cluster_3" },
-      { id: 13, label: "교13", x: 43, y: 17, facing: "right", group: "cluster_3" },
-      { id: 14, label: "교14", x: 46, y: 17, facing: "left", group: "cluster_3" },
+      { id: 12, label: "교12", x: 43, y: 20, facing: "up", group: "cluster_3" },
+      { id: 13, label: "교13", x: 41, y: 17, facing: "right", group: "cluster_3" },
+      { id: 14, label: "교14", x: 44, y: 17, facing: "left", group: "cluster_3" },
 
-      { id: 15, label: "교15", x: 60, y: 21, facing: "up", group: "cluster_4" },
-      { id: 16, label: "교16", x: 58, y: 18, facing: "right", group: "cluster_4" },
-      { id: 17, label: "교17", x: 61, y: 18, facing: "left", group: "cluster_4" },
+      { id: 23, label: "교23", x: 57, y: 18, facing: "right", group: "cluster_4_added" },
+      { id: 24, label: "교24", x: 60, y: 18, facing: "left", group: "cluster_4_added" },
+      { id: 25, label: "교25", x: 59, y: 21, facing: "up", group: "cluster_4_added" },
 
-      { id: 18, label: "교18", x: 75, y: 21, facing: "up", group: "cluster_5" },
-      { id: 19, label: "교19", x: 73, y: 18, facing: "right", group: "cluster_5" },
-      { id: 20, label: "교20", x: 76, y: 18, facing: "left", group: "cluster_5" },
-      { id: 21, label: "교21", x: 73, y: 15, facing: "right", group: "cluster_5" },
-      { id: 22, label: "교22", x: 76, y: 15, facing: "left", group: "cluster_5" }
+      { id: 15, label: "교15", x: 74, y: 21, facing: "up", group: "cluster_5" },
+      { id: 16, label: "교16", x: 72, y: 18, facing: "right", group: "cluster_5" },
+      { id: 17, label: "교17", x: 75, y: 18, facing: "left", group: "cluster_5" },
+
+      { id: 18, label: "교18", x: 89, y: 21, facing: "up", group: "cluster_6" },
+      { id: 19, label: "교19", x: 87, y: 18, facing: "right", group: "cluster_6" },
+      { id: 20, label: "교20", x: 90, y: 18, facing: "left", group: "cluster_6" },
+      { id: 21, label: "교21", x: 87, y: 15, facing: "right", group: "cluster_6" },
+      { id: 22, label: "교22", x: 90, y: 15, facing: "left", group: "cluster_6" }
     ]
   },
   classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
