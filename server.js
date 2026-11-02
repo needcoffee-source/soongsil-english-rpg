@@ -501,6 +501,24 @@ function startBrawlMatchFromQueue(forceBots = false) {
     }
   }, 1000);
 
+  // Sync server-side human player positions to their kickoff spawn points
+  const allMatched = [...blueTeam, ...redTeam];
+  for (const m of allMatched) {
+    if (!m.isBot && m.socketId && players[m.socketId]) {
+      const p = players[m.socketId];
+      p.x = m.spawnX;
+      p.y = m.spawnY;
+      p.direction = (m.team === 'blue') ? 'up' : 'down';
+      const roomName = `server_${p.grade}_f${p.floor}_${p.room}`;
+      io.to(roomName).emit('player_moved', {
+        id: p.id,
+        x: p.x,
+        y: p.y,
+        direction: p.direction
+      });
+    }
+  }
+
   // Broadcast match start
   io.emit('brawl_match_started', {
     match: brawlMatch
@@ -637,6 +655,15 @@ function sanitizeGear(g) {
   return out;
 }
 
+// Normalize floor for singleton rooms (playground, career, staff_office, history)
+function normalizeSingletonRoomFloor(room, floor) {
+  if (room === 'playground') return 1;
+  if (room === 'room_career') return 5;
+  if (room === 'room_staff_office') return 6;
+  if (room === 'room_history') return 0;
+  return floor;
+}
+
 io.on('connection', (socket) => {
   console.log(`[Connect] Socket ID: ${socket.id}`);
 
@@ -645,6 +672,8 @@ io.on('connection', (socket) => {
     const { name, grade, studentId, avatar, isTeacher, teacherPwd } = data;
     const isVerifiedTeacher = !!isTeacher && teacherPwd === '03220322';
     const resolvedName = isVerifiedTeacher ? ((name && name !== '교사') ? name : '갓준철') : (name || '학생_' + socket.id.substr(0, 4));
+    const initRoom = data.room || 'hallway';
+    const initFloor = normalizeSingletonRoomFloor(initRoom, (data.floor !== undefined) ? parseInt(data.floor) : 7);
     players[socket.id] = {
       id: socket.id,
       name: resolvedName,
@@ -656,8 +685,8 @@ io.on('connection', (socket) => {
       maxHp: isVerifiedTeacher ? 9999 : 100,
       atk: isVerifiedTeacher ? 9999 : 10,
       def: isVerifiedTeacher ? 9999 : 2,
-      floor: (data.floor !== undefined) ? parseInt(data.floor) : 7,
-      room: data.room || 'hallway',
+      floor: initFloor,
+      room: initRoom,
       x: (data.x !== undefined) ? parseInt(data.x) : 14 * 32,
       y: (data.y !== undefined) ? parseInt(data.y) : 11 * 32,
       direction: data.direction || 'down',
@@ -701,18 +730,18 @@ io.on('connection', (socket) => {
   // Movement & Location sync
   socket.on('player_move', (data) => {
     const player = players[socket.id];
-    if (!player) return;
+    if (!player || !data || typeof data.x !== 'number' || typeof data.y !== 'number') return;
 
     player.x = data.x;
     player.y = data.y;
-    player.direction = data.direction;
+    if (data.direction) player.direction = data.direction;
 
     const currentRoom = `server_${player.grade}_f${player.floor}_${player.room}`;
     socket.to(currentRoom).emit('player_moved', {
       id: socket.id,
-      x: data.x,
-      y: data.y,
-      direction: data.direction
+      x: player.x,
+      y: player.y,
+      direction: player.direction
     });
   });
 
@@ -769,10 +798,12 @@ io.on('connection', (socket) => {
     socket.leave(oldRoom);
     socket.to(oldRoom).emit('player_left', socket.id);
 
-    player.floor = data.floor !== undefined ? data.floor : player.floor;
-    player.room = data.room || 'hallway';
-    player.x = data.x || 400;
-    player.y = data.y || 300;
+    const nextRoom = data.room || 'hallway';
+    const nextFloor = normalizeSingletonRoomFloor(nextRoom, data.floor !== undefined ? data.floor : player.floor);
+    player.floor = nextFloor;
+    player.room = nextRoom;
+    player.x = (typeof data.x === 'number') ? data.x : (data.x || 400);
+    player.y = (typeof data.y === 'number') ? data.y : (data.y || 300);
 
     if (player.room !== 'playground') {
       const bqIdx = brawlQueue.findIndex(p => p.socketId === socket.id);
@@ -1416,6 +1447,26 @@ setInterval(() => {
               carrierName: '',
               carrierTeam: null
             };
+            const allMatched = [...(brawlMatch.teams.blue || []), ...(brawlMatch.teams.red || [])];
+            for (const m of allMatched) {
+              if (m.spawnX !== undefined && m.spawnY !== undefined) {
+                m.x = m.spawnX;
+                m.y = m.spawnY;
+              }
+              if (!m.isBot && m.socketId && players[m.socketId]) {
+                const p = players[m.socketId];
+                p.x = m.spawnX;
+                p.y = m.spawnY;
+                p.direction = (m.team === 'blue') ? 'up' : 'down';
+                const roomName = `server_${p.grade}_f${p.floor}_${p.room}`;
+                io.to(roomName).emit('player_moved', {
+                  id: p.id,
+                  x: p.x,
+                  y: p.y,
+                  direction: p.direction
+                });
+              }
+            }
             io.emit('brawl_ball_reset', {
               ball: brawlMatch.ball,
               status: 'playing',

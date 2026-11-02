@@ -93,6 +93,7 @@ class NetworkManager {
     });
 
     this.socket.on('player_moved', (data) => {
+      if (!data || typeof data.x !== 'number' || typeof data.y !== 'number') return;
       const p = this.engine.otherPlayers[data.id];
       if (p) {
         if (p.x !== data.x || p.y !== data.y) {
@@ -100,7 +101,7 @@ class NetworkManager {
         }
         p.x = data.x;
         p.y = data.y;
-        p.direction = data.direction;
+        if (data.direction) p.direction = data.direction;
       }
     });
 
@@ -445,9 +446,13 @@ class NetworkManager {
     });
   }
 
-  sendMove(data) {
-    if (this.socket) {
-      this.socket.emit('player_move', data);
+  sendMove(dataOrX, y, direction) {
+    if (!this.socket) return;
+    const payload = (typeof dataOrX === 'object' && dataOrX !== null)
+      ? dataOrX
+      : { x: dataOrX, y, direction: direction || 'down' };
+    if (typeof payload.x === 'number' && typeof payload.y === 'number') {
+      this.socket.emit('player_move', payload);
     }
   }
 

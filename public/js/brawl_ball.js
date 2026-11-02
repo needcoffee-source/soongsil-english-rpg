@@ -6,9 +6,9 @@
  */
 
 class BrawlBallManager {
-  constructor() {
-    this.engine = null;
-    this.network = null;
+  constructor(engine = null, network = null) {
+    this.engine = engine;
+    this.network = network;
     this.inQueue = false;
     this.queue = [];
     this.myTeam = null; // 'blue' | 'red' | null
@@ -270,6 +270,21 @@ class BrawlBallManager {
       this.ball.isSuper = false;
     }
 
+    // Sync initial kickoff coordinates for all match members & remote otherPlayers
+    const allMatchMembers = [...(match.teams.blue || []), ...(match.teams.red || [])];
+    for (const m of allMatchMembers) {
+      if (m.spawnX !== undefined && m.spawnY !== undefined) {
+        m.x = m.spawnX;
+        m.y = m.spawnY;
+        m.direction = (m.team === 'blue') ? 'up' : 'down';
+        if (this.engine && this.engine.otherPlayers && this.engine.otherPlayers[m.socketId]) {
+          this.engine.otherPlayers[m.socketId].x = m.spawnX;
+          this.engine.otherPlayers[m.socketId].y = m.spawnY;
+          this.engine.otherPlayers[m.socketId].direction = m.direction;
+        }
+      }
+    }
+
     // Determine my team
     const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
     const bluePlayer = match.teams.blue.find(p => p.socketId === myId);
@@ -306,8 +321,8 @@ class BrawlBallManager {
       p.y = targetY;
       for (let i = 0; i < 16; i++) {
         this.particles.push({
-          x: targetX,
-          y: targetY,
+          x: targetX + 12,
+          y: targetY + 15,
           vx: (Math.random() - 0.5) * 6,
           vy: (Math.random() - 0.5) * 6,
           color: '#38bdf8',
@@ -317,11 +332,24 @@ class BrawlBallManager {
         });
       }
       if (this.network && typeof this.network.sendMove === 'function') {
-        this.network.sendMove(p.x, p.y, p.direction);
+        this.network.sendMove({
+          x: Math.round(p.x),
+          y: Math.round(p.y),
+          direction: p.direction
+        });
       }
     } else {
-      this.engine.teleportTo(p.floor || 1, 'playground', targetX, targetY);
+      this.engine.teleportTo(1, 'playground', targetX, targetY);
     }
+  }
+
+  isMatchHost() {
+    if (!this.match || !this.match.teams) return true;
+    const myId = (this.network && this.network.socket) ? this.network.socket.id : null;
+    if (!myId) return true;
+    const humans = [...(this.match.teams.blue || []), ...(this.match.teams.red || [])].filter(p => !p.isBot);
+    if (humans.length === 0) return true;
+    return humans[0].socketId === myId;
   }
 
   onMatchTick(data) {
@@ -545,7 +573,11 @@ class BrawlBallManager {
 
       this.safeDashMove(p, dx, dy);
       if (this.network && typeof this.network.sendMove === 'function') {
-        this.network.sendMove(Math.round(p.x), Math.round(p.y), p.direction);
+        this.network.sendMove({
+          x: Math.round(p.x),
+          y: Math.round(p.y),
+          direction: p.direction
+        });
       }
 
       if (window.AudioManager) {
@@ -904,7 +936,11 @@ class BrawlBallManager {
 
     this.safeDashMove(p, dx, dy);
     if (this.network && typeof this.network.sendMove === 'function') {
-      this.network.sendMove(Math.round(p.x), Math.round(p.y), p.direction);
+      this.network.sendMove({
+        x: Math.round(p.x),
+        y: Math.round(p.y),
+        direction: p.direction
+      });
     }
 
     const pos = this.getEntityVisualPos(p);
@@ -1173,11 +1209,25 @@ class BrawlBallManager {
         if (m.spawnX !== undefined && m.spawnY !== undefined) {
           m.x = m.spawnX;
           m.y = m.spawnY;
+          m.direction = (m.team === 'blue') ? 'up' : 'down';
+          if (this.engine && this.engine.otherPlayers && this.engine.otherPlayers[m.socketId]) {
+            this.engine.otherPlayers[m.socketId].x = m.spawnX;
+            this.engine.otherPlayers[m.socketId].y = m.spawnY;
+            this.engine.otherPlayers[m.socketId].direction = m.direction;
+          }
         }
         m.stunnedUntil = 0;
         if (m.socketId === myId && this.engine && this.engine.player && this.engine.player.room === 'playground') {
           this.engine.player.x = m.spawnX;
           this.engine.player.y = m.spawnY;
+          this.engine.player.direction = m.direction || 'up';
+          if (this.network && typeof this.network.sendMove === 'function') {
+            this.network.sendMove({
+              x: Math.round(m.spawnX),
+              y: Math.round(m.spawnY),
+              direction: this.engine.player.direction
+            });
+          }
         }
       }
       if (window.AudioManager) {
@@ -1387,7 +1437,7 @@ class BrawlBallManager {
         if (this.ball.x >= this.court.goalMinX && this.ball.x <= this.court.goalMaxX) {
           this.ball.vy = 0;
           this.ball.vx = 0;
-          if (this.match && this.match.status === 'playing' && this.network) {
+          if (this.match && this.match.status === 'playing' && this.network && this.isMatchHost()) {
             const scorer = this.ball.carrierName || this.ball.lastTouchName || '블루팀';
             this.match.status = 'goal_celebration';
             this.network.notifyBrawlGoal('blue', scorer);
@@ -1403,7 +1453,7 @@ class BrawlBallManager {
         if (this.ball.x >= this.court.goalMinX && this.ball.x <= this.court.goalMaxX) {
           this.ball.vy = 0;
           this.ball.vx = 0;
-          if (this.match && this.match.status === 'playing' && this.network) {
+          if (this.match && this.match.status === 'playing' && this.network && this.isMatchHost()) {
             const scorer = this.ball.carrierName || this.ball.lastTouchName || '레드팀';
             this.match.status = 'goal_celebration';
             this.network.notifyBrawlGoal('red', scorer);
@@ -1516,7 +1566,7 @@ class BrawlBallManager {
           this.ball.carrierTeam = null;
           this.ball.pickupCooldown = now + 450;
 
-          if (this.network) {
+          if (this.network && this.isMatchHost()) {
             this.network.sendBrawlKick({
               x: this.ball.x,
               y: this.ball.y,
@@ -1544,6 +1594,17 @@ class BrawlBallManager {
             this.ball.lastTouchTeam = bot.team;
             this.ball.vx = 0;
             this.ball.vy = 0;
+            if (this.network && this.isMatchHost()) {
+              this.network.sendBrawlBallSync({
+                x: this.ball.x,
+                y: this.ball.y,
+                vx: 0,
+                vy: 0,
+                carrierId: bot.socketId,
+                carrierName: bot.name,
+                carrierTeam: bot.team
+              });
+            }
           }
         } else {
           const carrierTeam = this.ball.carrierTeam;
@@ -1566,7 +1627,9 @@ class BrawlBallManager {
                 ballVy: (Math.random() - 0.5) * 8
               };
               if (this.network && this.network.socket && this.network.socket.connected) {
-                this.network.sendBrawlTackleHit(hitPayload);
+                if (this.isMatchHost()) {
+                  this.network.sendBrawlTackleHit(hitPayload);
+                }
               } else {
                 this.onTackleHit(hitPayload);
               }

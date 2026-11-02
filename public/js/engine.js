@@ -220,26 +220,28 @@ class GameEngine {
       return;
     }
 
-    // 기절(isFallen 또는 brawl stunned) 상태 시 이동 및 애니메이션 전면 정지
-    const isBrawlStunned = (window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
+    // 기절(isFallen 또는 brawl stunned) 및 브롤볼 킥오프 대기 상태 시 플레이어 이동만 정지 (월드/브롤볼 업데이트는 계속 실행)
+    const isBrawlStunned = !!(window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
+    const isBrawlKickoffWait = !!(window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam && window.BrawlBall.kickoffUntil && Date.now() < window.BrawlBall.kickoffUntil);
+    const isMovementLocked = !!(this.player.isFallen || isBrawlStunned || isBrawlKickoffWait);
     if (this.player.isFallen || isBrawlStunned) {
-      this.player.isMoving = false;
       this.keys.up = false;
       this.keys.down = false;
       this.keys.left = false;
       this.keys.right = false;
-      return;
     }
 
     let dx = 0;
     let dy = 0;
 
-    if (this.keys.up) { dy -= 1; this.player.direction = 'up'; }
-    if (this.keys.down) { dy += 1; this.player.direction = 'down'; }
-    if (this.keys.left) { dx -= 1; this.player.direction = 'left'; }
-    if (this.keys.right) { dx += 1; this.player.direction = 'right'; }
+    if (!isMovementLocked) {
+      if (this.keys.up) { dy -= 1; this.player.direction = 'up'; }
+      if (this.keys.down) { dy += 1; this.player.direction = 'down'; }
+      if (this.keys.left) { dx -= 1; this.player.direction = 'left'; }
+      if (this.keys.right) { dx += 1; this.player.direction = 'right'; }
+    }
 
-    this.player.isMoving = (dx !== 0 || dy !== 0);
+    this.player.isMoving = !isMovementLocked && (dx !== 0 || dy !== 0);
 
     if (this.player.isMoving) {
       if (dx !== 0 && dy !== 0) {
@@ -365,6 +367,11 @@ class GameEngine {
   }
 
   checkCollision(x, y) {
+    // Active Brawl Ball match boundaries & crates apply even when Teacher Noclip is enabled
+    if (this.player.room === 'playground' && window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam) {
+      if (window.BrawlBall.isCollisionBlocked(this.player.x, this.player.y, x, y)) return true;
+    }
+
     // Teacher Noclip (공간돌파 무적 벽통과)
     if (this.player.noclip) return false;
 
@@ -601,6 +608,10 @@ class GameEngine {
       }
     }
     this.player.room = roomId;
+    if (roomId === 'playground') this.player.floor = 1;
+    else if (roomId === 'room_career') this.player.floor = 5;
+    else if (roomId === 'room_staff_office') this.player.floor = 6;
+    else if (roomId === 'room_history') this.player.floor = 0;
     this.player.roomName = roomName;
     this.player.x = x;
     this.player.y = y;
@@ -703,6 +714,10 @@ class GameEngine {
         const rData = fData && fData.rooms ? fData.rooms.find(r => r.id === this.player.room) : null;
         this.player.roomName = rData ? rData.name : '교실 내부';
       }
+      if (this.player.room === 'playground') this.player.floor = 1;
+      else if (this.player.room === 'room_career') this.player.floor = 5;
+      else if (this.player.room === 'room_staff_office') this.player.floor = 6;
+      else if (this.player.room === 'room_history') this.player.floor = 0;
       if (this.onLocationChangeCallback) {
         this.onLocationChangeCallback({
           floor: this.player.floor,

@@ -175,10 +175,10 @@ check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', 
 // 5. Version Cache-Buster Consistency
 console.log('\n--- 5. CACHE BUSTER CONSISTENCY AUDIT ---');
 const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-const vOldMatches = (indexHtml.match(/v=120/g) || []).length;
-const vCurMatches = (indexHtml.match(/v=121/g) || []).length;
-check('No stale v=120 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
-check('All assets use v=121 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=121 tags`);
+const vOldMatches = (indexHtml.match(/v=121/g) || []).length;
+const vCurMatches = (indexHtml.match(/v=122/g) || []).length;
+check('No stale v=121 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
+check('All assets use v=122 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=122 tags`);
 
 // 6. DOM Element ID Integrity Audit
 console.log('\n--- 6. DOM ELEMENT ID INTEGRITY AUDIT ---');
@@ -255,6 +255,16 @@ let totalQuestionsChecked = 0;
   });
 });
 check(`All curriculum quiz questions (${totalQuestionsChecked} Qs) have valid answers matching options`, questionErrors.length === 0, questionErrors.join(' | '));
+
+// 10. Brawl Ball & Multiplayer Sync Integrity Audit
+console.log('\n--- 10. BRAWL BALL & MULTIPLAYER SYNC INTEGRITY AUDIT ---');
+const brawlCode = fs.readFileSync('public/js/brawl_ball.js', 'utf8');
+const networkCode = fs.readFileSync('public/js/network.js', 'utf8');
+check('network.sendMove supports object & positional args safely', networkCode.includes('sendMove(dataOrX, y, direction)'));
+check('server.js normalizes singleton room floors (playground -> 1)', serverCode.includes('function normalizeSingletonRoomFloor'));
+check('engine.update does not early-return before BrawlBall.update when stunned', engineCode.includes('const isMovementLocked = !!(this.player.isFallen || isBrawlStunned || isBrawlKickoffWait);'));
+check('brawl_ball.js defines getEntityVisualPos and getPlayerTeam', brawlCode.includes('getEntityVisualPos(entity)') && brawlCode.includes('getPlayerTeam(p, isLocal'));
+check('brawl_ball.js defines isMatchHost() to prevent duplicate goal/bot packets', brawlCode.includes('isMatchHost()'));
 
 console.log('\n====================================================');
 console.log(` AUDIT RESULT: ${passedChecks} / ${totalChecks} PASSED`);

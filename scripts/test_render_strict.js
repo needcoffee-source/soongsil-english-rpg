@@ -83,6 +83,108 @@ for (const room of rooms) {
     }
   }
 }
+
+// Also test BrawlBallManager full match lifecycle & strict rendering
+const brawlJs = fs.readFileSync('public/js/brawl_ball.js', 'utf8');
+eval(brawlJs.replace('class BrawlBallManager', 'global.BrawlBallManager = class BrawlBallManager'));
+
+const emittedMoves = [];
+const mockNetwork = {
+  socket: { id: 'me_socket', connected: true },
+  sendMove(dataOrX, y, direction) {
+    const payload = (dataOrX && typeof dataOrX === 'object') ? dataOrX : { x: dataOrX, y, direction };
+    if (typeof payload.x !== 'number' || typeof payload.y !== 'number') {
+      throw new Error('sendMove received invalid coordinates: ' + JSON.stringify(payload));
+    }
+    emittedMoves.push(payload);
+  },
+  joinBrawlQueue() {},
+  leaveBrawlQueue() {},
+  startBrawlWithBots() {},
+  sendBrawlKick() {},
+  sendBrawlTackle() {},
+  sendBrawlTackleHit() {},
+  sendBrawlSuperShot() {},
+  sendBrawlMegaTackle() {},
+  sendBrawlObstacleBreak() {},
+  sendBrawlPowerupCollected() {},
+  sendBrawlBallSync() {},
+  notifyBrawlGoal() {}
+};
+
+try {
+  const bb = new BrawlBallManager(engine, mockNetwork);
+  bb.init(engine, mockNetwork);
+  window.BrawlBall = bb;
+  engine.player.room = 'playground';
+  engine.player.floor = 1;
+  engine.otherPlayers = {
+    o1: { id: 'o1', name: '라이벌', x: 500, y: 500, direction: 'down', gear: {} }
+  };
+
+  // 1. Start match
+  bb.onMatchStarted({
+    matchId: 'test_match',
+    status: 'playing',
+    kickoffUntil: Date.now() - 100,
+    timeRemaining: 140,
+    score: { blue: 0, red: 0 },
+    powerups: [{ id: 'pw_1', type: 'speed', x: 36 * 32, y: 29 * 32 }],
+    teams: {
+      blue: [
+        { socketId: 'me_socket', name: '갓준철', team: 'blue', spawnX: 43 * 32, spawnY: 44 * 32, x: 43 * 32, y: 44 * 32, isBot: false },
+        { socketId: 'bot_1', name: '🤖 골든 키커', team: 'blue', spawnX: 38 * 32, spawnY: 42 * 32, x: 38 * 32, y: 42 * 32, isBot: true },
+        { socketId: 'bot_2', name: '🤖 철벽 수비수', team: 'blue', spawnX: 48 * 32, spawnY: 42 * 32, x: 48 * 32, y: 42 * 32, isBot: true }
+      ],
+      red: [
+        { socketId: 'o1', name: '라이벌', team: 'red', spawnX: 43 * 32, spawnY: 26 * 32, x: 43 * 32, y: 26 * 32, isBot: false },
+        { socketId: 'bot_3', name: '🤖 불꽃 태클러', team: 'red', spawnX: 38 * 32, spawnY: 28 * 32, x: 38 * 32, y: 28 * 32, isBot: true },
+        { socketId: 'bot_4', name: '🤖 번개 드리블러', team: 'red', spawnX: 48 * 32, spawnY: 28 * 32, x: 48 * 32, y: 28 * 32, isBot: true }
+      ]
+    },
+    ball: { x: 43 * 32, y: 35 * 32, vx: 0, vy: 0, carrierId: 'me_socket', carrierName: '갓준철', carrierTeam: 'blue' }
+  });
+
+  // Verify remote player o1 snapped to spawnX/spawnY
+  if (engine.otherPlayers.o1.x !== 43 * 32 || engine.otherPlayers.o1.y !== 26 * 32) {
+    throw new Error('Remote player o1 did not snap to kickoff spawn coordinates');
+  }
+
+  // 2. Render & update with active carrier, tackle, super shot, and stun
+  engine.update();
+  engine.render();
+
+  bb.tryTackle();
+  bb.superGauge = 100;
+  bb.trySuper();
+  engine.update();
+  engine.render();
+
+  // 3. Test stun during engine.update() — ensure BrawlBall.update still runs and decrements floatingTexts
+  bb.stunnedUntil = Date.now() + 1200;
+  const beforeLife = bb.floatingTexts[0] ? bb.floatingTexts[0].life : 0;
+  engine.update();
+  engine.render();
+  const afterLife = bb.floatingTexts[0] ? bb.floatingTexts[0].life : 0;
+  if (beforeLife > 0 && afterLife >= beforeLife) {
+    throw new Error('BrawlBall.update() was skipped while local player was stunned!');
+  }
+
+  // 4. Test goal & ball reset
+  bb.onGoalScored({ team: 'blue', scorerName: '갓준철', score: { blue: 1, red: 0 } });
+  bb.onBallReset({ x: 43 * 32, y: 35 * 32 }, Date.now() + 3000);
+  engine.update();
+  engine.render();
+
+  // 5. Test match end
+  bb.onMatchEnded({ winnerTeam: 'blue', score: { blue: 2, red: 0 }, reason: '승리' });
+  engine.update();
+  engine.render();
+} catch (e) {
+  fail++;
+  console.error('FAIL BrawlBall simulation:', e.stack || e.message);
+}
+
 if (errors.size) console.log('\nUnique canvas errors:\n' + [...errors].join('\n'));
 console.log(fail === 0 ? '\n✅ ALL ROOMS/VARIANTS RENDER WITHOUT ERROR' : `\n❌ ${fail} failures`);
 process.exit(fail ? 1 : 0);
