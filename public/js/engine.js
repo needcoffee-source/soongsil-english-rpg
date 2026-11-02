@@ -427,7 +427,7 @@ class GameEngine {
       }
 
       // Exit Door area is ALWAYS passable
-      if (Math.abs(tileX - cr.exitDoor.x) <= 2 && tileY >= cr.exitDoor.y) {
+      if (Math.abs(tileX - cr.exitDoor.x) <= 1 && tileY >= cr.exitDoor.y) {
         return false;
       }
 
@@ -563,7 +563,7 @@ class GameEngine {
       } else if (this.player.room === 'room_career') {
         const cr = this.getCurrentClassroomData();
         const exit = (cr && cr.exitDoor) || { x: 30, y: 17 };
-        if (Math.abs(tileX - exit.x) <= 2 && tileY >= 17) {
+        if (Math.abs(tileX - exit.x) <= 1 && tileY >= exit.y) {
           this.triggerFadeWarp(() => {
             this.exitClassroom();
           });
@@ -571,7 +571,7 @@ class GameEngine {
       } else {
         const cr = this.getCurrentClassroomData();
         const exit = (cr && cr.exitDoor) || WORLD_DATA.classroom.exitDoor;
-        if (Math.abs(tileX - exit.x) <= 2 && tileY >= exit.y - 1) {
+        if (Math.abs(tileX - exit.x) <= 1 && tileY >= exit.y) {
           this.triggerFadeWarp(() => {
             this.exitClassroom();
           });
@@ -719,7 +719,7 @@ class GameEngine {
         this.player.floor = 5;
         this.player.room = 'room_career';
         this.player.x = 30 * 32;
-        this.player.y = 13 * 32;
+        this.player.y = 15 * 32;
         this.player.roomName = '🌟 진로실 (Career Center)';
       } else if (room === 'room_staff_office') {
         this.player.floor = 6;
@@ -1157,8 +1157,9 @@ class GameEngine {
       }
       // Exit Door Proximity
       const exitDist = Math.hypot(cr.exitDoor.x * 32 - this.player.x, cr.exitDoor.y * 32 - this.player.y);
-      if (exitDist < 64) {
+      if (exitDist < 48 && exitDist < minDist) {
         closest = { type: 'exit', name: '복도 출구', prompt: '복도로 나가기 (SPACE)' };
+        minDist = exitDist;
       }
     }
 
@@ -1271,7 +1272,7 @@ class GameEngine {
       }
     } else {
       const cr = this.getCurrentClassroomData();
-      if (Math.hypot(cr.exitDoor.x * 32 - x, cr.exitDoor.y * 32 - y) < 48) {
+      if (Math.hypot(cr.exitDoor.x * 32 - x, cr.exitDoor.y * 32 - y) < 40) {
         return { type: 'exit' };
       }
       for (const npc of (cr.npcs || [])) {
@@ -2541,9 +2542,9 @@ class GameEngine {
     this.drawCareerStationSpace(52 * 32, 7 * 32);
     this.drawCareerClueLabel(52 * 32 + 16, 7 * 32 - 18, 6, '우주 탐구관', 'S', clues[5]);
 
-    // 8. Draw Decoy Clue Station 7: 💼 Vintage Briefcase (x: 28, y: 12)
-    this.drawCareerStationDecoy(28 * 32, 12 * 32);
-    this.drawCareerClueLabel(28 * 32 + 16, 12 * 32 - 18, 7, '골동품 서류가방', 'P', clues[6]);
+    // 8. Draw Decoy Clue Station 7: 💼 Vintage Briefcase (x: 23, y: 12)
+    this.drawCareerStationDecoy(23 * 32, 12 * 32);
+    this.drawCareerClueLabel(23 * 32 + 16, 12 * 32 - 18, 7, '골동품 서류가방', 'P', clues[6]);
 
     // 9. Draw Fallen Developer Note #2 (가장 왼쪽 아래편: x: 4, y: 16)
     this.drawHighResDevNote(4 * 32, 16 * 32, '📜 떨어진 개발자노트 (제2편)');
