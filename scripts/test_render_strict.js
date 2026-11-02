@@ -57,7 +57,7 @@ const rooms = ['hallway', 'playground', 'room_701', 'room_702', 'room_703', 'roo
 const variants = [
   { label: 'student', isTeacher: false, isFallen: false, gear: {} },
   { label: 'teacher', isTeacher: true, isFallen: false, gear: {}, noclip: true },
-  { label: 'fallen', isTeacher: false, isFallen: true, gear: { weapon: 'equip_leather_sword', armor: 'equip_bronze_armor', helmet: 'equip_laurel_crown', accessory: 'equip_ginkgo_talisman' } }
+  { label: 'fallen', isTeacher: false, isFallen: true, gear: { weapon: 'equip_leather_sword', armor: 'equip_bronze_armor', helmet: 'equip_heritage_helmet', accessory: 'equip_ginkgo_talisman' } }
 ];
 const plantCounts = [0, 150, 1500, 3500];
 let fail = 0;

@@ -33,8 +33,8 @@ const ITEM_ICON_MAP = {
   item_hp_potion: '🧪',
   item_red_potion: '🍷',
   item_orange_potion: '🧪',
-  item_golem_core: '🟢',
-  item_dragon_heart: '❤️‍🔥',
+  item_boss_leather: '🥋',
+  item_bronze_heart: '❤️‍🔥',
   item_revive_scroll: '📜'
 };
 

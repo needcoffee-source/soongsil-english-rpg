@@ -52,8 +52,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '기본 재료',
     tierColor: '#78350f',
     effect: '1티어 나무 장비(나무검·투구·갑옷) 제작 핵심 기본 재료',
-    source: '1학년 1반 책상, 사물함, 교탁 퀴즈 정답 시 100% 드랍',
-    recipe: '1반 교실 채집 파밍'
+    source: '7층 1학년 1반 책상·사물함·교탁 및 1~4단원 채집 퀴즈 정답 시 드랍',
+    recipe: '1학년 1반 및 교내 채집 파밍'
   },
   {
     id: 'item_herb',
@@ -63,8 +63,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '약초 재료',
     tierColor: '#166534',
     effect: '빨간 물약, 주홍 물약, 부활 주문서 조제 필수 재료',
-    source: '1층 현관 화단 및 복도 식물 상호작용',
-    recipe: '교내 화단 채집 파밍'
+    source: '7층 1학년 복도 동쪽 화분(실내 식물존) 1단원 퀴즈 정답 시 드랍',
+    recipe: '7층 복도 화분 채집 파밍'
   },
   {
     id: 'item_forsythia',
@@ -74,8 +74,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교화 재료',
     tierColor: '#ca8a04',
     effect: '주홍 물약, 청동 장비, 성실의 개나리 반지 제작 재료',
-    source: '숭실 교정 화단 및 운동장 주변 개나리 군락',
-    recipe: '교정 화단 채집 파밍'
+    source: '7층 1학년 복도 서쪽 개나리 화분 2단원 퀴즈 정답 시 드랍',
+    recipe: '7층 복도 개나리 화분 채집 파밍'
   },
   {
     id: 'item_ginkgo',
@@ -85,19 +85,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교목 재료',
     tierColor: '#d97706',
     effect: '부활 주문서 및 합심의 황금 은행잎 부적 제작 재료',
-    source: '학교 교문 진입로 및 가로수 은행나무 채집',
-    recipe: '가로수길 채집 파밍'
-  },
-  {
-    id: 'item_golem_core',
-    name: '고목의 핵',
-    icon: '🟢',
-    category: 'material',
-    tierBadge: '보스 전리품',
-    tierColor: '#059669',
-    effect: '1차 관문 골렘 보스 토벌 증표 · 상위 장비 제작 재료',
-    source: '1학년 2반 가죽 골렘 보스 처치 시 100% 획득',
-    recipe: '1-2 보스 처치 전리품'
+    source: '7층 1학년 복도 중앙 교목 은행나무 3단원 퀴즈 정답 시 드랍',
+    recipe: '7층 복도 은행나무 채집 파밍'
   },
   {
     id: 'item_boss_leather',
@@ -140,8 +129,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 전리품',
     tierColor: '#dc2626',
     effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
-    source: '옥상 심층 레이드 청동 드래곤 보스 격파 시 100% 획득',
-    recipe: '드래곤 보스 처치 전리품'
+    source: '1학년 2반 숭실 청동 드래곤 보스 격파 시 100% 획득',
+    recipe: '1-2 청동 드래곤 처치 전리품'
   },
   {
     id: 'item_perfect_exam',
@@ -150,12 +139,23 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '명예 증표',
     tierColor: '#4338ca',
-    effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 교환권',
-    source: '중간고사 대마왕 보스 격파 시 증정',
-    recipe: '중간고사 대마왕 격파'
+    effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 및 [👟 삼디다스 실내화] 교환권',
+    source: '운동장 축구장 중간고사 대마왕 보스 격파 시 100% 획득',
+    recipe: '중간고사 대마왕 처치 전리품'
+  },
+  {
+    id: 'item_eval_paper',
+    name: 'A+ 만점 수행평가지',
+    icon: '📜',
+    category: 'material',
+    tierBadge: '보스 전리품',
+    tierColor: '#0d9488',
+    effect: '케르베로스 토벌 증표 · [👟 삼디다스 실내화] 특별 교환권',
+    source: '운동장 축구장 수행평가 3두마수 케르베로스 보스 격파 시 100% 획득',
+    recipe: '케르베로스 보스 처치 전리품'
   },
 
-  // 2. Consumables (소비품 3종 - craft_recipes.json 공식 레시피)
+  // 2. Consumables (소비품 6종 - craft_recipes.json 공식 레시피)
   {
     id: 'item_red_potion',
     name: '빨간 물약',
@@ -164,7 +164,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '회복 물약',
     tierColor: '#e11d48',
     effect: '사용 시 체력(HP) +10 즉시 회복',
-    source: '포션 제작대 조제 / 매점 구매 (5G)',
+    source: '포션·주문서 제작대(C)에서 조제 / 보스 레이드 전리품',
     recipe: '향긋한 허브 1개 + 5G'
   },
   {
@@ -175,7 +175,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '고급 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '포션 제작대 조제 / 매점 구매 (10G)',
+    source: '포션·주문서 제작대(C)에서 조제 / 보스 레이드 전리품',
     recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
   },
   {
@@ -388,7 +388,7 @@ window.ITEM_CODEX_DATABASE = [
   },
   {
     id: 'item_unyielding_stone',
-    name: '불굴의 사명석',
+    name: '꺾이지 않는 사명석',
     icon: '💎',
     category: 'material',
     tierBadge: '4티어 역사 재료',
@@ -406,7 +406,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#6366f1',
     effect: '공격력 +45, 체력 +35',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 150G)',
-    recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 150G'
+    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 150G'
   },
   {
     id: 'equip_heritage_helmet',
@@ -417,7 +417,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#6366f1',
     effect: '방어력 +20, 체력 +35',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 4개 + 사명석 2개 + 120G)',
-    recipe: '숭실 역사의 정수 4개 + 불굴의 사명석 2개 + 120G'
+    recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 120G'
   },
   {
     id: 'equip_heritage_armor',
@@ -428,7 +428,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#6366f1',
     effect: '방어력 +30, 체력 +45',
     source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 140G)',
-    recipe: '숭실 역사의 정수 5개 + 불굴의 사명석 3개 + 140G'
+    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
   {
     id: 'equip_shoes_samdidas',
@@ -438,8 +438,19 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '1티어 신발',
     tierColor: '#059669',
     effect: '공격력 +2, 방어력 +2, 체력 +10 (Shift 키 질주 기능 활성화)',
-    source: '🏅 호칭 교환소 특별 교환 (만점 시험지 1장)',
-    recipe: '백점만점 시험지 또는 수행평가지 교환'
+    source: '🏅 호칭 교환소 특별 교환 (백점만점 시험지 또는 A+ 만점 수행평가지 1장)',
+    recipe: '백점만점 시험지 또는 A+ 만점 수행평가지 교환'
+  },
+  {
+    id: 'equip_omr_wand',
+    name: '컴싸 마법봉 (OMR Magic Wand)',
+    icon: '🖊️',
+    category: 'equip',
+    tierBadge: '전설 무기',
+    tierColor: '#7e22ce',
+    effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
+    source: '기말고사 파멸신 레이드 전리품 드랍 (드랍 확률 75% / 제작 불가)',
+    recipe: '제작 불가 (보스 레이드 전용 75% 드랍)'
   }
 ];
 
@@ -458,7 +469,6 @@ const ALL_GAME_ITEMS = {
   'item_herb': { name: '향긋한 허브', icon: '🌿', count: 9999, meta: { type: 'material', effect: '물약 및 주문서 제작 재료' } },
   'item_forsythia': { name: '노란 개나리 꽃잎', icon: '🌼', count: 9999, meta: { type: 'material', effect: '교화 개나리 장신구 및 주홍 물약 재료' } },
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
-  'item_golem_core': { name: '고목의 핵', icon: '🟢', count: 9999, meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
@@ -500,8 +510,7 @@ const ALL_GAME_ITEMS = {
   // 6. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
-  'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
-  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } }
 
 };
 
@@ -518,7 +527,6 @@ const ITEM_SELL_PRICES = {
   // 2. 몬스터 / 보스 전리품
   'item_basketball_leather': 2, // 농구공 가죽 조각
   'item_futsal_leather': 2, // 탄력있는 풋살공 가죽 (유저 확정: 2G)
-  'item_golem_core': 10, // 고목의 핵
   'item_boss_leather': 15, // 질긴 보스의 가죽
   'item_bronze_heart': 30, // 청동 드래곤의 심장
   'equip_shoes_samdidas': 20,
@@ -551,7 +559,6 @@ const ITEM_SELL_PRICES = {
   'equip_heritage_armor': 28, // 제작비 140G -> 20% = 28G
 
   // 7. 최상위 엔드 레이드 전리품
-  'equip_laurel_crown': 20,
   'equip_omr_wand': 20,
     'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
 };
@@ -752,18 +759,12 @@ const TITLE_DEFINITIONS = [
     costItemName: '💯 백점만점 시험지',
     costAmount: 1
   },
-    { id: 'title_job_doctor', name: '🩺 생명을 살리는 의사', desc: '5층 진로 방탈출을 통과하고 의사로 전직한 의료 전문가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_researcher', name: '🔬 진리를 밝히는 연구원', desc: '5층 진로 방탈출을 통과하고 연구원으로 전직한 학술 전문가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_engineer', name: '💻 미래를 코딩하는 엔지니어', desc: '5층 진로 방탈출을 통과하고 소프트웨어 엔지니어로 전직한 IT 공학자!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_artist', name: '🎨 영감을 주는 디자이너', desc: '5층 진로 방탈출을 통과하고 디자이너로 전직한 시각 예술가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_mentor', name: '🤝 마음을 보듬는 멘토', desc: '5층 진로 방탈출을 통과하고 상담 멘토로 전직한 교육 상담가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_scientist', name: '🔭 미래를 여는 과학자', desc: '5층 진로 방탈출을 통과하고 과학자로 전직한 과학 탐구자!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_medic', name: '🩺 생명을 살리는 의사', desc: '5층 진로 방탈출을 통과하고 의사로 전직한 의료 전문가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_runner', name: '💻 미래를 코딩하는 엔지니어', desc: '5층 진로 방탈출을 통과하고 엔지니어로 전직한 IT 공학자!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_scholar', name: '🔬 진리를 밝히는 연구원', desc: '5층 진로 방탈출을 통과하고 연구원으로 전직한 학술 전문가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_banker', name: '🔭 미래를 여는 과학자', desc: '5층 진로 방탈출을 통과하고 과학자로 전직한 과학 탐구자!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_scout', name: '🎨 영감을 주는 디자이너', desc: '5층 진로 방탈출을 통과하고 디자이너로 전직한 시각 예술가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_guardian', name: '🤝 마음을 보듬는 멘토', desc: '5층 진로 방탈출을 통과하고 상담 멘토로 전직한 교육 상담가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_medic', name: '🩺 수호의 메딕', desc: '5층 진로상담실 방탈출을 통과하고 메딕(Medic)으로 전직한 숭실의 힐러!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_runner', name: '⚡ 질주의 러너', desc: '5층 진로상담실 방탈출을 통과하고 러너(Runner)로 전직한 육상 스타!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scholar', name: '📚 지혜의 스칼라', desc: '5층 진로상담실 방탈출을 통과하고 스칼라(Scholar)로 전직한 지혜의 학자!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_banker', name: '🪙 황금의 뱅커', desc: '5층 진로상담실 방탈출을 통과하고 뱅커(Banker)로 전직한 숭실 자산가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_scout', name: '🍀 행운의 스카우트', desc: '5층 진로상담실 방탈출을 통과하고 스카우트(Scout)로 전직한 보물 탐험가!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_guardian', name: '🛡️ 철벽의 가디언', desc: '5층 진로상담실 방탈출을 통과하고 가디언(Guardian)으로 전직한 든든한 방패!', costType: 'quest', costAmount: 0 },
   {
     id: 'title_drummer',
     name: '🥁 영혼의 드러머',
@@ -2781,8 +2782,8 @@ class MainApp {
           }
           this.playerData.isAccessory2Unlocked = !!saved.isAccessory2Unlocked;
 
-          // Filter out deleted items (용의 심장, 아이스 물약, 백호 수호 부적)
-          const DELETED_IDS = ['item_dragon_heart', 'item_ice_potion', 'equip_tiger_amulet'];
+          // Filter out deleted items (용의 심장, 아이스 물약, 백호 수호 부적, 고목의 핵, 종강의 황금 월계관)
+          const DELETED_IDS = ['item_dragon_heart', 'item_ice_potion', 'equip_tiger_amulet', 'item_golem_core', 'equip_laurel_crown'];
           this.playerData.inventory = (this.playerData.inventory || []).filter(i => i && !DELETED_IDS.includes(i.item));
           if (this.playerData.equipment) {
             for (const sKey of Object.keys(this.playerData.equipment)) {
@@ -2820,8 +2821,20 @@ class MainApp {
               if (localSolved) this.playerData.solvedMoralQuestionIds = JSON.parse(localSolved);
             } catch (e) {}
           }
-          this.playerData.titles = Array.isArray(saved.titles) ? saved.titles : [];
-          this.playerData.equippedTitle = saved.equippedTitle || null;
+          const LEGACY_TITLE_MAP = {
+            '🩺 생명을 살리는 의사': '🩺 수호의 메딕',
+            '💻 미래를 코딩하는 엔지니어': '⚡ 질주의 러너',
+            '🔬 진리를 밝히는 연구원': '📚 지혜의 스칼라',
+            '🔭 미래를 여는 과학자': '🪙 황금의 뱅커',
+            '🎨 영감을 주는 디자이너': '🍀 행운의 스카우트',
+            '🤝 마음을 보듬는 멘토': '🛡️ 철벽의 가디언'
+          };
+          this.playerData.titles = Array.isArray(saved.titles)
+            ? [...new Set(saved.titles.map(t => LEGACY_TITLE_MAP[t] || t))]
+            : [];
+          this.playerData.equippedTitle = saved.equippedTitle
+            ? (LEGACY_TITLE_MAP[saved.equippedTitle] || saved.equippedTitle)
+            : null;
           console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}, 704클리어: ${this.playerData.hasClearedClass704}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');

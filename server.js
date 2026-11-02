@@ -576,7 +576,6 @@ const ALL_GAME_ITEMS = {
   'item_herb': { name: '향긋한 허브', icon: '🌿', meta: { type: 'material', effect: '물약 및 주문서 제작 재료' } },
   'item_forsythia': { name: '노란 개나리 꽃잎', icon: '🌼', meta: { type: 'material', effect: '교화 개나리 장신구 및 주홍 물약 재료' } },
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
-  'item_golem_core': { name: '고목의 핵', icon: '🟢', meta: { type: 'material', effect: '골렘 보스 전리품 · 상위 제작 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
     'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
   'item_unyielding_stone': { name: '💎 꺾이지 않는 사명석', icon: '💎', meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료' } },
@@ -611,7 +610,6 @@ const ALL_GAME_ITEMS = {
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
-  'equip_laurel_crown': { name: '종강의 황금 월계관', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 15, def: 25, hp: 80 }, effect: '기말고사 파멸신 전리품 · 공격력 +15, 방어력 +25, 체력 +80' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
 
