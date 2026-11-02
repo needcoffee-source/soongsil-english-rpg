@@ -2166,7 +2166,8 @@ class MainApp {
         btn._bound = true;
         btn.addEventListener('click', () => {
           modal.classList.add('hidden');
-          this.travelToElevatorFloor(btn.dataset.target);
+          const target = btn.getAttribute('data-target') || btn.dataset.target;
+          this.travelToElevatorFloor(target);
         });
       }
     });
@@ -2179,8 +2180,9 @@ class MainApp {
   }
 
   travelToElevatorFloor(target) {
-    if (this._elevatorCooldown && Date.now() - this._elevatorCooldown < 1500) return;
-    this._elevatorCooldown = Date.now() + 1500;
+    if (this._isElevatorTraveling) return;
+    this._isElevatorTraveling = true;
+    setTimeout(() => { this._isElevatorTraveling = false; }, 800);
 
     // 엘리베이터 이용료 (무조건 1회 이용 시 10G 지출, 교사는 무료)
     if (!this.playerData.isTeacher) {
@@ -2192,29 +2194,37 @@ class MainApp {
       this.showToast('🛗 엘리베이터 이용료 10G를 지불했습니다.', 'info');
     }
 
+    if (this.engine && this.engine.fade && this.engine.fade.phase === 'none') {
+      this.engine.fade.active = false;
+    }
+
     if (target === 'floor_7' || target === 'floor_1') {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 7;
         this.engine.warpToRoom('hallway', '7층 복도 (1학년 구역)', 56 * 32, 6 * 32);
+        this.saveProgress();
       });
     } else if (target === 'floor_6') {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 6;
         this.engine.warpToRoom('hallway', '6층 복도 (교무실 & 2학년 구역)', 56 * 32, 6 * 32);
+        this.saveProgress();
       });
     } else if (target === 'floor_5') {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+        this.saveProgress();
       });
     } else if (target === 'playground') {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
         this.engine.warpToRoom('playground', '숭실 운동장', 80 * 32, 6 * 32);
+        this.saveProgress();
       });
     }
   }
