@@ -2352,6 +2352,14 @@ body, html {
   background: #0369a1;
 }
 
+.btn-inv-teleport {
+  background: #9333ea;
+  color: #ffffff;
+}
+.btn-inv-teleport:hover {
+  background: #7e22ce;
+}
+
 .btn-inv-courage {
   background: #7c3aed;
   color: #ffffff;

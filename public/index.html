@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=128">
+  <link rel="manifest" href="/manifest.json?v=129">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=128">
+  <link rel="stylesheet" href="css/style.css?v=129">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -744,6 +744,81 @@
             <div style="font-size: 15px; font-weight: 900; color: #fbbf24;">⚽ 지상 — 숭실 야외 운동장</div>
           </div>
           <span class="elevator-tag" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #78350f; color: #fef08a; font-weight: 800;">10G 소모 ➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-G3. Modal: Teleport Scroll (순간이동 주문서 목적지 선택) -->
+  <div id="modal-teleport" class="modal-overlay hidden" style="z-index: 136;">
+    <div class="modal-box" style="max-width: 460px; width: 92%; border: 3px solid #8b5cf6; background: linear-gradient(180deg, #1e1b4b, #0f172a); color: #fff; padding: 22px 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.7);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #4338ca; padding-bottom: 10px;">
+        <h2 style="font-size: 19px; font-weight: 900; color: #f8fafc; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🌀</span> 순간이동 주문서
+        </h2>
+        <button id="btn-close-teleport-modal" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 12.5px; color: #cbd5e1; margin: 0 0 14px;">
+        이동할 목적지를 선택하세요. <b>순간이동 주문서 1장</b>이 소모됩니다.
+      </p>
+
+      <div style="font-size: 12px; font-weight: 800; color: #a5b4fc; margin-bottom: 6px;">🏢 학교 본관 복도</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;" id="teleport-hallway-list">
+        <!-- 7층 복도 -->
+        <button class="btn-teleport-dest" data-target="floor_7" style="display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #22c55e; border-radius: 9px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 900; color: #4ade80;">🏫 7층 — 1학년 복도</div>
+            <div style="font-size: 11px; color: #94a3b8;">장비/소비품 제작대, 1~6반 교실, 보스 레이드</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #14532d; color: #bbf7d0; font-weight: 800;">이동 ➔</span>
+        </button>
+
+        <!-- 6층 복도 -->
+        <button class="btn-teleport-dest" data-target="floor_6" style="display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #a855f7; border-radius: 9px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 900; color: #c084fc;">🏛️ 6층 — 2학년 & 교무실 복도</div>
+            <div style="font-size: 11px; color: #94a3b8;">대형 교무실(탕비실 개발자노트3), 2학년 교실</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #581c87; color: #e9d5ff; font-weight: 800;">이동 ➔</span>
+        </button>
+
+        <!-- 5층 복도 -->
+        <button class="btn-teleport-dest" data-target="floor_5" style="display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #38bdf8; border-radius: 9px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 900; color: #38bdf8;">🌟 5층 — 진로상담실 복도</div>
+            <div style="font-size: 11px; color: #94a3b8;">대형 진로상담실 (6대 직업 아카데미)</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #075985; color: #bae6fd; font-weight: 800;">이동 ➔</span>
+        </button>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 800; color: #fcd34d; margin-bottom: 6px;">⚽ 야외 운동장 구역</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;" id="teleport-playground-list">
+        <!-- 농구장 -->
+        <button class="btn-teleport-dest" data-target="court_basketball" style="display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #f97316; border-radius: 9px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 900; color: #fb923c;">🏀 야외 농구장</div>
+            <div style="font-size: 11px; color: #94a3b8;">우레탄 코트, 덩크 고블린 사냥 (농구 가죽 파밍)</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #7c2d12; color: #fed7aa; font-weight: 800;">이동 ➔</span>
+        </button>
+
+        <!-- 풋살장 -->
+        <button class="btn-teleport-dest" data-target="court_futsal" style="display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #10b981; border-radius: 9px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 900; color: #34d399;">⚽ 야외 풋살장</div>
+            <div style="font-size: 11px; color: #94a3b8;">인조잔디 코트, 풋살 가죽 파밍, 숭실역사관 입구</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #064e3b; color: #a7f3d0; font-weight: 800;">이동 ➔</span>
+        </button>
+
+        <!-- 축구장 -->
+        <button class="btn-teleport-dest" data-target="field_soccer" style="display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #eab308; border-radius: 9px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 14.5px; font-weight: 900; color: #facc15;">🏟️ 야외 축구장</div>
+            <div style="font-size: 11px; color: #94a3b8;">천연잔디 축구장 필드 & 트랙</div>
+          </div>
+          <span style="font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #713f12; color: #fef08a; font-weight: 800;">이동 ➔</span>
         </button>
       </div>
     </div>
@@ -1778,18 +1853,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=128"></script>
-  <script src="js/dialog.js?v=128"></script>
+  <script src="js/audio.js?v=129"></script>
+  <script src="js/dialog.js?v=129"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=128"></script>
-  <script src="js/engine.js?v=128"></script>
-  <script src="js/quiz.js?v=128"></script>
-  <script src="js/crafting.js?v=128"></script>
-  <script src="js/network.js?v=128"></script>
-  <script src="js/acid_rain.js?v=128"></script>
-  <script src="js/brawl_ball.js?v=128"></script>
-  <script src="js/main.js?v=128"></script>
+  <script src="js/world.js?v=129"></script>
+  <script src="js/engine.js?v=129"></script>
+  <script src="js/quiz.js?v=129"></script>
+  <script src="js/crafting.js?v=129"></script>
+  <script src="js/network.js?v=129"></script>
+  <script src="js/acid_rain.js?v=129"></script>
+  <script src="js/brawl_ball.js?v=129"></script>
+  <script src="js/main.js?v=129"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

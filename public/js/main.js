@@ -222,6 +222,17 @@ window.ITEM_CODEX_DATABASE = [
     source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 15G)',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 15G'
   },
+  {
+    id: 'item_teleport_scroll',
+    name: '순간이동 주문서',
+    icon: '📜',
+    category: 'consumable',
+    tierBadge: '비전 주문서',
+    tierColor: '#9333ea',
+    effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
+    source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 은행잎 1개 + 50G)',
+    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 황금 은행잎 1개 + 50G'
+  },
 
   // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
   {
@@ -483,6 +494,7 @@ const ALL_GAME_ITEMS = {
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
+  'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
@@ -3673,6 +3685,7 @@ class MainApp {
         const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
         const isScroll = (item.item === 'item_revive_scroll');
         const isReturnScroll = (item.item === 'item_return_scroll');
+        const isTeleportScroll = (item.item === 'item_teleport_scroll');
         const isGreenPotion = (item.item === 'item_green_potion');
         const isCouragePotion = (item.item === 'item_courage_potion');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
@@ -3697,7 +3710,9 @@ class MainApp {
           const statText = parts.length > 0 ? parts.join(' · ') : (effect || '능력치 상승');
           statBadgeHtml = `<span class="inv-item-stat-badge">${statText}</span>`;
         } else if (isPotion) {
-          if (isReturnScroll) {
+          if (isTeleportScroll) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">🌀 복도 및 운동장 구역으로 공간 이동</span>`;
+          } else if (isReturnScroll) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;">🌀 7층 복도로 즉시 공간 이동</span>`;
           } else if (isScroll) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">💫 쓰러진 친구 50% 체력 부활</span>`;
@@ -3756,7 +3771,10 @@ class MainApp {
           let btnClass = 'btn-inv-potion';
           let btnText = '마시기';
 
-          if (isReturnScroll) {
+          if (isTeleportScroll) {
+            btnClass = 'btn-inv-teleport';
+            btnText = '순간이동';
+          } else if (isReturnScroll) {
             btnClass = 'btn-inv-return';
             btnText = '귀환';
           } else if (isScroll) {
@@ -3771,7 +3789,8 @@ class MainApp {
           btn.innerText = btnText;
 
           const handleUse = () => {
-            if (isReturnScroll) this.useReturnScroll();
+            if (isTeleportScroll) this.useTeleportScroll();
+            else if (isReturnScroll) this.useReturnScroll();
             else if (isScroll) this.attemptUseReviveScroll();
             else if (isGreenPotion) this.useGreenPotion();
             else if (isCouragePotion) this.useCouragePotion();
@@ -5090,6 +5109,130 @@ class MainApp {
     } else if (confirm('귀환 주문서를 사용하여 7층 복도로 즉시 공간 이동하시겠습니까?')) {
       executeReturn();
     }
+  }
+
+  // 🌀 순간이동 주문서 사용 (목적지 선택 모달 오픈)
+  useTeleportScroll() {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 순간이동 주문서를 사용할 수 없습니다!\n동료의 [부활 주문서]를 받거나 [복도 부활]을 이용해주세요.');
+      return;
+    }
+
+    const scroll = this.playerData.inventory.find(i => i.item === 'item_teleport_scroll');
+    if (!scroll || scroll.count <= 0) {
+      alert('📜 보유 중인 순간이동 주문서가 없습니다.\n소비품 제작대에서 제작할 수 있습니다.');
+      return;
+    }
+
+    this.openTeleportModal();
+  }
+
+  openTeleportModal() {
+    const modal = document.getElementById('modal-teleport');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+
+    const destButtons = modal.querySelectorAll('.btn-teleport-dest');
+    destButtons.forEach(btn => {
+      if (!btn._bound) {
+        btn._bound = true;
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-target');
+          if (target) this.executeTeleport(target);
+        });
+      }
+    });
+
+    const btnClose = document.getElementById('btn-close-teleport-modal');
+    if (btnClose && !btnClose._bound) {
+      btnClose._bound = true;
+      btnClose.addEventListener('click', () => this.closeTeleportModal());
+    }
+  }
+
+  closeTeleportModal() {
+    const modal = document.getElementById('modal-teleport');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  executeTeleport(target) {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 순간이동 주문서를 사용할 수 없습니다!');
+      this.closeTeleportModal();
+      return;
+    }
+
+    const scroll = this.playerData.inventory.find(i => i.item === 'item_teleport_scroll');
+    if (!scroll || scroll.count <= 0) {
+      alert('📜 보유 중인 순간이동 주문서가 없습니다.\n소비품 제작대에서 제작할 수 있습니다.');
+      this.closeTeleportModal();
+      return;
+    }
+
+    // 1장 차감
+    this.removeItem('item_teleport_scroll', 1);
+
+    // 모달창 닫기
+    this.closeTeleportModal();
+    if (this.modalInventory) this.modalInventory.classList.add('hidden');
+    if (this.closeFieldBattleModal) this.closeFieldBattleModal();
+    if (this.modalBossRaid) this.modalBossRaid.classList.add('hidden');
+    if (this.bossTimerInterval) {
+      clearInterval(this.bossTimerInterval);
+      this.bossTimerInterval = null;
+    }
+
+    // 사운드
+    if (window.AudioManager) {
+      if (window.AudioManager.playLevelUp) {
+        window.AudioManager.playLevelUp();
+      } else if (window.AudioManager.playSelect) {
+        window.AudioManager.playSelect();
+      }
+    }
+
+    let targetName = '목적지';
+    if (target === 'floor_7') {
+      targetName = '🏫 7층 1학년 복도';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 7;
+        this.engine.warpToRoom('hallway', '7층 복도', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'floor_6') {
+      targetName = '🏛️ 6층 2학년 & 교무실 복도';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 6;
+        this.engine.warpToRoom('hallway', '6층 복도 (교무실 & 2학년 구역)', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'floor_5') {
+      targetName = '🌟 5층 진로상담실 복도';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 5;
+        this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'court_basketball') {
+      targetName = '🏀 야외 농구장';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 1;
+        this.engine.warpToRoom('playground_basketball', '숭실 운동장 (농구장)', 74 * 32, 16 * 32);
+      });
+    } else if (target === 'court_futsal') {
+      targetName = '⚽ 야외 풋살장';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 1;
+        this.engine.warpToRoom('playground_futsal', '숭실 운동장 (풋살장)', 74 * 32, 40 * 32);
+      });
+    } else if (target === 'field_soccer') {
+      targetName = '🏟️ 야외 축구장';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 1;
+        this.engine.warpToRoom('playground_soccer', '숭실 운동장 (축구장)', 22 * 32, 35 * 32);
+      });
+    }
+
+    this.saveProgress();
+    this.showToast(`🌀 순간이동 주문서 발동! ${targetName}(으)로 즉시 공간 이동했습니다.`, 'success');
   }
 
   isBuffActive(buffKey) {

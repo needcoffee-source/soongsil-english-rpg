@@ -747,6 +747,54 @@
     }
   },
   {
+    "id": "recipe_teleport_scroll",
+    "name": "순간이동 주문서",
+    "category": "potion",
+    "description": "[소비품] 고위 시공간 마력이 담긴 비전 주문서입니다. 사용 시 각 층 복도(7·6·5층) 또는 야외 운동장(농구장·풋살장·축구장)으로 즉시 공간 이동합니다.",
+    "icon": "📜",
+    "gradeLevel": 1,
+    "requiredGold": 50,
+    "requiredItems": [
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 1
+      },
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 2
+      },
+      {
+        "item": "item_ginkgo",
+        "name": "황금 은행잎",
+        "count": 1
+      }
+    ],
+    "unscramble": {
+      "korean": "우리는 원하는 곳으로 자유롭게 순간이동할 수 있다.",
+      "words": [
+        "We",
+        "can",
+        "teleport",
+        "freely",
+        "anywhere",
+        "we",
+        "want."
+      ],
+      "correct": "We can teleport freely anywhere we want."
+    },
+    "result": {
+      "item": "item_teleport_scroll",
+      "name": "순간이동 주문서",
+      "icon": "📜",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 0,
+      "effect": "사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동"
+    }
+  },
+  {
     "id": "recipe_heritage_sword",
     "name": "⚔️ 1897 숭실 헤리티지 소드",
     "category": "equipment",

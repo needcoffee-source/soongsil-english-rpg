@@ -595,6 +595,7 @@ const ALL_GAME_ITEMS = {
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
+  'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도(7·6·5층) 및 운동장(농구·풋살·축구장)으로 즉시 순간이동' } },
 
   // 3. Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
