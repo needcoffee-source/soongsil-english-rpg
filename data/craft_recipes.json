@@ -764,25 +764,17 @@
         "item": "item_herb",
         "name": "향긋한 허브",
         "count": 2
-      },
-      {
-        "item": "item_ginkgo",
-        "name": "황금 은행잎",
-        "count": 1
       }
     ],
     "unscramble": {
-      "korean": "우리는 원하는 곳으로 자유롭게 순간이동할 수 있다.",
+      "korean": "우리는 어디든 갈 수 있다.",
       "words": [
         "We",
         "can",
-        "teleport",
-        "freely",
-        "anywhere",
-        "we",
-        "want."
+        "go",
+        "anywhere."
       ],
-      "correct": "We can teleport freely anywhere we want."
+      "correct": "We can go anywhere."
     },
     "result": {
       "item": "item_teleport_scroll",

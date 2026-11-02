@@ -230,8 +230,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '비전 주문서',
     tierColor: '#9333ea',
     effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
-    source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 은행잎 1개 + 50G)',
-    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 황금 은행잎 1개 + 50G'
+    source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 50G)',
+    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
   },
 
   // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
@@ -5194,37 +5194,37 @@ class MainApp {
 
     let targetName = '목적지';
     if (target === 'floor_7') {
-      targetName = '🏫 7층 1학년 복도';
+      targetName = '🏫 7층 복도';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 7;
         this.engine.warpToRoom('hallway', '7층 복도', 56 * 32, 6 * 32);
       });
     } else if (target === 'floor_6') {
-      targetName = '🏛️ 6층 2학년 & 교무실 복도';
+      targetName = '🏛️ 6층 복도';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 6;
         this.engine.warpToRoom('hallway', '6층 복도 (교무실 & 2학년 구역)', 56 * 32, 6 * 32);
       });
     } else if (target === 'floor_5') {
-      targetName = '🌟 5층 진로상담실 복도';
+      targetName = '🌟 5층 복도';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
       });
     } else if (target === 'court_basketball') {
-      targetName = '🏀 야외 농구장';
+      targetName = '🏀 농구장';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
         this.engine.warpToRoom('playground_basketball', '숭실 운동장 (농구장)', 74 * 32, 16 * 32);
       });
     } else if (target === 'court_futsal') {
-      targetName = '⚽ 야외 풋살장';
+      targetName = '⚽ 풋살장';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
         this.engine.warpToRoom('playground_futsal', '숭실 운동장 (풋살장)', 74 * 32, 40 * 32);
       });
     } else if (target === 'field_soccer') {
-      targetName = '🏟️ 야외 축구장';
+      targetName = '🏟️ 축구장';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
         this.engine.warpToRoom('playground_soccer', '숭실 운동장 (축구장)', 22 * 32, 35 * 32);
