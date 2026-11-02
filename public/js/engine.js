@@ -3004,6 +3004,39 @@ class GameEngine {
       return;
     }
 
+    if (obj.category === 'potion') {
+      // 🧪 소비품 제작대 (신비한 포션 & 주문서 연금 작업대)
+      this.ctx.fillStyle = '#1e293b';
+      this.ctx.fillRect(px, py + 14, w, h - 14);
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(px + 4, py + 18, w - 8, h - 22);
+
+      // 에메랄드 그린 상판
+      this.ctx.fillStyle = '#065f46';
+      this.ctx.fillRect(px - 2, py, w + 4, 16);
+      this.ctx.fillStyle = '#34d399';
+      this.ctx.fillRect(px - 2, py, w + 4, 2);
+
+      // 반짝이는 물약 플라스크 및 마법 주문서
+      this.ctx.save();
+      this.ctx.font = '13px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('🧪', px + 16, py + 13);
+      this.ctx.fillText('📜', px + 38, py + 13);
+      this.ctx.restore();
+
+      const labelText = obj.name ? `🧪 ${obj.name}` : '🧪 소비품 제작대';
+      this.drawSharpLabel(px + w / 2, py + h + 8, labelText, {
+        bgColor: 'rgba(6, 78, 59, 0.95)',
+        borderColor: '#34d399',
+        textColor: '#ecfdf5',
+        fontSize: 12,
+        paddingX: 10,
+        height: 21
+      });
+      return;
+    }
+
     // Heavy Oak Bench Body
     this.ctx.fillStyle = '#78350f';
     this.ctx.fillRect(px, py + 14, w, h - 14);
@@ -9337,6 +9370,15 @@ class GameEngine {
 
     // 5. 실 이름표
     this.drawStaffOfficeSignage();
+
+    // 6. 상호작용 오브젝트 (예: 탕비실 안쪽 떨어진 개발자노트 제3편)
+    if (cr && cr.interactive) {
+      for (const obj of cr.interactive) {
+        if (obj.type === 'dev_note_3') {
+          this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || '📜 떨어진 개발자노트 (제3편)');
+        }
+      }
+    }
   }
 
   // 끊김 없는 단일 벽체 (타일마다 줄무늬가 생기지 않도록 한 번에 그림)

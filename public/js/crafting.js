@@ -50,7 +50,7 @@ class CraftingManager {
       if (category === 'equipment') {
         headerTitle.innerHTML = '🔨 숭실 장비 제작대 (Equipment Crafting)';
       } else if (category === 'potion') {
-        headerTitle.innerHTML = '🧪 숭실 포션·주문서 제작대 (Potion & Scroll Crafting)';
+        headerTitle.innerHTML = '🧪 숭실 소비품 제작대 (Consumable Crafting Station)';
       } else if (category === 'accessory') {
         headerTitle.innerHTML = '💍 교화·교목 장신구 세공대 (Accessory Crafting)';
       } else {
@@ -70,6 +70,16 @@ class CraftingManager {
 
   close() {
     this.modal.classList.add('hidden');
+  }
+
+  getPotionClass(recipe) {
+    if (!recipe) return '';
+    const id = recipe.id || (recipe.result ? recipe.result.item : '');
+    if (id === 'recipe_red_potion' || id === 'item_red_potion') return 'icon-red-potion';
+    if (id === 'recipe_orange_potion' || id === 'item_orange_potion') return 'icon-orange-potion';
+    if (id === 'recipe_green_potion' || id === 'item_green_potion') return 'icon-green-potion';
+    if (id === 'recipe_courage_potion' || id === 'item_courage_potion') return 'icon-purple-potion';
+    return '';
   }
 
   renderRecipeList() {
@@ -103,9 +113,9 @@ class CraftingManager {
         nameEn = match[2].trim();
       }
 
-      const isCourage = (r.id === 'recipe_courage_potion' || (r.result && r.result.item === 'item_courage_potion'));
+      const potionClass = this.getPotionClass(r);
       item.innerHTML = `
-        <span class="recipe-item-icon ${isCourage ? 'icon-purple-potion' : ''}">${r.icon}</span>
+        <span class="recipe-item-icon ${potionClass}">${r.icon}</span>
         <div class="recipe-item-info">
           <div class="recipe-name-ko">${nameKo}</div>
           ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
@@ -124,10 +134,10 @@ class CraftingManager {
     this.renderRecipeList();
 
     this.craftIcon.innerText = recipe.icon;
-    if (recipe.id === 'recipe_courage_potion' || (recipe.result && recipe.result.item === 'item_courage_potion')) {
-      this.craftIcon.classList.add('icon-purple-potion');
-    } else {
-      this.craftIcon.classList.remove('icon-purple-potion');
+    this.craftIcon.className = 'recipe-detail-icon';
+    const potionClass = this.getPotionClass(recipe);
+    if (potionClass) {
+      this.craftIcon.classList.add(potionClass);
     }
     this.craftName.innerText = recipe.name;
     this.craftDesc.innerText = `${recipe.description} (효과: ${recipe.result.effect})`;

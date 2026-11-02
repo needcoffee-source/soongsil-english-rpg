@@ -539,10 +539,10 @@
   },
   {
     "id": "recipe_orange_potion",
-    "name": "주홍 물약 (Orange Potion)",
+    "name": "주홍 물약",
     "category": "potion",
     "description": "[포션] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다.",
-    "icon": "🍹",
+    "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 10,
     "requiredItems": [
@@ -571,95 +571,11 @@
     "result": {
       "item": "item_orange_potion",
       "name": "주홍 물약",
-      "icon": "🍹",
+      "icon": "🧪",
       "type": "consumable",
       "slot": "consumable",
       "heal": 25,
       "effect": "사용 시 체력(HP) +25 즉시 회복"
-    }
-  },
-  {
-    "id": "recipe_revive_scroll",
-    "name": "부활 주문서 (Revival Scroll)",
-    "category": "potion",
-    "description": "[주문서] 향긋한 허브와 황금 은행잎으로 제작한 신비한 주문서입니다. 보스전에서 쓰러진 친구를 50% 체력으로 부활시킵니다.",
-    "icon": "📜",
-    "gradeLevel": 1,
-    "requiredGold": 25,
-    "requiredItems": [
-      {
-        "item": "item_herb",
-        "name": "향긋한 허브",
-        "count": 3
-      },
-      {
-        "item": "item_ginkgo",
-        "name": "황금 은행잎",
-        "count": 1
-      }
-    ],
-    "unscramble": {
-      "korean": "작은 실천이 큰 차이를 만듭니다.",
-      "words": [
-        "Small",
-        "actions",
-        "make",
-        "a",
-        "big",
-        "difference."
-      ],
-      "correct": "Small actions make a big difference."
-    },
-    "result": {
-      "item": "item_revive_scroll",
-      "name": "부활 주문서",
-      "icon": "📜",
-      "type": "consumable",
-      "slot": "consumable",
-      "heal": 0,
-      "effect": "쓰러진 친구를 50% 체력으로 부활"
-    }
-  },
-  {
-    "id": "recipe_return_scroll",
-    "name": "귀환 주문서",
-    "category": "potion",
-    "description": "[주문서] 숭실의 마력이 깃든 비전 주문서입니다. 사용 시 현재 위치가 어디든 상관없이 안전한 7층 복도로 즉시 공간 이동합니다.",
-    "icon": "📜",
-    "gradeLevel": 1,
-    "requiredGold": 10,
-    "requiredItems": [
-      {
-        "item": "item_wood",
-        "name": "단단한 목재",
-        "count": 1
-      },
-      {
-        "item": "item_herb",
-        "name": "향긋한 허브",
-        "count": 2
-      }
-    ],
-    "unscramble": {
-      "korean": "우리는 안전하게 학교로 돌아갈 것이다.",
-      "words": [
-        "We",
-        "will",
-        "return",
-        "to",
-        "school",
-        "safely."
-      ],
-      "correct": "We will return to school safely."
-    },
-    "result": {
-      "item": "item_return_scroll",
-      "name": "귀환 주문서",
-      "icon": "📜",
-      "type": "consumable",
-      "slot": "consumable",
-      "heal": 0,
-      "effect": "사용 시 모든 장소에서 7층 복도로 즉시 공간 이동"
     }
   },
   {
@@ -744,6 +660,90 @@
       "slot": "consumable",
       "heal": 0,
       "effect": "3분간 공격력(ATK) +5 증가"
+    }
+  },
+  {
+    "id": "recipe_revive_scroll",
+    "name": "부활 주문서",
+    "category": "potion",
+    "description": "[주문서] 향긋한 허브와 황금 은행잎으로 제작한 신비한 주문서입니다. 보스전에서 쓰러진 친구를 50% 체력으로 부활시킵니다.",
+    "icon": "📜",
+    "gradeLevel": 1,
+    "requiredGold": 10,
+    "requiredItems": [
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 3
+      },
+      {
+        "item": "item_ginkgo",
+        "name": "황금 은행잎",
+        "count": 1
+      }
+    ],
+    "unscramble": {
+      "korean": "작은 실천이 큰 차이를 만듭니다.",
+      "words": [
+        "Small",
+        "actions",
+        "make",
+        "a",
+        "big",
+        "difference."
+      ],
+      "correct": "Small actions make a big difference."
+    },
+    "result": {
+      "item": "item_revive_scroll",
+      "name": "부활 주문서",
+      "icon": "📜",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 0,
+      "effect": "쓰러진 친구를 50% 체력으로 부활"
+    }
+  },
+  {
+    "id": "recipe_return_scroll",
+    "name": "귀환 주문서",
+    "category": "potion",
+    "description": "[주문서] 숭실의 마력이 깃든 비전 주문서입니다. 사용 시 현재 위치가 어디든 상관없이 안전한 7층 복도로 즉시 공간 이동합니다.",
+    "icon": "📜",
+    "gradeLevel": 1,
+    "requiredGold": 15,
+    "requiredItems": [
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 1
+      },
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "우리는 안전하게 학교로 돌아갈 것이다.",
+      "words": [
+        "We",
+        "will",
+        "return",
+        "to",
+        "school",
+        "safely."
+      ],
+      "correct": "We will return to school safely."
+    },
+    "result": {
+      "item": "item_return_scroll",
+      "name": "귀환 주문서",
+      "icon": "📜",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 0,
+      "effect": "사용 시 모든 장소에서 7층 복도로 즉시 공간 이동"
     }
   },
   {

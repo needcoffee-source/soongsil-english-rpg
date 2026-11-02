@@ -164,7 +164,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '회복 물약',
     tierColor: '#e11d48',
     effect: '사용 시 체력(HP) +10 즉시 회복',
-    source: '포션·주문서 제작대(C)에서 조제 / 보스 레이드 전리품',
+    source: '소비품 제작대(C)에서 조제 / 보스 레이드 전리품',
     recipe: '향긋한 허브 1개 + 5G'
   },
   {
@@ -175,30 +175,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '고급 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '포션·주문서 제작대(C)에서 조제 / 보스 레이드 전리품',
+    source: '소비품 제작대(C)에서 조제 / 보스 레이드 전리품',
     recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
-  },
-  {
-    id: 'item_revive_scroll',
-    name: '부활 주문서',
-    icon: '📜',
-    category: 'consumable',
-    tierBadge: '특수 주문서',
-    tierColor: '#7c3aed',
-    effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
-    source: '포션 제작대에서 제작 (은행잎 1개 + 허브 3개 + 25G)',
-    recipe: '향긋한 허브 3개 + 황금 은행잎 1개 + 25G'
-  },
-  {
-    id: 'item_return_scroll',
-    name: '귀환 주문서',
-    icon: '📜',
-    category: 'consumable',
-    tierBadge: '주문서',
-    tierColor: '#0284c7',
-    effect: '사용 시 어디서든 안전한 7층 복도로 즉시 공간 이동',
-    source: '포션·주문서 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 10G)',
-    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 10G'
   },
   {
     id: 'item_green_potion',
@@ -208,7 +186,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 물약',
     tierColor: '#16a34a',
     effect: '사용 시 1분간 질주(대시) 속도 +10% 증가',
-    source: '포션·주문서 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 15G)',
+    source: '소비품 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 15G)',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 15G'
   },
   {
@@ -219,8 +197,30 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 물약',
     tierColor: '#9333ea',
     effect: '사용 시 3분간 공격력(ATK) +5 증가',
-    source: '포션·주문서 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 20G)',
+    source: '소비품 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 20G)',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
+  },
+  {
+    id: 'item_revive_scroll',
+    name: '부활 주문서',
+    icon: '📜',
+    category: 'consumable',
+    tierBadge: '특수 주문서',
+    tierColor: '#7c3aed',
+    effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
+    source: '소비품 제작대(C)에서 제작 (허브 3개 + 은행잎 1개 + 10G)',
+    recipe: '향긋한 허브 3개 + 황금 은행잎 1개 + 10G'
+  },
+  {
+    id: 'item_return_scroll',
+    name: '귀환 주문서',
+    icon: '📜',
+    category: 'consumable',
+    tierBadge: '주문서',
+    tierColor: '#0284c7',
+    effect: '사용 시 어디서든 안전한 7층 복도로 즉시 공간 이동',
+    source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 15G)',
+    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 15G'
   },
 
   // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
@@ -1322,6 +1322,8 @@ class MainApp {
       this.handleDevNoteInteraction();
     } else if (target.type === 'dev_note_2') {
       this.handleDevNote2Interaction();
+    } else if (target.type === 'dev_note_3') {
+      this.handleDevNote3Interaction();
     }
   }
 
@@ -4973,7 +4975,7 @@ class MainApp {
   attemptUseReviveScroll() {
     const scroll = this.playerData.inventory.find(i => i.item === 'item_revive_scroll');
     if (!scroll || scroll.count <= 0) {
-      alert('📜 보유 중인 부활 주문서가 없습니다.\n포션 제작대에서 제작할 수 있습니다.');
+      alert('📜 보유 중인 부활 주문서가 없습니다.\n소비품 제작대에서 제작할 수 있습니다.');
       return;
     }
 
@@ -5020,7 +5022,7 @@ class MainApp {
 
     const scroll = this.playerData.inventory.find(i => i.item === 'item_return_scroll');
     if (!scroll || scroll.count <= 0) {
-      alert('📜 보유 중인 귀환 주문서가 없습니다.\n포션·주문서 제작대에서 제작할 수 있습니다.');
+      alert('📜 보유 중인 귀환 주문서가 없습니다.\n소비품 제작대에서 제작할 수 있습니다.');
       return;
     }
 
@@ -7236,6 +7238,54 @@ class MainApp {
         const label = mobileBtnB.querySelector('.mobile-btn-label');
         if (label) label.textContent = '🔒';
       }
+    }
+  }
+
+  // 📜 교무실 탕비실 떨어진 개발자노트 이스터에그 (제3편)
+  handleDevNote3Interaction() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const noteKey = 'soongsil_dev_note_3_' + studentId;
+    let alreadyRead = false;
+    try {
+      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+    } catch (e) {}
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const noteStory =
+      "📜 [떨어진 개발자노트 — 제3편: 탕비실의 따뜻한 아침 온기]\n\n" +
+      "\"이른 아침 고요한 교무실 탕비실. 은은하게 퍼지는 커피 향기 속에\n" +
+      "선생님들이 아이들을 맞이하기 위해 분주히 수업을 준비하던 모습이 떠오릅니다.\n\n" +
+      "단어 암기와 문법 공부가 지루했던 아이들이 게임 속에서 활짝 웃으며 뛰놀 수 있도록,\n" +
+      "복도와 교실, 탕비실 구석구석에 비밀스런 이스터에그와 따뜻한 애정을 숨겨두었습니다.\n\n" +
+      "숭실의 모든 꿈들이 교무실의 불빛처럼 언제나 밝고 따스하게 빛나기를 바랍니다.\n\n" +
+      "— 탕비실 커피 한 잔의 온기를 전하며, 개발자 갓준철 올림 ☕✨—\"";
+
+    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+      try {
+        localStorage.setItem(noteKey, 'true');
+      } catch (e) {}
+
+      this.addGold(50);
+      this.addExp(50);
+      this.saveProgress();
+
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+
+      alert(
+        noteStory + "\n\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "🎁 [개발자노트 제3편 감상 보너스]\n" +
+        "• 갓준철 선생님의 따스한 커피 한 잔 같은 온기가 전해집니다!\n" +
+        "• 🪙 골드 +50G 획득!\n" +
+        "• 🌟 경험치 +50 EXP 획득!"
+      );
+    } else {
+      alert(noteStory);
     }
   }
 

@@ -75,7 +75,7 @@ const WORLD_DATA = {
         { id: "board_leaderboard", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
         { id: "mirror_hallway", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
         { id: "craft_equip_7", type: "craft", category: "equipment", x: 9, y: 14, name: "장비 제작대", prompt: "장비 제작하기" },
-        { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "포션 제작대", prompt: "포션·주문서 제작하기" },
+        { id: "craft_potion_7", type: "craft", category: "potion", x: 21, y: 14, name: "소비품 제작대", prompt: "소비품(포션·주문서) 제작하기" },
         { id: "craft_accessory_7", type: "craft", category: "accessory", x: 35, y: 14, name: "장신구 세공대", prompt: "장신구 세공하기" },
         { id: "board_club", type: "club_board", x: 27, y: 17, name: "🎸 동아리 홍보 게시판", prompt: "동아리 공지 확인 (SPACE)" },
         { id: "plant_hallway_1", type: "plant_zone", subType: "monstera", x: 33, y: 17, name: "🪴 복도 식물존", prompt: "물 주기 (SPACE) 💧" },
@@ -90,7 +90,7 @@ const WORLD_DATA = {
           x: 14,
           y: 9,
           avatar: "graduate",
-          dialogue: "안녕! 숭실중 1학년 영어 RPG(시즌1)에 온 후배들을 환영해! 🎓\n선배로서 모험을 위한 핵심 가이드를 알려줄게!\n\n📝 [1단계: 퀴즈 풀기 & 재료 모으기]\n• [1학년 1반] 교실로 들어가서 책상 앞에서 SPACE를 눌러봐.\n• 1~4단원 영어 문제를 풀면 단단한 목재, 허브, 개나리 꽃잎과 골드를 얻을 수 있어!\n• (주의: 오답을 고르면 1~2 HP의 패널티를 입으니 문제를 신중히 읽어봐!)\n\n🔨 [2단계: 장비 & 포션 제작]\n• [1학년 복도] 아래쪽의 '장비 제작대'와 '포션 제작대'를 찾아가 봐.\n• 영어 문장 퍼즐을 맞추고 재료와 골드로 무기, 방어구, 물약을 직접 만들 수 있어!\n\n🎒 [꿀팁 1: 장비 착용법]\n• 제작한 무기나 방어구는 우측 [가방(🎒)]에서 직접 터치해 '착용'해야 공격력(ATK)과 방어력(DEF), 체력(HP)이 올라가!\n\n❤️ [꿀팁 2: 체력 회복 & 부활]\n• 다쳤을 땐 언제든 [가방(🎒)]을 열어 빨간/주홍 물약을 마실 수 있어!\n• 복도나 1반 교실에서 안전하게 쉬면 3초마다 1 HP씩 서서히 자연 회복돼!\n• 친구가 쓰러지면 [부활 주문서]를 사용해서 50% 체력으로 살려줄 수도 있어!\n\n✨ [선배의 조언]\n모든 장비 준비가 완료되면 1학년 2반 앞의 한강우 선생님에게 찾아가 봐!"
+          dialogue: "안녕! 숭실중 1학년 영어 RPG(시즌1)에 온 후배들을 환영해! 🎓\n선배로서 모험을 위한 핵심 가이드를 알려줄게!\n\n📝 [1단계: 퀴즈 풀기 & 재료 모으기]\n• [1학년 1반] 교실로 들어가서 책상 앞에서 SPACE를 눌러봐.\n• 1~4단원 영어 문제를 풀면 단단한 목재, 허브, 개나리 꽃잎과 골드를 얻을 수 있어!\n• (주의: 오답을 고르면 1~2 HP의 패널티를 입으니 문제를 신중히 읽어봐!)\n\n🔨 [2단계: 장비 & 포션 제작]\n• [1학년 복도] 아래쪽의 '장비 제작대'와 '소비품 제작대'를 찾아가 봐.\n• 영어 문장 퍼즐을 맞추고 재료와 골드로 무기, 방어구, 물약을 직접 만들 수 있어!\n\n🎒 [꿀팁 1: 장비 착용법]\n• 제작한 무기나 방어구는 우측 [가방(🎒)]에서 직접 터치해 '착용'해야 공격력(ATK)과 방어력(DEF), 체력(HP)이 올라가!\n\n❤️ [꿀팁 2: 체력 회복 & 부활]\n• 다쳤을 땐 언제든 [가방(🎒)]을 열어 빨간/주홍 물약을 마실 수 있어!\n• 복도나 1반 교실에서 안전하게 쉬면 3초마다 1 HP씩 서서히 자연 회복돼!\n• 친구가 쓰러지면 [부활 주문서]를 사용해서 50% 체력으로 살려줄 수도 있어!\n\n✨ [선배의 조언]\n모든 장비 준비가 완료되면 1학년 2반 앞의 한강우 선생님에게 찾아가 봐!"
         },
         {
           id: "npc_teacher_kangwoo",
@@ -250,7 +250,9 @@ const WORLD_DATA = {
     gatherSpots: [],
     desks: [],
     npcs: [],
-    interactive: [],
+    interactive: [
+      { id: "note_developer_staff_office", type: "dev_note_3", x: 51, y: 4, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" }
+    ],
     // 교1 ~ 교25 좌석 정의 (추후 교사 NPC 배치용)
     seats: [
       { id: 1, label: "교1", x: 67, y: 5, facing: "down", group: "top" },
