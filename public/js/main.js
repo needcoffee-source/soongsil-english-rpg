@@ -810,7 +810,7 @@ const QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_joshua',
     teacherName: 'Joshua 선생님',
     teacherRole: '3학년 영어',
-    teacherSeat: '5번',
+    teacherSeat: '3번',
     teacherAvatar: '👨‍🏫',
     category: '⭐ 입문 퀘스트 (Introductory Quest)',
     title: '[3학년 영어] Joshua 선생님의 특별 지령: 흩어진 단어장',
@@ -8181,7 +8181,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_joshua_intro'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('📝 [바닥에 떨어진 영단어 메모]\n\n"교무실 5번 좌석에 앉아 계신 3학년 영어 Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n\n먼저 교무실 5번 좌석의 Joshua 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      alert('📝 [바닥에 떨어진 영단어 메모]\n\n"교무실 3번 좌석에 앉아 계신 3학년 영어 Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n\n먼저 교무실 3번 좌석의 Joshua 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
       return;
     }
 
@@ -8209,7 +8209,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 5번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 3번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -8233,7 +8233,7 @@ class MainApp {
             if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
               window.AudioManager.playFanfare();
             }
-            this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 5번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+            this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 3번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
           }, 600);
         }
       }

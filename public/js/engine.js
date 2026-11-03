@@ -9291,15 +9291,16 @@ class GameEngine {
   getStaffOfficeLayout() {
     if (this._staffOfficeLayout) return this._staffOfficeLayout;
     this._staffOfficeLayout = {
-      topClusterLeft: 66, // 1 · 2 · 3 T자 클러스터 (tx 66..69, ty 5..8)
+      topClusterLeft: 66, // 31 · 32 · 33 T자 클러스터 (tx 66..69, ty 5..8)
+      topClusterLabels: { top: '31', l: '32', r: '33' },
       counsel: { x1: 84, x2: 100, doorX1: 90, doorX2: 92 }, // 상담실
       clusters: [
-        { type: 'five', left: 9, labels: { tl: '4', tr: '8', ml: '5', mr: '7', bottom: '6' } }, // 1분단: 5석 (Joshua: 5번 좌석)
-        { type: 'five', left: 24, labels: { tl: '9', tr: '13', ml: '10', mr: '12', bottom: '11' } }, // 2분단: 5석
-        { type: 'diamond', left: 39, labels: { top: '14', l: '15', r: '16', bottom: '17' } }, // 3분단: 1-2-1 4석
-        { type: 'five', left: 56, labels: { tl: '18', tr: '22', ml: '19', mr: '21', bottom: '20' } }, // 4분단: 5석
-        { type: 'five', left: 72, labels: { tl: '23', tr: '27', ml: '24', mr: '26', bottom: '25' } }, // 5분단: 5석
-        { type: 'six', left: 87, labels: { tl: '28', tr: '29', ml: '30', mr: '31', bl: '32', br: '33' } } // 6분단: 6석 (3x2)
+        { type: 'five', left: 9, labels: { tl: '1', tr: '2', ml: '3', mr: '4', bottom: '5' } }, // 1분단: 5석 (Joshua: 3번 좌석)
+        { type: 'five', left: 24, labels: { tl: '6', tr: '7', ml: '8', mr: '9', bottom: '10' } }, // 2분단: 5석
+        { type: 'diamond', left: 39, labels: { top: '11', l: '12', r: '13', bottom: '14' } }, // 3분단: 1-2-1 4석
+        { type: 'five', left: 56, labels: { tl: '15', tr: '16', ml: '17', mr: '18', bottom: '19' } }, // 4분단: 5석
+        { type: 'five', left: 72, labels: { tl: '20', tr: '21', ml: '22', mr: '23', bottom: '24' } }, // 5분단: 5석
+        { type: 'six', left: 87, labels: { tl: '25', tr: '26', ml: '27', mr: '28', bl: '29', br: '30' } } // 6분단: 6석 (3x2)
       ]
     };
     return this._staffOfficeLayout;
@@ -10024,11 +10025,12 @@ class GameEngine {
   drawStaffOfficeAllTeacherClusters() {
     const L = this.getStaffOfficeLayout();
 
-    // [상단] 1 · 2 · 3 (T자형)
+    // [상단] 31 · 32 · 33 (T자형)
     const T = L.topClusterLeft;
-    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, '1', 'down');
-    this.drawStaffOfficeTeacherDesk(T * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '2', 'right');
-    this.drawStaffOfficeTeacherDesk((T + 2) * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '3', 'left');
+    const topLb = L.topClusterLabels || { top: '31', l: '32', r: '33' };
+    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, topLb.top, 'down');
+    this.drawStaffOfficeTeacherDesk(T * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, topLb.l, 'right');
+    this.drawStaffOfficeTeacherDesk((T + 2) * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, topLb.r, 'left');
     this.drawPartitionLine(T * 32 - 4, 6 * 32 + 2, (T + 4) * 32 + 4, 6 * 32 + 2);
     this.drawPartitionLine((T + 2) * 32, 6 * 32 + 2, (T + 2) * 32, 9 * 32 + 2);
 

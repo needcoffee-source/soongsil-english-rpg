@@ -86,10 +86,10 @@ const office = global.WORLD_DATA.classroom_staff_office;
 assert(office, 'classroom_staff_office must exist');
 const joshuaNpc = office.npcs.find(n => n.id === 'npc_teacher_joshua');
 assert(joshuaNpc, 'Joshua NPC must exist in classroom_staff_office.npcs');
-assert.strictEqual(joshuaNpc.seatId, 5, 'Joshua must be assigned to seat 5');
-assert.strictEqual(joshuaNpc.seatLabel, '5', 'Joshua must have seatLabel "5"');
+assert.strictEqual(joshuaNpc.seatId, 3, 'Joshua must be assigned to seat 3');
+assert.strictEqual(joshuaNpc.seatLabel, '3', 'Joshua must have seatLabel "3"');
 assert.strictEqual(joshuaNpc.questId, 'quest_joshua_intro', 'Joshua must have questId quest_joshua_intro');
-console.log('✔ Joshua NPC, seatId: 5, and seatLabel: "5" verified');
+console.log('✔ Joshua NPC, seatId: 3, and seatLabel: "3" verified');
 
 const memoObj = office.interactive.find(i => i.id === 'quest_joshua_memo');
 assert(memoObj, 'Dropped memo must exist in classroom_staff_office.interactive');
@@ -119,9 +119,9 @@ assert(app, 'MainApp must be instantiated');
 
 // 1-B. Verify Staff Office Layout Desk Label Cleanliness (No duplication)
 const layout = app.engine.getStaffOfficeLayout();
-assert.strictEqual(layout.clusters[0].labels.ml, '5', 'Desk 5 label must be cleanly "5" without repeating NPC name');
-assert.strictEqual(layout.clusters[0].labels.tl, '4', 'Desk 4 label must be "4"');
-console.log('✔ Staff office desk label cleanliness (5) verified');
+assert.strictEqual(layout.clusters[0].labels.ml, '3', 'Desk 3 label must be cleanly "3" without repeating NPC name');
+assert.strictEqual(layout.clusters[0].labels.tl, '1', 'Desk 1 label must be "1"');
+console.log('✔ Staff office desk label cleanliness (3) verified');
 
 // Test Player Setup
 app.playerData = {
