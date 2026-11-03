@@ -182,16 +182,16 @@ assert.strictEqual(app.playerData.gold, goldBefore + 100, 'Gold must increase by
 assert.strictEqual(app.playerData.level, levelBefore + 1, 'Player must level up from Lv.1 to Lv.2 with 100 EXP');
 assert(app.playerData.inventory.some(i => i.item === 'item_teleport_scroll'), 'Player must receive teleport scroll');
 assert(!app.playerData.inventory.some(i => i.item === 'item_joshua_memo'), 'item_joshua_memo must be removed on turn in');
-assert(app.playerData.titles.includes('📝 Joshua의 든든한 조교'), 'Player must receive title [📝 Joshua의 든든한 조교]');
-assert.strictEqual(app.playerData.equippedTitle, '📝 Joshua의 든든한 조교', 'Title must be equipped');
-console.log('✔ Reward delivery (100G, 100EXP, scroll, title) verified');
+assert.strictEqual(app.playerData.titles.length, 0, 'No title should be awarded (title removed from reward)');
+assert.strictEqual(app.playerData.equippedTitle, null, 'Equipped title should remain null');
+console.log('✔ Reward delivery (100G, 100EXP, scroll, NO title) verified');
 
-// Verify combat stats bonus from title (+5 ATK, +15 HP) and level up (+1 ATK at Lv.2)
+// Verify combat stats (no title bonus, only level up bonus +1 ATK at Lv.2)
 app.recalcCombatStats();
 const lvBonus = app.playerData.level - 1;
-assert.strictEqual(app.playerData.atk, app.playerData.baseAtk + lvBonus + 5, 'ATK must have +5 title bonus + lvBonus');
-assert.strictEqual(app.playerData.maxHp, app.playerData.baseHp + 15, 'Max HP must have +15 title bonus');
-console.log('✔ Title combat stat bonus (+5 ATK, +15 Max HP) verified');
+assert.strictEqual(app.playerData.atk, app.playerData.baseAtk + lvBonus, 'ATK must only have lvBonus, no title bonus');
+assert.strictEqual(app.playerData.maxHp, app.playerData.baseHp, 'Max HP must have no title bonus');
+console.log('✔ Combat stats verified (Lv.2 bonus only, no title bonus)');
 
 console.log('\n====================================================');
 console.log(' ALL JOSHUA TEACHER & QUEST TESTS PASSED 100%! ');

@@ -5124,38 +5124,67 @@ class GameEngine {
         const isTeacherNpc = (npc.avatar === 'teacher' || npc.avatar === 'teacher_joshua' || npc.name.includes('선생님'));
 
         if (isJoshua) {
-          // 3학년 영어 Joshua 선생님 전용 클래식 RPG 정장 그래픽
-          // 1. 머리 및 피부
+          // 3학년 영어 Joshua 선생님 (블랙맨투맨, 청바지, 짧은 머리, 안경없는 훈남 영어 교사)
+          // 1. 머리 및 피부 베이스
           this.ctx.fillStyle = '#fed7aa';
           this.ctx.beginPath();
           this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
           this.ctx.fill();
 
-          // 2. 단정한 갈색/금발 헤어스타일
-          this.ctx.fillStyle = '#b45309';
+          // 2. 짧고 깔끔한 다크 브라운 크롭/댄디 헤어스타일 (짧은 머리)
+          this.ctx.fillStyle = '#292524';
           this.ctx.beginPath();
-          this.ctx.arc(px + 16, py + 9, 10, Math.PI * 0.9, Math.PI * 2.1);
+          this.ctx.arc(px + 16, py + 8.5, 9.5, Math.PI * 0.95, Math.PI * 2.05);
           this.ctx.fill();
-          this.ctx.fillRect(px + 7, py + 7, 4, 7); // 옆머리 좌
-          this.ctx.fillRect(px + 21, py + 7, 4, 7); // 옆머리 우
+          this.ctx.fillRect(px + 9, py + 5, 14, 4); // 앞머리
+          this.ctx.fillRect(px + 7, py + 7, 3, 5);  // 짧은 구렛나루 좌
+          this.ctx.fillRect(px + 22, py + 7, 3, 5); // 짧은 구렛나루 우
 
-          // 3. 지적인 은테 안경
-          this.ctx.strokeStyle = '#94a3b8';
-          this.ctx.lineWidth = 1.5;
-          this.ctx.strokeRect(px + 10, py + 10, 5, 4);
-          this.ctx.strokeRect(px + 17, py + 10, 5, 4);
+          // 3. 눈 & 눈썹 (안경 없음)
+          this.ctx.fillStyle = '#292524';
+          this.ctx.fillRect(px + 11, py + 10, 3.5, 1.2); // 눈썹 좌
+          this.ctx.fillRect(px + 17.5, py + 10, 3.5, 1.2); // 눈썹 우
+          this.ctx.fillStyle = '#1e293b';
+          this.ctx.fillRect(px + 11.5, py + 12, 2.5, 2.5); // 눈동자 좌
+          this.ctx.fillRect(px + 18, py + 12, 2.5, 2.5);   // 눈동자 우
+          this.ctx.fillStyle = '#ffffff';
+          this.ctx.fillRect(px + 12, py + 12, 1, 1);       // 눈 하이라이트 좌
+          this.ctx.fillRect(px + 18.5, py + 12, 1, 1);     // 눈 하이라이트 우
+
+          // 미소 입
+          this.ctx.strokeStyle = '#c2410c';
+          this.ctx.lineWidth = 1;
           this.ctx.beginPath();
-          this.ctx.moveTo(px + 15, py + 12);
-          this.ctx.lineTo(px + 17, py + 12);
+          this.ctx.moveTo(px + 14.5, py + 16);
+          this.ctx.lineTo(px + 17.5, py + 16);
           this.ctx.stroke();
 
-          // 4. 네이비 수트 자켓 & 화이트 셔츠 & 레드 넥타이
-          this.ctx.fillStyle = '#1e293b';
-          this.ctx.fillRect(px + 8, py + 18, 16, 14);
+          // 4. 블랙맨투맨 (Black Sweatshirt / Crewneck)
+          this.ctx.fillStyle = '#18181b';
+          this.ctx.fillRect(px + 8, py + 18, 16, 9); // 몸통
+          this.ctx.fillRect(px + 5, py + 18, 3, 8);  // 소매 좌
+          this.ctx.fillRect(px + 24, py + 18, 3, 8); // 소매 우
+
+          // 맨투맨 크루넥 넥라인 밴딩
+          this.ctx.fillStyle = '#27272a';
+          this.ctx.fillRect(px + 12, py + 18, 8, 2);
+
+          // 손 (피부톤)
+          this.ctx.fillStyle = '#fed7aa';
+          this.ctx.fillRect(px + 5, py + 26, 3, 2);
+          this.ctx.fillRect(px + 24, py + 26, 3, 2);
+
+          // 5. 청바지 (Blue Denim Jeans)
+          this.ctx.fillStyle = '#2563eb';
+          this.ctx.fillRect(px + 8, py + 27, 16, 4.5);
+          // 청바지 중앙 봉제선
+          this.ctx.fillStyle = '#1d4ed8';
+          this.ctx.fillRect(px + 15.5, py + 27, 1, 4.5);
+
+          // 깔끔한 화이트 스니커즈 (신발)
           this.ctx.fillStyle = '#f8fafc';
-          this.ctx.fillRect(px + 13, py + 18, 6, 8);
-          this.ctx.fillStyle = '#dc2626';
-          this.ctx.fillRect(px + 15, py + 19, 2, 7);
+          this.ctx.fillRect(px + 8, py + 31.5, 6, 2.5);
+          this.ctx.fillRect(px + 18, py + 31.5, 6, 2.5);
         } else {
           this.ctx.fillStyle = isKyungsook ? '#581c87' : (isTeacherNpc ? '#1e3a8a' : '#047857');
           this.ctx.beginPath();

@@ -784,13 +784,6 @@ const TITLE_DEFINITIONS = [
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
     costAmount: 0
-  },
-  {
-    id: 'title_joshua_assistant',
-    name: '📝 Joshua의 든든한 조교',
-    desc: '3학년 영어 Joshua 선생님의 특별 지령을 완수하고 공식 조교로 임명된 모범생! (공격력 +5, 체력 +15)',
-    costType: 'quest',
-    costAmount: 0
   }
 ];
 
@@ -829,7 +822,7 @@ const QUEST_DEFINITIONS = {
 
 1학년 1반(1-1) 칠판에서 영어 퀴즈 2문제를 멋지게 맞히고, 6층 교무실 탕비실 안쪽 싱크대 근처에 떨어진 내 [Joshua의 단어 메모]를 찾아와 주겠나?
 
-성공하면 든든한 골드와 경험치, 순간이동 주문서, 그리고 내 공식 조교 칭호를 수여하겠네!`,
+성공하면 든든한 골드와 경험치, 그리고 순간이동 주문서를 보상으로 지급하겠네!`,
     inProgressStory: `어서 오게나! 아직 임무가 완료되지 않았더군!
 
 1학년 1반(1-1) 교실 칠판에서 영어 퀴즈 2문제를 풀고, 6층 교무실 탕비실 안쪽 구석에 떨어진 내 단어 메모를 찾아와 주게나!`,
@@ -837,8 +830,8 @@ const QUEST_DEFINITIONS = {
 
 자네 덕분에 3학년 영어 단어장 메모를 무사히 되찾았고, 1학년 1반 영어 퀴즈도 멋지게 통과했더군!
 
-약속했던 보상과 함께, 자네를 [Joshua의 든든한 조교]로 공식 임명하네! 앞으로도 숭실을 위해 힘써주게!`,
-    doneStory: `Hello, my assistant! 자네 덕분에 이번 3학년 영어 수업 준비가 아주 순조롭다네.
+약속했던 골드와 경험치, 그리고 유용한 순간이동 주문서를 지급하겠네! 앞으로도 숭실을 위해 힘써주게!`,
+    doneStory: `Hello, student! 자네 덕분에 이번 3학년 영어 수업 준비가 아주 순조롭다네.
 
 언제나 성실하게 활약하는 자네가 자랑스럽군! 궁금한 점이 있으면 언제든 교무실로 찾아오게나! 👍`,
     objectives: [
@@ -858,8 +851,7 @@ const QUEST_DEFINITIONS = {
     rewards: [
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_teleport_scroll', itemName: '순간이동 주문서', count: 1, icon: '📜', label: '📜 순간이동 주문서 x1' },
-      { type: 'title', titleId: 'title_joshua_assistant', titleName: '📝 Joshua의 든든한 조교', label: '🏅 칭호: [Joshua의 든든한 조교] (공격력+5, 체력+15)' }
+      { type: 'item', itemKey: 'item_teleport_scroll', itemName: '순간이동 주문서', count: 1, icon: '📜', label: '📜 순간이동 주문서 x1' }
     ]
   }
 };
@@ -3496,12 +3488,6 @@ class MainApp {
     if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
       bonusAtk += 10;
       bonusHp += 30;
-    }
-
-    // 📝 Joshua의 든든한 조교 칭호 보너스 (공격력 +5, 체력 +15)
-    if (this.playerData.equippedTitle === '📝 Joshua의 든든한 조교') {
-      bonusAtk += 5;
-      bonusHp += 15;
     }
 
     // 🔥 용기의 물약 버프 (공격력 +5 증가)
@@ -8170,15 +8156,6 @@ class MainApp {
     // 회수한 메모 제출
     this.removeItem('item_joshua_memo', 1);
 
-    // 특별 칭호 수여
-    const titleName = '📝 Joshua의 든든한 조교';
-    if (!this.playerData.titles) this.playerData.titles = [];
-    if (!this.playerData.titles.includes(titleName)) {
-      this.playerData.titles.push(titleName);
-    }
-    if (!this.playerData.equippedTitle) {
-      this.playerData.equippedTitle = titleName;
-    }
     this.recalcCombatStats();
     this.updatePlayerNameDisplay();
 
@@ -8189,7 +8166,7 @@ class MainApp {
       window.AudioManager.playFanfare();
     }
 
-    this.showToast(`🎉 [퀘스트 완수] Joshua 선생님의 특별 지령 완료! (100G, 100 EXP, 순간이동 주문서, 칭호 [${titleName}] 획득!)`, 'success');
+    this.showToast('🎉 [퀘스트 완수] Joshua 선생님의 특별 지령 완료! (100G, 100 EXP, 순간이동 주문서 획득!)', 'success');
   }
 
   handleQuestMemoPickup(itemData) {
