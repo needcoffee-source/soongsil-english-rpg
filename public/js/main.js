@@ -588,9 +588,9 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '🩺 수호의 메딕',
     icon: '👨‍⚕️',
     skillName: '치유의 손길 (Healing Touch)',
-    effect: '3초당 자동 자연 치유량 3배 (3 HP 회복)',
+    effect: '3초당 자동 자연 치유량 3배 (3 HP 회복) & 퀴즈 오답 체력 데미지 10% 감소',
     desc: '환자를 보살피고 동료의 상처를 치유하는 숭실의 힐러!',
-    stats: { hpRegen: 3 }
+    stats: { hpRegen: 3, penaltyReduction: 0.10 }
   },
   {
     id: 'runner',
@@ -626,16 +626,16 @@ const JOB_PASSIVE_DEFINITIONS = [
     stats: { goldBonus: 0.10 }
   },
   {
-    id: 'wrestler',
-    legacyId: 'guardian',
-    altLegacyId: 'mentor',
-    name: '레슬러 (Wrestler)',
-    title: '🤼 투지의 레슬러',
-    icon: '🤼',
-    skillName: '불굴의 투지 (Indomitable Will)',
-    effect: '퀴즈 오답 체력 데미지 20% 감소',
-    desc: '어떤 충격도 끄떡없이 버텨내는 숭실의 불굴의 파이터!',
-    stats: { penaltyReduction: 0.20 }
+    id: 'fighter',
+    legacyId: 'wrestler',
+    altLegacyId: 'guardian',
+    name: '파이터 (Fighter)',
+    title: '🥊 불패의 파이터',
+    icon: '🥊',
+    skillName: '결정타 (Finishing Blow)',
+    effect: '필드 몬스터 및 보스 레이드 공격 데미지 +10% 상승',
+    desc: '강인한 피지컬과 날카로운 타격으로 몬스터를 제압하는 숭실의 격투가!',
+    stats: { damageBonus: 0.10 }
   }
 ];
 
@@ -766,7 +766,7 @@ const TITLE_DEFINITIONS = [
   { id: 'title_job_runner', name: '⚡ 질주의 러너', desc: '5층 진로상담실 방탈출을 통과하고 러너(Runner)로 전직한 육상 스타!', costType: 'quest', costAmount: 0 },
   { id: 'title_job_scholar', name: '📚 지혜의 스칼라', desc: '5층 진로상담실 방탈출을 통과하고 스칼라(Scholar)로 전직한 지혜의 학자!', costType: 'quest', costAmount: 0 },
   { id: 'title_job_banker', name: '🪙 황금의 뱅커', desc: '5층 진로상담실 방탈출을 통과하고 뱅커(Banker)로 전직한 숭실 자산가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_wrestler', name: '🤼 투지의 레슬러', desc: '5층 진로상담실 방탈출을 통과하고 레슬러(Wrestler)로 전직한 불굴의 파이터!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_fighter', name: '🥊 불패의 파이터', desc: '5층 진로상담실 방탈출을 통과하고 파이터(Fighter)로 전직한 불패의 격투가!', costType: 'quest', costAmount: 0 },
   {
     id: 'title_drummer',
     name: '🥁 영혼의 드러머',
@@ -2884,8 +2884,8 @@ class MainApp {
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedClass704 = !!(saved.hasClearedClass704 || (studentId && localStorage.getItem('soongsil_class704_cleared_' + studentId) === 'true'));
           this.playerData.job = saved.job || (studentId ? localStorage.getItem('soongsil_job_' + studentId) : null) || null;
-          if (this.playerData.job === 'guardian' || this.playerData.job === 'mentor') {
-            this.playerData.job = 'wrestler';
+          if (this.playerData.job === 'wrestler' || this.playerData.job === 'guardian' || this.playerData.job === 'mentor') {
+            this.playerData.job = 'fighter';
           } else if (this.playerData.job === 'scout' || this.playerData.job === 'artist') {
             this.playerData.job = null;
           }
@@ -2912,8 +2912,9 @@ class MainApp {
             '🔭 미래를 여는 과학자': '🪙 황금의 뱅커',
             '🎨 영감을 주는 디자이너': null,
             '🍀 행운의 스카우트': null,
-            '🤝 마음을 보듬는 멘토': '🤼 투지의 레슬러',
-            '🛡️ 철벽의 가디언': '🤼 투지의 레슬러'
+            '🤝 마음을 보듬는 멘토': '🥊 불패의 파이터',
+            '🛡️ 철벽의 가디언': '🥊 불패의 파이터',
+            '🤼 투지의 레슬러': '🥊 불패의 파이터'
           };
           this.playerData.titles = Array.isArray(saved.titles)
             ? [...new Set(saved.titles.map(t => (t in LEGACY_TITLE_MAP ? LEGACY_TITLE_MAP[t] : t)).filter(Boolean))]
@@ -3569,8 +3570,9 @@ class MainApp {
     if (!this.playerData || this.playerData.hp <= 0 || this.playerData.isFallen) return 0;
 
     let penalty = Math.max(1, amount || 1);
-    if (this.playerData.job === 'wrestler' || this.playerData.job === 'guardian' || this.playerData.job === 'mentor') {
-      penalty = Math.max(1, Math.floor(penalty * 0.8)); // 레슬러: 퀴즈 오답 데미지 20% 감소
+    // 🩺 메딕 직업: 퀴즈 오답 체력 데미지 10% 감소
+    if (this.playerData.job === 'medic' || this.playerData.job === 'doctor') {
+      penalty = Math.max(1, Math.round(penalty * 0.9));
     }
     this.playerData.hp = Math.max(0, this.playerData.hp - penalty);
     this.updateHpBar();
@@ -4508,6 +4510,10 @@ class MainApp {
       if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자' && (bNameCheck.includes('파멸신') || bNameCheck.includes('기말고사'))) {
         myDmg = Math.round(myDmg * 1.15);
       }
+      // 🥊 파이터 직업: 보스 레이드 공격 데미지 +10% 상승
+      if (this.playerData && (this.playerData.job === 'fighter' || this.playerData.job === 'wrestler')) {
+        myDmg = Math.round(myDmg * 1.10);
+      }
       this.bossState.hasAttacked = true;
       this.bossState.damageDealt = (this.bossState.damageDealt || 0) + myDmg;
 
@@ -4758,7 +4764,11 @@ class MainApp {
       btnEl.classList.add('correct');
       if (window.AudioManager) window.AudioManager.playCorrect();
 
-      const myDmg = Math.max(8, this.playerData.atk - mob.def);
+      let myDmg = Math.max(8, this.playerData.atk - mob.def);
+      // 🥊 파이터 직업: 필드 몬스터 공격 데미지 +10% 상승
+      if (this.playerData && (this.playerData.job === 'fighter' || this.playerData.job === 'wrestler')) {
+        myDmg = Math.round(myDmg * 1.10);
+      }
       mob.hp = Math.max(0, mob.hp - myDmg);
       this.updateFieldBattleUI();
 
