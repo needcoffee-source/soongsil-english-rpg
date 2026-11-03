@@ -268,8 +268,8 @@ const WORLD_DATA = {
         role: "사회",
         seatId: 10,
         seatLabel: "10",
-        x: 27,
-        y: 22.2,
+        x: 26.0,
+        y: 20.875,
         avatar: "teacher",
         questId: "quest_okchohan_social",
         dialogue: "반갑다! 사회를 가르치는 옥촣한 선생님이란다. 👨‍🏫"

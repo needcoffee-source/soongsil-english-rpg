@@ -6,6 +6,7 @@ const tests = [
   'comprehensive_audit.js',
   'deep_audit.js',
   'debug_check.js',
+  'check_bounce_and_overlaps.js',
   'mock_runtime_test.js',
   'test_all_features.js',
   'test_all_new_features.js',

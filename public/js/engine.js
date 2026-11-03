@@ -575,7 +575,8 @@ class GameEngine {
       } else {
         const cr = this.getCurrentClassroomData();
         const exit = (cr && cr.exitDoor) || WORLD_DATA.classroom.exitDoor;
-        if (Math.abs(tileX - exit.x) <= 1 && tileY >= exit.y) {
+        // 교실 바닥(y=17) 횡단 시 비의도적 퇴장 방지: 문 바깥(y >= exit.y + 1, 즉 y >= 18)으로 완전히 나갈 때만 퇴장
+        if (Math.abs(tileX - exit.x) <= 1 && tileY >= exit.y + 1) {
           this.triggerFadeWarp(() => {
             this.exitClassroom();
           });
@@ -723,7 +724,7 @@ class GameEngine {
         this.player.floor = 5;
         this.player.room = 'room_career';
         this.player.x = 30 * 32;
-        this.player.y = 15 * 32;
+        this.player.y = 13 * 32;
         this.player.roomName = '🌟 진로실 (Career Center)';
       } else if (room === 'room_staff_office') {
         this.player.floor = 6;
@@ -770,7 +771,7 @@ class GameEngine {
     }
 
     let closest = null;
-    let minDist = 56;
+    let minDist = 80;
 
     if (this.player.room === 'hallway') {
       const floorData = WORLD_DATA.floors[this.player.floor];
@@ -779,7 +780,7 @@ class GameEngine {
         if (floorData.npcs) {
           for (const npc of floorData.npcs) {
             const dist = Math.hypot(npc.x * 32 - this.player.x, npc.y * 32 - this.player.y);
-            if (dist < minDist) {
+            if (dist < 64 && dist < minDist) {
               closest = { type: 'npc', data: npc, name: npc.name, prompt: `대화하기 (${npc.name})` };
               minDist = dist;
             }
