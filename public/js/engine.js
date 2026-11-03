@@ -988,12 +988,24 @@ class GameEngine {
       if (cr.npcs) {
         for (const npc of cr.npcs) {
           const nDist = Math.hypot(npc.x * 32 - this.player.x, npc.y * 32 - this.player.y);
-          if (nDist < 64 && nDist < minDist) {
+          const qStatus = (npc.questId && window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
+            ? window.MainApp.getTeacherQuestStatus(npc.id || npc.questId)
+            : null;
+          let prompt = `대화하기 (${npc.name})`;
+          if (qStatus === 'available') {
+            prompt = `📜 퀘스트 수락 (SPACE) [ ! ]`;
+          } else if (qStatus === 'in_progress') {
+            prompt = `📋 퀘스트 진행 확인 (SPACE) [ ? ]`;
+          } else if (qStatus === 'completed') {
+            prompt = `🎉 퀘스트 완료 & 보상 수령 (SPACE) [ ? ]`;
+          }
+          const interactRadius = (npc.questId ? 75 : 64);
+          if (nDist < interactRadius && nDist < minDist) {
             closest = {
               type: 'npc',
               data: npc,
               name: npc.name,
-              prompt: `대화하기 (${npc.name})`
+              prompt: prompt
             };
             minDist = nDist;
           }
@@ -1072,8 +1084,13 @@ class GameEngine {
           }
         }
       }
-      if (this.player.room === 'room_career' && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office') && cr.interactive) {
         for (const item of cr.interactive) {
+          if (item.type === 'quest_memo') {
+            if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           if (dist < 64 && dist < minDist) {
             closest = {
@@ -1321,8 +1338,13 @@ class GameEngine {
           }
         }
       }
-      if (this.player.room === 'room_career' && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office') && cr.interactive) {
         for (const item of cr.interactive) {
+          if (item.type === 'quest_memo') {
+            if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
+              continue;
+            }
+          }
           if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
             return { type: item.type, data: item, name: item.name };
           }
@@ -5098,28 +5120,75 @@ class GameEngine {
         this.ctx.fill();
 
         const isKyungsook = (npc.id === 'npc_teacher_kyungsook' || (npc.name && (npc.name.includes('졍경슉') || npc.name.includes('정경숙'))));
-        const isTeacherNpc = (npc.avatar === 'teacher' || npc.name.includes('선생님'));
-        this.ctx.fillStyle = isKyungsook ? '#581c87' : (isTeacherNpc ? '#1e3a8a' : '#047857');
-        this.ctx.beginPath();
-        this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.fillRect(px + 8, py + 18, 16, 14);
+        const isJoshua = (npc.id === 'npc_teacher_joshua' || (npc.name && npc.name.includes('Joshua')));
+        const isTeacherNpc = (npc.avatar === 'teacher' || npc.avatar === 'teacher_joshua' || npc.name.includes('선생님'));
 
-        // 연금술사 졍경슉 선생님 전용 신비한 룬 장식 펜던트
-        if (isKyungsook) {
-          this.ctx.fillStyle = '#f59e0b';
-          this.ctx.fillRect(px + 14, py + 22, 4, 4);
+        if (isJoshua) {
+          // 3학년 영어 Joshua 선생님 전용 클래식 RPG 정장 그래픽
+          // 1. 머리 및 피부
+          this.ctx.fillStyle = '#fed7aa';
+          this.ctx.beginPath();
+          this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
+          this.ctx.fill();
+
+          // 2. 단정한 갈색/금발 헤어스타일
+          this.ctx.fillStyle = '#b45309';
+          this.ctx.beginPath();
+          this.ctx.arc(px + 16, py + 9, 10, Math.PI * 0.9, Math.PI * 2.1);
+          this.ctx.fill();
+          this.ctx.fillRect(px + 7, py + 7, 4, 7); // 옆머리 좌
+          this.ctx.fillRect(px + 21, py + 7, 4, 7); // 옆머리 우
+
+          // 3. 지적인 은테 안경
+          this.ctx.strokeStyle = '#94a3b8';
+          this.ctx.lineWidth = 1.5;
+          this.ctx.strokeRect(px + 10, py + 10, 5, 4);
+          this.ctx.strokeRect(px + 17, py + 10, 5, 4);
+          this.ctx.beginPath();
+          this.ctx.moveTo(px + 15, py + 12);
+          this.ctx.lineTo(px + 17, py + 12);
+          this.ctx.stroke();
+
+          // 4. 네이비 수트 자켓 & 화이트 셔츠 & 레드 넥타이
+          this.ctx.fillStyle = '#1e293b';
+          this.ctx.fillRect(px + 8, py + 18, 16, 14);
+          this.ctx.fillStyle = '#f8fafc';
+          this.ctx.fillRect(px + 13, py + 18, 6, 8);
+          this.ctx.fillStyle = '#dc2626';
+          this.ctx.fillRect(px + 15, py + 19, 2, 7);
+        } else {
+          this.ctx.fillStyle = isKyungsook ? '#581c87' : (isTeacherNpc ? '#1e3a8a' : '#047857');
+          this.ctx.beginPath();
+          this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.fillRect(px + 8, py + 18, 16, 14);
+
+          // 연금술사 졍경슉 선생님 전용 신비한 룬 장식 펜던트
+          if (isKyungsook) {
+            this.ctx.fillStyle = '#f59e0b';
+            this.ctx.fillRect(px + 14, py + 22, 4, 4);
+          }
         }
 
-        const labelIcon = isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : '💬');
-        this.drawSharpLabel(px + 16, py + 38, `${labelIcon} ${npc.name}`, {
-          bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)'),
-          borderColor: isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399'),
+        const labelText = isJoshua ? '👨‍🏫 Joshua 선생님 (3학년 영어)' : `${isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : '💬')} ${npc.name}`;
+        this.drawSharpLabel(px + 16, py + 38, labelText, {
+          bgColor: isJoshua ? 'rgba(30, 41, 59, 0.95)' : (isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)')),
+          borderColor: isJoshua ? '#fbbf24' : (isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399')),
           textColor: '#fef08a',
           fontSize: 12,
           paddingX: 8,
           height: 20
         });
+
+        // 8-C-1. 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
+        if (npc.questId || isJoshua) {
+          const qStatus = (window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
+            ? window.MainApp.getTeacherQuestStatus(npc.id || npc.questId)
+            : 'available';
+          if (qStatus && qStatus !== 'done') {
+            this.drawFloatingQuestMarker(px + 16, py - 12, qStatus);
+          }
+        }
       }
     }
 
@@ -9196,7 +9265,7 @@ class GameEngine {
       topClusterLeft: 66, // 교1 · 교2 · 교3 T자 클러스터 (tx 66..69, ty 5..8)
       counsel: { x1: 84, x2: 100, doorX1: 90, doorX2: 92 }, // 상담실
       clusters: [
-        { type: 'five', left: 9, labels: { tl: '교4', tr: '교8', ml: '교5', mr: '교7', bottom: '교6' } },
+        { type: 'five', left: 9, labels: { tl: '교4', tr: '교8', ml: '👨‍🏫 Joshua (교5)', mr: '교7', bottom: '교6' } },
         { type: 'tee', left: 24, labels: { l: '교9', r: '교10', bottom: '교11' } },
         { type: 'box', left: 39, labels: { l: '교13', r: '교14', bottom: '교12' } },
         { type: 'tee', left: 56, labels: { l: '교23', r: '교24', bottom: '교25' } }, // 신규 T자 3석
@@ -9372,14 +9441,184 @@ class GameEngine {
     // 5. 실 이름표
     this.drawStaffOfficeSignage();
 
-    // 6. 상호작용 오브젝트 (예: 탕비실 안쪽 떨어진 개발자노트 제3편)
+    // 6. 상호작용 오브젝트 (예: 탕비실 안쪽 떨어진 개발자노트 제3편 및 Joshua의 단어 메모)
     if (cr && cr.interactive) {
       for (const obj of cr.interactive) {
         if (obj.type === 'dev_note_3') {
           this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || '📜 떨어진 개발자노트 (제3편)');
+        } else if (obj.type === 'quest_memo') {
+          this.drawStaffOfficeQuestMemo(obj.x * 32, obj.y * 32);
         }
       }
     }
+  }
+
+  // 교무실 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
+  drawFloatingQuestMarker(cx, cy, status) {
+    if (!status || status === 'done') return;
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 부드러운 상하 바운스 모션
+    const bob = Math.sin(Date.now() / 240) * 3.5;
+    const my = cy + bob;
+
+    if (status === 'available') {
+      // 1. 노란색 느낌표 [ ! ] + 빛나는 펄스 아우라
+      const pulse = (Math.sin(Date.now() / 200) + 1) / 2;
+
+      // 은은한 외곽 골드 글로우
+      ctx.fillStyle = `rgba(234, 179, 8, ${0.25 + pulse * 0.3})`;
+      ctx.beginPath();
+      ctx.arc(cx, my, 14 + pulse * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 골드 서클 배지
+      ctx.shadowColor = 'rgba(234, 179, 8, 0.9)';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#eab308';
+      ctx.beginPath();
+      ctx.arc(cx, my, 11, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // [ ! ] 느낌표 텍스트
+      ctx.shadowBlur = 0;
+      ctx.font = '900 15px "Pretendard", "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#1e1b4b';
+      ctx.fillText('!', cx, my);
+
+    } else if (status === 'in_progress') {
+      // 2. 회색 물음표 [ ? ] (진행 중)
+      ctx.shadowColor = 'rgba(100, 116, 139, 0.6)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = '#475569';
+      ctx.beginPath();
+      ctx.arc(cx, my, 11, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // [ ? ] 물음표 텍스트
+      ctx.shadowBlur = 0;
+      ctx.font = '900 14px "Pretendard", "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText('?', cx, my);
+
+    } else if (status === 'completed') {
+      // 3. 반짝이는 초록색 물음표 [ ? ] + 광휘 펄스 + 궤도 회전 반짝이 별 (✦)
+      const pulse = (Math.sin(Date.now() / 180) + 1) / 2;
+
+      // 에메랄드 광휘 아우라
+      ctx.fillStyle = `rgba(16, 185, 129, ${0.3 + pulse * 0.35})`;
+      ctx.beginPath();
+      ctx.arc(cx, my, 16 + pulse * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 반짝이는 에메랄드 그린 배지
+      ctx.shadowColor = 'rgba(16, 185, 129, 0.95)';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#059669';
+      ctx.beginPath();
+      ctx.arc(cx, my, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#6ee7b7';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // [ ? ] 물음표 텍스트
+      ctx.shadowBlur = 0;
+      ctx.font = '900 15px "Pretendard", "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('?', cx, my);
+
+      // 주위를 공전하는 반짝이 별 (✦)
+      const t = Date.now() / 320;
+      const r = 16;
+      const sparkles = [
+        { angle: t, color: '#fef08a', size: 11 },
+        { angle: t + (Math.PI * 2 / 3), color: '#ffffff', size: 9 },
+        { angle: t + (Math.PI * 4 / 3), color: '#6ee7b7', size: 10 }
+      ];
+
+      for (const sp of sparkles) {
+        const sx = cx + Math.cos(sp.angle) * r;
+        const sy = my + Math.sin(sp.angle) * (r * 0.7);
+        ctx.font = `bold ${sp.size}px sans-serif`;
+        ctx.fillStyle = sp.color;
+        ctx.shadowColor = sp.color;
+        ctx.shadowBlur = 8;
+        ctx.fillText('✦', sx, sy);
+      }
+    }
+
+    ctx.restore();
+  }
+
+  // 탕비실 구석 떨어진 Joshua의 단어 메모 오브젝트 그래픽
+  drawStaffOfficeQuestMemo(px, py) {
+    if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
+      return; // 이미 회수한 경우 바닥에 표시하지 않음
+    }
+    const ctx = this.ctx;
+    ctx.save();
+
+    const bob = Math.sin(Date.now() / 260) * 3;
+    const pulse = (Math.sin(Date.now() / 300) + 1) / 2;
+
+    // 바닥 골든 반사광
+    ctx.fillStyle = `rgba(234, 179, 8, ${0.2 + pulse * 0.25})`;
+    ctx.beginPath();
+    ctx.ellipse(px + 16, py + 22, 16 + pulse * 4, 9 + pulse * 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 살짝 회전된 양피지 노트
+    ctx.save();
+    ctx.translate(px + 16, py + 14 + bob);
+    ctx.rotate(0.08);
+
+    ctx.fillStyle = '#fef9c3';
+    ctx.fillRect(-11, -13, 22, 26);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-11, -13, 22, 26);
+
+    // 노트 줄글 텍스처
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-8, -8, 16, 2);
+    ctx.fillRect(-8, -3, 14, 2);
+    ctx.fillRect(-8, 2, 16, 2);
+    ctx.fillRect(-8, 7, 10, 2);
+
+    // 상단 레드 북마크 탭
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(5, -15, 4, 6);
+
+    ctx.restore();
+
+    // 플로팅 라벨
+    this.drawSharpLabel(px + 16, py + 36, '📝 Joshua의 단어 메모', {
+      bgColor: 'rgba(120, 53, 15, 0.95)',
+      borderColor: '#fbbf24',
+      textColor: '#fef08a',
+      fontSize: 11,
+      paddingX: 7,
+      height: 19
+    });
+
+    ctx.restore();
   }
 
   // 끊김 없는 단일 벽체 (타일마다 줄무늬가 생기지 않도록 한 번에 그림)

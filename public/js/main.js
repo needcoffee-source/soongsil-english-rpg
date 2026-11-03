@@ -522,7 +522,8 @@ const ALL_GAME_ITEMS = {
   // 6. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
-  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } }
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
+  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } }
 
 };
 
@@ -783,6 +784,13 @@ const TITLE_DEFINITIONS = [
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
     costAmount: 0
+  },
+  {
+    id: 'title_joshua_assistant',
+    name: '📝 Joshua의 든든한 조교',
+    desc: '3학년 영어 Joshua 선생님의 특별 지령을 완수하고 공식 조교로 임명된 모범생! (공격력 +5, 체력 +15)',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -798,6 +806,62 @@ window.BOSS_CONFIG = {
   def: 14,
   rewardGold: 50,
   rewardExp: 100
+};
+
+// =========================================================================
+// 🏛️ 6층 교무실 교사 퀘스트 정의 (RPG Quest Dispatch System)
+// =========================================================================
+const QUEST_DEFINITIONS = {
+  'quest_joshua_intro': {
+    id: 'quest_joshua_intro',
+    teacherId: 'npc_teacher_joshua',
+    teacherName: 'Joshua 선생님',
+    teacherRole: '3학년 영어',
+    teacherSeat: '교5',
+    teacherAvatar: '👨‍🏫',
+    category: '⭐ 입문 퀘스트 (Introductory Quest)',
+    title: '[3학년 영어] Joshua 선생님의 특별 지령: 흩어진 단어장',
+    story: `Hello, student! 나는 3학년 영어를 가르치고 있는 Joshua 선생님이란다. 👨‍🏫
+
+이번 3학년 단어 평가를 앞두고 핵심 영단어 메모를 검토하던 중, 그만 6층 탕비실에서 커피를 타다가 바닥 구석에 떨어뜨리고 말았지 뭐니!
+
+게다가 자네가 3학년 영어를 배울 기본기가 튼튼한지도 한번 점검해보고 싶군.
+
+1학년 1반(1-1) 칠판에서 영어 퀴즈 2문제를 멋지게 맞히고, 6층 교무실 탕비실 안쪽 싱크대 근처에 떨어진 내 [Joshua의 단어 메모]를 찾아와 주겠나?
+
+성공하면 든든한 골드와 경험치, 순간이동 주문서, 그리고 내 공식 조교 칭호를 수여하겠네!`,
+    inProgressStory: `어서 오게나! 아직 임무가 완료되지 않았더군!
+
+1학년 1반(1-1) 교실 칠판에서 영어 퀴즈 2문제를 풀고, 6층 교무실 탕비실 안쪽 구석에 떨어진 내 단어 메모를 찾아와 주게나!`,
+    completeStory: `Oh, brilliant! Wonderful work! 👏
+
+자네 덕분에 3학년 영어 단어장 메모를 무사히 되찾았고, 1학년 1반 영어 퀴즈도 멋지게 통과했더군!
+
+약속했던 보상과 함께, 자네를 [Joshua의 든든한 조교]로 공식 임명하네! 앞으로도 숭실을 위해 힘써주게!`,
+    doneStory: `Hello, my assistant! 자네 덕분에 이번 3학년 영어 수업 준비가 아주 순조롭다네.
+
+언제나 성실하게 활약하는 자네가 자랑스럽군! 궁금한 점이 있으면 언제든 교무실로 찾아오게나! 👍`,
+    objectives: [
+      {
+        id: 'quiz',
+        text: '1학년 1반(1-1) 칠판에서 영어 퀴즈 2회 정답 맞히기',
+        targetCount: 2,
+        getCount: (quest) => (quest ? (quest.quizCount || 0) : 0)
+      },
+      {
+        id: 'memo',
+        text: '6층 교무실 탕비실 안쪽에서 [Joshua의 단어 메모] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.memoCollected ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_teleport_scroll', itemName: '순간이동 주문서', count: 1, icon: '📜', label: '📜 순간이동 주문서 x1' },
+      { type: 'title', titleId: 'title_joshua_assistant', titleName: '📝 Joshua의 든든한 조교', label: '🏅 칭호: [Joshua의 든든한 조교] (공격력+5, 체력+15)' }
+    ]
+  }
 };
 
 class MainApp {
@@ -851,6 +915,7 @@ class MainApp {
       careerClues: [false, false, false, false, false, false],
       titles: [],
       equippedTitle: null,
+      quests: {},
       inventory: []
     };
 
@@ -1214,6 +1279,12 @@ class MainApp {
         return;
       }
 
+      // 6층 교무실 3학년 영어 Joshua 선생님 (입문 퀘스트)
+      if (npc.id === 'npc_teacher_joshua' || npc.questId || (npc.name && npc.name.includes('Joshua'))) {
+        this.openQuestDispatchModal(npc.questId || 'quest_joshua_intro');
+        return;
+      }
+
       if (!npc.dialogue) return; // 대사 없는 NPC (오예숙 선생님 등)
       alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
     } else if (target.type === 'mascot') {
@@ -1336,6 +1407,8 @@ class MainApp {
       this.handleDevNote2Interaction();
     } else if (target.type === 'dev_note_3') {
       this.handleDevNote3Interaction();
+    } else if (target.type === 'quest_memo') {
+      this.handleQuestMemoPickup(target.data || target);
     }
   }
 
@@ -2858,6 +2931,13 @@ class MainApp {
           this.playerData.equippedTitle = saved.equippedTitle
             ? (LEGACY_TITLE_MAP[saved.equippedTitle] || saved.equippedTitle)
             : null;
+          this.playerData.quests = (saved.quests && typeof saved.quests === 'object') ? saved.quests : {};
+          if (Object.keys(this.playerData.quests).length === 0 && studentId) {
+            try {
+              const localQuests = localStorage.getItem('soongsil_quests_' + studentId);
+              if (localQuests) this.playerData.quests = JSON.parse(localQuests);
+            } catch (e) {}
+          }
           console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}, 704클리어: ${this.playerData.hasClearedClass704}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
@@ -2889,6 +2969,13 @@ class MainApp {
           }
           this.playerData.titles = [];
           this.playerData.equippedTitle = null;
+          this.playerData.quests = {};
+          if (studentId) {
+            try {
+              const localQuests = localStorage.getItem('soongsil_quests_' + studentId);
+              if (localQuests) this.playerData.quests = JSON.parse(localQuests);
+            } catch (e) {}
+          }
         }
         try {
           localStorage.setItem('soongsil_last_student_id', studentId);
@@ -3409,6 +3496,12 @@ class MainApp {
     if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
       bonusAtk += 10;
       bonusHp += 30;
+    }
+
+    // 📝 Joshua의 든든한 조교 칭호 보너스 (공격력 +5, 체력 +15)
+    if (this.playerData.equippedTitle === '📝 Joshua의 든든한 조교') {
+      bonusAtk += 5;
+      bonusHp += 15;
     }
 
     // 🔥 용기의 물약 버프 (공격력 +5 증가)
@@ -6293,9 +6386,13 @@ class MainApp {
         solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
         titles: this.playerData.titles || [],
         equippedTitle: this.playerData.equippedTitle || null,
+        quests: this.playerData.quests || {},
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
+      if (this.playerData.quests) {
+        try { localStorage.setItem('soongsil_quests_' + this.playerData.studentId, JSON.stringify(this.playerData.quests)); } catch (e) {}
+      }
       if (this.playerData.hasClearedClass704) {
         try { localStorage.setItem('soongsil_class704_cleared_' + this.playerData.studentId, 'true'); } catch (e) {}
       }
@@ -7810,6 +7907,350 @@ class MainApp {
 
       grid.appendChild(card);
     });
+  }
+
+  // =========================================================================
+  // 🏛️ 6층 교무실 교사 퀘스트 시스템 & 의뢰서 모달 메서드
+  // =========================================================================
+  getTeacherQuestStatus(id) {
+    let questId = id;
+    if (id === 'npc_teacher_joshua') questId = 'quest_joshua_intro';
+    const qDef = QUEST_DEFINITIONS[questId];
+    if (!qDef) return null;
+
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests[questId];
+
+    if (!quest) return 'available';
+    if (quest.status === 'done') return 'done';
+    if (quest.status === 'in_progress') {
+      const isQuizDone = (quest.quizCount || 0) >= 2;
+      const isMemoDone = !!quest.memoCollected;
+      if (isQuizDone && isMemoDone) {
+        return 'completed';
+      }
+      return 'in_progress';
+    }
+    return 'available';
+  }
+
+  isQuestMemoCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_joshua_intro'];
+    if (!q) return false;
+    return !!q.memoCollected;
+  }
+
+  openQuestDispatchModal(questId) {
+    const qDef = QUEST_DEFINITIONS[questId] || QUEST_DEFINITIONS['quest_joshua_intro'];
+    if (!qDef) return;
+
+    const modal = document.getElementById('modal-quest-dispatch');
+    if (!modal) return;
+
+    const status = this.getTeacherQuestStatus(qDef.id);
+    const quest = (this.playerData && this.playerData.quests) ? this.playerData.quests[qDef.id] : null;
+
+    // Teacher Profile
+    const avatarEl = document.getElementById('quest-teacher-avatar');
+    if (avatarEl) avatarEl.innerText = qDef.teacherAvatar || '👨‍🏫';
+
+    const roleEl = document.getElementById('quest-teacher-role');
+    if (roleEl) roleEl.innerText = qDef.teacherRole || '교사';
+
+    const seatEl = document.getElementById('quest-teacher-seat');
+    if (seatEl) seatEl.innerText = (qDef.teacherSeat || '') + ' 좌석';
+
+    const nameEl = document.getElementById('quest-teacher-name');
+    if (nameEl) nameEl.innerText = qDef.teacherName;
+
+    // Status Badge
+    const badgeEl = document.getElementById('quest-status-badge');
+    if (badgeEl) {
+      if (status === 'available') {
+        badgeEl.style.background = '#fef08a';
+        badgeEl.style.color = '#854d0e';
+        badgeEl.style.borderColor = '#eab308';
+        badgeEl.innerText = '⭐ 의뢰 가능';
+      } else if (status === 'in_progress') {
+        badgeEl.style.background = '#e2e8f0';
+        badgeEl.style.color = '#334155';
+        badgeEl.style.borderColor = '#94a3b8';
+        badgeEl.innerText = '⏳ 진행 중';
+      } else if (status === 'completed') {
+        badgeEl.style.background = '#dcfce7';
+        badgeEl.style.color = '#15803d';
+        badgeEl.style.borderColor = '#22c55e';
+        badgeEl.innerText = '🎉 의뢰 완수 (보고 가능)';
+      } else if (status === 'done') {
+        badgeEl.style.background = '#f1f5f9';
+        badgeEl.style.color = '#64748b';
+        badgeEl.style.borderColor = '#cbd5e1';
+        badgeEl.innerText = '✅ 완료된 의뢰';
+      }
+    }
+
+    // Quest Title
+    const titleEl = document.getElementById('quest-modal-title');
+    if (titleEl) titleEl.innerText = qDef.title;
+
+    // Story Text
+    const storyEl = document.getElementById('quest-modal-story');
+    if (storyEl) {
+      if (status === 'available') storyEl.innerText = qDef.story;
+      else if (status === 'in_progress') storyEl.innerText = qDef.inProgressStory;
+      else if (status === 'completed') storyEl.innerText = qDef.completeStory;
+      else if (status === 'done') storyEl.innerText = qDef.doneStory;
+    }
+
+    // Objectives List
+    const objContainer = document.getElementById('quest-objectives-container');
+    if (objContainer) {
+      objContainer.innerHTML = '';
+      qDef.objectives.forEach(obj => {
+        const cur = obj.getCount(quest);
+        const isDone = (status === 'done') || (cur >= obj.targetCount);
+        const card = document.createElement('div');
+        card.style.cssText = `
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 9px 12px;
+          border-radius: 8px;
+          background: ${isDone ? '#f0fdf4' : '#fffbeb'};
+          border: 1.5px solid ${isDone ? '#86efac' : '#fcd34d'};
+          font-size: 13px;
+        `;
+        card.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">${isDone ? '✅' : '📌'}</span>
+            <span style="font-weight: 700; color: ${isDone ? '#166534' : '#78350f'};">${obj.text}</span>
+          </div>
+          <div style="font-weight: 800; font-size: 12px; color: ${isDone ? '#15803d' : '#b45309'}; background: ${isDone ? '#dcfce7' : '#fef3c7'}; border: 1px solid ${isDone ? '#22c55e' : '#f59e0b'}; padding: 2px 8px; border-radius: 6px; white-space: nowrap;">
+            ${isDone ? '완료' : `${cur} / ${obj.targetCount}`}
+          </div>
+        `;
+        objContainer.appendChild(card);
+      });
+    }
+
+    // Rewards List
+    const rewContainer = document.getElementById('quest-rewards-container');
+    if (rewContainer) {
+      rewContainer.innerHTML = '';
+      qDef.rewards.forEach(r => {
+        const pill = document.createElement('div');
+        pill.style.cssText = `
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          background: #ffffff;
+          border: 1.5px solid #f59e0b;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 800;
+          color: #78350f;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        `;
+        pill.innerText = r.label;
+        rewContainer.appendChild(pill);
+      });
+    }
+
+    // Actions Buttons
+    const actContainer = document.getElementById('quest-actions-container');
+    if (actContainer) {
+      actContainer.innerHTML = '';
+
+      if (status === 'available') {
+        const btnReject = document.createElement('button');
+        btnReject.className = 'btn-secondary';
+        btnReject.style.cssText = 'padding: 8px 18px; font-size: 13px; border-radius: 8px; cursor: pointer;';
+        btnReject.innerText = '❌ 나중에 하기';
+        btnReject.addEventListener('click', () => this.closeQuestDispatchModal());
+        actContainer.appendChild(btnReject);
+
+        const btnAccept = document.createElement('button');
+        btnAccept.className = 'btn-primary';
+        btnAccept.style.cssText = 'padding: 8px 22px; font-size: 13.5px; font-weight: 900; background: linear-gradient(135deg, #15803d, #16a34a); border: 2px solid #86efac; color: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);';
+        btnAccept.innerText = '📜 의뢰 수락하기 (Accept)';
+        btnAccept.addEventListener('click', () => this.acceptQuest(qDef.id));
+        actContainer.appendChild(btnAccept);
+
+      } else if (status === 'in_progress') {
+        const btnClose = document.createElement('button');
+        btnClose.className = 'btn-primary';
+        btnClose.style.cssText = 'padding: 8px 22px; font-size: 13.5px; font-weight: 900; background: linear-gradient(135deg, #0369a1, #0284c7); border: 2px solid #7dd3fc; color: #fff; border-radius: 8px; cursor: pointer;';
+        btnClose.innerText = '🧭 1-1 교실과 탕비실 계속 탐색하기 (닫기)';
+        btnClose.addEventListener('click', () => this.closeQuestDispatchModal());
+        actContainer.appendChild(btnClose);
+
+      } else if (status === 'completed') {
+        const btnTurnIn = document.createElement('button');
+        btnTurnIn.className = 'btn-primary';
+        btnTurnIn.style.cssText = 'padding: 10px 24px; font-size: 14px; font-weight: 900; background: linear-gradient(135deg, #16a34a, #22c55e); border: 2px solid #bbf7d0; color: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.45); animation: pulse 1.5s infinite;';
+        btnTurnIn.innerText = '🎁 의뢰 완료 보고 & 특별 보상 수령하기!';
+        btnTurnIn.addEventListener('click', () => this.completeQuest(qDef.id));
+        actContainer.appendChild(btnTurnIn);
+
+      } else if (status === 'done') {
+        const btnDone = document.createElement('button');
+        btnDone.className = 'btn-secondary';
+        btnDone.style.cssText = 'padding: 8px 20px; font-size: 13px; border-radius: 8px; cursor: pointer;';
+        btnDone.innerText = '확인 (닫기)';
+        btnDone.addEventListener('click', () => this.closeQuestDispatchModal());
+        actContainer.appendChild(btnDone);
+      }
+    }
+
+    modal.classList.remove('hidden');
+
+    if (!this._questDispatchModalInitialized) {
+      this._questDispatchModalInitialized = true;
+      const btnCloseX = document.getElementById('btn-close-quest-dispatch-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => this.closeQuestDispatchModal());
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeQuestDispatchModal();
+      });
+    }
+
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+  }
+
+  closeQuestDispatchModal() {
+    const modal = document.getElementById('modal-quest-dispatch');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  acceptQuest(questId) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    this.playerData.quests[questId] = {
+      status: 'in_progress',
+      quizCount: 0,
+      memoCollected: false,
+      acceptedAt: Date.now()
+    };
+    this.saveProgress();
+    this.closeQuestDispatchModal();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('📜 [Joshua 선생님의 특별 지령] 수락 완료! 1-1 교실과 6층 탕비실을 조사하세요.', 'success');
+  }
+
+  completeQuest(questId) {
+    const qDef = QUEST_DEFINITIONS[questId];
+    if (!qDef) return;
+    const quest = this.playerData.quests && this.playerData.quests[questId];
+    if (!quest || quest.status !== 'in_progress') return;
+
+    if ((quest.quizCount || 0) < 2 || !quest.memoCollected) {
+      this.showToast('⚠️ 아직 의뢰 목표를 모두 달성하지 못했습니다!', 'warning');
+      return;
+    }
+
+    quest.status = 'done';
+    quest.completedAt = Date.now();
+
+    // 1. Grant Rewards: 100G, 100EXP, Teleport Scroll x1
+    this.addGold(100);
+    this.addExp(100);
+    this.addItem('item_teleport_scroll', '순간이동 주문서', 1, '📜', {
+      type: 'consumable',
+      slot: 'consumable',
+      heal: 0,
+      effect: '사용 시 각 층 복도(7·6·5층) 및 운동장으로 즉시 순간이동'
+    });
+
+    // 회수한 메모 제출
+    this.removeItem('item_joshua_memo', 1);
+
+    // 특별 칭호 수여
+    const titleName = '📝 Joshua의 든든한 조교';
+    if (!this.playerData.titles) this.playerData.titles = [];
+    if (!this.playerData.titles.includes(titleName)) {
+      this.playerData.titles.push(titleName);
+    }
+    if (!this.playerData.equippedTitle) {
+      this.playerData.equippedTitle = titleName;
+    }
+    this.recalcCombatStats();
+    this.updatePlayerNameDisplay();
+
+    this.saveProgress();
+    this.closeQuestDispatchModal();
+
+    if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+      window.AudioManager.playFanfare();
+    }
+
+    this.showToast(`🎉 [퀘스트 완수] Joshua 선생님의 특별 지령 완료! (100G, 100 EXP, 순간이동 주문서, 칭호 [${titleName}] 획득!)`, 'success');
+  }
+
+  handleQuestMemoPickup(itemData) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests['quest_joshua_intro'];
+    if (!quest || quest.status !== 'in_progress') {
+      alert('📝 [바닥에 떨어진 영단어 메모]\n\n"교무실 교5 좌석에 앉아 계신 3학년 영어 Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n\n먼저 교무실 교5 좌석의 Joshua 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      return;
+    }
+
+    if (quest.memoCollected) {
+      this.showToast('이미 단어 메모를 회수했습니다.', 'info');
+      return;
+    }
+
+    quest.memoCollected = true;
+    this.addItem('item_joshua_memo', 'Joshua의 단어 메모', 1, '📝', {
+      type: 'quest',
+      effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모'
+    });
+    this.saveProgress();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('📝 탕비실 구석에서 [Joshua의 단어 메모]를 회수했습니다!', 'success');
+
+    if ((quest.quizCount || 0) >= 2) {
+      setTimeout(() => {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 교5 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+      }, 500);
+    }
+  }
+
+  onQuizSolved(sourceType, room) {
+    if (!this.playerData || !this.playerData.quests) return;
+    const quest = this.playerData.quests['quest_joshua_intro'];
+    if (!quest || quest.status !== 'in_progress') return;
+
+    // Check if solved in 1학년 1반 (room_701)
+    if (room === 'room_701') {
+      const prevCount = quest.quizCount || 0;
+      if (prevCount < 2) {
+        quest.quizCount = prevCount + 1;
+        this.saveProgress();
+        this.showToast(`📜 [Joshua의 특별 지령] 1학년 1반 영어 퀴즈 완수! (${quest.quizCount}/2)`, 'info');
+
+        if (quest.quizCount >= 2 && quest.memoCollected) {
+          setTimeout(() => {
+            if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+              window.AudioManager.playFanfare();
+            }
+            this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 교5 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+          }, 600);
+        }
+      }
+    }
   }
 }
 

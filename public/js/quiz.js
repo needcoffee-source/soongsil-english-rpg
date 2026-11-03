@@ -703,6 +703,9 @@ class QuizManager {
             type: 'material'
           });
         }
+        if (typeof window.MainApp.onQuizSolved === 'function') {
+          window.MainApp.onQuizSolved(this.currentSourceType, window.MainApp.engine ? window.MainApp.engine.player.room : '');
+        }
       }
 
       let rewardMsg = isDesk

@@ -249,9 +249,23 @@ const WORLD_DATA = {
     teacherDesk: null,
     gatherSpots: [],
     desks: [],
-    npcs: [],
+    npcs: [
+      {
+        id: "npc_teacher_joshua",
+        name: "Joshua 선생님",
+        role: "3학년 영어",
+        seatId: 5,
+        seatLabel: "교5",
+        x: 8.8,
+        y: 17.8,
+        avatar: "teacher_joshua",
+        questId: "quest_joshua_intro",
+        dialogue: "Hello! 3학년 영어를 담당하는 Joshua 선생님이란다. 👨‍🏫"
+      }
+    ],
     interactive: [
-      { id: "note_developer_staff_office", type: "dev_note_3", x: 51, y: 4, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" }
+      { id: "note_developer_staff_office", type: "dev_note_3", x: 51, y: 4, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" },
+      { id: "quest_joshua_memo", type: "quest_memo", x: 48, y: 4, name: "📝 Joshua의 영단어 메모", prompt: "단어 메모 회수하기 (SPACE)" }
     ],
     // 교1 ~ 교25 좌석 정의 (추후 교사 NPC 배치용)
     seats: [
