@@ -9291,15 +9291,15 @@ class GameEngine {
   getStaffOfficeLayout() {
     if (this._staffOfficeLayout) return this._staffOfficeLayout;
     this._staffOfficeLayout = {
-      topClusterLeft: 66, // 교1 · 교2 · 교3 T자 클러스터 (tx 66..69, ty 5..8)
+      topClusterLeft: 66, // 1 · 2 · 3 T자 클러스터 (tx 66..69, ty 5..8)
       counsel: { x1: 84, x2: 100, doorX1: 90, doorX2: 92 }, // 상담실
       clusters: [
-        { type: 'five', left: 9, labels: { tl: '교4', tr: '교8', ml: '교5', mr: '교7', bottom: '교6' } },
-        { type: 'tee', left: 24, labels: { l: '교9', r: '교10', bottom: '교11' } },
-        { type: 'box', left: 39, labels: { l: '교13', r: '교14', bottom: '교12' } },
-        { type: 'tee', left: 56, labels: { l: '교23', r: '교24', bottom: '교25' } }, // 신규 T자 3석
-        { type: 'tee', left: 72, labels: { l: '교16', r: '교17', bottom: '교15' } },
-        { type: 'five', left: 87, labels: { tl: '교21', tr: '교22', ml: '교19', mr: '교20', bottom: '교18' } }
+        { type: 'five', left: 9, labels: { tl: '4', tr: '8', ml: '5', mr: '7', bottom: '6' } }, // 1분단: 5석 (Joshua: 5번 좌석)
+        { type: 'five', left: 24, labels: { tl: '9', tr: '13', ml: '10', mr: '12', bottom: '11' } }, // 2분단: 5석
+        { type: 'diamond', left: 39, labels: { top: '14', l: '15', r: '16', bottom: '17' } }, // 3분단: 1-2-1 4석
+        { type: 'five', left: 56, labels: { tl: '18', tr: '22', ml: '19', mr: '21', bottom: '20' } }, // 4분단: 5석
+        { type: 'five', left: 72, labels: { tl: '23', tr: '27', ml: '24', mr: '26', bottom: '25' } }, // 5분단: 5석
+        { type: 'six', left: 87, labels: { tl: '28', tr: '29', ml: '30', mr: '31', bl: '32', br: '33' } } // 6분단: 6석 (3x2)
       ]
     };
     return this._staffOfficeLayout;
@@ -9411,20 +9411,17 @@ class GameEngine {
     // 상담실 원형 테이블
     if (ty === 6 && tx >= C.x1 + 6 && tx <= C.x1 + 8) return true;
 
-    // 5. 상단 교1 · 교2 · 교3 클러스터
+    // 5. 상단 1 · 2 · 3 클러스터
     const T = L.topClusterLeft;
     if (tx >= T && tx <= T + 3 && ty >= 5 && ty <= 8) return true;
 
     // 6. 하단 교사석 6개 분단
     for (const c of L.clusters) {
       const x = c.left;
-      if (c.type === 'five') {
+      if (c.type === 'five' || c.type === 'six') {
+        if (tx >= x && tx <= x + 4 && ty >= 15 && ty <= 21) return true;
+      } else if (c.type === 'diamond') {
         if (tx >= x && tx <= x + 4 && ty >= 15 && ty <= 20) return true;
-      } else if (c.type === 'tee') {
-        if (tx >= x && tx <= x + 4 && ty >= 17 && ty <= 20) return true;
-      } else if (c.type === 'box') {
-        if (tx >= x + 1 && tx <= x + 5 && ty >= 16 && ty <= 18) return true;
-        if (tx >= x && tx <= x + 6 && ty >= 19 && ty <= 20) return true;
       }
     }
 
@@ -9438,13 +9435,12 @@ class GameEngine {
     // 1. 상단 부속실 내부 가구 및 소품
     this.drawStaffOfficeRoomsInterior();
 
-    // 2. 상단 부속실 벽체 — 겹침 없이 하나로 이어진 깔끔한 벽 (세로벽 먼저, 가로벽 나중)
+    // 2. 상단 부속실 벽체 — 열린 출입구 통로 (문 그래픽 없이 자유로운 통행)
     // 2-A. 소회의실
     this.drawStaffOfficeWallRun(7, 3, 7, 9);
     this.drawStaffOfficeWallRun(28, 3, 28, 9);
     this.drawStaffOfficeWallRun(7, 10, 21, 10);
     this.drawStaffOfficeWallRun(25, 10, 28, 10);
-    this.drawStaffOfficeDoorRun(22, 24, 10);
 
     // 2-B. 탕비실 · 인쇄실
     this.drawStaffOfficeWallRun(52, 3, 52, 10);
@@ -9452,16 +9448,14 @@ class GameEngine {
     this.drawStaffOfficeWallRun(36, 6, 51, 6);
     this.drawStaffOfficeWallRun(36, 10, 42, 10);
     this.drawStaffOfficeWallRun(46, 10, 51, 10);
-    this.drawStaffOfficeDoorRun(43, 45, 10);
 
     // 2-C. 상담실
     this.drawStaffOfficeWallRun(C.x1, 3, C.x1, 9);
     this.drawStaffOfficeWallRun(C.x2, 3, C.x2, 9);
     this.drawStaffOfficeWallRun(C.x1, 10, C.doorX1 - 1, 10);
     this.drawStaffOfficeWallRun(C.doorX2 + 1, 10, C.x2, 10);
-    this.drawStaffOfficeDoorRun(C.doorX1, C.doorX2, 10);
 
-    // 3. 교1 ~ 교25 교사 좌석 클러스터
+    // 3. 1 ~ 33번 교사 좌석 클러스터
     this.drawStaffOfficeAllTeacherClusters();
 
     // 4. 앞문 · 뒷문 입구
@@ -10030,11 +10024,11 @@ class GameEngine {
   drawStaffOfficeAllTeacherClusters() {
     const L = this.getStaffOfficeLayout();
 
-    // [상단] 교1 · 교2 · 교3 (T자형)
+    // [상단] 1 · 2 · 3 (T자형)
     const T = L.topClusterLeft;
-    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, '교1', 'down');
-    this.drawStaffOfficeTeacherDesk(T * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교2', 'right');
-    this.drawStaffOfficeTeacherDesk((T + 2) * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교3', 'left');
+    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, '1', 'down');
+    this.drawStaffOfficeTeacherDesk(T * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '2', 'right');
+    this.drawStaffOfficeTeacherDesk((T + 2) * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '3', 'left');
     this.drawPartitionLine(T * 32 - 4, 6 * 32 + 2, (T + 4) * 32 + 4, 6 * 32 + 2);
     this.drawPartitionLine((T + 2) * 32, 6 * 32 + 2, (T + 2) * 32, 9 * 32 + 2);
 
@@ -10043,7 +10037,7 @@ class GameEngine {
       const x = c.left;
       const lb = c.labels;
       if (c.type === 'five') {
-        // 좌/우 2열 x 2행 + 하단 가로석 (5인)
+        // 좌/우 2열 x 2행 + 하단 가로석 (5인 모둠)
         this.drawStaffOfficeTeacherDesk(x * 32, 15 * 32, 64, 64, lb.tl, 'right');
         this.drawStaffOfficeTeacherDesk((x + 3) * 32, 15 * 32, 64, 64, lb.tr, 'left');
         this.drawStaffOfficeTeacherDesk(x * 32, 17 * 32 + 4, 64, 64, lb.ml, 'right');
@@ -10052,19 +10046,26 @@ class GameEngine {
         this.drawPartitionLine((x + 2.5) * 32, 14.8 * 32, (x + 2.5) * 32, 19.3 * 32);
         this.drawPartitionLine(x * 32 - 4, 17 * 32 + 2, (x + 5) * 32 + 4, 17 * 32 + 2);
         this.drawPartitionLine(x * 32 - 6, 19.7 * 32, (x + 5) * 32 + 6, 19.7 * 32);
-      } else if (c.type === 'tee') {
-        // 좌/우 1석씩 + 하단 가로석 (T자 3인)
-        this.drawStaffOfficeTeacherDesk(x * 32, 17 * 32, 64, 76, lb.l, 'right');
-        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 17 * 32, 64, 76, lb.r, 'left');
-        this.drawStaffOfficeTeacherDesk(x * 32, 20 * 32, 5 * 32, 36, lb.bottom, 'up');
-        this.drawPartitionLine((x + 2.5) * 32, 16.8 * 32, (x + 2.5) * 32, 19.5 * 32);
-        this.drawPartitionLine(x * 32 - 6, 19.7 * 32, (x + 5) * 32 + 6, 19.7 * 32);
-      } else if (c.type === 'box') {
-        // 좌/우 1석씩 + 하단 단독 박스석 (교12)
-        this.drawStaffOfficeTeacherDesk((x + 1) * 32, 16 * 32, 64, 76, lb.l, 'right');
-        this.drawStaffOfficeTeacherDesk((x + 4) * 32, 16 * 32, 64, 76, lb.r, 'left');
-        this.drawPartitionLine((x + 3.5) * 32, 15.8 * 32, (x + 3.5) * 32, 18.6 * 32);
-        this.drawStaffOfficeTeacherDesk(x * 32 + 8, 19 * 32 + 12, 7 * 32 - 16, 44, lb.bottom, 'up');
+      } else if (c.type === 'diamond') {
+        // 1 - 2 - 1 자리 테이블 (총 4석)
+        this.drawStaffOfficeTeacherDesk((x + 0.5) * 32, 15 * 32, 4 * 32, 34, lb.top, 'down');
+        this.drawStaffOfficeTeacherDesk(x * 32, 16 * 32 + 10, 64, 64, lb.l, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 16 * 32 + 10, 64, 64, lb.r, 'left');
+        this.drawStaffOfficeTeacherDesk((x + 0.5) * 32, 19 * 32, 4 * 32, 34, lb.bottom, 'up');
+        this.drawPartitionLine(x * 32 - 2, 16 * 32 + 6, (x + 5) * 32 + 2, 16 * 32 + 6);
+        this.drawPartitionLine((x + 2.5) * 32, 16 * 32 + 6, (x + 2.5) * 32, 18 * 32 + 26);
+        this.drawPartitionLine(x * 32 - 2, 18 * 32 + 26, (x + 5) * 32 + 2, 18 * 32 + 26);
+      } else if (c.type === 'six') {
+        // 좌/우 2열 x 3행 마주보기 (6인 모둠)
+        this.drawStaffOfficeTeacherDesk(x * 32, 15 * 32, 64, 64, lb.tl, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 15 * 32, 64, 64, lb.tr, 'left');
+        this.drawStaffOfficeTeacherDesk(x * 32, 17 * 32 + 4, 64, 64, lb.ml, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 17 * 32 + 4, 64, 64, lb.mr, 'left');
+        this.drawStaffOfficeTeacherDesk(x * 32, 19 * 32 + 8, 64, 64, lb.bl, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 19 * 32 + 8, 64, 64, lb.br, 'left');
+        this.drawPartitionLine((x + 2.5) * 32, 14.8 * 32, (x + 2.5) * 32, 21.6 * 32);
+        this.drawPartitionLine(x * 32 - 4, 17 * 32 + 2, (x + 5) * 32 + 4, 17 * 32 + 2);
+        this.drawPartitionLine(x * 32 - 4, 19 * 32 + 6, (x + 5) * 32 + 4, 19 * 32 + 6);
       }
     }
   }
@@ -10122,15 +10123,9 @@ class GameEngine {
 
     const plaques = [
       { text: '📋 소회의실', x: 17.5 * 32, y: 4 * 32 + 12, bg: '#1e3a8a', border: '#fbbf24', color: '#fef08a' },
-      { text: '🚪 문', x: 23.5 * 32, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' },
-
       { text: '☕ 탕비실', x: 33 * 32, y: 6.5 * 32, bg: '#7c2d12', border: '#fdba74', color: '#ffedd5' },
-
       { text: '🖨️ 인쇄실', x: 44 * 32, y: 8.4 * 32, bg: '#0f172a', border: '#94a3b8', color: '#f8fafc' },
-      { text: '🚪 문', x: 44.5 * 32, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' },
-
-      { text: '💬 상담실', x: counselCenter, y: 4 * 32 + 12, bg: '#065f46', border: '#6ee7b7', color: '#ecfdf5' },
-      { text: '🚪 문', x: counselDoorCenter, y: 10 * 32 + 16, bg: '#334155', border: '#cbd5e1', color: '#f8fafc' }
+      { text: '💬 상담실', x: counselCenter, y: 4 * 32 + 12, bg: '#065f46', border: '#6ee7b7', color: '#ecfdf5' }
     ];
 
     for (const p of plaques) {
