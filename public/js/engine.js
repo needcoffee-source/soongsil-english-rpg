@@ -9932,6 +9932,12 @@ class GameEngine {
     ctx.save();
 
     const isCreatorDesk = (label === '26');
+    const now = Date.now();
+
+    // 0. 제작자 갓준철 연구석: 황금빛 펄스 후광 글로우 (바닥 조명 및 배경 아우라)
+    if (isCreatorDesk) {
+      this.renderJuncheolDeskGoldenAuraBack(px, py, w, h, now);
+    }
 
     // 1. 의자 (책상 바깥쪽)
     if (facing === 'right') {
@@ -9953,7 +9959,7 @@ class GameEngine {
     ctx.fillRect(px + 3, py + 4, w, h);
 
     if (isCreatorDesk) {
-      // 제작자 갓준철 연구석 (26번): 딥 체리월넛 & 골드 테두리 및 부드러운 오라
+      // 제작자 갓준철 연구석 (26번): 딥 체리월넛 & 골드 테두리
       ctx.fillStyle = '#7c2d12';
       ctx.fillRect(px, py, w, h);
       ctx.fillStyle = '#9a3412';
@@ -9961,10 +9967,6 @@ class GameEngine {
       ctx.strokeStyle = '#f59e0b';
       ctx.lineWidth = 2;
       ctx.strokeRect(px + 0.5, py + 0.5, w - 1, h - 1);
-
-      const aura = 0.12 + 0.08 * Math.sin(Date.now() / 280);
-      ctx.fillStyle = `rgba(251, 191, 36, ${aura})`;
-      ctx.fillRect(px - 2, py - 2, w + 4, h + 4);
     } else {
       ctx.fillStyle = '#d97706';
       ctx.fillRect(px, py, w, h);
@@ -10142,6 +10144,118 @@ class GameEngine {
       ctx.textBaseline = 'middle';
       ctx.fillText(label, cx, cy + 0.5);
     }
+
+    // 5. 제작자 갓준철 연구석: 전면 황금 십자별(✦) & 상승 글리터 파티클 (갓준철 캐릭터 아우라 동일 스타일)
+    if (isCreatorDesk) {
+      this.renderJuncheolDeskGoldenAuraFront(px, py, w, h, now);
+    }
+
+    ctx.restore();
+  }
+
+  // ========================================================
+  // 👑 제작자 갓준철 책상 전용 황금빛 반짝이 아우라 렌더러
+  // (갓준철 캐릭터 renderTeacherGoldenAura와 동일한 광휘 & 십자별 ✦)
+  // ========================================================
+  renderJuncheolDeskGoldenAuraBack(px, py, w, h, now) {
+    const ctx = this.ctx;
+    ctx.save();
+    const cx = px + w / 2;
+    const cy = py + h / 2;
+
+    // 1. 은은하게 호흡하는 황금빛 펄스 후광 글로우 (바닥 조명 효과)
+    const pulse = Math.sin(now / 360) * 5;
+    const glowRadius = Math.max(w, h) * 0.72 + pulse;
+    const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, glowRadius);
+    grad.addColorStop(0, 'rgba(254, 240, 138, 0.65)'); // 화사한 골드빛
+    grad.addColorStop(0.45, 'rgba(245, 158, 11, 0.38)'); // 따뜻한 앰버 골드
+    grad.addColorStop(0.8, 'rgba(217, 119, 6, 0.15)');
+    grad.addColorStop(1, 'rgba(217, 119, 6, 0)');        // 자연스러운 페이드아웃
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, glowRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. 책상 주변 부드러운 골드 오라 테두리
+    const auraPulse = 0.25 + 0.15 * Math.sin(now / 280);
+    ctx.fillStyle = `rgba(251, 191, 36, ${auraPulse})`;
+    ctx.fillRect(px - 4, py - 4, w + 8, h + 8);
+
+    ctx.restore();
+  }
+
+  renderJuncheolDeskGoldenAuraFront(px, py, w, h, now) {
+    const ctx = this.ctx;
+    ctx.save();
+    const cx = px + w / 2;
+    const cy = py + h / 2;
+
+    // 1. 반짝반짝 회전하는 황금 십자별 파티클 (Twinkling Sparkle Starbursts ✦)
+    // 외곽 궤도 공전 6개 + 책상 위 2개 = 총 8개
+    const starCount = 8;
+    for (let i = 0; i < starCount; i++) {
+      let sx, sy;
+      if (i < 6) {
+        const angle = (now / 1400) + (i * Math.PI * 2 / 6);
+        const rx = (w / 2 + 5) + Math.sin(now / 450 + i * 2) * 5;
+        const ry = (h / 2 + 5) + Math.cos(now / 550 + i * 2) * 5;
+        sx = cx + Math.cos(angle) * rx;
+        sy = cy + Math.sin(angle) * ry;
+      } else if (i === 6) {
+        sx = px + 16 + Math.sin(now / 600) * 4;
+        sy = py + 16 + Math.cos(now / 700) * 4;
+      } else {
+        sx = px + w - 16 + Math.cos(now / 650) * 4;
+        sy = py + h - 16 + Math.sin(now / 550) * 4;
+      }
+
+      // 트윙클 애니메이션 (크기 & 투명도 숨쉬기)
+      const twinkle = Math.sin(now / 220 + i * 1.8);
+      const alpha = Math.max(0.28, 0.65 + twinkle * 0.35);
+      const size = 3.5 + Math.abs(twinkle) * 3.8;
+
+      // 4포인트 십자 반짝이 (✦)
+      ctx.fillStyle = `rgba(254, 240, 138, ${alpha})`;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy - size);
+      ctx.lineTo(sx + size * 0.35, sy);
+      ctx.lineTo(sx, sy + size);
+      ctx.lineTo(sx - size * 0.35, sy);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(sx - size, sy);
+      ctx.lineTo(sx, sy + size * 0.35);
+      ctx.lineTo(sx + size, sy);
+      ctx.lineTo(sx, sy - size * 0.35);
+      ctx.closePath();
+      ctx.fill();
+
+      // 별 중심부 반짝이는 화이트 보석 코어
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.fillRect(sx - 1, sy - 1, 2, 2);
+    }
+
+    // 2. 위로 솟아오르는 황금 미세 글리터 입자 (Upward Rising Gold Glitters)
+    for (let j = 0; j < 7; j++) {
+      const phase = ((now * 0.045 + j * 48) % 100) / 100;
+      const gx = px + 8 + ((j * 11 + Math.sin(now / 380 + j) * 8 + 30) % (w - 16));
+      const gy = (py + h + 2) - phase * (h + 18);
+      const gAlpha = Math.sin(phase * Math.PI) * 0.85;
+      ctx.fillStyle = `rgba(253, 224, 71, ${gAlpha})`;
+      ctx.fillRect(gx, gy, 2, 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${gAlpha * 0.9})`;
+      ctx.fillRect(gx + 0.5, gy + 0.5, 1, 1);
+    }
+
+    // 3. 👑 26 갓준철 골드 명패의 빛나는 황금 하이라이트 림
+    const badgeTw = Math.max(54, ctx.measureText('👑 26 갓준철').width + 10);
+    const badgeTh = 18;
+    const rimAlpha = 0.5 + 0.5 * Math.sin(now / 200);
+    ctx.strokeStyle = `rgba(254, 240, 138, ${rimAlpha})`;
+    ctx.lineWidth = 1.8;
+    ctx.strokeRect(cx - badgeTw / 2, cy - badgeTh / 2, badgeTw, badgeTh);
 
     ctx.restore();
   }
