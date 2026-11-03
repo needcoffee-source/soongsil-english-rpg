@@ -22,7 +22,7 @@ const WORLD_DATA = {
     5: {
       name: "5층 복도 (진로 & 선배 구역)",
       rooms: [
-        { id: "room_career", name: "🌟 진로상담실", doorX: 13, doorY: 5, targetX: 30, targetY: 15, locked: false },
+        { id: "room_career", name: "🌟 진로상담실", doorX: 13, doorY: 5, targetX: 30, targetY: 13, locked: false },
         { id: "room_501", name: "2학년 1반", doorX: 25, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 1반 자율학습 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_502", name: "2학년 2반", doorX: 32, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 2반 수업 시간입니다. (현재 준비 중 🚧)" },
         { id: "room_503", name: "2학년 3반", doorX: 39, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "지금은 2학년 3반 수업 시간입니다. (현재 준비 중 🚧)" },

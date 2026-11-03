@@ -566,7 +566,8 @@ class GameEngine {
       } else if (this.player.room === 'room_career') {
         const cr = this.getCurrentClassroomData();
         const exit = (cr && cr.exitDoor) || { x: 30, y: 17 };
-        if (Math.abs(tileX - exit.x) <= 1 && tileY >= exit.y) {
+        // 진로실 바닥(y=17) 횡단 시 비의도적 퇴장 방지: 문 바깥(y >= exit.y + 1, 즉 y >= 18)으로 완전히 나갈 때만 퇴장
+        if (Math.abs(tileX - exit.x) <= 1 && tileY >= exit.y + 1) {
           this.triggerFadeWarp(() => {
             this.exitClassroom();
           });

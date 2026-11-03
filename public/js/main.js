@@ -1739,8 +1739,8 @@ class MainApp {
 
   resetCareerEscapeProgress() {
     if (!this.playerData) return;
+    if (this.playerData.hasEscapedCareerRoom) return; // 이미 방탈출 및 전직 완료한 학생은 진행도 보존
     this.playerData.careerClues = [false, false, false, false, false, false];
-    this.playerData.hasEscapedCareerRoom = false;
     this.saveProgress(true);
   }
 
