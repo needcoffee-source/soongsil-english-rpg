@@ -952,6 +952,7 @@ class MainApp {
     this.initControls();
     this.initModals();
     this.initTeacherAdmin();
+    this.initQuestTracker();
     this.initServerStatusMonitor();
     this.recalcCombatStats();
   }
@@ -6852,6 +6853,7 @@ class MainApp {
       this.engine.player.name = name;
       this.engine.player.equippedTitle = title;
     }
+    this.updateQuestTracker();
   }
 
   // =========================================================================
@@ -7909,6 +7911,7 @@ class MainApp {
 
     if (!quest) return 'available';
     if (quest.status === 'done') return 'done';
+    if (quest.status === 'completed') return 'completed';
     if (quest.status === 'in_progress') {
       const isQuizDone = (quest.quizCount || 0) >= 2;
       const isMemoDone = !!quest.memoCollected;
@@ -8120,6 +8123,7 @@ class MainApp {
       acceptedAt: Date.now()
     };
     this.saveProgress();
+    this.updateQuestTracker();
     this.closeQuestDispatchModal();
 
     if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
@@ -8133,7 +8137,7 @@ class MainApp {
     const qDef = QUEST_DEFINITIONS[questId];
     if (!qDef) return;
     const quest = this.playerData.quests && this.playerData.quests[questId];
-    if (!quest || quest.status !== 'in_progress') return;
+    if (!quest || (quest.status !== 'in_progress' && quest.status !== 'completed')) return;
 
     if ((quest.quizCount || 0) < 2 || !quest.memoCollected) {
       this.showToast('⚠️ 아직 의뢰 목표를 모두 달성하지 못했습니다!', 'warning');
@@ -8160,6 +8164,7 @@ class MainApp {
     this.updatePlayerNameDisplay();
 
     this.saveProgress();
+    this.updateQuestTracker();
     this.closeQuestDispatchModal();
 
     if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
@@ -8188,6 +8193,7 @@ class MainApp {
       effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모'
     });
     this.saveProgress();
+    this.updateQuestTracker();
 
     if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
       window.AudioManager.playCollect();
@@ -8216,6 +8222,7 @@ class MainApp {
       if (prevCount < 2) {
         quest.quizCount = prevCount + 1;
         this.saveProgress();
+        this.updateQuestTracker();
         this.showToast(`📜 [Joshua의 특별 지령] 1학년 1반 영어 퀴즈 완수! (${quest.quizCount}/2)`, 'info');
 
         if (quest.quizCount >= 2 && quest.memoCollected) {
@@ -8226,6 +8233,137 @@ class MainApp {
             this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 교5 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
           }, 600);
         }
+      }
+    }
+  }
+
+  // =========================================================================
+  // 📜 TOP-LEFT FLOATING QUEST TRACKER HUD
+  // =========================================================================
+  initQuestTracker() {
+    const trackerEl = document.getElementById('quest-tracker-hud');
+    if (!trackerEl) return;
+
+    const header = document.getElementById('quest-tracker-header');
+    const toggleBtn = document.getElementById('btn-toggle-quest-tracker');
+    if (header) {
+      header.addEventListener('click', (e) => {
+        trackerEl.classList.toggle('collapsed');
+        if (toggleBtn) {
+          toggleBtn.innerText = trackerEl.classList.contains('collapsed') ? '▲' : '▼';
+        }
+      });
+    }
+
+    const body = document.getElementById('quest-tracker-body');
+    if (body) {
+      body.addEventListener('click', () => {
+        const active = this.getActiveQuest();
+        if (active) {
+          this.openQuestDispatchModal(active.id);
+        }
+      });
+    }
+
+    this.updateQuestTracker();
+  }
+
+  getActiveQuest() {
+    if (!this.playerData || !this.playerData.quests) return null;
+    for (const qId of Object.keys(this.playerData.quests)) {
+      const q = this.playerData.quests[qId];
+      if (q && (q.status === 'in_progress' || q.status === 'completed')) {
+        const qDef = QUEST_DEFINITIONS[qId];
+        if (qDef) return { id: qId, def: qDef, data: q };
+      }
+    }
+    return null;
+  }
+
+  updateQuestTracker() {
+    const trackerEl = document.getElementById('quest-tracker-hud');
+    if (!trackerEl) return;
+
+    const active = this.getActiveQuest();
+    if (!active) {
+      trackerEl.classList.add('hidden');
+      return;
+    }
+
+    const { id, def, data } = active;
+    trackerEl.classList.remove('hidden');
+
+    // Check completion of all objectives
+    let allDone = true;
+    for (const obj of def.objectives) {
+      const cur = obj.getCount ? obj.getCount(data) : 0;
+      if (cur < obj.targetCount) {
+        allDone = false;
+        break;
+      }
+    }
+
+    if (allDone && data.status === 'in_progress') {
+      data.status = 'completed';
+    }
+
+    // Badge
+    const badgeEl = document.getElementById('quest-tracker-badge');
+    if (badgeEl) {
+      if (allDone) {
+        badgeEl.innerText = '완수 가능! 🎁';
+        badgeEl.className = 'quest-tracker-badge completed';
+      } else {
+        badgeEl.innerText = '진행 중';
+        badgeEl.className = 'quest-tracker-badge in-progress';
+      }
+    }
+
+    // Quest Name
+    const nameEl = document.getElementById('quest-tracker-quest-name');
+    if (nameEl) nameEl.innerText = def.title;
+
+    // Meta (Teacher Role & Seat)
+    const metaEl = document.getElementById('quest-tracker-meta');
+    if (metaEl) {
+      metaEl.innerText = `의뢰인: ${def.teacherName} (${def.teacherSeat ? `${def.teacherSeat} 좌석` : ''})`;
+    }
+
+    // Objectives List
+    const objListEl = document.getElementById('quest-tracker-objectives');
+    if (objListEl) {
+      objListEl.innerHTML = '';
+      def.objectives.forEach(obj => {
+        const cur = obj.getCount ? obj.getCount(data) : 0;
+        const isDone = cur >= obj.targetCount;
+        const row = document.createElement('div');
+        row.className = `quest-tracker-obj-item ${isDone ? 'done' : ''}`;
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:6px; overflow:hidden;">
+            <span style="font-size:11px;">${isDone ? '✅' : '📌'}</span>
+            <span style="font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:165px; font-weight:${isDone ? '700' : '500'};">${obj.text}</span>
+          </div>
+          <span style="font-size:10px; font-weight:800; padding:1px 5px; border-radius:4px; margin-left:4px; white-space:nowrap; ${isDone ? 'background:#dcfce7; color:#15803d;' : 'background:#fef3c7; color:#b45309;'}">
+            ${isDone ? '완료' : `${cur}/${obj.targetCount}`}
+          </span>
+        `;
+        objListEl.appendChild(row);
+      });
+    }
+
+    // Hint
+    const hintEl = document.getElementById('quest-tracker-hint');
+    if (hintEl) {
+      if (allDone) {
+        hintEl.innerHTML = `🎁 <b>모든 목표 완수!</b> 6층 교무실 <b>${def.teacherName}</b>께 돌아가 보상을 받으세요!`;
+        hintEl.style.background = 'rgba(22, 101, 52, 0.25)';
+        hintEl.style.borderColor = 'rgba(34, 197, 94, 0.4)';
+        hintEl.style.color = '#bbf7d0';
+      } else {
+        hintEl.innerHTML = `💡 1학년 1반(1-1) 칠판과 6층 탕비실 안쪽을 조사하세요.`;
+        hintEl.style.background = 'rgba(245, 158, 11, 0.12)';
+        hintEl.style.borderColor = 'rgba(245, 158, 11, 0.25)';
+        hintEl.style.color = '#fbbf24';
       }
     }
   }

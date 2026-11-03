@@ -116,6 +116,12 @@ files.forEach(f => {
 const app = new MainApp();
 assert(app, 'MainApp must be instantiated');
 
+// 1-B. Verify Staff Office Layout Desk Label Cleanliness (No duplication)
+const layout = app.engine.getStaffOfficeLayout();
+assert.strictEqual(layout.clusters[0].labels.ml, '교5', 'Desk 5 label must be cleanly "교5" without repeating NPC name');
+assert.strictEqual(layout.clusters[0].labels.tl, '교4', 'Desk 4 label must be "교4"');
+console.log('✔ Staff office desk label cleanliness (교5) verified');
+
 // Test Player Setup
 app.playerData = {
   name: '테스트학생',
@@ -147,7 +153,9 @@ app.acceptQuest('quest_joshua_intro');
 assert.strictEqual(app.getTeacherQuestStatus('npc_teacher_joshua'), 'in_progress', 'Status must be in_progress after accept');
 assert.strictEqual(app.playerData.quests['quest_joshua_intro'].quizCount, 0, 'Quiz count must start at 0');
 assert.strictEqual(app.playerData.quests['quest_joshua_intro'].memoCollected, false, 'Memo must not be collected yet');
-console.log('✔ Quest acceptance & state initialization verified');
+assert(app.getActiveQuest(), 'getActiveQuest must return active quest info');
+assert.strictEqual(app.getActiveQuest().id, 'quest_joshua_intro', 'Active quest id must match');
+console.log('✔ Quest acceptance & tracker activation verified');
 
 // Objective 1: English Quiz in room_701
 app.onQuizSolved('teacher_desk', 'room_702'); // Wrong room
@@ -178,6 +186,7 @@ const levelBefore = app.playerData.level;
 app.completeQuest('quest_joshua_intro');
 
 assert.strictEqual(app.getTeacherQuestStatus('npc_teacher_joshua'), 'done', 'Status must be done after turning in');
+assert.strictEqual(app.getActiveQuest(), null, 'Quest tracker must deactivate when quest is done');
 assert.strictEqual(app.playerData.gold, goldBefore + 100, 'Gold must increase by 100');
 assert.strictEqual(app.playerData.level, levelBefore + 1, 'Player must level up from Lv.1 to Lv.2 with 100 EXP');
 assert(app.playerData.inventory.some(i => i.item === 'item_teleport_scroll'), 'Player must receive teleport scroll');

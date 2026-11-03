@@ -5215,7 +5215,7 @@ class GameEngine {
             ? window.MainApp.getTeacherQuestStatus(npc.id || npc.questId)
             : 'available';
           if (qStatus && qStatus !== 'done') {
-            this.drawFloatingQuestMarker(px + 16, py - 12, qStatus);
+            this.drawFloatingQuestMarker(px + 16, py - 18, qStatus);
           }
         }
       }
@@ -9294,7 +9294,7 @@ class GameEngine {
       topClusterLeft: 66, // 교1 · 교2 · 교3 T자 클러스터 (tx 66..69, ty 5..8)
       counsel: { x1: 84, x2: 100, doorX1: 90, doorX2: 92 }, // 상담실
       clusters: [
-        { type: 'five', left: 9, labels: { tl: '교4', tr: '교8', ml: '👨‍🏫 Joshua (교5)', mr: '교7', bottom: '교6' } },
+        { type: 'five', left: 9, labels: { tl: '교4', tr: '교8', ml: '교5', mr: '교7', bottom: '교6' } },
         { type: 'tee', left: 24, labels: { l: '교9', r: '교10', bottom: '교11' } },
         { type: 'box', left: 39, labels: { l: '교13', r: '교14', bottom: '교12' } },
         { type: 'tee', left: 56, labels: { l: '교23', r: '교24', bottom: '교25' } }, // 신규 T자 3석
@@ -10030,9 +10030,9 @@ class GameEngine {
   drawStaffOfficeAllTeacherClusters() {
     const L = this.getStaffOfficeLayout();
 
-    // [상단] 교사 1 · 교2 · 교3 (T자형)
+    // [상단] 교1 · 교2 · 교3 (T자형)
     const T = L.topClusterLeft;
-    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, '교사 1 (교1)', 'down');
+    this.drawStaffOfficeTeacherDesk(T * 32, 5 * 32, 4 * 32, 32, '교1', 'down');
     this.drawStaffOfficeTeacherDesk(T * 32, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교2', 'right');
     this.drawStaffOfficeTeacherDesk((T + 2) * 32 + 2, 6 * 32 + 4, 2 * 32 - 2, 3 * 32 - 4, '교3', 'left');
     this.drawPartitionLine(T * 32 - 4, 6 * 32 + 2, (T + 4) * 32 + 4, 6 * 32 + 2);
