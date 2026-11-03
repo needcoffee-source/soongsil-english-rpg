@@ -153,9 +153,9 @@ class GameEngine {
       return;
     }
     const isSpeedJob = (window.MainApp && window.MainApp.playerData && (window.MainApp.playerData.job === 'engineer' || window.MainApp.playerData.job === 'runner'));
-    const runnerMult = isSpeedJob ? 1.15 : 1.0;
+    const runnerMult = isSpeedJob ? 1.10 : 1.0; // 러너: 기본 걷기 속도 +10% 상시 증가
 
-    // 기본 이동속도: 기본 3.8에 초록물약 버프(+10%) 및 러너 직업 효과 적용
+    // 기본 이동속도: 기본 3.8에 초록물약 버프(+10%) 및 러너 직업 효과(+10%) 적용
     const baseWalkSpeed = 3.8 * speedBuffMult * runnerMult;
 
     if (!this.player.hasRunningShoes) {
@@ -164,10 +164,10 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    // 신발 종류 확인: 날렵한 가죽 농구화 착용 시 실내화(4.37, +15%)보다 소폭 빠른 고속 질주(4.75, +25%) 적용 (질주 속도는 초록물약 미적용)
+    // 신발 종류 확인: 날렵한 가죽 농구화 착용 시 실내화(4.37, +15%)보다 소폭 빠른 고속 질주(4.75, +25%) 적용
     const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
     const isBasketballShoes = !!(equippedShoes && (equippedShoes.item === 'equip_leather_shoes'));
-    const dashSpeed = (isBasketballShoes ? 4.75 : 4.37) * runnerMult;
+    const dashSpeed = isBasketballShoes ? 4.75 : 4.37;
     this.player.speed = isDashing ? dashSpeed : baseWalkSpeed;
   }
 

@@ -524,8 +524,7 @@ class QuizManager {
 
   resolveTargetDropInfo() {
     const cfg = window.ECONOMY_CONFIG;
-    const isDropJob = (window.MainApp && window.MainApp.playerData && (window.MainApp.playerData.job === 'artist' || window.MainApp.playerData.job === 'scout'));
-    const scoutBonus = isDropJob ? 20 : 0;
+    const scoutBonus = 0; // 스카우트 직업 삭제
     if (this.currentSpotData && this.currentSpotData.dropItem) {
       const baseRate = cfg.spotDropRates[this.currentSourceType] || this.currentSpotData.dropRate || cfg.itemDropRatePercent;
       return {
@@ -680,14 +679,14 @@ class QuizManager {
       let jobBonusNotice = '';
       if (window.MainApp && window.MainApp.playerData) {
         if (window.MainApp.playerData.job === 'researcher' || window.MainApp.playerData.job === 'scholar') {
-          const extraExp = Math.round(earnedExp * 0.3);
+          const extraExp = Math.round(earnedExp * 0.15);
           earnedExp += extraExp;
-          jobBonusNotice += ' (🔬 연구원: EXP +30% 적용!)';
+          jobBonusNotice += ' (📚 스칼라: EXP +15% 적용!)';
         }
         if (window.MainApp.playerData.job === 'scientist' || window.MainApp.playerData.job === 'banker') {
-          const extraGold = Math.round(earnedGold * 0.35);
+          const extraGold = Math.round(earnedGold * 0.10);
           earnedGold += extraGold;
-          jobBonusNotice += ' (🔭 과학자: 골드 +35% 적용!)';
+          jobBonusNotice += ' (🪙 뱅커: 골드 +10% 적용!)';
         }
       }
 

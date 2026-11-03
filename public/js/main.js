@@ -588,9 +588,9 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '🩺 수호의 메딕',
     icon: '👨‍⚕️',
     skillName: '치유의 손길 (Healing Touch)',
-    effect: '최대 체력(HP) +40 영구 증가 & 3초당 자동 자연 치유량 2배 (2 HP 회복)',
+    effect: '3초당 자동 자연 치유량 3배 (3 HP 회복)',
     desc: '환자를 보살피고 동료의 상처를 치유하는 숭실의 힐러!',
-    stats: { hpBonus: 40, hpRegen: 2 }
+    stats: { hpRegen: 3 }
   },
   {
     id: 'runner',
@@ -599,9 +599,9 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '⚡ 질주의 러너',
     icon: '🏃‍♂️',
     skillName: '쾌속 질주 (Swift Sprint)',
-    effect: '기본 걷기 속도 +15% 상시 증가 & 삼디다스 실내화 질주 시간 +1.5초 연장',
+    effect: '기본 걷기 속도 +10% 상시 증가',
     desc: '지치지 않는 체력과 빠른 스피드로 숭실을 누비는 육상 스타!',
-    stats: { speedBonus: 0.15, dashBonus: 1500 }
+    stats: { speedBonus: 0.10 }
   },
   {
     id: 'scholar',
@@ -610,9 +610,9 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '📚 지혜의 스칼라',
     icon: '🧙‍♂️',
     skillName: '지식의 탐구자 (Deep Knowledge)',
-    effect: '모든 퀴즈 정답 시 경험치(EXP) +30% 추가 획득 (초고속 레벨업)',
+    effect: '모든 퀴즈 및 전투 정답 시 경험치(EXP) +15% 추가 획득',
     desc: '끊임없는 학구열과 지혜로 초고속 성장을 달성하는 학자!',
-    stats: { expBonus: 0.3 }
+    stats: { expBonus: 0.15 }
   },
   {
     id: 'banker',
@@ -621,31 +621,21 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '🪙 황금의 뱅커',
     icon: '💼',
     skillName: '스마트 투자 (Smart Investment)',
-    effect: '모든 골드(Gold) 획득량 +35% 추가 획득 & 매점 아이템 판매 시 10% 추가 정산',
+    effect: '모든 골드(Gold) 획득량 +10% 추가 획득',
     desc: '밝은 경제 감각과 재테크 지혜로 부를 일구는 숭실 자산가!',
-    stats: { goldBonus: 0.35, storeBonus: 0.1 }
+    stats: { goldBonus: 0.10 }
   },
   {
-    id: 'scout',
-    legacyId: 'artist',
-    name: '스카우트 (Scout)',
-    title: '🍀 행운의 스카우트',
-    icon: '🏹',
-    skillName: '보물 사냥꾼 (Treasure Hunter)',
-    effect: '채집 시 재료 아이템(목재, 허브, 꽃잎, 은행잎 등) 드랍 확률 +20% 증가',
-    desc: '날카로운 관찰력으로 숨겨진 귀한 재료를 찾아내는 탐험가!',
-    stats: { dropRateBonus: 20 }
-  },
-  {
-    id: 'guardian',
-    legacyId: 'mentor',
-    name: '가디언 (Guardian)',
-    title: '🛡️ 철벽의 가디언',
-    icon: '🛡️',
-    skillName: '강철 멘탈 (Iron Fortress)',
-    effect: '방어력(DEF) +8 영구 증가 & 퀴즈 오답 체력 데미지 50% 대폭 감소',
-    desc: '어떤 난관과 위기에도 끄떡없는 숭실의 든든한 방패!',
-    stats: { defBonus: 8, penaltyReduction: 0.5 }
+    id: 'wrestler',
+    legacyId: 'guardian',
+    altLegacyId: 'mentor',
+    name: '레슬러 (Wrestler)',
+    title: '🤼 투지의 레슬러',
+    icon: '🤼',
+    skillName: '불굴의 투지 (Indomitable Will)',
+    effect: '퀴즈 오답 체력 데미지 20% 감소',
+    desc: '어떤 충격도 끄떡없이 버텨내는 숭실의 불굴의 파이터!',
+    stats: { penaltyReduction: 0.20 }
   }
 ];
 
@@ -776,8 +766,7 @@ const TITLE_DEFINITIONS = [
   { id: 'title_job_runner', name: '⚡ 질주의 러너', desc: '5층 진로상담실 방탈출을 통과하고 러너(Runner)로 전직한 육상 스타!', costType: 'quest', costAmount: 0 },
   { id: 'title_job_scholar', name: '📚 지혜의 스칼라', desc: '5층 진로상담실 방탈출을 통과하고 스칼라(Scholar)로 전직한 지혜의 학자!', costType: 'quest', costAmount: 0 },
   { id: 'title_job_banker', name: '🪙 황금의 뱅커', desc: '5층 진로상담실 방탈출을 통과하고 뱅커(Banker)로 전직한 숭실 자산가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_scout', name: '🍀 행운의 스카우트', desc: '5층 진로상담실 방탈출을 통과하고 스카우트(Scout)로 전직한 보물 탐험가!', costType: 'quest', costAmount: 0 },
-  { id: 'title_job_guardian', name: '🛡️ 철벽의 가디언', desc: '5층 진로상담실 방탈출을 통과하고 가디언(Guardian)으로 전직한 든든한 방패!', costType: 'quest', costAmount: 0 },
+  { id: 'title_job_wrestler', name: '🤼 투지의 레슬러', desc: '5층 진로상담실 방탈출을 통과하고 레슬러(Wrestler)로 전직한 불굴의 파이터!', costType: 'quest', costAmount: 0 },
   {
     id: 'title_drummer',
     name: '🥁 영혼의 드러머',
@@ -1062,14 +1051,12 @@ class MainApp {
       this.engine.setDashing(true);
 
       if (!isTeacher) {
-        const isSpeedJob = !!(this.playerData && (this.playerData.job === 'runner' || this.playerData.job === 'engineer'));
-        const effectiveDuration = this.dashState.durationMs + (isSpeedJob ? 1500 : 0);
         clearTimeout(this.dashState.durationTimeout);
         this.dashState.durationTimeout = setTimeout(() => {
           if (this.dashState.isDashing) {
             this.stopDash(true);
           }
-        }, effectiveDuration);
+        }, this.dashState.durationMs);
       }
     };
 
@@ -2897,6 +2884,11 @@ class MainApp {
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedClass704 = !!(saved.hasClearedClass704 || (studentId && localStorage.getItem('soongsil_class704_cleared_' + studentId) === 'true'));
           this.playerData.job = saved.job || (studentId ? localStorage.getItem('soongsil_job_' + studentId) : null) || null;
+          if (this.playerData.job === 'guardian' || this.playerData.job === 'mentor') {
+            this.playerData.job = 'wrestler';
+          } else if (this.playerData.job === 'scout' || this.playerData.job === 'artist') {
+            this.playerData.job = null;
+          }
           this.playerData.hasEscapedCareerRoom = !!(saved.hasEscapedCareerRoom || (studentId && localStorage.getItem('soongsil_career_escaped_' + studentId) === 'true'));
           this.playerData.careerClues = Array.isArray(saved.careerClues) ? saved.careerClues : [false, false, false, false, false, false];
           if (!this.playerData.careerClues.some(Boolean) && studentId) {
@@ -2918,14 +2910,16 @@ class MainApp {
             '💻 미래를 코딩하는 엔지니어': '⚡ 질주의 러너',
             '🔬 진리를 밝히는 연구원': '📚 지혜의 스칼라',
             '🔭 미래를 여는 과학자': '🪙 황금의 뱅커',
-            '🎨 영감을 주는 디자이너': '🍀 행운의 스카우트',
-            '🤝 마음을 보듬는 멘토': '🛡️ 철벽의 가디언'
+            '🎨 영감을 주는 디자이너': null,
+            '🍀 행운의 스카우트': null,
+            '🤝 마음을 보듬는 멘토': '🤼 투지의 레슬러',
+            '🛡️ 철벽의 가디언': '🤼 투지의 레슬러'
           };
           this.playerData.titles = Array.isArray(saved.titles)
-            ? [...new Set(saved.titles.map(t => LEGACY_TITLE_MAP[t] || t))]
+            ? [...new Set(saved.titles.map(t => (t in LEGACY_TITLE_MAP ? LEGACY_TITLE_MAP[t] : t)).filter(Boolean))]
             : [];
           this.playerData.equippedTitle = saved.equippedTitle
-            ? (LEGACY_TITLE_MAP[saved.equippedTitle] || saved.equippedTitle)
+            ? (saved.equippedTitle in LEGACY_TITLE_MAP ? LEGACY_TITLE_MAP[saved.equippedTitle] : saved.equippedTitle)
             : null;
           this.playerData.quests = (saved.quests && typeof saved.quests === 'object') ? saved.quests : {};
           if (Object.keys(this.playerData.quests).length === 0 && studentId) {
@@ -3481,12 +3475,7 @@ class MainApp {
       });
     }
 
-        // 🌟 진로 직업 패시브 스킬 스탯 보너스
-    if (this.playerData.job === 'doctor' || this.playerData.job === 'medic') {
-      bonusHp += 40; // 의사: 최대 체력 +40
-    } else if (this.playerData.job === 'mentor' || this.playerData.job === 'guardian') {
-      bonusDef += 8; // 상담교사/멘토: 방어력 +8
-    }
+        // 🌟 진로 직업 패시브 스킬 스탯 보너스 (각 직업은 고유 특수 기능만 적용)
 
     // 🏛️ 역사관 특별 칭호 보너스
     if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
@@ -3562,8 +3551,8 @@ class MainApp {
     const isInBossRoom = this.engine && this.engine.player && this.engine.player.room === 'room_702';
     if (isBossRaidOpen || isInBossRoom) return;
 
-    // 5. 체력 +1 자연 회복 및 UI 동기화
-    const regenAmount = (this.playerData.job === 'doctor' || this.playerData.job === 'medic') ? 2 : 1;
+    // 5. 체력 자연 회복 및 UI 동기화 (메딕 직업은 3초당 3 HP 회복)
+    const regenAmount = (this.playerData.job === 'doctor' || this.playerData.job === 'medic') ? 3 : 1;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + regenAmount);
     this.updateHpBar();
 
@@ -3580,8 +3569,8 @@ class MainApp {
     if (!this.playerData || this.playerData.hp <= 0 || this.playerData.isFallen) return 0;
 
     let penalty = Math.max(1, amount || 1);
-    if (this.playerData.job === 'mentor' || this.playerData.job === 'guardian') {
-      penalty = Math.max(1, Math.floor(penalty * 0.5)); // 상담교사/멘토: 퀴즈 오답 데미지 50% 감소
+    if (this.playerData.job === 'wrestler' || this.playerData.job === 'guardian' || this.playerData.job === 'mentor') {
+      penalty = Math.max(1, Math.floor(penalty * 0.8)); // 레슬러: 퀴즈 오답 데미지 20% 감소
     }
     this.playerData.hp = Math.max(0, this.playerData.hp - penalty);
     this.updateHpBar();
@@ -4867,13 +4856,12 @@ class MainApp {
     let finalGold = mob.goldReward || 10;
     let finalExp = mob.expReward || 20;
     if (this.playerData && (this.playerData.job === 'scholar' || this.playerData.job === 'researcher')) {
-      finalExp += Math.round(finalExp * 0.3);
+      finalExp += Math.round(finalExp * 0.15); // 스칼라: 경험치 +15%
     }
     if (this.playerData && (this.playerData.job === 'banker' || this.playerData.job === 'scientist')) {
-      finalGold += Math.round(finalGold * 0.35);
+      finalGold += Math.round(finalGold * 0.10); // 뱅커: 모든 골드 +10%
     }
-    const isScoutJob = !!(this.playerData && (this.playerData.job === 'scout' || this.playerData.job === 'artist'));
-    const scoutDropBonus = isScoutJob ? 20 : 0;
+    const scoutDropBonus = 0; // 스카우트 삭제
 
     this.addGold(finalGold);
     this.addExp(finalExp);
@@ -6899,9 +6887,6 @@ class MainApp {
     else if (itemId.startsWith('equip_wood')) basePrice = 3;
     else if (itemId.startsWith('item_')) basePrice = 2;
 
-    if (this.playerData && (this.playerData.job === 'banker' || this.playerData.job === 'scientist')) {
-      return Math.max(basePrice + 1, Math.round(basePrice * 1.1));
-    }
     return basePrice;
   }
 
