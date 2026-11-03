@@ -582,7 +582,7 @@
     "id": "recipe_green_potion",
     "name": "초록 물약",
     "category": "potion",
-    "description": "[소비품] 싱그러운 약초 진액으로 조제한 비전 물약입니다. 마시면 1분 동안 질주 속도가 10% 증가합니다.",
+    "description": "[소비품] 싱그러운 약초 진액으로 조제한 비전 물약입니다. 마시면 1분 동안 기본 이동속도가 10% 증가합니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 15,
@@ -618,7 +618,7 @@
       "type": "consumable",
       "slot": "consumable",
       "heal": 0,
-      "effect": "1분간 질주 속도 +10% 증가"
+      "effect": "1분간 기본 이동속도 +10% 증가"
     }
   },
   {

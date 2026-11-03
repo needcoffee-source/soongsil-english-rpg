@@ -490,7 +490,7 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
-  'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 질주 속도 +10% 증가' } },
+  'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
@@ -3810,7 +3810,7 @@ class MainApp {
           } else if (isScroll) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;">💫 쓰러진 친구 50% 체력 부활</span>`;
           } else if (isGreenPotion) {
-            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#4ade80;">⚡ 1분간 질주 속도 +10%</span>`;
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#4ade80;">⚡ 1분간 기본 이동속도 +10%</span>`;
           } else if (isCouragePotion) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;"><span class="icon-purple-potion">🧪</span> 3분간 공격력(ATK) +5</span>`;
           } else {
@@ -5449,7 +5449,7 @@ class MainApp {
       return false;
     }
     this.removeItem('item_green_potion', 1);
-    this.applyBuff('speed_boost', 60000, '신속 질주 (+10%)', '⚡');
+    this.applyBuff('speed_boost', 60000, '기본 이속 (+10%)', '⚡');
     this.saveProgress();
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();

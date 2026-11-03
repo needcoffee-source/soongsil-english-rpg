@@ -143,29 +143,32 @@ class GameEngine {
   }
 
   setDashing(isDashing) {
+    // 초록 물약 버프: 1분간 기본 이동속도 10% 증가 (질주 속도가 아닌 기본 걷기 속도에 적용)
+    const hasSpeedBuff = !!(window.MainApp && window.MainApp.isBuffActive && window.MainApp.isBuffActive('speed_boost'));
+    const speedBuffMult = hasSpeedBuff ? 1.10 : 1.0;
+
     if (this.player.isTeacher) {
       this.player.isDashing = isDashing;
-      this.player.speed = isDashing ? 7.6 : 4.0; // 교사: 기본 이동속도 4.0, Shift 누르면 7.6
+      this.player.speed = isDashing ? 7.6 : 4.0 * speedBuffMult; // 교사: 기본 이동속도 4.0(버프 시 4.4), Shift 누르면 7.6
       return;
     }
     const isSpeedJob = (window.MainApp && window.MainApp.playerData && (window.MainApp.playerData.job === 'engineer' || window.MainApp.playerData.job === 'runner'));
     const runnerMult = isSpeedJob ? 1.15 : 1.0;
 
-    // 초록 물약 버프: 1분간 질주 속도 10% 증가
-    const hasSpeedBuff = !!(window.MainApp && window.MainApp.isBuffActive && window.MainApp.isBuffActive('speed_boost'));
-    const speedBuffMult = hasSpeedBuff ? 1.10 : 1.0;
+    // 기본 이동속도: 기본 3.8에 초록물약 버프(+10%) 및 러너 직업 효과 적용
+    const baseWalkSpeed = 3.8 * speedBuffMult * runnerMult;
 
     if (!this.player.hasRunningShoes) {
       this.player.isDashing = false;
-      this.player.speed = 3.8 * runnerMult;
+      this.player.speed = baseWalkSpeed;
       return;
     }
     this.player.isDashing = isDashing;
-    // 신발 종류 확인: 날렵한 가죽 농구화 착용 시 실내화(4.37, +15%)보다 소폭 빠른 고속 질주(4.75, +25%) 적용
+    // 신발 종류 확인: 날렵한 가죽 농구화 착용 시 실내화(4.37, +15%)보다 소폭 빠른 고속 질주(4.75, +25%) 적용 (질주 속도는 초록물약 미적용)
     const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
     const isBasketballShoes = !!(equippedShoes && (equippedShoes.item === 'equip_leather_shoes'));
-    const dashSpeed = (isBasketballShoes ? 4.75 : 4.37) * speedBuffMult;
-    this.player.speed = (isDashing ? dashSpeed : 3.8) * runnerMult;
+    const dashSpeed = (isBasketballShoes ? 4.75 : 4.37) * runnerMult;
+    this.player.speed = isDashing ? dashSpeed : baseWalkSpeed;
   }
 
   // ========================================================
