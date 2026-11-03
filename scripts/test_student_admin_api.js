@@ -1,10 +1,12 @@
 const http = require('http');
+const { spawn } = require('child_process');
+const path = require('path');
 
 function postJson(urlPath, data) {
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify(data);
     const req = http.request({
-      hostname: 'localhost',
+      hostname: '127.0.0.1',
       port: 3000,
       path: urlPath,
       method: 'POST',
@@ -28,7 +30,7 @@ function postJson(urlPath, data) {
 
 function getJson(urlPath) {
   return new Promise((resolve, reject) => {
-    http.get(`http://localhost:3000${urlPath}`, res => {
+    http.get(`http://127.0.0.1:3000${urlPath}`, res => {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
@@ -40,7 +42,23 @@ function getJson(urlPath) {
 }
 
 async function runTests() {
-  console.log('🧪 [TEST 1] GET /api/admin/all-students-progress');
+  let serverProcess = null;
+  try {
+    await getJson('/');
+  } catch (e) {
+    console.log('[INFO] Starting ephemeral server for test_student_admin_api...');
+    serverProcess = spawn(process.execPath, ['server.js'], { cwd: path.join(__dirname, '..'), stdio: 'ignore' });
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 250));
+      try {
+        await getJson('/');
+        break;
+      } catch (err) {}
+    }
+  }
+
+  try {
+    console.log('🧪 [TEST 1] GET /api/admin/all-students-progress');
   const res1 = await getJson('/api/admin/all-students-progress');
   console.log('Result 1:', res1.status, Object.keys(res1.data.students || {}));
 
@@ -81,6 +99,11 @@ async function runTests() {
   }
 
   console.log('\n🎉 ALL TEACHER ADMIN STUDENT PROGRESS TESTS PASSED SUCCESSFULLY!');
+  } finally {
+    if (serverProcess) {
+      serverProcess.kill();
+    }
+  }
 }
 
 runTests().catch(err => {

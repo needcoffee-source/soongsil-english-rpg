@@ -1,0 +1,44 @@
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+const tests = [
+  'comprehensive_audit.js',
+  'deep_audit.js',
+  'debug_check.js',
+  'mock_runtime_test.js',
+  'test_all_features.js',
+  'test_all_new_features.js',
+  'test_easter_eggs.js',
+  'test_engine_runtime.js',
+  'test_joshua_quest.js',
+  'test_render_strict.js',
+  'test_student_admin_api.js',
+  'test_teacher_login.js'
+];
+
+console.log('==============================================');
+console.log('   RUNNING SUITE OF CODEBASE AUDITS & TESTS   ');
+console.log('==============================================');
+
+for (const t of tests) {
+  const fullPath = path.join(__dirname, t);
+  if (!fs.existsSync(fullPath)) {
+    console.log(`⚠️ ${t} does not exist, skipping`);
+    continue;
+  }
+  try {
+    const res = execSync(`"${process.execPath}" "${fullPath}"`, { encoding: 'utf8', stdio: 'pipe' });
+    const hasFail = res.includes('[FAIL]') || (res.includes('FAIL') && !res.includes('FAILED: 0'));
+    if (hasFail) {
+      console.log(`❌ ${t} FAILED:`);
+      console.log(res);
+    } else {
+      console.log(`✅ ${t} PASSED`);
+    }
+  } catch (err) {
+    console.log(`💥 ${t} EXCEPTION:`);
+    if (err.stdout) console.log(err.stdout.slice(0, 1000));
+    if (err.stderr) console.log(err.stderr.slice(0, 1000));
+  }
+}

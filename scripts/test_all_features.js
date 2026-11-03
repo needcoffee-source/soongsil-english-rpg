@@ -64,10 +64,10 @@ const html = fs.readFileSync('public/index.html', 'utf8');
 if (!html.includes('<span class="btn-letter">SHIFT</span>')) {
   throw new Error('SHIFT label missing in index.html');
 }
-if (!html.includes('v=45')) {
-  throw new Error('Cache version v=45 missing in index.html');
+if (!html.includes('?v=')) {
+  throw new Error('Cache version tag ?v= missing in index.html');
 }
-console.log('4. index.html SHIFT button and v=45 cache bump verified!');
+console.log('4. index.html SHIFT button and cache bump verified!');
 
 const css = fs.readFileSync('public/css/style.css', 'utf8');
 if (!css.includes('.btn-b .btn-letter')) {

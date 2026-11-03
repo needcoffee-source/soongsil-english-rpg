@@ -30,6 +30,8 @@ const mockCtx = {
   clearRect: () => {},
   createLinearGradient: () => ({ addColorStop: () => {} }),
   createRadialGradient: () => ({ addColorStop: () => {} }),
+  setLineDash: () => {},
+  getLineDash: () => [],
   fillStyle: '',
   strokeStyle: '',
   lineWidth: 1,
@@ -77,7 +79,7 @@ vm.runInNewContext(worldCode, sandbox);
 
 // Load engine.js
 const engineCode = fs.readFileSync('public/js/engine.js', 'utf8');
-vm.runInNewContext(engineCode, sandbox);
+vm.runInNewContext(engineCode + '\nglobalThis.GameEngine = GameEngine;\nwindow.GameEngine = GameEngine;', sandbox);
 
 const engine = new (sandbox.window.GameEngine || sandbox.GameEngine)(mockCanvas);
 
@@ -133,17 +135,17 @@ console.log('✅ Room 706 update & render succeeded without error!');
 console.log('--- Testing Locked Doors in Hallway ---');
 engine.player.room = 'hallway';
 engine.player.floor = 7;
-// Test door proximity for room 704 (doorX: 37, doorY: 5)
-engine.player.x = 37 * 32;
+// Test door proximity for room 706 (doorX: 49, doorY: 5)
+engine.player.x = 49 * 32;
 engine.player.y = 6 * 32;
 engine.update();
 if (!engine.activeInteractable || engine.activeInteractable.type !== 'locked_door') {
-  throw new Error('Expected activeInteractable to be locked_door at Class 4 door!');
+  throw new Error('Expected activeInteractable to be locked_door at Class 6 door!');
 }
-console.log('✅ Class 4 door interactable detected:', engine.activeInteractable.name);
+console.log('✅ Class 6 door interactable detected:', engine.activeInteractable.name);
 
-// Test student stepping on locked door (doorX: 37, doorY: 5)
-engine.player.x = 37 * 32;
+// Test student stepping on locked door (doorX: 49, doorY: 5)
+engine.player.x = 49 * 32;
 engine.player.y = 5 * 32;
 let lockedCallbackCalled = false;
 engine.onLockedDoorCallback = (r) => {
@@ -156,11 +158,11 @@ if (!lockedCallbackCalled) {
 if (engine.player.room !== 'hallway') {
   throw new Error('Student should be blocked from entering locked room!');
 }
-console.log('✅ Student blocked from entering Class 4 door!');
+console.log('✅ Student blocked from entering Class 6 door!');
 
 // Test teacher stepping on locked door
 engine.player.isTeacher = true;
-engine.player.x = 37 * 32;
+engine.player.x = 49 * 32;
 engine.player.y = 5 * 32;
 engine.checkWarps();
 console.log('✅ Teacher allowed through door into:', engine.player.room);

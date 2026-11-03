@@ -198,7 +198,7 @@ const http = require('http');
 
 function testEndpoint(pathUrl) {
   return new Promise((resolve) => {
-    http.get(`http://localhost:3000${pathUrl}`, (res) => {
+    http.get(`http://127.0.0.1:3000${pathUrl}`, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
@@ -211,6 +211,21 @@ function testEndpoint(pathUrl) {
 }
 
 (async () => {
+  let serverProcess = null;
+  // Test if port 3000 is already running
+  const firstProbe = await testEndpoint('/');
+  if (firstProbe.error) {
+    console.log('  [INFO] Starting ephemeral server.js on port 3000 for endpoint testing...');
+    const { spawn } = require('child_process');
+    serverProcess = spawn(process.execPath, ['server.js'], { cwd: path.join(__dirname, '..'), stdio: 'ignore' });
+    // Wait for server to start
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 250));
+      const probe = await testEndpoint('/');
+      if (!probe.error) break;
+    }
+  }
+
   const endpoints = [
     { url: '/', expectStatus: 200 },
     { url: '/api/quiz?grade=1', expectStatus: 200 },
@@ -226,6 +241,10 @@ function testEndpoint(pathUrl) {
       console.error(`  [FAIL] ${ep.url} -> ${res.error || 'HTTP ' + res.status}`);
       pass = false;
     }
+  }
+
+  if (serverProcess) {
+    serverProcess.kill();
   }
 
   console.log(`\n========================================================`);
