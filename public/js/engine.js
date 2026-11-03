@@ -9898,7 +9898,7 @@ class GameEngine {
     ctx.fill();
   }
 
-  drawStaffOfficeChair(cx, cy, facing) {
+  drawStaffOfficeChair(cx, cy, facing, customSeatColor, customBorderColor) {
     const ctx = this.ctx;
     ctx.save();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
@@ -9906,11 +9906,11 @@ class GameEngine {
     ctx.arc(cx + 1, cy + 2, 11, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = customSeatColor || '#1e293b';
     ctx.beginPath();
     ctx.arc(cx, cy, 10, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#64748b';
+    ctx.strokeStyle = customBorderColor || '#64748b';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
@@ -9931,9 +9931,15 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
 
+    const isCreatorDesk = (label === '29');
+
     // 1. 의자 (책상 바깥쪽)
     if (facing === 'right') {
-      this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
+      if (isCreatorDesk) {
+        this.drawStaffOfficeChair(px - 10, py + h / 2, 'right', '#1e1b4b', '#fbbf24');
+      } else {
+        this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
+      }
     } else if (facing === 'left') {
       this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left');
     } else if (facing === 'down') {
@@ -9945,59 +9951,148 @@ class GameEngine {
     // 2. 책상 상판
     ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
     ctx.fillRect(px + 3, py + 4, w, h);
-    ctx.fillStyle = '#d97706';
-    ctx.fillRect(px, py, w, h);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(px + 2, py + 2, w - 4, h - 4);
-    ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(px + 0.5, py + 0.5, w - 1, h - 1);
 
-    // 3. 모니터 & 서류
-    ctx.fillStyle = '#1e293b';
-    if (facing === 'right') {
-      ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
+    if (isCreatorDesk) {
+      // 제작자 갓준철 연구석: 딥 체리월넛 & 골드 테두리 및 부드러운 오라
+      ctx.fillStyle = '#7c2d12';
+      ctx.fillRect(px, py, w, h);
+      ctx.fillStyle = '#9a3412';
+      ctx.fillRect(px + 2, py + 2, w - 4, h - 4);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px + 0.5, py + 0.5, w - 1, h - 1);
+
+      const aura = 0.12 + 0.08 * Math.sin(Date.now() / 280);
+      ctx.fillStyle = `rgba(251, 191, 36, ${aura})`;
+      ctx.fillRect(px - 2, py - 2, w + 4, h + 4);
+    } else {
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(px, py, w, h);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(px + 2, py + 2, w - 4, h - 4);
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(px + 0.5, py + 0.5, w - 1, h - 1);
+    }
+
+    // 3. 모니터 & 서류 & 소품
+    if (isCreatorDesk) {
+      // 3-A. 듀얼 모니터 (메인 가로 모니터 + 상단 피벗 모니터)
+      // 메인 모니터 (IDE 코딩 화면)
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(px + w - 14, py + 18, 10, 28);
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(px + w - 16, py + 20, 3, 24);
+      // IDE 코드 라인들
+      ctx.fillStyle = '#38bdf8'; // cyan code
+      ctx.fillRect(px + w - 15, py + 22, 2, 4);
+      ctx.fillStyle = '#4ade80'; // green code
+      ctx.fillRect(px + w - 15, py + 28, 2, 5);
+      ctx.fillStyle = '#fde047'; // yellow code
+      ctx.fillRect(px + w - 15, py + 35, 2, 4);
+      // 깜빡이는 에디터 커서
+      if (Math.floor(Date.now() / 350) % 2 === 0) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px + w - 15, py + 41, 2, 2);
+      }
+
+      // 피벗 세로 모니터 (상단)
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(px + w - 14, py + 4, 10, 11);
+      ctx.fillStyle = '#022c22';
+      ctx.fillRect(px + w - 15, py + 5, 2, 9);
+      ctx.fillStyle = '#22c55e'; // 터미널 그린 코드
+      ctx.fillRect(px + w - 15, py + 6, 2, 2);
+      ctx.fillRect(px + w - 15, py + 9, 2, 3);
+
+      // 3-B. 기계식 키보드 & 마우스패드 (LED 발광)
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(px + 22, py + 22, 16, 20); // 마우스패드
+      ctx.fillStyle = '#0ea5e9';
+      ctx.fillRect(px + 24, py + 24, 12, 16); // LED 키보드
       ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(px + 8, py + 8, 14, 12);
-    } else if (facing === 'left') {
-      ctx.fillRect(px + 6, py + h / 2 - 12, 8, 24);
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(px + 14, py + h / 2 - 10, 2, 20);
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(px + w - 22, py + 8, 14, 12);
-    } else if (facing === 'down') {
-      ctx.fillRect(px + w / 2 - 14, py + h - 12, 28, 7);
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(px + w / 2 - 12, py + h - 14, 24, 2);
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(px + 10, py + 6, 16, 12);
-    } else if (facing === 'up') {
-      ctx.fillRect(px + w / 2 - 14, py + 5, 28, 7);
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(px + w / 2 - 12, py + 12, 24, 2);
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(px + w - 28, py + h - 18, 16, 12);
+      ctx.fillRect(px + 26, py + 26, 8, 12);
+
+      // 3-C. 노란 포스트잇 메모지 더미 & 펜
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(px + 6, py + 6, 12, 11);
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(px + 7, py + 7, 10, 2);
+      ctx.fillRect(px + 7, py + 10, 8, 1);
+      ctx.fillStyle = '#2563eb'; // 블루 펜
+      ctx.fillRect(px + 17, py + 7, 3, 10);
+
+      // 3-D. 식지 않는 커피 텀블러 (따뜻한 김 모락모락 애니메이션)
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(px + 7, py + h - 18, 10, 12);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(px + 6, py + h - 20, 12, 2); // 뚜껑
+      const steamY = (Date.now() / 250) % 6;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.fillRect(px + 10, py + h - 22 - steamY, 2, 2);
+      ctx.fillRect(px + 12, py + h - 24 - ((steamY + 2) % 6), 2, 2);
+    } else {
+      ctx.fillStyle = '#1e293b';
+      if (facing === 'right') {
+        ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(px + 8, py + 8, 14, 12);
+      } else if (facing === 'left') {
+        ctx.fillRect(px + 6, py + h / 2 - 12, 8, 24);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px + 14, py + h / 2 - 10, 2, 20);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(px + w - 22, py + 8, 14, 12);
+      } else if (facing === 'down') {
+        ctx.fillRect(px + w / 2 - 14, py + h - 12, 28, 7);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px + w / 2 - 12, py + h - 14, 24, 2);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(px + 10, py + 6, 16, 12);
+      } else if (facing === 'up') {
+        ctx.fillRect(px + w / 2 - 14, py + 5, 28, 7);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(px + w / 2 - 12, py + 12, 24, 2);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(px + w - 28, py + h - 18, 16, 12);
+      }
     }
 
     // 4. 좌석 번호 배지
     const cx = px + w / 2;
     const cy = py + h / 2;
-    ctx.font = 'bold 12px "Pretendard", "Noto Sans KR", sans-serif';
-    const tw = Math.max(34, ctx.measureText(label).width + 14);
-    const th = 20;
+    if (isCreatorDesk) {
+      // 👑 29 갓준철 골드 명패
+      ctx.font = 'bold 10px "Pretendard", "Noto Sans KR", sans-serif';
+      const tw = Math.max(54, ctx.measureText('👑 29 갓준철').width + 10);
+      const th = 18;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+      ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+      ctx.strokeStyle = '#eab308';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+      ctx.fillStyle = '#fef08a';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('👑 29 갓준철', cx, cy + 0.5);
+    } else {
+      ctx.font = 'bold 12px "Pretendard", "Noto Sans KR", sans-serif';
+      const tw = Math.max(34, ctx.measureText(label).width + 14);
+      const th = 20;
 
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-    ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+      ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
 
-    ctx.fillStyle = '#fef08a';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, cx, cy + 0.5);
+      ctx.fillStyle = '#fef08a';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, cx, cy + 0.5);
+    }
 
     ctx.restore();
   }

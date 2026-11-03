@@ -908,6 +908,7 @@ class MainApp {
       titles: [],
       equippedTitle: null,
       quests: {},
+      juncheolGuestbookNote: '',
       inventory: []
     };
 
@@ -1402,6 +1403,8 @@ class MainApp {
       this.handleDevNote3Interaction();
     } else if (target.type === 'quest_memo') {
       this.handleQuestMemoPickup(target.data || target);
+    } else if (target.type === 'desk_juncheol') {
+      this.handleJuncheolDeskInteraction();
     }
   }
 
@@ -7527,7 +7530,188 @@ class MainApp {
     }
   }
 
-  // 📜 진로실 떨어진 개발자노트 이스터에그 (제2편)
+  
+  // =========================================================================
+  // 👑 6층 교무실 갓준철 선생님 연구 책상 (29번 좌석) 인터랙션 시스템
+  // =========================================================================
+  handleJuncheolDeskInteraction() {
+    const modal = document.getElementById('modal-juncheol-desk');
+    if (!modal) return;
+
+    if (!this._juncheolDeskModalInitialized) {
+      this._juncheolDeskModalInitialized = true;
+
+      // 닫기 버튼들
+      const btnCloseX = document.getElementById('btn-close-juncheol-desk-x');
+      if (btnCloseX) btnCloseX.addEventListener('click', () => this.closeJuncheolDeskModal());
+
+      const btnCloseBottom = document.getElementById('btn-close-juncheol-desk-bottom');
+      if (btnCloseBottom) btnCloseBottom.addEventListener('click', () => this.closeJuncheolDeskModal());
+
+      const btnCloseGuestBottom = document.getElementById('btn-close-juncheol-guestbook-bottom');
+      if (btnCloseGuestBottom) btnCloseGuestBottom.addEventListener('click', () => this.closeJuncheolDeskModal());
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeJuncheolDeskModal();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          this.closeJuncheolDeskModal();
+        }
+      });
+
+      // 탭 전환 (둘러보기 vs 방명록 남기기)
+      const tabInspect = document.getElementById('btn-tab-juncheol-inspect');
+      if (tabInspect) tabInspect.addEventListener('click', () => this.switchJuncheolDeskTab('inspect'));
+
+      const tabGuestbook = document.getElementById('btn-tab-juncheol-guestbook');
+      if (tabGuestbook) tabGuestbook.addEventListener('click', () => this.switchJuncheolDeskTab('guestbook'));
+
+      const btnGotoGuestbook = document.getElementById('btn-goto-guestbook-from-inspect');
+      if (btnGotoGuestbook) btnGotoGuestbook.addEventListener('click', () => this.switchJuncheolDeskTab('guestbook'));
+
+      const btnGotoInspect = document.getElementById('btn-goto-inspect-from-guestbook');
+      if (btnGotoInspect) btnGotoInspect.addEventListener('click', () => this.switchJuncheolDeskTab('inspect'));
+
+      // 추천 응원 쪽지 버튼 클릭
+      const presetButtons = modal.querySelectorAll('.btn-preset-note');
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const note = btn.getAttribute('data-note');
+          if (note) this.saveJuncheolGuestbookNote(note);
+        });
+      });
+
+      // 직접 응원 메시지 적기
+      const btnSubmitCustom = document.getElementById('btn-submit-juncheol-custom-note');
+      const inputCustom = document.getElementById('input-juncheol-custom-note');
+      if (btnSubmitCustom && inputCustom) {
+        btnSubmitCustom.addEventListener('click', () => {
+          const text = inputCustom.value.trim();
+          if (!text) {
+            this.showToast('메시지를 입력해주세요!', 'warning');
+            return;
+          }
+          this.saveJuncheolGuestbookNote(text);
+          inputCustom.value = '';
+        });
+        inputCustom.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            btnSubmitCustom.click();
+          }
+        });
+      }
+    }
+
+    // UI에 현재 남겨둔 쪽지 반영
+    this.refreshJuncheolDeskNoteDisplay();
+
+    // 기본 둘러보기 탭으로 오픈
+    this.switchJuncheolDeskTab('inspect');
+
+    modal.classList.remove('hidden');
+
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+  }
+
+  closeJuncheolDeskModal() {
+    const modal = document.getElementById('modal-juncheol-desk');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  switchJuncheolDeskTab(tab) {
+    const viewInspect = document.getElementById('juncheol-desk-view-inspect');
+    const viewGuestbook = document.getElementById('juncheol-desk-view-guestbook');
+    const tabInspect = document.getElementById('btn-tab-juncheol-inspect');
+    const tabGuestbook = document.getElementById('btn-tab-juncheol-guestbook');
+
+    if (tab === 'guestbook') {
+      if (viewInspect) viewInspect.style.display = 'none';
+      if (viewGuestbook) viewGuestbook.style.display = 'block';
+
+      if (tabGuestbook) {
+        tabGuestbook.style.background = 'linear-gradient(135deg, #b45309, #d97706)';
+        tabGuestbook.style.color = '#ffffff';
+        tabGuestbook.style.borderColor = '#f59e0b';
+      }
+      if (tabInspect) {
+        tabInspect.style.background = '#1e293b';
+        tabInspect.style.color = '#94a3b8';
+        tabInspect.style.borderColor = '#475569';
+      }
+    } else {
+      if (viewInspect) viewInspect.style.display = 'block';
+      if (viewGuestbook) viewGuestbook.style.display = 'none';
+
+      if (tabInspect) {
+        tabInspect.style.background = 'linear-gradient(135deg, #b45309, #d97706)';
+        tabInspect.style.color = '#ffffff';
+        tabInspect.style.borderColor = '#f59e0b';
+      }
+      if (tabGuestbook) {
+        tabGuestbook.style.background = '#1e293b';
+        tabGuestbook.style.color = '#94a3b8';
+        tabGuestbook.style.borderColor = '#475569';
+      }
+    }
+
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+  }
+
+  refreshJuncheolDeskNoteDisplay() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    let currentNote = (this.playerData && this.playerData.juncheolGuestbookNote) || '';
+    if (!currentNote && studentId) {
+      try {
+        currentNote = localStorage.getItem('soongsil_juncheol_guestbook_' + studentId) || '';
+      } catch (e) {}
+    }
+
+    const inspectContainer = document.getElementById('juncheol-inspect-current-note-container');
+    const inspectText = document.getElementById('juncheol-inspect-current-note-text');
+    const guestbookText = document.getElementById('juncheol-guestbook-my-note-text');
+
+    if (currentNote) {
+      if (inspectContainer) inspectContainer.style.display = 'block';
+      if (inspectText) inspectText.innerText = '"' + currentNote + '"';
+      if (guestbookText) guestbookText.innerText = '"' + currentNote + '"';
+    } else {
+      if (inspectContainer) inspectContainer.style.display = 'none';
+      if (guestbookText) guestbookText.innerText = '아직 남긴 쪽지가 없습니다. 아래에서 쪽지를 골라보세요!';
+    }
+  }
+
+  saveJuncheolGuestbookNote(noteText) {
+    if (!this.playerData) return;
+    const cleanNote = (noteText || '').trim();
+    if (!cleanNote) return;
+
+    const studentId = this.playerData.studentId || 'default';
+    this.playerData.juncheolGuestbookNote = cleanNote;
+
+    try {
+      localStorage.setItem('soongsil_juncheol_guestbook_' + studentId, cleanNote);
+    } catch (e) {}
+
+    this.saveProgress();
+    this.refreshJuncheolDeskNoteDisplay();
+
+    if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+      window.AudioManager.playFanfare();
+    } else if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('💖 갓준철 선생님 책상에 [' + cleanNote + '] 쪽지를 살포시 붙였습니다!', 'success');
+  }
+
+// 📜 진로실 떨어진 개발자노트 이스터에그 (제2편)
   handleDevNote2Interaction() {
     const studentId = (this.playerData && this.playerData.studentId) || 'default';
     const noteKey = 'soongsil_dev_note_2_' + studentId;

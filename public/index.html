@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=137">
+  <link rel="manifest" href="/manifest.json?v=138">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=137">
+  <link rel="stylesheet" href="css/style.css?v=138">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -790,6 +790,166 @@
         <!-- Action Buttons -->
         <div id="quest-actions-container" style="display: flex; gap: 10px; justify-content: flex-end;">
           <!-- Accept / Reject / Close / Complete buttons -->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 4-H2. Modal: 갓준철 선생님의 연구 책상 (29번) 상호작용 모달 -->
+  <div id="modal-juncheol-desk" class="modal-overlay hidden" style="z-index: 135;">
+    <div class="modal-card" style="max-width: 560px; width: 95%; background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%); border: 3px solid #f59e0b; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 25px rgba(245, 158, 11, 0.25); overflow: hidden; font-family: 'Pretendard', sans-serif; color: #f8fafc;">
+
+      <!-- Top Header -->
+      <div style="background: linear-gradient(135deg, #78350f, #b45309, #78350f); color: #fef08a; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f59e0b;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 22px;">👑</span>
+          <div style="font-size: 16px; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">갓준철 선생님의 연구 책상 (29번)</div>
+        </div>
+        <button class="btn-modal-close" id="btn-close-juncheol-desk-x" style="color: #fef08a; font-size: 20px; background: transparent; border: none; cursor: pointer; padding: 2px 6px;">✕</button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px 18px; max-height: 80vh; overflow-y: auto;">
+
+        <!-- Desk Profile Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(30, 41, 59, 0.85); border: 1.5px solid #d97706; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 30px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; background: #fef08a; border: 2px solid #b45309; border-radius: 50%;">👑</div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 11px; font-weight: 800; background: #b45309; color: #fef08a; padding: 2px 8px; border-radius: 12px;">29번 좌석</span>
+                <span style="font-size: 11px; font-weight: 800; background: #1e3a8a; color: #93c5fd; padding: 2px 8px; border-radius: 12px;">제작자의 연구석</span>
+              </div>
+              <div style="font-size: 16px; font-weight: 900; color: #fef08a; margin-top: 2px;">갓준철 선생님의 책상</div>
+            </div>
+          </div>
+          <div style="font-size: 11px; font-weight: 700; color: #cbd5e1; background: rgba(15, 23, 42, 0.8); border: 1px solid #64748b; border-radius: 8px; padding: 4px 10px; text-align: right;">
+            ☕ 따뜻한 온기 머무는 곳
+          </div>
+        </div>
+
+        <!-- Mode Selection Tabs (둘러보기 vs 방명록 남기기) -->
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+          <button id="btn-tab-juncheol-inspect" style="flex: 1; padding: 10px 0; border-radius: 10px; font-size: 13.5px; font-weight: 800; cursor: pointer; border: 2px solid #f59e0b; background: linear-gradient(135deg, #b45309, #d97706); color: #fff; transition: all 0.2s;">
+            🔍 [5] 책상 둘러보기
+          </button>
+          <button id="btn-tab-juncheol-guestbook" style="flex: 1; padding: 10px 0; border-radius: 10px; font-size: 13.5px; font-weight: 800; cursor: pointer; border: 2px solid #475569; background: #1e293b; color: #94a3b8; transition: all 0.2s;">
+            📝 [4] 방명록 쪽지 남기기
+          </button>
+        </div>
+
+        <!-- View 1: 책상 둘러보기 (Idea 5) -->
+        <div id="juncheol-desk-view-inspect">
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #334155; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; line-height: 1.7; font-size: 13px; color: #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 900; color: #fef08a; margin-bottom: 10px; border-bottom: 1px dashed #475569; padding-bottom: 6px;">
+              <span>☕</span> 식지 않는 텀블러와 정갈한 개발 연구석
+            </div>
+            
+            <p style="margin: 0 0 10px 0;">
+              정갈하게 정돈된 갓준철 선생님의 29번 교무실 연구 책상입니다.
+            </p>
+            
+            <div style="background: rgba(30, 41, 59, 0.6); border-left: 3px solid #38bdf8; padding: 8px 12px; margin-bottom: 10px; border-radius: 4px;">
+              <div style="font-weight: 800; color: #38bdf8; margin-bottom: 2px;">🖥️ 듀얼 모니터의 게임 소스코드</div>
+              <div style="font-size: 12px; color: #94a3b8;">
+                화면에 VS Code 창이 환하게 켜져 있습니다.<br>
+                <code style="color: #4ade80; background: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 11px;">// 숭실 학생들이 영어를 두려워하지 않고 활짝 웃을 수 있도록...</code><br>
+                아이들을 위해 밤새 버그를 잡고 다듬은 따스한 코드들이 조용히 깜빡입니다.
+              </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.6); border-left: 3px solid #f59e0b; padding: 8px 12px; margin-bottom: 10px; border-radius: 4px;">
+              <div style="font-weight: 800; color: #f59e0b; margin-bottom: 2px;">☕ 식지 않는 따뜻한 커피 텀블러</div>
+              <div style="font-size: 12px; color: #94a3b8;">
+                이른 아침 내린 원두의 깊은 향기가 은은하게 피어오릅니다.<br>
+                항상 학생들을 반갑게 맞이할 준비가 된 듯 따스한 온기가 감돕니다.
+              </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.6); border-left: 3px solid #ec4899; padding: 8px 12px; margin-bottom: 10px; border-radius: 4px;">
+              <div style="font-weight: 800; color: #f472b6; margin-bottom: 2px;">🍬 학생들이 건네고 간 사탕과 응원 쪽지</div>
+              <div style="font-size: 12px; color: #94a3b8;">
+                책상 한구석에는 쉬는 시간 아이들이 살며시 건네고 간 달콤한 사탕과 비뚤배뚤 적힌 응원 포스트잇들이 소중한 보물처럼 가지런히 간직되어 있습니다.
+              </div>
+            </div>
+
+            <div id="juncheol-inspect-current-note-container" style="display: none; background: #fef08a; color: #78350f; border: 2px dashed #b45309; border-radius: 8px; padding: 8px 12px; font-weight: 700; font-size: 12px; margin-top: 10px;">
+              📌 내가 남겨둔 쪽지: <span id="juncheol-inspect-current-note-text">""</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button id="btn-goto-guestbook-from-inspect" style="padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; border: none; background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; cursor: pointer;">
+              📝 선생님께 응원 쪽지 남기기 ➔
+            </button>
+            <button id="btn-close-juncheol-desk-bottom" style="padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: 1px solid #64748b; background: #334155; color: #e2e8f0; cursor: pointer;">
+              닫기
+            </button>
+          </div>
+        </div>
+
+        <!-- View 2: 방명록 남기기 (Idea 4) -->
+        <div id="juncheol-desk-view-guestbook" style="display: none;">
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #334155; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;">
+            <div style="font-size: 13.5px; font-weight: 800; color: #fef08a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span>📝</span> 선생님 책상 위 노란 포스트잇에 응원 쪽지 붙이기
+            </div>
+            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
+              선생님께 전하고 싶은 메시지를 선택하거나 직접 적어보세요! 언제든 자유롭게 바꿀 수 있습니다.
+            </div>
+
+            <!-- Current Attached Note Display -->
+            <div id="juncheol-guestbook-my-note-box" style="background: linear-gradient(135deg, #fef9c3, #fef08a); border: 2px solid #ca8a04; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; color: #854d0e; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #a16207; margin-bottom: 4px;">
+                📌 현재 내가 붙여둔 포스트잇
+              </div>
+              <div id="juncheol-guestbook-my-note-text" style="font-size: 14px; font-weight: 900; color: #713f12;">
+                아직 남긴 쪽지가 없습니다. 아래에서 쪽지를 골라보세요!
+              </div>
+            </div>
+
+            <!-- Quick Preset Notes -->
+            <div style="font-size: 12px; font-weight: 800; color: #cbd5e1; margin-bottom: 8px;">
+              ⭐ 한 번의 터치로 붙이는 추천 응원 쪽지
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
+              <button class="btn-preset-note" data-note="🎮 선생님! 숭실 RPG 너무 재밌어요!" style="text-align: left; padding: 8px 12px; background: #1e293b; border: 1.5px solid #475569; border-radius: 8px; color: #f8fafc; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                🎮 선생님! 숭실 RPG 너무 재밌어요!
+              </button>
+              <button class="btn-preset-note" data-note="☕ 선생님, 따뜻한 커피 한 잔 드시고 힘내세요!" style="text-align: left; padding: 8px 12px; background: #1e293b; border: 1.5px solid #475569; border-radius: 8px; color: #f8fafc; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                ☕ 선생님, 따뜻한 커피 한 잔 드시고 힘내세요!
+              </button>
+              <button class="btn-preset-note" data-note="✨ 오늘 영어 수업 정말 최고였습니다!" style="text-align: left; padding: 8px 12px; background: #1e293b; border: 1.5px solid #475569; border-radius: 8px; color: #f8fafc; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                ✨ 오늘 영어 수업 정말 최고였습니다!
+              </button>
+              <button class="btn-preset-note" data-note="💖 숭실의 밤을 밝혀주셔서 감사합니다!" style="text-align: left; padding: 8px 12px; background: #1e293b; border: 1.5px solid #475569; border-radius: 8px; color: #f8fafc; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                💖 숭실의 밤을 밝혀주셔서 감사합니다!
+              </button>
+              <button class="btn-preset-note" data-note="🏃‍♂️ 오늘은 야근하지 마시고 정시 칼퇴하세요~!" style="text-align: left; padding: 8px 12px; background: #1e293b; border: 1.5px solid #475569; border-radius: 8px; color: #f8fafc; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                🏃‍♂️ 오늘은 야근하지 마시고 정시 칼퇴하세요~!
+              </button>
+            </div>
+
+            <!-- Custom Input Box -->
+            <div style="font-size: 12px; font-weight: 800; color: #cbd5e1; margin-bottom: 6px;">
+              ✏️ 직접 한 줄 응원 메시지 적기
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input id="input-juncheol-custom-note" type="text" maxlength="35" placeholder="선생님께 남길 따뜻한 한마디 (최대 35자)..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #64748b; background: #0f172a; color: #fff; font-size: 12px;">
+              <button id="btn-submit-juncheol-custom-note" style="padding: 8px 14px; border-radius: 8px; border: none; background: #f59e0b; color: #000; font-weight: 900; font-size: 12px; cursor: pointer;">
+                붙이기 📌
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button id="btn-goto-inspect-from-guestbook" style="padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; border: none; background: #334155; color: #e2e8f0; cursor: pointer;">
+              🔍 책상 둘러보기
+            </button>
+            <button id="btn-close-juncheol-guestbook-bottom" style="padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; border: 1px solid #64748b; background: #1e293b; color: #94a3b8; cursor: pointer;">
+              닫기
+            </button>
+          </div>
         </div>
 
       </div>
@@ -1931,18 +2091,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=137"></script>
-  <script src="js/dialog.js?v=137"></script>
+  <script src="js/audio.js?v=138"></script>
+  <script src="js/dialog.js?v=138"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=137"></script>
-  <script src="js/engine.js?v=137"></script>
-  <script src="js/quiz.js?v=137"></script>
-  <script src="js/crafting.js?v=137"></script>
-  <script src="js/network.js?v=137"></script>
-  <script src="js/acid_rain.js?v=137"></script>
-  <script src="js/brawl_ball.js?v=137"></script>
-  <script src="js/main.js?v=137"></script>
+  <script src="js/world.js?v=138"></script>
+  <script src="js/engine.js?v=138"></script>
+  <script src="js/quiz.js?v=138"></script>
+  <script src="js/crafting.js?v=138"></script>
+  <script src="js/network.js?v=138"></script>
+  <script src="js/acid_rain.js?v=138"></script>
+  <script src="js/brawl_ball.js?v=138"></script>
+  <script src="js/main.js?v=138"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
