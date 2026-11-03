@@ -523,7 +523,8 @@ const ALL_GAME_ITEMS = {
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
-  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } }
+  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
+  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } }
 
 };
 
@@ -841,6 +842,56 @@ const QUEST_DEFINITIONS = {
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' },
       { type: 'item', itemKey: 'item_teleport_scroll', itemName: '순간이동 주문서', count: 1, icon: '📜', label: '📜 순간이동 주문서 x1' }
+    ]
+  },
+  'quest_okchohan_social': {
+    id: 'quest_okchohan_social',
+    teacherId: 'npc_teacher_okchohan',
+    teacherName: '옥촣한 선생님',
+    teacherRole: '사회',
+    teacherSeat: '10번',
+    teacherAvatar: '👨‍🏫',
+    category: '🏛️ 사회 탐구 퀘스트 (Social Studies Quest)',
+    title: '[사회] 옥촣한 선생님의 특별 과제: 숭실 사회 탐구',
+    cleanupItem: 'item_okchohan_textbook',
+    story: `반갑다! 숭실중학교에서 사회를 가르치는 옥촣한 선생님이란다. 👨‍🏫
+
+사회를 배운다는 것은 우리 사회의 역사와 민주주의의 가치를 가슴 깊이 이해하는 것이지!
+
+이번 사회 수업 연구 과제를 준비하던 중, 교무실 안쪽 인쇄기 근처에 내 [옥촣한의 사회 탐구 교재]를 두고 왔지 뭐니!
+
+교실 칠판에서 퀴즈 2문제를 멋지게 맞히고, 교무실 인쇄실 근처에 놓인 내 사회 교재를 찾아와 주겠니?
+
+과제를 성실히 마친 학생에게는 전설의 장비 제작 핵심 재료인 [청동 드래곤의 심장]을 선물로 주마!`,
+    inProgressStory: `어서 오렴! 아직 사회 탐구 과제가 완료되지 않았더구나!
+
+교실 칠판에서 퀴즈 2문제를 풀고, 교무실 안쪽 인쇄실 근처에 있는 내 사회 교재를 찾아오렴!`,
+    completeStory: `오, 훌륭하구나! 멋지게 과제를 완수했어! 👏
+
+덕분에 사회 탐구 교재도 무사히 되찾았고, 퀴즈도 멋지게 통과했더구나!
+
+약속했던 특별 보상으로 [청동 드래곤의 심장]을 수여하마! 앞으로도 숭실의 모범 시민으로 성장해주길 바란다!`,
+    doneStory: `자네 덕분에 이번 사회 수업 준비가 아주 순조롭단다.
+
+언제나 성실하게 활약하는 자네가 자랑스럽구나! 사회에 대해 궁금한 점이 있다면 언제든 10번 자리로 찾아오렴! 👍`,
+    objectives: [
+      {
+        id: 'quiz',
+        text: '교실 칠판에서 퀴즈 2회 정답 맞히기',
+        targetCount: 2,
+        getCount: (quest) => (quest ? (quest.quizCount || 0) : 0)
+      },
+      {
+        id: 'textbook',
+        text: '6층 교무실 인쇄실 근처에서 [옥촣한의 사회 탐구 교재] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.textbookCollected ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'item', itemKey: 'item_bronze_heart', itemName: '청동 드래곤의 심장', count: 1, icon: '🥉', meta: { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' }, label: '🥉 청동 드래곤의 심장 x1개' },
+      { type: 'gold', amount: 150, label: '🪙 150 G (골드)' },
+      { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' }
     ]
   }
 };
@@ -1390,6 +1441,8 @@ class MainApp {
       this.handleDevNote3Interaction();
     } else if (target.type === 'quest_memo') {
       this.handleQuestMemoPickup(target.data || target);
+    } else if (target.type === 'quest_okchohan_book') {
+      this.handleQuestSocialBookPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     }
@@ -8082,6 +8135,7 @@ class MainApp {
   getTeacherQuestStatus(id) {
     let questId = id;
     if (id === 'npc_teacher_joshua') questId = 'quest_joshua_intro';
+    if (id === 'npc_teacher_okchohan') questId = 'quest_okchohan_social';
     const qDef = QUEST_DEFINITIONS[questId];
     if (!qDef) return null;
 
@@ -8092,14 +8146,20 @@ class MainApp {
     if (quest.status === 'done') return 'done';
     if (quest.status === 'completed') return 'completed';
     if (quest.status === 'in_progress') {
-      const isQuizDone = (quest.quizCount || 0) >= 2;
-      const isMemoDone = !!quest.memoCollected;
-      if (isQuizDone && isMemoDone) {
+      const allDone = qDef.objectives.every(obj => obj.getCount(quest) >= obj.targetCount);
+      if (allDone) {
         return 'completed';
       }
       return 'in_progress';
     }
     return 'available';
+  }
+
+  isQuestSocialBookCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_okchohan_social'];
+    if (!q) return false;
+    return !!q.textbookCollected;
   }
 
   isQuestMemoCollected() {
@@ -8321,7 +8381,8 @@ class MainApp {
     const quest = this.playerData.quests && this.playerData.quests[questId];
     if (!quest || (quest.status !== 'in_progress' && quest.status !== 'completed')) return;
 
-    if ((quest.quizCount || 0) < 2 || !quest.memoCollected) {
+    const allDone = qDef.objectives.every(obj => obj.getCount(quest) >= obj.targetCount);
+    if (!allDone) {
       this.showToast('⚠️ 아직 의뢰 목표를 모두 달성하지 못했습니다!', 'warning');
       return;
     }
@@ -8329,18 +8390,23 @@ class MainApp {
     quest.status = 'done';
     quest.completedAt = Date.now();
 
-    // 1. Grant Rewards: 100G, 100EXP, Teleport Scroll x1
-    this.addGold(100);
-    this.addExp(100);
-    this.addItem('item_teleport_scroll', '순간이동 주문서', 1, '📜', {
-      type: 'consumable',
-      slot: 'consumable',
-      heal: 0,
-      effect: '사용 시 각 층 복도(7·6·5층) 및 운동장으로 즉시 순간이동'
-    });
+    // Grant configured rewards
+    if (Array.isArray(qDef.rewards)) {
+      qDef.rewards.forEach(r => {
+        if (r.type === 'gold') this.addGold(r.amount);
+        else if (r.type === 'exp') this.addExp(r.amount);
+        else if (r.type === 'item') {
+          this.addItem(r.itemKey, r.itemName, r.count || 1, r.icon || '📦', r.meta || { type: 'material' });
+        }
+      });
+    }
 
-    // 회수한 메모 제출
-    this.removeItem('item_joshua_memo', 1);
+    // Cleanup turn-in quest items
+    if (qDef.cleanupItem) {
+      this.removeItem(qDef.cleanupItem, 1);
+    } else if (questId === 'quest_joshua_intro') {
+      this.removeItem('item_joshua_memo', 1);
+    }
 
     this.recalcCombatStats();
     this.updatePlayerNameDisplay();
@@ -8352,8 +8418,44 @@ class MainApp {
     if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
       window.AudioManager.playFanfare();
     }
+    this.showToast(`🎉 [${qDef.title}] 완료! 특별 보상을 획득했습니다!`, 'success');
+  }
 
-    this.showToast('🎉 [퀘스트 완수] Joshua 선생님의 특별 지령 완료! (100G, 100 EXP, 순간이동 주문서 획득!)', 'success');
+  handleQuestSocialBookPickup(itemData) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests['quest_okchohan_social'];
+    if (!quest || quest.status !== 'in_progress') {
+      alert('📘 [바닥에 놓인 사회 탐구 교재]\n\n"교무실 10번 좌석에 앉아 계신 사회 옥촣한 선생님의 사회 탐구 교재 같습니다.\n\n먼저 교무실 10번 좌석의 옥촣한 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      return;
+    }
+
+    if (quest.textbookCollected) {
+      this.showToast('이미 사회 교재를 회수했습니다.', 'info');
+      return;
+    }
+
+    quest.textbookCollected = true;
+    this.addItem('item_okchohan_textbook', '옥촣한의 사회 탐구 교재', 1, '📘', {
+      type: 'quest',
+      effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재'
+    });
+    this.saveProgress();
+    this.updateQuestTracker();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('📘 교무실 인쇄실 근처에서 [옥촣한의 사회 탐구 교재]를 회수했습니다!', 'success');
+
+    if ((quest.quizCount || 0) >= 2) {
+      setTimeout(() => {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 10번 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+      }, 500);
+    }
   }
 
   handleQuestMemoPickup(itemData) {
@@ -8395,24 +8497,44 @@ class MainApp {
 
   onQuizSolved(sourceType, room) {
     if (!this.playerData || !this.playerData.quests) return;
-    const quest = this.playerData.quests['quest_joshua_intro'];
-    if (!quest || quest.status !== 'in_progress') return;
 
-    // Check if solved in 1학년 1반 (room_701)
-    if (room === 'room_701') {
-      const prevCount = quest.quizCount || 0;
+    // 1. Joshua 퀘스트 진행도 체크 (1-1 교실)
+    const questJoshua = this.playerData.quests['quest_joshua_intro'];
+    if (questJoshua && questJoshua.status === 'in_progress' && room === 'room_701') {
+      const prevCount = questJoshua.quizCount || 0;
       if (prevCount < 2) {
-        quest.quizCount = prevCount + 1;
+        questJoshua.quizCount = prevCount + 1;
         this.saveProgress();
         this.updateQuestTracker();
-        this.showToast(`📜 [Joshua의 특별 지령] 1학년 1반 영어 퀴즈 완수! (${quest.quizCount}/2)`, 'info');
+        this.showToast(`📜 [Joshua의 특별 지령] 1학년 1반 영어 퀴즈 완수! (${questJoshua.quizCount}/2)`, 'info');
 
-        if (quest.quizCount >= 2 && quest.memoCollected) {
+        if (questJoshua.quizCount >= 2 && questJoshua.memoCollected) {
           setTimeout(() => {
             if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
               window.AudioManager.playFanfare();
             }
             this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 3번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+          }, 600);
+        }
+      }
+    }
+
+    // 2. 옥촣한 선생님 퀘스트 진행도 체크 (모든 교실 칠판 퀴즈)
+    const questOkchohan = this.playerData.quests['quest_okchohan_social'];
+    if (questOkchohan && questOkchohan.status === 'in_progress') {
+      const prevCount = questOkchohan.quizCount || 0;
+      if (prevCount < 2) {
+        questOkchohan.quizCount = prevCount + 1;
+        this.saveProgress();
+        this.updateQuestTracker();
+        this.showToast(`🏛️ [옥촣한 선생님의 사회 과제] 교실 칠판 퀴즈 완료! (${questOkchohan.quizCount}/2)`, 'info');
+
+        if (questOkchohan.quizCount >= 2 && questOkchohan.textbookCollected) {
+          setTimeout(() => {
+            if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+              window.AudioManager.playFanfare();
+            }
+            this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 10번 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
           }, 600);
         }
       }

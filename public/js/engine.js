@@ -1095,6 +1095,11 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_okchohan_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestSocialBookCollected === 'function' && window.MainApp.isQuestSocialBookCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           if (dist < 64 && dist < minDist) {
             closest = {
@@ -1346,6 +1351,11 @@ class GameEngine {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_okchohan_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestSocialBookCollected === 'function' && window.MainApp.isQuestSocialBookCollected()) {
               continue;
             }
           }
@@ -9476,6 +9486,8 @@ class GameEngine {
           this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || '📜 떨어진 개발자노트 (제3편)');
         } else if (obj.type === 'quest_memo') {
           this.drawStaffOfficeQuestMemo(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_okchohan_book') {
+          this.drawStaffOfficeSocialBook(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -9591,6 +9603,69 @@ class GameEngine {
         ctx.fillText('✦', sx, sy);
       }
     }
+
+    ctx.restore();
+  }
+
+  // 6층 교무실 인쇄실 근처 놓인 옥촣한 선생님의 사회 탐구 교재 렌더링
+  drawStaffOfficeSocialBook(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestSocialBookCollected === 'function' && window.MainApp.isQuestSocialBookCollected()) {
+      return;
+    }
+    const ctx = this.ctx;
+    ctx.save();
+
+    const bob = Math.sin(Date.now() / 200) * 2;
+    const by = y + bob;
+
+    // 바닥 부드러운 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 24, 12, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 청색 빛나는 글로우 아우라
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 12, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 파란색 고급 양장본 책 표지
+    ctx.fillStyle = '#1e3a8a';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, by + 4, 20, 16, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // 책등(Spine)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(x + 6, by + 4, 3.5, 16);
+
+    // 책 속지(White pages edge)
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(x + 9.5, by + 5, 15, 14);
+
+    // 표지 겉표면 & 황금 엠블럼
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(x + 10.5, by + 5, 14, 14);
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(x + 17.5, by + 12, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 텍스트 라벨 (펄스)
+    const labelOpacity = 0.85 + Math.sin(Date.now() / 250) * 0.15;
+    ctx.globalAlpha = labelOpacity;
+    this.drawSharpLabel(x + 16, by - 6, '📘 옥촣한의 사회 교재', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#38bdf8',
+      textColor: '#7dd3fc',
+      fontSize: 10,
+      paddingX: 6,
+      height: 16
+    });
 
     ctx.restore();
   }

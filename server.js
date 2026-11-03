@@ -614,6 +614,7 @@ const ALL_GAME_ITEMS = {
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
+  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
 
 };
 
