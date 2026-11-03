@@ -504,6 +504,9 @@ class AcidRainGame {
       const comboMultiplier = Math.min(3.5, 1 + (this.combo - 1) * 0.15);
       const wordScore = Math.round(target.en.length * 15 * comboMultiplier);
       this.score += wordScore;
+      if (window.MainApp && typeof window.MainApp.onAcidRainScore === 'function') {
+        window.MainApp.onAcidRainScore(this.score);
+      }
 
       if (window.AudioManager) {
         window.AudioManager.playCorrect();
@@ -529,6 +532,9 @@ class AcidRainGame {
       this.wordsCleared++;
     }
     this.fallingWords = [];
+    if (window.MainApp && typeof window.MainApp.onAcidRainScore === 'function') {
+      window.MainApp.onAcidRainScore(this.score);
+    }
 
     if (window.AudioManager) {
       window.AudioManager.playSelect();
@@ -597,6 +603,9 @@ class AcidRainGame {
           type: 'material',
           effect: '포션 및 부활 주문서 고급 제작 재료'
         });
+      }
+      if (typeof window.MainApp.onAcidRainScore === 'function') {
+        window.MainApp.onAcidRainScore(this.score);
       }
     }
 

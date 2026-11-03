@@ -856,19 +856,19 @@ const QUEST_DEFINITIONS = {
     cleanupItem: 'item_okchohan_textbook',
     story: `반갑다! 숭실중학교에서 사회를 가르치는 옥촣한 선생님이란다. 👨‍🏫
 
-사회를 배운다는 것은 우리 사회의 역사와 민주주의의 가치를 가슴 깊이 이해하는 것이지!
+사회를 배운다는 것은 빠른 정보 습득력과 민주시민의 순발력을 기르는 것이기도 하지!
 
 이번 사회 수업 연구 과제를 준비하던 중, 교무실 안쪽 인쇄기 근처에 내 [옥촣한의 사회 탐구 교재]를 두고 왔지 뭐니!
 
-교실 칠판에서 퀴즈 2문제를 멋지게 맞히고, 교무실 인쇄실 근처에 놓인 내 사회 교재를 찾아와 주겠니?
+1학년 3반 컴퓨터실에서 [산성비 단어 타자 게임 1,000점 이상 달성]하고, 교무실 인쇄실 근처에 놓인 내 사회 교재를 찾아와 주겠니?
 
 과제를 성실히 마친 학생에게는 전설의 장비 제작 핵심 재료인 [청동 드래곤의 심장]을 선물로 주마!`,
     inProgressStory: `어서 오렴! 아직 사회 탐구 과제가 완료되지 않았더구나!
 
-교실 칠판에서 퀴즈 2문제를 풀고, 교무실 안쪽 인쇄실 근처에 있는 내 사회 교재를 찾아오렴!`,
+1학년 3반 컴퓨터실에서 산성비 타자 게임 1,000점 이상을 달성하고, 교무실 안쪽 인쇄실 근처에 있는 내 사회 교재를 찾아오렴!`,
     completeStory: `오, 훌륭하구나! 멋지게 과제를 완수했어! 👏
 
-덕분에 사회 탐구 교재도 무사히 되찾았고, 퀴즈도 멋지게 통과했더구나!
+덕분에 사회 탐구 교재도 무사히 되찾았고, 산성비 타자 게임도 1,000점을 넘겨 순발력을 증명했더구나!
 
 약속했던 특별 보상으로 [청동 드래곤의 심장]을 수여하마! 앞으로도 숭실의 모범 시민으로 성장해주길 바란다!`,
     doneStory: `자네 덕분에 이번 사회 수업 준비가 아주 순조롭단다.
@@ -876,10 +876,11 @@ const QUEST_DEFINITIONS = {
 언제나 성실하게 활약하는 자네가 자랑스럽구나! 사회에 대해 궁금한 점이 있다면 언제든 10번 자리로 찾아오렴! 👍`,
     objectives: [
       {
-        id: 'quiz',
-        text: '교실 칠판에서 퀴즈 2회 정답 맞히기',
-        targetCount: 2,
-        getCount: (quest) => (quest ? (quest.quizCount || 0) : 0)
+        id: 'acid_rain',
+        text: '1학년 3반 컴퓨터실에서 산성비 타자 게임 1,000점 이상 달성하기',
+        targetCount: 1000,
+        unit: '점',
+        getCount: (quest) => (quest ? (quest.acidRainScore || 0) : 0)
       },
       {
         id: 'textbook',
@@ -8258,7 +8259,7 @@ class MainApp {
             <span style="font-weight: 700; color: ${isDone ? '#166534' : '#78350f'};">${obj.text}</span>
           </div>
           <div style="font-weight: 800; font-size: 12px; color: ${isDone ? '#15803d' : '#b45309'}; background: ${isDone ? '#dcfce7' : '#fef3c7'}; border: 1px solid ${isDone ? '#22c55e' : '#f59e0b'}; padding: 2px 8px; border-radius: 6px; white-space: nowrap;">
-            ${isDone ? '완료' : `${cur} / ${obj.targetCount}`}
+            ${isDone ? '완료' : `${cur.toLocaleString()} / ${obj.targetCount.toLocaleString()}${obj.unit || ''}`}
           </div>
         `;
         objContainer.appendChild(card);
@@ -8448,7 +8449,7 @@ class MainApp {
 
     this.showToast('📘 교무실 인쇄실 근처에서 [옥촣한의 사회 탐구 교재]를 회수했습니다!', 'success');
 
-    if ((quest.quizCount || 0) >= 2) {
+    if ((quest.acidRainScore || 0) >= 1000) {
       setTimeout(() => {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
@@ -8518,22 +8519,27 @@ class MainApp {
         }
       }
     }
+  }
 
-    // 2. 옥촣한 선생님 퀘스트 진행도 체크 (모든 교실 칠판 퀴즈)
-    const questOkchohan = this.playerData.quests['quest_okchohan_social'];
-    if (questOkchohan && questOkchohan.status === 'in_progress') {
-      const prevCount = questOkchohan.quizCount || 0;
-      if (prevCount < 2) {
-        questOkchohan.quizCount = prevCount + 1;
-        this.saveProgress();
-        this.updateQuestTracker();
-        this.showToast(`🏛️ [옥촣한 선생님의 사회 과제] 교실 칠판 퀴즈 완료! (${questOkchohan.quizCount}/2)`, 'info');
+  onAcidRainScore(score) {
+    if (!this.playerData || !this.playerData.quests) return;
+    const quest = this.playerData.quests['quest_okchohan_social'];
+    if (!quest || quest.status !== 'in_progress') return;
 
-        if (questOkchohan.quizCount >= 2 && questOkchohan.textbookCollected) {
+    const prevScore = quest.acidRainScore || 0;
+    if (score > prevScore) {
+      quest.acidRainScore = score;
+      this.saveProgress();
+      this.updateQuestTracker();
+
+      if (score >= 1000 && prevScore < 1000) {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast(`🎉 [옥촣한 선생님의 사회 과제] 산성비 타자 ${score.toLocaleString()}점 달성! (1,000점 돌파!)`, 'success');
+
+        if (quest.textbookCollected) {
           setTimeout(() => {
-            if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
-              window.AudioManager.playFanfare();
-            }
             this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 10번 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
           }, 600);
         }
