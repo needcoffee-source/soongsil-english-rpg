@@ -1101,6 +1101,11 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_kimmijin_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestSketchbookCollected === 'function' && window.MainApp.isQuestSketchbookCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           if (dist < 64 && dist < minDist) {
             closest = {
@@ -1357,6 +1362,11 @@ class GameEngine {
           }
           if (item.type === 'quest_okchohan_book') {
             if (window.MainApp && typeof window.MainApp.isQuestSocialBookCollected === 'function' && window.MainApp.isQuestSocialBookCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_kimmijin_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestSketchbookCollected === 'function' && window.MainApp.isQuestSketchbookCollected()) {
               continue;
             }
           }
@@ -5135,89 +5145,31 @@ class GameEngine {
         this.ctx.fill();
 
         const isKyungsook = (npc.id === 'npc_teacher_kyungsook' || (npc.name && (npc.name.includes('졍경슉') || npc.name.includes('정경숙'))));
-        const isJoshua = (npc.id === 'npc_teacher_joshua' || (npc.name && npc.name.includes('Joshua')));
         const isTeacherNpc = (npc.avatar === 'teacher' || npc.avatar === 'teacher_joshua' || npc.name.includes('선생님'));
 
-        if (isJoshua) {
-          // 3학년 영어 Joshua 선생님 (블랙맨투맨, 청바지, 짧은 머리, 안경없는 훈남 영어 교사)
-          // 1. 머리 및 피부 베이스
-          this.ctx.fillStyle = '#fed7aa';
-          this.ctx.beginPath();
-          this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
-          this.ctx.fill();
-
-          // 2. 짧고 깔끔한 다크 브라운 크롭/댄디 헤어스타일 (짧은 머리)
-          this.ctx.fillStyle = '#292524';
-          this.ctx.beginPath();
-          this.ctx.arc(px + 16, py + 8.5, 9.5, Math.PI * 0.95, Math.PI * 2.05);
-          this.ctx.fill();
-          this.ctx.fillRect(px + 9, py + 5, 14, 4); // 앞머리
-          this.ctx.fillRect(px + 7, py + 7, 3, 5);  // 짧은 구렛나루 좌
-          this.ctx.fillRect(px + 22, py + 7, 3, 5); // 짧은 구렛나루 우
-
-          // 3. 눈 & 눈썹 (안경 없음)
-          this.ctx.fillStyle = '#292524';
-          this.ctx.fillRect(px + 11, py + 10, 3.5, 1.2); // 눈썹 좌
-          this.ctx.fillRect(px + 17.5, py + 10, 3.5, 1.2); // 눈썹 우
-          this.ctx.fillStyle = '#1e293b';
-          this.ctx.fillRect(px + 11.5, py + 12, 2.5, 2.5); // 눈동자 좌
-          this.ctx.fillRect(px + 18, py + 12, 2.5, 2.5);   // 눈동자 우
-          this.ctx.fillStyle = '#ffffff';
-          this.ctx.fillRect(px + 12, py + 12, 1, 1);       // 눈 하이라이트 좌
-          this.ctx.fillRect(px + 18.5, py + 12, 1, 1);     // 눈 하이라이트 우
-
-          // 미소 입
-          this.ctx.strokeStyle = '#c2410c';
-          this.ctx.lineWidth = 1;
-          this.ctx.beginPath();
-          this.ctx.moveTo(px + 14.5, py + 16);
-          this.ctx.lineTo(px + 17.5, py + 16);
-          this.ctx.stroke();
-
-          // 4. 블랙맨투맨 (Black Sweatshirt / Crewneck)
-          this.ctx.fillStyle = '#18181b';
-          this.ctx.fillRect(px + 8, py + 18, 16, 9); // 몸통
-          this.ctx.fillRect(px + 5, py + 18, 3, 8);  // 소매 좌
-          this.ctx.fillRect(px + 24, py + 18, 3, 8); // 소매 우
-
-          // 맨투맨 크루넥 넥라인 밴딩
-          this.ctx.fillStyle = '#27272a';
-          this.ctx.fillRect(px + 12, py + 18, 8, 2);
-
-          // 손 (피부톤)
-          this.ctx.fillStyle = '#fed7aa';
-          this.ctx.fillRect(px + 5, py + 26, 3, 2);
-          this.ctx.fillRect(px + 24, py + 26, 3, 2);
-
-          // 5. 청바지 (Blue Denim Jeans)
-          this.ctx.fillStyle = '#2563eb';
-          this.ctx.fillRect(px + 8, py + 27, 16, 4.5);
-          // 청바지 중앙 봉제선
-          this.ctx.fillStyle = '#1d4ed8';
-          this.ctx.fillRect(px + 15.5, py + 27, 1, 4.5);
-
-          // 깔끔한 화이트 스니커즈 (신발)
-          this.ctx.fillStyle = '#f8fafc';
-          this.ctx.fillRect(px + 8, py + 31.5, 6, 2.5);
-          this.ctx.fillRect(px + 18, py + 31.5, 6, 2.5);
-        } else {
-          this.ctx.fillStyle = isKyungsook ? '#581c87' : (isTeacherNpc ? '#1e3a8a' : '#047857');
+        if (isKyungsook) {
+          this.ctx.fillStyle = '#581c87';
           this.ctx.beginPath();
           this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
           this.ctx.fill();
           this.ctx.fillRect(px + 8, py + 18, 16, 14);
 
           // 연금술사 졍경슉 선생님 전용 신비한 룬 장식 펜던트
-          if (isKyungsook) {
-            this.ctx.fillStyle = '#f59e0b';
-            this.ctx.fillRect(px + 14, py + 22, 4, 4);
-          }
+          this.ctx.fillStyle = '#f59e0b';
+          this.ctx.fillRect(px + 14, py + 22, 4, 4);
+        } else {
+          // 교사 NPC (조슈아, 옥촣한, 김미진 등) - 단정한 딥블루 교사 스프라이트
+          this.ctx.fillStyle = isTeacherNpc ? '#1e3a8a' : '#047857';
+          this.ctx.beginPath();
+          this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.fillRect(px + 8, py + 18, 16, 14);
         }
 
-        const labelText = isJoshua ? '👨‍🏫 Joshua 선생님 (3학년 영어)' : `${isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : '💬')} ${npc.name}`;
+        const labelText = `${isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : '💬')} ${npc.name}`;
         this.drawSharpLabel(px + 16, py + 38, labelText, {
-          bgColor: isJoshua ? 'rgba(30, 41, 59, 0.95)' : (isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)')),
-          borderColor: isJoshua ? '#fbbf24' : (isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399')),
+          bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)'),
+          borderColor: isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399'),
           textColor: '#fef08a',
           fontSize: 12,
           paddingX: 8,
@@ -5225,7 +5177,7 @@ class GameEngine {
         });
 
         // 8-C-1. 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
-        if (npc.questId || isJoshua) {
+        if (npc.questId) {
           const qStatus = (window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
             ? window.MainApp.getTeacherQuestStatus(npc.id || npc.questId)
             : 'available';
@@ -9489,6 +9441,8 @@ class GameEngine {
           this.drawStaffOfficeQuestMemo(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'quest_okchohan_book') {
           this.drawStaffOfficeSocialBook(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_kimmijin_book') {
+          this.drawStaffOfficeArtSketchbook(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -9663,6 +9617,79 @@ class GameEngine {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#38bdf8',
       textColor: '#7dd3fc',
+      fontSize: 10,
+      paddingX: 6,
+      height: 16
+    });
+
+    ctx.restore();
+  }
+
+  // 6층 교무실 상담실 테이블에 놓인 김미진 선생님의 풍경화 스케치북 렌더링
+  drawStaffOfficeArtSketchbook(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestSketchbookCollected === 'function' && window.MainApp.isQuestSketchbookCollected()) {
+      return;
+    }
+    const ctx = this.ctx;
+    ctx.save();
+
+    const bob = Math.sin(Date.now() / 200) * 2;
+    const by = y + bob;
+
+    // 바닥 부드러운 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 24, 13, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 핑크/바이올렛 예술적 글로우 아우라
+    ctx.fillStyle = 'rgba(244, 114, 182, 0.28)';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 12, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 스케치북 겉표지 (부드러운 크림 핑크 양장 스케치북)
+    ctx.fillStyle = '#fdf2f8';
+    ctx.beginPath();
+    ctx.roundRect(x + 5, by + 3, 22, 17, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f43f5e';
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+
+    // 상단 와이어 스프링 제본 (Spiral Wire Binding)
+    ctx.fillStyle = '#64748b';
+    for (let sx = x + 7; sx <= x + 23; sx += 3.5) {
+      ctx.fillRect(sx, by + 2, 2, 3);
+    }
+
+    // 스케치북 속 풍경화 미니 캔버스 (녹색 언덕 + 햇살 + 파란 하늘)
+    ctx.fillStyle = '#bae6fd';
+    ctx.fillRect(x + 8, by + 6, 16, 12);
+    // 푸른 언덕
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.arc(x + 14, by + 17, 7, Math.PI, 0);
+    ctx.fill();
+    // 노란 햇살
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(x + 20, by + 9, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 미니 붓 (Wooden Brush)
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(x + 18, by + 14, 7, 2);
+    ctx.fillStyle = '#f43f5e';
+    ctx.fillRect(x + 25, by + 13.5, 3, 3);
+
+    // 텍스트 라벨 (펄스)
+    const labelOpacity = 0.85 + Math.sin(Date.now() / 250) * 0.15;
+    ctx.globalAlpha = labelOpacity;
+    this.drawSharpLabel(x + 16, by - 6, '🎨 김미진의 스케치북', {
+      bgColor: 'rgba(30, 27, 75, 0.92)',
+      borderColor: '#f472b6',
+      textColor: '#fbcfe8',
       fontSize: 10,
       paddingX: 6,
       height: 16

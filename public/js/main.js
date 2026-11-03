@@ -524,7 +524,8 @@ const ALL_GAME_ITEMS = {
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
-  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } }
+  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
+  'item_kimmijin_sketchbook': { name: '김미진의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북' } }
 
 };
 
@@ -891,8 +892,64 @@ const QUEST_DEFINITIONS = {
     ],
     rewards: [
       { type: 'item', itemKey: 'item_bronze_heart', itemName: '청동 드래곤의 심장', count: 1, icon: '🥉', meta: { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' }, label: '🥉 청동 드래곤의 심장 x1개' },
-      { type: 'gold', amount: 150, label: '🪙 150 G (골드)' },
-      { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' }
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
+    ]
+  },
+  'quest_kimmijin_art': {
+    id: 'quest_kimmijin_art',
+    teacherId: 'npc_teacher_kimmijin',
+    teacherName: '김미진 선생님',
+    teacherRole: '미술',
+    teacherSeat: '15번',
+    teacherAvatar: '🎨',
+    category: '🎨 숭실 예술 프로젝트 (Fine Arts Quest)',
+    title: '[미술] 김미진 선생님의 예술 프로젝트: 숭실의 색채',
+    cleanupItem: 'item_kimmijin_sketchbook',
+    story: `반갑다! 숭실중학교에서 미술을 가르치는 김미진 선생님이란다. 🎨
+
+미술은 우리 주변의 아름다운 색채를 관찰하고 표현하는 예술이란다!
+
+이번에 교내 미술전에 출품할 숭실 풍경화를 준비하고 있는데, 두 가지 도움이 필요하단다.
+
+첫째, 풍경화에 화사한 봄빛을 입힐 천연 안료 재료로 [노란 개나리 꽃잎] 3송이가 필요하단다. (1학년 1반 채집장이나 가방에서 마련할 수 있단다!)
+
+둘째, 지난번 상담실에서 학생들과 작품 구상을 나누다가 상담실 테이블에 내 [김미진의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
+
+개나리 꽃잎 3송이와 내 스케치북을 찾아와 주면, 고마운 마음을 담아 내가 정성껏 수공예로 세공한 [성실의 개나리 반지]를 선물로 줄게!`,
+    inProgressStory: `어서 오렴! 아직 미술 프로젝트 준비물이 모두 모이지 않았더구나!
+
+풍경화 채색용 [노란 개나리 꽃잎 3송이]와 교무실 안쪽 상담실 테이블에 놓인 [김미진의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
+    completeStory: `어머나, 정말 고마워! 완벽하게 구해왔구나! 👏
+
+덕분에 잃어버렸던 소중한 스케치북을 되찾았고, 향기로운 개나리 꽃잎으로 숭실의 아름다운 황금빛 물감을 만들 수 있게 되었단다!
+
+약속했던 보상으로 꽃잎을 엮어 세공한 [성실의 개나리 반지]와 골드, 경험치를 선물로 줄게! 너의 따뜻한 예술적 감성을 응원한다!`,
+    doneStory: `너 덕분에 이번 숭실 미술전 작품이 멋지게 완성될 것 같구나!
+
+언제든 미술에 대해 이야기를 나누고 싶거나 영감을 얻고 싶다면 15번 자리로 편하게 찾아오렴! 🎨✨`,
+    objectives: [
+      {
+        id: 'forsythia',
+        text: '풍경화 채색용 천연 안료 [노란 개나리 꽃잎] 3송이 수집하기',
+        targetCount: 3,
+        unit: '송이',
+        getCount: (quest) => {
+          const invCount = (window.MainApp && typeof window.MainApp.getItemCount === 'function') ? window.MainApp.getItemCount('item_forsythia') : 0;
+          return Math.max(invCount, quest ? (quest.forsythiaCount || 0) : 0);
+        }
+      },
+      {
+        id: 'sketchbook',
+        text: '6층 교무실 상담실 테이블에서 [김미진의 풍경화 스케치북] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.sketchbookCollected ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'item', itemKey: 'equip_forsythia_ring', itemName: '성실의 개나리 반지', count: 1, icon: '🌼', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' }, label: '🌼 성실의 개나리 반지 x1개' },
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
     ]
   }
 };
@@ -1444,6 +1501,8 @@ class MainApp {
       this.handleQuestMemoPickup(target.data || target);
     } else if (target.type === 'quest_okchohan_book') {
       this.handleQuestSocialBookPickup(target.data || target);
+    } else if (target.type === 'quest_kimmijin_book') {
+      this.handleQuestSketchbookPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     }
@@ -6348,6 +6407,12 @@ class MainApp {
     }, 3200);
   }
 
+  getItemCount(itemId) {
+    if (!this.playerData || !this.playerData.inventory) return 0;
+    const existing = this.playerData.inventory.find(i => i.item === itemId);
+    return existing ? (existing.count || 0) : 0;
+  }
+
   addItem(itemId, name, count = 1, icon = '📦', meta = {}) {
     const existing = this.playerData.inventory.find(i => i.item === itemId);
     if (existing) {
@@ -6364,6 +6429,24 @@ class MainApp {
         heal: meta.heal || 0,
         effect: meta.effect || ''
       });
+    }
+    if (itemId === 'item_forsythia' && this.playerData && this.playerData.quests && this.playerData.quests['quest_kimmijin_art']) {
+      const q = this.playerData.quests['quest_kimmijin_art'];
+      if (q.status === 'in_progress') {
+        const curFlowers = this.getItemCount('item_forsythia');
+        if (curFlowers >= 3) {
+          if (q.sketchbookCollected) {
+            setTimeout(() => {
+              if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+                window.AudioManager.playFanfare();
+              }
+              this.showToast('🎉 [김미진 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김미진 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+            }, 500);
+          } else {
+            this.showToast('🌼 [김미진 선생님의 미술 프로젝트] 개나리 꽃잎 3송이 수집 완료! (스케치북 회수 필요)', 'info');
+          }
+        }
+      }
     }
     this.saveProgress();
   }
@@ -8137,6 +8220,7 @@ class MainApp {
     let questId = id;
     if (id === 'npc_teacher_joshua') questId = 'quest_joshua_intro';
     if (id === 'npc_teacher_okchohan') questId = 'quest_okchohan_social';
+    if (id === 'npc_teacher_kimmijin') questId = 'quest_kimmijin_art';
     const qDef = QUEST_DEFINITIONS[questId];
     if (!qDef) return null;
 
@@ -8161,6 +8245,13 @@ class MainApp {
     const q = this.playerData.quests['quest_okchohan_social'];
     if (!q) return false;
     return !!q.textbookCollected;
+  }
+
+  isQuestSketchbookCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_kimmijin_art'];
+    if (!q) return false;
+    return !!q.sketchbookCollected;
   }
 
   isQuestMemoCollected() {
@@ -8408,6 +8499,9 @@ class MainApp {
     } else if (questId === 'quest_joshua_intro') {
       this.removeItem('item_joshua_memo', 1);
     }
+    if (questId === 'quest_kimmijin_art') {
+      this.removeItem('item_forsythia', 3);
+    }
 
     this.recalcCombatStats();
     this.updatePlayerNameDisplay();
@@ -8455,6 +8549,44 @@ class MainApp {
           window.AudioManager.playFanfare();
         }
         this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 10번 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+      }, 500);
+    }
+  }
+
+  handleQuestSketchbookPickup(itemData) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests['quest_kimmijin_art'];
+    if (!quest || quest.status !== 'in_progress') {
+      alert('🎨 [상담실 테이블에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김미진 선생님의 풍경화 스케치북 같습니다.\n\n먼저 교무실 15번 좌석의 김미진 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      return;
+    }
+
+    if (quest.sketchbookCollected) {
+      this.showToast('이미 스케치북을 회수했습니다.', 'info');
+      return;
+    }
+
+    quest.sketchbookCollected = true;
+    this.addItem('item_kimmijin_sketchbook', '김미진의 풍경화 스케치북', 1, '🎨', {
+      type: 'quest',
+      effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북'
+    });
+    this.saveProgress();
+    this.updateQuestTracker();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('🎨 교무실 상담실에서 [김미진의 풍경화 스케치북]을 회수했습니다!', 'success');
+
+    const curFlowers = (this.getItemCount('item_forsythia') || 0);
+    if (curFlowers >= 3) {
+      setTimeout(() => {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast('🎉 [김미진 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김미진 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }

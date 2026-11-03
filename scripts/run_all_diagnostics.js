@@ -13,6 +13,7 @@ const tests = [
   'test_easter_eggs.js',
   'test_engine_runtime.js',
   'test_joshua_quest.js',
+  'test_staff_office_quests.js',
   'test_render_strict.js',
   'test_student_admin_api.js',
   'test_teacher_login.js'
