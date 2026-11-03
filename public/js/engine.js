@@ -1121,6 +1121,11 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_yosunyu_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestMusicBookCollected === 'function' && window.MainApp.isQuestMusicBookCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           if (dist < 64 && dist < minDist) {
             closest = {
@@ -1399,6 +1404,11 @@ class GameEngine {
           }
           if (item.type === 'quest_kimmijin_book') {
             if (window.MainApp && typeof window.MainApp.isQuestSketchbookCollected === 'function' && window.MainApp.isQuestSketchbookCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_yosunyu_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestMusicBookCollected === 'function' && window.MainApp.isQuestMusicBookCollected()) {
               continue;
             }
           }
@@ -9479,6 +9489,8 @@ class GameEngine {
           this.drawStaffOfficeSocialBook(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'quest_kimmijin_book') {
           this.drawStaffOfficeArtSketchbook(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_yosunyu_book') {
+          this.drawStaffOfficeMusicBook(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -9726,6 +9738,79 @@ class GameEngine {
       bgColor: 'rgba(30, 27, 75, 0.92)',
       borderColor: '#f472b6',
       textColor: '#fbcfe8',
+      fontSize: 10,
+      paddingX: 6,
+      height: 16
+    });
+
+    ctx.restore();
+  }
+
+  // 6층 교무실 소회의실 대형 테이블에 놓인 요션유 선생님의 오선지 악보집 렌더링
+  drawStaffOfficeMusicBook(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestMusicBookCollected === 'function' && window.MainApp.isQuestMusicBookCollected()) {
+      return;
+    }
+    const ctx = this.ctx;
+    ctx.save();
+
+    const bob = Math.sin(Date.now() / 200) * 2;
+    const by = y + bob;
+
+    // 바닥 부드러운 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 24, 13, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 신비한 보라빛 음악적 글로우 아우라 (Musical Glow)
+    ctx.fillStyle = 'rgba(168, 85, 247, 0.32)';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 12, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 악보집 바깥 표지 (로열 바이올렛 양장 제본)
+    ctx.fillStyle = '#3b0764';
+    ctx.beginPath();
+    ctx.roundRect(x + 4, by + 2, 24, 18, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#c084fc';
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+
+    // 펼쳐진 크림 화이트 오선지 내지
+    ctx.fillStyle = '#faf5ff';
+    ctx.fillRect(x + 6, by + 4, 20, 14);
+
+    // 오선지 줄 (Five-line staff)
+    ctx.strokeStyle = 'rgba(107, 114, 128, 0.6)';
+    ctx.lineWidth = 0.8;
+    for (let sy = by + 6; sy <= by + 14; sy += 2) {
+      ctx.beginPath();
+      ctx.moveTo(x + 7, sy);
+      ctx.lineTo(x + 25, sy);
+      ctx.stroke();
+    }
+
+    // 골드 높은음자리표 & 음표 (♪ ♫)
+    ctx.fillStyle = '#eab308';
+    ctx.font = 'bold 9px "Segoe UI Symbol", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('𝄞', x + 10, by + 11);
+
+    ctx.fillStyle = '#4c1d95';
+    ctx.font = '8px sans-serif';
+    ctx.fillText('♪', x + 16, by + 10);
+    ctx.fillText('♫', x + 21, by + 9);
+
+    // 텍스트 라벨 (펄스)
+    const labelOpacity = 0.85 + Math.sin(Date.now() / 250) * 0.15;
+    ctx.globalAlpha = labelOpacity;
+    this.drawSharpLabel(x + 16, by - 6, '🎼 요션유의 악보집', {
+      bgColor: 'rgba(59, 7, 100, 0.94)',
+      borderColor: '#c084fc',
+      textColor: '#f3e8ff',
       fontSize: 10,
       paddingX: 6,
       height: 16

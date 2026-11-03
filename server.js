@@ -616,6 +616,7 @@ const ALL_GAME_ITEMS = {
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
   'item_kimmijin_sketchbook': { name: '김미진의 풍경화 스케치북', icon: '🎨', meta: { type: 'quest', effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북' } },
+  'item_yosunyu_sheetmusic': { name: '요션유의 오선지 악보집', icon: '🎼', meta: { type: 'quest', effect: '18번 좌석 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집' } },
 
 };
 

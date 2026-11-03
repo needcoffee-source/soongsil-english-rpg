@@ -285,12 +285,25 @@ const WORLD_DATA = {
         avatar: "teacher",
         questId: "quest_kimmijin_art",
         dialogue: "반갑다! 미술을 가르치는 김미진 선생님이란다. 🎨"
+      },
+      {
+        id: "npc_teacher_yosunyu",
+        name: "요션유 선생님",
+        role: "음악",
+        seatId: 18,
+        seatLabel: "18",
+        x: 61.3125,
+        y: 17.5625,
+        avatar: "teacher",
+        questId: "quest_yosunyu_music",
+        dialogue: "반갑다! 아름다운 선율과 리듬을 가르치는 음악 요션유 선생님이란다. 🎵"
       }
     ],
     interactive: [
       { id: "note_developer_staff_office", type: "dev_note_3", x: 51, y: 4, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" },
       { id: "quest_joshua_memo", type: "quest_memo", x: 48, y: 4, name: "📝 Joshua의 영단어 메모", prompt: "단어 메모 회수하기 (SPACE)" },
       { id: "quest_okchohan_textbook", type: "quest_okchohan_book", x: 42, y: 8, name: "📘 옥촣한의 사회 탐구 교재", prompt: "사회 교재 회수하기 (SPACE)" },
+      { id: "quest_yosunyu_sheetmusic", type: "quest_yosunyu_book", x: 17, y: 6, name: "🎼 요션유의 오선지 악보집", prompt: "악보집 회수하기 (SPACE)" },
       { id: "desk_developer_juncheol", type: "desk_juncheol", x: 91, y: 15, name: "👑 갓준철의 연구 책상 (26번)", prompt: "갓준철 선생님 책상 (SPACE)" }
     ],
     // 1 ~ 33번 좌석 정의 (교사 NPC 배치용 - 좌측 1번부터 우측 33번까지 순차 정리)

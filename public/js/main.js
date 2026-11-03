@@ -525,7 +525,8 @@ const ALL_GAME_ITEMS = {
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
-  'item_kimmijin_sketchbook': { name: '김미진의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북' } }
+  'item_kimmijin_sketchbook': { name: '김미진의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북' } },
+  'item_yosunyu_sheetmusic': { name: '요션유의 오선지 악보집', icon: '🎼', count: 1, meta: { type: 'quest', effect: '18번 좌석 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집' } }
 
 };
 
@@ -948,6 +949,59 @@ const QUEST_DEFINITIONS = {
     ],
     rewards: [
       { type: 'item', itemKey: 'item_forsythia', itemName: '노란 개나리 꽃잎', count: 3, icon: '🌼', meta: { type: 'material', effect: '개나리 반지 및 주홍 물약 재료' }, label: '🌼 노란 개나리 꽃잎 x3개' },
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
+    ]
+  },
+  quest_yosunyu_music: {
+    id: 'quest_yosunyu_music',
+    teacherId: 'npc_teacher_yosunyu',
+    teacherName: '요션유 선생님',
+    teacherRole: '음악',
+    teacherSeat: '18번',
+    teacherAvatar: '🎵',
+    category: '🎵 숭실 음악 프로젝트 (Music Harmony Quest)',
+    title: '[음악] 요션유 선생님의 음악 프로젝트: 숭실의 하모니',
+    cleanupItem: 'item_yosunyu_sheetmusic',
+    story: `반갑다! 숭실중학교에서 음악을 가르치는 요션유 선생님이란다. 🎵
+
+음악은 마음을 하나로 이어주고 지친 일상에 아름다운 울림을 주는 예술이란다!
+
+이번에 교내 음악 발표회를 준비하고 있는데, 두 가지 도움이 필요하단다.
+
+첫째, 1학년 4반 교실에 마련된 [숭실 락앤롤 드럼 세트]를 직접 두드려 신나는 비트(리듬)를 1회 연주해 보렴! (음악의 기본은 가슴을 울리는 신나는 비트란다!)
+
+둘째, 지난번 교무실 소회의실에서 음악과 회의를 하다가 대형 회의 테이블에 내 [요션유의 오선지 악보집]을 깜빡 두고 왔지 뭐니!
+
+드럼 연주로 멋진 리듬감을 보여주고 소회의실에서 내 악보집을 찾아와 주면, 고마운 마음을 담아 [황금 은행잎] 3개와 골드, 경험치를 선물로 줄게!`,
+    inProgressStory: `어서 오렴! 아직 음악 프로젝트 준비물이 모두 모이지 않았더구나!
+
+1학년 4반 교실의 [드럼 세트 연주]와 6층 교무실 소회의실 대형 테이블에 놓인 [요션유의 오선지 악보집]을 찾아와 주렴! 🎵`,
+    completeStory: `어머나, 정말 멋지구나! 완벽하게 해냈어! 👏
+
+1학년 4반에서 울려 퍼진 너의 힘찬 드럼 비트 소리를 여기까지 들었단다! 잃어버렸던 소중한 악보집도 무사히 되찾았고 말이야!
+
+약속했던 보상으로 향긋한 [황금 은행잎 3개]와 골드, 경험치를 선물로 줄게! 너의 뛰어난 음악적 감성과 박자감을 응원한다!`,
+    doneStory: `너 덕분에 이번 숭실 음악 발표회 하모니가 정말 멋지게 완성될 것 같구나!
+
+언제든 음악과 악기에 대해 이야기를 나누고 싶다면 18번 자리로 편하게 찾아오렴! 🎵✨`,
+    objectives: [
+      {
+        id: 'drum',
+        text: '1학년 4반 교실에서 [숭실 드럼 세트] 1회 연주하기',
+        targetCount: 1,
+        unit: '회',
+        getCount: (quest) => (quest && quest.drumPlayed ? 1 : 0)
+      },
+      {
+        id: 'sheetmusic',
+        text: '6층 교무실 소회의실 대형 테이블에서 [요션유의 오선지 악보집] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.sheetMusicCollected ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'item', itemKey: 'item_ginkgo', itemName: '황금 은행잎', count: 3, icon: '🍁', meta: { type: 'material', effect: '은행잎 부적 및 비전 영약 재료' }, label: '🍁 황금 은행잎 x3개' },
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
     ]
@@ -1503,6 +1557,8 @@ class MainApp {
       this.handleQuestSocialBookPickup(target.data || target);
     } else if (target.type === 'quest_kimmijin_book') {
       this.handleQuestSketchbookPickup(target.data || target);
+    } else if (target.type === 'quest_yosunyu_book') {
+      this.handleQuestMusicBookPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     }
@@ -2039,6 +2095,7 @@ class MainApp {
     if (window.AudioManager && typeof window.AudioManager.playDrumBeat === 'function') {
       window.AudioManager.playDrumBeat();
     }
+    this.onDrumKitPlayed();
 
     const curHp = this.playerData.hp || 0;
     const maxHp = this.playerData.maxHp || 100;
@@ -8245,6 +8302,72 @@ class MainApp {
     const q = this.playerData.quests['quest_okchohan_social'];
     if (!q) return false;
     return !!q.textbookCollected;
+  }
+
+  isQuestMusicBookCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_yosunyu_music'];
+    if (!q) return false;
+    return !!q.sheetMusicCollected;
+  }
+
+  onDrumKitPlayed() {
+    if (!this.playerData || !this.playerData.quests) return;
+    const quest = this.playerData.quests['quest_yosunyu_music'];
+    if (!quest || quest.status !== 'in_progress') return;
+
+    if (!quest.drumPlayed) {
+      quest.drumPlayed = true;
+      this.saveProgress();
+      this.updateQuestTracker();
+      this.showToast('🥁 [요션유 선생님의 음악 프로젝트] 1학년 4반 드럼 연주 완수! 신나는 리듬감을 증명했습니다! (1/1)', 'info');
+
+      if (quest.sheetMusicCollected) {
+        setTimeout(() => {
+          if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+            window.AudioManager.playFanfare();
+          }
+          this.showToast('🎉 [요션유 선생님의 음악 프로젝트] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        }, 500);
+      }
+    }
+  }
+
+  handleQuestMusicBookPickup(itemData) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests['quest_yosunyu_music'];
+    if (!quest || quest.status !== 'in_progress') {
+      alert('🎼 [소회의실 대형 테이블에 놓인 오선지 악보집]\n\n"교무실 18번 좌석에 앉아 계신 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집 같습니다.\n\n먼저 6층 교무실 18번 좌석의 요션유 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      return;
+    }
+
+    if (quest.sheetMusicCollected) {
+      this.showToast('이미 악보집을 회수했습니다.', 'info');
+      return;
+    }
+
+    quest.sheetMusicCollected = true;
+    this.addItem('item_yosunyu_sheetmusic', '요션유의 오선지 악보집', 1, '🎼', {
+      type: 'quest',
+      effect: '18번 좌석 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집'
+    });
+    this.saveProgress();
+    this.updateQuestTracker();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('🎼 교무실 소회의실에서 [요션유의 오선지 악보집]을 회수했습니다!', 'success');
+
+    if (quest.drumPlayed) {
+      setTimeout(() => {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast('🎉 [요션유 선생님의 음악 프로젝트] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+      }, 500);
+    }
   }
 
   isQuestSketchbookCollected() {

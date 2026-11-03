@@ -2,7 +2,7 @@ const fs = require('fs');
 const assert = require('assert');
 const path = require('path');
 
-console.log('=== VERIFYING ALL 3 STAFF OFFICE TEACHERS & QUESTS ===');
+console.log('=== VERIFYING ALL 4 STAFF OFFICE TEACHERS & QUESTS ===');
 
 global.window = global;
 const vm = require('vm');
@@ -40,6 +40,17 @@ assert.strictEqual(kimmijin.y, 15.4375);
 assert.strictEqual(kimmijin.questId, 'quest_kimmijin_art');
 console.log('✔ 3. Kim Mi-jin verified (Seat 15, role: "미술", coords: (55.1875, 15.4375), avatar: "teacher")');
 
+// Test Yo Sun-yu
+const yosunyu = office.npcs.find(n => n.id === 'npc_teacher_yosunyu');
+assert(yosunyu, 'Yo Sun-yu NPC must exist');
+assert.strictEqual(yosunyu.seatId, 18);
+assert.strictEqual(yosunyu.role, '음악');
+assert.strictEqual(yosunyu.avatar, 'teacher');
+assert.strictEqual(yosunyu.x, 61.3125);
+assert.strictEqual(yosunyu.y, 17.5625);
+assert.strictEqual(yosunyu.questId, 'quest_yosunyu_music');
+console.log('✔ 4. Yo Sun-yu verified (Seat 18, role: "음악", coords: (61.3125, 17.5625), avatar: "teacher")');
+
 // Test Interactive objects in staff office
 const memo = office.interactive.find(i => i.id === 'quest_joshua_memo');
 assert(memo && memo.x === 48 && memo.y === 4, 'Joshua memo must be in pantry at (48, 4)');
@@ -48,7 +59,7 @@ const textbook = office.interactive.find(i => i.id === 'quest_okchohan_textbook'
 assert(textbook, 'Ok Cho-han textbook must exist');
 assert.strictEqual(textbook.x, 42, 'Textbook must be inside printing room at x=42');
 assert.strictEqual(textbook.y, 8, 'Textbook must be inside printing room at y=8');
-console.log('✔ 4. Ok Cho-han textbook moved to printing room (x: 42, y: 8) verified');
+console.log('✔ 5. Ok Cho-han textbook in printing room (x: 42, y: 8) verified');
 
 const officeSketchbook = office.interactive.find(i => i.id === 'quest_kimmijin_sketchbook');
 assert(!officeSketchbook, 'Sketchbook must no longer be in staff office');
@@ -56,7 +67,13 @@ const pgSketchbook = w.playground.sketchbook;
 assert(pgSketchbook, 'Kim Mi-jin sketchbook must exist in playground');
 assert.strictEqual(pgSketchbook.x, 24, 'Sketchbook must be to the left of the bench at x=24');
 assert.strictEqual(pgSketchbook.y, 16, 'Sketchbook must be at y=16');
-console.log('✔ 5. Kim Mi-jin sketchbook relocated to playground bench left side (x: 24, y: 16) verified');
+console.log('✔ 6. Kim Mi-jin sketchbook on playground bench left (x: 24, y: 16) verified');
+
+const sheetmusic = office.interactive.find(i => i.id === 'quest_yosunyu_sheetmusic');
+assert(sheetmusic, 'Yo Sun-yu sheet music must exist in staff office');
+assert.strictEqual(sheetmusic.x, 17, 'Sheet music must be on conference table at x=17');
+assert.strictEqual(sheetmusic.y, 6, 'Sheet music must be on conference table at y=6');
+console.log('✔ 7. Yo Sun-yu sheet music on small conference table (x: 17, y: 6) verified');
 
 // 2. Check main.js and server.js item catalog sync
 const mainCode = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
@@ -64,20 +81,29 @@ const serverCode = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8')
 
 assert(mainCode.includes('item_kimmijin_sketchbook'), 'main.js must define item_kimmijin_sketchbook');
 assert(serverCode.includes('item_kimmijin_sketchbook'), 'server.js must define item_kimmijin_sketchbook');
-console.log('✔ 6. item_kimmijin_sketchbook synced between main.js and server.js');
+assert(mainCode.includes('item_yosunyu_sheetmusic'), 'main.js must define item_yosunyu_sheetmusic');
+assert(serverCode.includes('item_yosunyu_sheetmusic'), 'server.js must define item_yosunyu_sheetmusic');
+console.log('✔ 8. item_kimmijin_sketchbook & item_yosunyu_sheetmusic synced between main.js and server.js');
 
 // 3. Check Ok Cho-han reward values (item_bronze_heart, 100G, 100EXP)
 assert(mainCode.includes("itemKey: 'item_bronze_heart'"), 'Ok Cho-han must grant item_bronze_heart');
 assert(mainCode.includes("amount: 100, label: '🪙 100 G (골드)'"), 'Rewards must have 100 G');
 assert(mainCode.includes("amount: 100, label: '🌟 100 EXP (경험치)'"), 'Rewards must have 100 EXP');
-console.log('✔ 7. Ok Cho-han rewards (Bronze Heart x1, 100 G, 100 EXP) verified');
+console.log('✔ 9. Ok Cho-han rewards (Bronze Heart x1, 100 G, 100 EXP) verified');
 
 // 4. Check Kim Mi-jin quest definition and rewards in main.js
 assert(mainCode.includes('quest_kimmijin_art'), 'main.js must define quest_kimmijin_art');
-const kimQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_kimmijin_art'"), mainCode.indexOf('class MainApp'));
+const kimQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_kimmijin_art'"), mainCode.indexOf("id: 'quest_yosunyu_music'"));
 assert(kimQuestSnippet.includes("itemKey: 'item_forsythia'"), 'quest_kimmijin_art must reward forsythia petals');
 assert(kimQuestSnippet.includes("label: '🌼 노란 개나리 꽃잎 x3개'"), 'quest_kimmijin_art must reward 3 forsythia petals');
 assert(!kimQuestSnippet.includes('equip_forsythia_ring'), 'quest_kimmijin_art must no longer reward forsythia ring');
-console.log('✔ 8. quest_kimmijin_art definition and rewards (Forsythia Petals x3, 100 G, 100 EXP) verified');
+console.log('✔ 10. quest_kimmijin_art definition and rewards (Forsythia Petals x3, 100 G, 100 EXP) verified');
+
+// 5. Check Yo Sun-yu quest definition and rewards in main.js
+assert(mainCode.includes('quest_yosunyu_music'), 'main.js must define quest_yosunyu_music');
+const yoQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_yosunyu_music'"), mainCode.indexOf('class MainApp'));
+assert(yoQuestSnippet.includes("itemKey: 'item_ginkgo'"), 'quest_yosunyu_music must reward ginkgo leaves');
+assert(yoQuestSnippet.includes("label: '🍁 황금 은행잎 x3개'"), 'quest_yosunyu_music must reward 3 ginkgo leaves');
+console.log('✔ 11. quest_yosunyu_music definition and rewards (Ginkgo Leaves x3, 100 G, 100 EXP) verified');
 
 console.log('\n=== ALL STAFF OFFICE TEACHER TESTS PASSED SUCCESSFULLY! ===');
