@@ -914,17 +914,17 @@ const QUEST_DEFINITIONS = {
 
 첫째, 풍경화에 화사한 봄빛을 입힐 천연 안료 재료로 [노란 개나리 꽃잎] 3송이가 필요하단다. (1학년 1반 채집장이나 가방에서 마련할 수 있단다!)
 
-둘째, 지난번 상담실에서 학생들과 작품 구상을 나누다가 상담실 테이블에 내 [김미진의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
+둘째, 지난번 운동장 벤치에서 교내 풍경을 스케치하다가 벤치 왼쪽편에 내 [김미진의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
 
-개나리 꽃잎 3송이와 내 스케치북을 찾아와 주면, 고마운 마음을 담아 내가 정성껏 수공예로 세공한 [성실의 개나리 반지]를 선물로 줄게!`,
+운동장 벤치 왼쪽편에서 내 스케치북을 찾아와 주면, 고마운 마음을 담아 향긋한 [노란 개나리 꽃잎] 3개와 골드, 경험치를 선물로 줄게!`,
     inProgressStory: `어서 오렴! 아직 미술 프로젝트 준비물이 모두 모이지 않았더구나!
 
-풍경화 채색용 [노란 개나리 꽃잎 3송이]와 교무실 안쪽 상담실 테이블에 놓인 [김미진의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
+풍경화 채색용 [노란 개나리 꽃잎 3송이]와 운동장 벤치 왼쪽편에 놓인 [김미진의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
     completeStory: `어머나, 정말 고마워! 완벽하게 구해왔구나! 👏
 
-덕분에 잃어버렸던 소중한 스케치북을 되찾았고, 향기로운 개나리 꽃잎으로 숭실의 아름다운 황금빛 물감을 만들 수 있게 되었단다!
+덕분에 운동장 벤치 옆에 떨어져 있던 소중한 스케치북을 되찾았고, 아름다운 풍경화를 완성할 수 있게 되었단다!
 
-약속했던 보상으로 꽃잎을 엮어 세공한 [성실의 개나리 반지]와 골드, 경험치를 선물로 줄게! 너의 따뜻한 예술적 감성을 응원한다!`,
+약속했던 보상으로 싱싱한 [노란 개나리 꽃잎 3개]와 골드, 경험치를 선물로 줄게! 너의 따뜻한 예술적 감성을 응원한다!`,
     doneStory: `너 덕분에 이번 숭실 미술전 작품이 멋지게 완성될 것 같구나!
 
 언제든 미술에 대해 이야기를 나누고 싶거나 영감을 얻고 싶다면 15번 자리로 편하게 찾아오렴! 🎨✨`,
@@ -941,13 +941,13 @@ const QUEST_DEFINITIONS = {
       },
       {
         id: 'sketchbook',
-        text: '6층 교무실 상담실 테이블에서 [김미진의 풍경화 스케치북] 회수하기',
+        text: '운동장 벤치 왼쪽편에서 [김미진의 풍경화 스케치북] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.sketchbookCollected ? 1 : 0)
       }
     ],
     rewards: [
-      { type: 'item', itemKey: 'equip_forsythia_ring', itemName: '성실의 개나리 반지', count: 1, icon: '🌼', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' }, label: '🌼 성실의 개나리 반지 x1개' },
+      { type: 'item', itemKey: 'item_forsythia', itemName: '노란 개나리 꽃잎', count: 3, icon: '🌼', meta: { type: 'material', effect: '개나리 반지 및 주홍 물약 재료' }, label: '🌼 노란 개나리 꽃잎 x3개' },
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
     ]
@@ -8499,9 +8499,6 @@ class MainApp {
     } else if (questId === 'quest_joshua_intro') {
       this.removeItem('item_joshua_memo', 1);
     }
-    if (questId === 'quest_kimmijin_art') {
-      this.removeItem('item_forsythia', 3);
-    }
 
     this.recalcCombatStats();
     this.updatePlayerNameDisplay();
@@ -8557,7 +8554,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kimmijin_art'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('🎨 [상담실 테이블에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김미진 선생님의 풍경화 스케치북 같습니다.\n\n먼저 교무실 15번 좌석의 김미진 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      alert('🎨 [운동장 벤치 옆에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김미진 선생님의 풍경화 스케치북 같습니다.\n\n먼저 6층 교무실 15번 좌석의 김미진 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
       return;
     }
 
@@ -8578,7 +8575,7 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    this.showToast('🎨 교무실 상담실에서 [김미진의 풍경화 스케치북]을 회수했습니다!', 'success');
+    this.showToast('🎨 운동장 벤치 왼쪽편에서 [김미진의 풍경화 스케치북]을 회수했습니다!', 'success');
 
     const curFlowers = (this.getItemCount('item_forsythia') || 0);
     if (curFlowers >= 3) {

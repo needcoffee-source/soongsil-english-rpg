@@ -50,11 +50,13 @@ assert.strictEqual(textbook.x, 42, 'Textbook must be inside printing room at x=4
 assert.strictEqual(textbook.y, 8, 'Textbook must be inside printing room at y=8');
 console.log('✔ 4. Ok Cho-han textbook moved to printing room (x: 42, y: 8) verified');
 
-const sketchbook = office.interactive.find(i => i.id === 'quest_kimmijin_sketchbook');
-assert(sketchbook, 'Kim Mi-jin sketchbook must exist');
-assert.strictEqual(sketchbook.x, 91, 'Sketchbook must be in counseling room at x=91');
-assert.strictEqual(sketchbook.y, 6, 'Sketchbook must be in counseling room at y=6');
-console.log('✔ 5. Kim Mi-jin sketchbook in counseling room (x: 91, y: 6) verified');
+const officeSketchbook = office.interactive.find(i => i.id === 'quest_kimmijin_sketchbook');
+assert(!officeSketchbook, 'Sketchbook must no longer be in staff office');
+const pgSketchbook = w.playground.sketchbook;
+assert(pgSketchbook, 'Kim Mi-jin sketchbook must exist in playground');
+assert.strictEqual(pgSketchbook.x, 24, 'Sketchbook must be to the left of the bench at x=24');
+assert.strictEqual(pgSketchbook.y, 16, 'Sketchbook must be at y=16');
+console.log('✔ 5. Kim Mi-jin sketchbook relocated to playground bench left side (x: 24, y: 16) verified');
 
 // 2. Check main.js and server.js item catalog sync
 const mainCode = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
@@ -70,9 +72,12 @@ assert(mainCode.includes("amount: 100, label: '🪙 100 G (골드)'"), 'Rewards 
 assert(mainCode.includes("amount: 100, label: '🌟 100 EXP (경험치)'"), 'Rewards must have 100 EXP');
 console.log('✔ 7. Ok Cho-han rewards (Bronze Heart x1, 100 G, 100 EXP) verified');
 
-// 4. Check Kim Mi-jin quest definition in main.js
+// 4. Check Kim Mi-jin quest definition and rewards in main.js
 assert(mainCode.includes('quest_kimmijin_art'), 'main.js must define quest_kimmijin_art');
-assert(mainCode.includes('equip_forsythia_ring'), 'quest_kimmijin_art must reward forsythia ring');
-console.log('✔ 8. quest_kimmijin_art definition and rewards verified');
+const kimQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_kimmijin_art'"), mainCode.indexOf('class MainApp'));
+assert(kimQuestSnippet.includes("itemKey: 'item_forsythia'"), 'quest_kimmijin_art must reward forsythia petals');
+assert(kimQuestSnippet.includes("label: '🌼 노란 개나리 꽃잎 x3개'"), 'quest_kimmijin_art must reward 3 forsythia petals');
+assert(!kimQuestSnippet.includes('equip_forsythia_ring'), 'quest_kimmijin_art must no longer reward forsythia ring');
+console.log('✔ 8. quest_kimmijin_art definition and rewards (Forsythia Petals x3, 100 G, 100 EXP) verified');
 
 console.log('\n=== ALL STAFF OFFICE TEACHER TESTS PASSED SUCCESSFULLY! ===');

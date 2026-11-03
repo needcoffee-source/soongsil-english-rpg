@@ -915,6 +915,21 @@ class GameEngine {
             minDist = bcDist;
           }
         }
+        // 2-E. Kim Mi-jin Art Quest Sketchbook (운동장 벤치 왼쪽편: x: 24, y: 16)
+        if (pg.sketchbook) {
+          if (!window.MainApp || typeof window.MainApp.isQuestSketchbookCollected !== 'function' || !window.MainApp.isQuestSketchbookCollected()) {
+            const sbDist = Math.hypot((pg.sketchbook.x + 0.5) * 32 - this.player.x, (pg.sketchbook.y + 0.5) * 32 - this.player.y);
+            if (sbDist < 64 && sbDist < minDist) {
+              closest = {
+                type: 'quest_kimmijin_book',
+                data: pg.sketchbook,
+                name: pg.sketchbook.name || '🎨 김미진의 풍경화 스케치북',
+                prompt: pg.sketchbook.prompt || '스케치북 회수하기 (SPACE)'
+              };
+              minDist = sbDist;
+            }
+          }
+        }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -1268,6 +1283,23 @@ class GameEngine {
             const distToPlayer = Math.hypot(boxCenterX - this.player.x, boxCenterY - this.player.y);
             if (distToPlayer < 72) {
               return { type: 'lost_box', name: '낡은 철제 분실물 상자' };
+            }
+          }
+        }
+        if (pg.sketchbook) {
+          if (!window.MainApp || typeof window.MainApp.isQuestSketchbookCollected !== 'function' || !window.MainApp.isQuestSketchbookCollected()) {
+            const sbCenterX = (pg.sketchbook.x + 0.5) * 32;
+            const sbCenterY = (pg.sketchbook.y + 0.5) * 32;
+            if (Math.hypot(sbCenterX - x, sbCenterY - y) < 48) {
+              const distToPlayer = Math.hypot(sbCenterX - this.player.x, sbCenterY - this.player.y);
+              if (distToPlayer < 72) {
+                return {
+                  type: 'quest_kimmijin_book',
+                  data: pg.sketchbook,
+                  name: pg.sketchbook.name || '🎨 김미진의 풍경화 스케치북',
+                  prompt: pg.sketchbook.prompt || '스케치북 회수하기 (SPACE)'
+                };
+              }
             }
           }
         }
@@ -5510,6 +5542,10 @@ class GameEngine {
     this.drawHighResBench(76 * 32, 5 * 32 + 6);
     this.drawHighResBench(70 * 32, 28 * 32 + 6);
     this.drawHighResBench(76 * 32, 28 * 32 + 6);
+
+    // 10-B. Kim Mi-jin Art Quest Sketchbook (운동장 벤치 왼쪽편: x: 24, y: 16)
+    const pgSketchbook = (WORLD_DATA.playground && WORLD_DATA.playground.sketchbook) || { x: 24, y: 16 };
+    this.drawStaffOfficeArtSketchbook(pgSketchbook.x * 32, pgSketchbook.y * 32);
 
     // Drinking Fountain between fields (x: 59, y: 5)
     this.drawHighResDrinkingFountain(59 * 32 + 16, 5 * 32 + 10);
