@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=159">
+  <link rel="manifest" href="/manifest.json?v=160">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=159">
+  <link rel="stylesheet" href="css/style.css?v=160">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -2104,18 +2104,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=159"></script>
-  <script src="js/dialog.js?v=159"></script>
+  <script src="js/audio.js?v=160"></script>
+  <script src="js/dialog.js?v=160"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=159"></script>
-  <script src="js/engine.js?v=159"></script>
-  <script src="js/quiz.js?v=159"></script>
-  <script src="js/crafting.js?v=159"></script>
-  <script src="js/network.js?v=159"></script>
-  <script src="js/acid_rain.js?v=159"></script>
-  <script src="js/brawl_ball.js?v=159"></script>
-  <script src="js/main.js?v=159"></script>
+  <script src="js/world.js?v=160"></script>
+  <script src="js/engine.js?v=160"></script>
+  <script src="js/quiz.js?v=160"></script>
+  <script src="js/crafting.js?v=160"></script>
+  <script src="js/network.js?v=160"></script>
+  <script src="js/acid_rain.js?v=160"></script>
+  <script src="js/brawl_ball.js?v=160"></script>
+  <script src="js/main.js?v=160"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
@@ -2244,7 +2244,7 @@
 
   <!-- 4-J. Modal: Item Codex (아이템 도감) -->
   <div id="modal-codex" class="modal-overlay hidden" style="z-index: 140;">
-    <div class="modal-card" style="max-width: 720px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; border: 3px solid #b45309; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    <div class="modal-card" style="max-width: 920px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; border: 3px solid #b45309; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
       <div class="modal-header" style="background: linear-gradient(135deg, #78350f, #b45309); color: #fff; border-bottom: 2px solid #fbbf24; padding: 12px 16px;">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 22px;">📖</span>
@@ -2270,18 +2270,18 @@
           </div>
         </div>
 
-        <!-- Filter Tabs (무기·방어구 / 신발 / 장신구 분리형 탭) -->
-        <div id="codex-tab-container" style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
-          <button class="codex-tab-btn active" data-tab="all" style="padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #3b82f6; color: #fff; cursor: pointer;">전체 (All)</button>
-          <button class="codex-tab-btn" data-tab="weapon_armor" style="padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer;">⚔️🛡️ 무기·방어구</button>
-          <button class="codex-tab-btn" data-tab="shoes" style="padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer;">👟 신발</button>
-          <button class="codex-tab-btn" data-tab="accessory" style="padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer;">💍 장신구</button>
-          <button class="codex-tab-btn" data-tab="material" style="padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer;">🪵 재료 (Materials)</button>
-          <button class="codex-tab-btn" data-tab="consumable" style="padding: 5px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer;">🧪 소비품 (Consumables)</button>
+        <!-- Filter Tabs (무기·방어구 / 신발 / 장신구 분리형 탭 - 한 줄 정렬) -->
+        <div id="codex-tab-container" style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px;">
+          <button class="codex-tab-btn active" data-tab="all" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #3b82f6; color: #fff; cursor: pointer; white-space: nowrap; flex-shrink: 0;">전체 (All)</button>
+          <button class="codex-tab-btn" data-tab="weapon_armor" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; white-space: nowrap; flex-shrink: 0;">⚔️🛡️ 무기·방어구</button>
+          <button class="codex-tab-btn" data-tab="shoes" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; white-space: nowrap; flex-shrink: 0;">👟 신발</button>
+          <button class="codex-tab-btn" data-tab="accessory" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; white-space: nowrap; flex-shrink: 0;">💍 장신구</button>
+          <button class="codex-tab-btn" data-tab="material" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; white-space: nowrap; flex-shrink: 0;">🪵 재료 (Materials)</button>
+          <button class="codex-tab-btn" data-tab="consumable" style="padding: 6px 12px; font-size: 11.5px; font-weight: 800; border-radius: 6px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; white-space: nowrap; flex-shrink: 0;">🧪 소비품 (Consumables)</button>
         </div>
 
         <!-- Item Cards Grid -->
-        <div id="grid-codex-items" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px;">
+        <div id="grid-codex-items" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
           <!-- Generated by JS -->
         </div>
       </div>

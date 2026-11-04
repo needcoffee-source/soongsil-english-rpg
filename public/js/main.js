@@ -96,7 +96,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 가죽',
     tierColor: '#b45309',
     effect: '2티어 고급 가죽 방어구(세이버·투구·갑옷) 제작 핵심 재료',
-    source: '1학년 2반 가죽 골렘 보스 처치 시 100% 획득',
+    source: '1학년 2반 가죽 골렘 보스 처치 시 획득',
     recipe: '1-2 보스 처치 전리품'
   },
   {
@@ -129,7 +129,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 전리품',
     tierColor: '#dc2626',
     effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
-    source: '1학년 2반 숭실 청동 드래곤 보스 격파 시 100% 획득',
+    source: '1학년 2반 숭실 청동 드래곤 보스 격파 시 획득',
     recipe: '1-2 청동 드래곤 처치 전리품'
   },
   {
@@ -140,7 +140,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '명예 증표',
     tierColor: '#4338ca',
     effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 및 [👟 삼디다스 실내화] 교환권',
-    source: '운동장 축구장 중간고사 대마왕 보스 격파 시 100% 획득',
+    source: '운동장 축구장 중간고사 대마왕 보스 격파 시 획득',
     recipe: '중간고사 대마왕 처치 전리품'
   },
   {
@@ -151,7 +151,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 전리품',
     tierColor: '#0d9488',
     effect: '케르베로스 토벌 증표 · [👟 삼디다스 실내화] 특별 교환권',
-    source: '운동장 축구장 수행평가 3두마수 케르베로스 보스 격파 시 100% 획득',
+    source: '운동장 축구장 수행평가 3두마수 케르베로스 보스 격파 시 획득',
     recipe: '케르베로스 보스 처치 전리품'
   },
 
@@ -186,7 +186,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 물약',
     tierColor: '#16a34a',
     effect: '사용 시 1분간 질주(대시) 속도 +10% 증가',
-    source: '소비품 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 15G)',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 15G'
   },
   {
@@ -197,7 +197,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 물약',
     tierColor: '#9333ea',
     effect: '사용 시 3분간 공격력(ATK) +5 증가',
-    source: '소비품 제작대(C)에서 제작 (허브 2개 + 목재 1개 + 20G)',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
   {
@@ -208,7 +208,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 주문서',
     tierColor: '#7c3aed',
     effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
-    source: '소비품 제작대(C)에서 제작 (허브 3개 + 은행잎 1개 + 10G)',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '향긋한 허브 3개 + 황금 은행잎 1개 + 10G'
   },
   {
@@ -219,7 +219,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '주문서',
     tierColor: '#0284c7',
     effect: '사용 시 어디서든 안전한 7층 복도로 즉시 공간 이동',
-    source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 15G)',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 15G'
   },
   {
@@ -230,7 +230,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '비전 주문서',
     tierColor: '#9333ea',
     effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
-    source: '소비품 제작대(C)에서 제작 (목재 1개 + 허브 2개 + 50G)',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
   },
 
@@ -243,7 +243,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '1티어 무기',
     tierColor: '#854d0e',
     effect: '공격력(ATK) +15 증가',
-    source: '장비 제작대(C)에서 제작 (목재 10개 + 15G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '단단한 목재 10개 + 15G'
   },
   {
@@ -254,7 +254,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '1티어 투구',
     tierColor: '#854d0e',
     effect: '방어력(DEF) +8, 체력(HP) +25 증가',
-    source: '장비 제작대(C)에서 제작 (목재 10개 + 15G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '단단한 목재 10개 + 15G'
   },
   {
@@ -265,7 +265,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '1티어 갑옷',
     tierColor: '#854d0e',
     effect: '방어력(DEF) +15, 체력(HP) +15 증가',
-    source: '장비 제작대(C)에서 제작 (목재 10개 + 15G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '단단한 목재 10개 + 15G'
   },
 
@@ -278,7 +278,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 무기',
     tierColor: '#b45309',
     effect: '공격력(ATK) +22 증가',
-    source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 농구가죽 10개 + 풋살가죽 10개 + 35G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 35G'
   },
   {
@@ -289,7 +289,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 투구',
     tierColor: '#b45309',
     effect: '방어력(DEF) +12, 체력(HP) +28 증가',
-    source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 풋살가죽 20개 + 40G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '보스의 가죽 1개 + 풋살공 가죽 20개 + 40G'
   },
   {
@@ -300,8 +300,19 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 갑옷',
     tierColor: '#b45309',
     effect: '방어력(DEF) +17, 체력(HP) +20 증가',
-    source: '장비 제작대(C)에서 제작 (보스의 가죽 1개 + 농구가죽 30개 + 50G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '보스의 가죽 1개 + 농구공 가죽 30개 + 50G'
+  },
+  {
+    id: 'equip_shoes_samdidas',
+    name: '삼디다스 실내화',
+    icon: '👟',
+    category: 'shoes',
+    subCategory: 'shoes',
+    tierBadge: '1티어 신발',
+    tierColor: '#059669',
+    effect: '공격력 +2, 방어력 +2, 체력 +10',
+    source: '🏅 호칭 교환소 특별 교환'
   },
   {
     id: 'equip_leather_shoes',
@@ -324,7 +335,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '3티어 무기',
     tierColor: '#047857',
     effect: '공격력(ATK) +30 증가',
-    source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G'
   },
   {
@@ -335,7 +346,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '3티어 투구',
     tierColor: '#047857',
     effect: '방어력(DEF) +14, 체력(HP) +35 증가',
-    source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G'
   },
   {
@@ -346,7 +357,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '3티어 갑옷',
     tierColor: '#047857',
     effect: '방어력(DEF) +22, 체력(HP) +25 증가',
-    source: '장비 제작대(C)에서 제작 (드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G)',
+    source: '장비 제작대(C)에서 제작',
     recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G'
   },
 
@@ -359,7 +370,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교화 장신구',
     tierColor: '#ca8a04',
     effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작 (개나리 꽃잎 20개 + 30G)',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작',
     recipe: '노란 개나리 꽃잎 20개 + 30G'
   },
   {
@@ -370,7 +381,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교목 장신구',
     tierColor: '#d97706',
     effect: '공격력 +20, 방어력 +12, 체력 +40 증가',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작 (황금 은행잎 10개 + 50G)',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작',
     recipe: '황금 은행잎 10개 + 50G'
   },
   {
@@ -381,7 +392,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '퀘스트 인가증',
     tierColor: '#2563eb',
     effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
-    source: '1학년 2반 가죽 골렘 토벌 시 100% 획득',
+    source: '1학년 2반 가죽 골렘 토벌 시 획득',
     recipe: '가죽 골렘 토벌'
   },
 
@@ -416,7 +427,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '4티어 무기',
     tierColor: '#6366f1',
     effect: '공격력 +45, 체력 +35',
-    source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 150G)',
+    source: '숭실역사관 제단(C)에서 제작',
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 150G'
   },
   {
@@ -427,7 +438,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '4티어 투구',
     tierColor: '#6366f1',
     effect: '방어력 +20, 체력 +35',
-    source: '숭실역사관 제단(C)에서 제작 (역사의 정수 4개 + 사명석 2개 + 120G)',
+    source: '숭실역사관 제단(C)에서 제작',
     recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 120G'
   },
   {
@@ -438,7 +449,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '4티어 갑옷',
     tierColor: '#6366f1',
     effect: '방어력 +30, 체력 +45',
-    source: '숭실역사관 제단(C)에서 제작 (역사의 정수 5개 + 사명석 3개 + 140G)',
+    source: '숭실역사관 제단(C)에서 제작',
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
   {
@@ -464,17 +475,6 @@ window.ITEM_CODEX_DATABASE = [
     source: '기말고사 파멸신 레이드 토벌 시 드랍'
   },
   {
-    id: 'equip_shoes_samdidas',
-    name: '삼디다스 실내화',
-    icon: '👟',
-    category: 'shoes',
-    subCategory: 'shoes',
-    tierBadge: '1티어 신발',
-    tierColor: '#059669',
-    effect: '공격력 +2, 방어력 +2, 체력 +10',
-    source: '🏅 호칭 교환소 특별 교환 (백점만점 시험지 또는 A+ 만점 수행평가지 1장)'
-  },
-  {
     id: 'equip_omr_wand',
     name: '컴싸 마법봉 (OMR Magic Wand)',
     icon: '🖊️',
@@ -482,7 +482,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '전설 무기',
     tierColor: '#7e22ce',
     effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
-    source: '기말고사 파멸신 레이드 전리품 드랍 (드랍 확률 75% / 제작 불가)',
+    source: '기말고사 파멸신 레이드 전리품 드랍',
     recipe: '제작 불가 (보스 레이드 전용 75% 드랍)'
   }
 ];
@@ -8488,6 +8488,12 @@ class MainApp {
       filtered = db.filter(item => item.category === 'weapon_armor' || item.subCategory === 'weapon_armor' || (item.category === 'equip' && !item.id.includes('shoes') && !item.id.includes('boots') && !item.id.includes('ring') && !item.id.includes('talisman') && !item.id.includes('pass')));
     } else if (tab === 'shoes') {
       filtered = db.filter(item => item.category === 'shoes' || item.subCategory === 'shoes' || item.id.includes('shoes') || item.id.includes('boots'));
+      const shoeOrder = ['equip_shoes_samdidas', 'equip_leather_shoes', 'equip_bronze_shoes', 'equip_heritage_boots'];
+      filtered.sort((a, b) => {
+        const idxA = shoeOrder.indexOf(a.id);
+        const idxB = shoeOrder.indexOf(b.id);
+        return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
+      });
     } else if (tab === 'accessory') {
       filtered = db.filter(item => item.category === 'accessory' || item.subCategory === 'accessory' || item.id.includes('ring') || item.id.includes('talisman') || item.id.includes('pass'));
     } else if (tab === 'equip') {
