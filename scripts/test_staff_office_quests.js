@@ -70,11 +70,15 @@ assert.strictEqual(pgSketchbook.x, 24, 'Sketchbook must be to the left of the be
 assert.strictEqual(pgSketchbook.y, 16, 'Sketchbook must be at y=16');
 console.log('✔ 6. Kim Jin-mui sketchbook on playground bench left (x: 24, y: 16) verified');
 
-const usb = office.interactive.find(i => i.id === 'quest_yosunyu_usb');
-assert(usb, 'Yo Sun-yu algorithm USB must exist in staff office');
-assert.strictEqual(usb.x, 17, 'USB must be on conference table at x=17');
-assert.strictEqual(usb.y, 6, 'USB must be on conference table at y=6');
-console.log('✔ 7. Yo Sun-yu algorithm USB on small conference table (x: 17, y: 6) verified');
+const officeUsb = office.interactive.find(i => i.id === 'quest_yosunyu_usb');
+assert(!officeUsb, 'Yo Sun-yu algorithm USB must no longer be in staff office');
+const cr702 = w.classroom_702;
+assert(cr702, 'classroom_702 must exist');
+const usb702 = cr702.interactive && cr702.interactive.find(i => i.id === 'quest_yosunyu_usb');
+assert(usb702, 'Yo Sun-yu algorithm USB must exist in classroom_702');
+assert.strictEqual(usb702.x, 2, 'USB must be at corner x=2');
+assert.strictEqual(usb702.y, 4, 'USB must be at corner y=4');
+console.log('✔ 7. Yo Sun-yu algorithm USB in 1-2 classroom corner (x: 2, y: 4) verified');
 
 // 2. Check main.js and server.js item catalog sync
 const mainCode = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
@@ -107,8 +111,9 @@ console.log('✔ 10. quest_kimmijin_art (김진믜) definition and rewards (Fors
 assert(mainCode.includes('quest_yosunyu_info'), 'main.js must define quest_yosunyu_info');
 const yoQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_yosunyu_info'"), mainCode.indexOf('class MainApp'));
 assert(yoQuestSnippet.includes("teacherRole: '정보'"), 'Yo Sun-yu role must be 정보');
-assert(yoQuestSnippet.includes("itemKey: 'item_ginkgo'"), 'quest_yosunyu_info must reward ginkgo leaves');
-assert(yoQuestSnippet.includes("label: '🍁 황금 은행잎 x3개'"), 'quest_yosunyu_info must reward 3 ginkgo leaves');
-console.log('✔ 11. quest_yosunyu_info (정보) definition and rewards (Ginkgo Leaves x3, 100 G, 100 EXP) verified');
+assert(!yoQuestSnippet.includes("itemKey: 'item_ginkgo'"), 'quest_yosunyu_info must no longer reward ginkgo leaves');
+assert(yoQuestSnippet.includes("amount: 100, label: '🪙 100 G (골드)'"), 'quest_yosunyu_info must reward 100 G');
+assert(yoQuestSnippet.includes("amount: 200, label: '🌟 200 EXP (경험치)'"), 'quest_yosunyu_info must reward 200 EXP');
+console.log('✔ 11. quest_yosunyu_info (정보) definition and rewards (No Ginkgo, 100 G, 200 EXP) verified');
 
 console.log('\n=== ALL STAFF OFFICE TEACHER TESTS PASSED SUCCESSFULLY! ===');

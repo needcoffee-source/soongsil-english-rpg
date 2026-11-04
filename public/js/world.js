@@ -303,7 +303,6 @@ const WORLD_DATA = {
       { id: "note_developer_staff_office", type: "dev_note_3", x: 51, y: 4, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" },
       { id: "quest_joshua_memo", type: "quest_memo", x: 48, y: 4, name: "📝 Joshua의 영단어 메모", prompt: "단어 메모 회수하기 (SPACE)" },
       { id: "quest_okchohan_textbook", type: "quest_okchohan_book", x: 42, y: 8, name: "📘 옥촣한의 사회 탐구 교재", prompt: "사회 교재 회수하기 (SPACE)" },
-      { id: "quest_yosunyu_usb", type: "quest_yosunyu_usb", x: 17, y: 6, name: "💾 요션유의 알고리즘 USB", prompt: "알고리즘 USB 회수하기 (SPACE)" },
       { id: "desk_developer_juncheol", type: "desk_juncheol", x: 91, y: 15, name: "👑 갓준철의 연구 책상 (26번)", prompt: "갓준철 선생님 책상 (SPACE)" }
     ],
     // 1 ~ 33번 좌석 정의 (교사 NPC 배치용 - 좌측 1번부터 우측 33번까지 순차 정리)
@@ -447,7 +446,10 @@ const WORLD_DATA = {
       atk: 30,
       def: 14
     },
-    desks: []
+    desks: [],
+    interactive: [
+      { id: "quest_yosunyu_usb", type: "quest_yosunyu_usb", x: 2, y: 4, name: "💾 요션유의 알고리즘 USB", prompt: "알고리즘 USB 회수하기 (SPACE)" }
+    ]
   },
 
   // 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어전)

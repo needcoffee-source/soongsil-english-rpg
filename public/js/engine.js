@@ -1104,7 +1104,7 @@ class GameEngine {
           }
         }
       }
-      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office') && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702') && cr.interactive) {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
@@ -1390,7 +1390,7 @@ class GameEngine {
           }
         }
       }
-      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office') && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702') && cr.interactive) {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
@@ -5133,6 +5133,14 @@ class GameEngine {
       } else {
         // 교사가 레이드 종료 버튼을 누르면 보스가 사라지고 대기 상태로 전환
         this.drawPeacefulBossChamber(cr);
+      }
+      // 1학년 2반 상호작용 오브젝트 (요션유의 알고리즘 USB 등)
+      if (cr.interactive) {
+        for (const obj of cr.interactive) {
+          if (obj.type === 'quest_yosunyu_usb') {
+            this.drawStaffOfficeUsb(obj.x * 32, obj.y * 32);
+          }
+        }
       }
     } else if (this.player.room === 'room_703') {
       // === 1학년 3반: 영어 타자 컴퓨터실 (산성비 단어 방어 기지) ===
