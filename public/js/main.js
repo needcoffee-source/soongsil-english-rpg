@@ -2719,7 +2719,7 @@ class MainApp {
       }
       const status1 = cond1Met ? '✅ 완수 (4/4개 완료)' : `❌ 미완수 (${vitrinesCount}/4개 조사됨)`;
       const status2 = '🔒 봉인 중 (조건 1, 3, 4 충족 시 교훈 암호 입력 가능)';
-      const status3 = cond3Met ? '✅ 완수 (응원 쪽지 작성됨)' : '❌ 미완수 (6층 교무실 26번 갓준철 책상에 쪽지 작성 필요)';
+      const status3 = cond3Met ? '✅ 완수 (응원 쪽지 작성됨)' : '❌ 미완수 (6층 교무실 26번 책상에 쪽지 작성 필요)';
       const status4 = cond4Met
         ? `✅ 완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유)`
         : `❌ 미완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유 중)`;
@@ -2731,13 +2731,10 @@ class MainApp {
         `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `[조건 1] 🏛️ 4대 전시관 모두 조사: ${status1}\n` +
         `[조건 2] 📜 숭실 교훈 암호 입력: ${status2}\n` +
-        `[조건 3] ✍️ 갓준철에게 메시지 남기기: ${status3}\n` +
+        `[조건 3] ✍️ 가장 존경하는 선생님에게 메시지 남기기: ${status3}\n` +
         `[조건 4] 💎 결계 봉인 제물 바치기: ${status4}\n` +
         `   • 💎 꺾이지 않는 사명석 1개 (${stoneCount}/1)\n` +
-        `   • 🏛️ 숭실 역사의 정수 5개 (${essenceCount}/5)\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-        `💡 4대 전시관을 답사하고, 6층 교무실 26번 책상에 응원 쪽지를 남긴 뒤,\n` +
-        `   역사관 몬스터를 토벌하여 사명석과 정수를 모아오세요!`
+        `   • 🏛️ 숭실 역사의 정수 5개 (${essenceCount}/5)`
       );
       return;
     }
@@ -2745,7 +2742,7 @@ class MainApp {
     // 조건 1, 3, 4 충족 완료 -> 조건 2. 숭실 교훈 입력 프롬프트
     const inputPw = prompt(
       `✨ [숭실역사관 비밀의 방 결계 해제 의식]\n\n` +
-      `4대 전시관 완벽 답사, 갓준철 응원 메시지, 그리고 봉인 제물(사명석 1개, 역사의 정수 5개)이 모두 갖추어졌습니다!\n\n` +
+      `4대 전시관 완벽 답사, 가장 존경하는 선생님 응원 메시지, 그리고 봉인 제물(사명석 1개, 역사의 정수 5개)이 모두 갖추어졌습니다!\n\n` +
       `비밀의 문을 열기 위해 숭실의 숭고한 교훈 문구를 입력하세요:\n\n` +
       `⚠️ [주의] 결계 해제 시 사명석 1개와 역사의 정수 5개가 제단에 바쳐집니다.\n` +
       `💡 힌트: 역사관 칠판 상단 교훈 액자 ("참과 사랑에 사는 사명인")`
@@ -2786,7 +2783,7 @@ class MainApp {
 
     alert(
       `🎉 [숭실역사관 비밀의 방 결계 전면 해제!]\n\n` +
-      `"참과 사랑에 사는 사명인의 정신과 갓준철을 향한 진심이 공명하며,\n` +
+      `"참과 사랑에 사는 사명인의 정신과 선생님을 향한 진심이 공명하며,\n` +
       `굳게 닫혀 있던 서쪽 석벽이 열리고 비밀의 통로가 드러났습니다!"\n\n` +
       `💎 꺾이지 않는 사명석 1개와 🏛️ 숭실 역사의 정수 5개가 결계에 바쳐졌습니다.\n` +
       `이제부터 비밀의 방을 언제든 자유롭게 드나들 수 있습니다!`
@@ -4758,19 +4755,50 @@ class MainApp {
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
       }
 
-      // 7. 기말고사 파멸신 전용 드랍: 4티어 헤리티지 부츠 (20% 전설 신발) or 컴싸 마법봉 (80%)
+      // 7. 기말고사 파멸신 전용 드랍 테이블:
+      // • 순간이동 주문서 1개 (100% 확정 고정 드랍)
+      // • 4티어 헤리티지 부츠 (20% 확률)
+      // • 컴싸 마법봉 (40% 확률)
+      // • 합심의 황금 은행잎 부적 (1% 확률)
       if (bName.includes('파멸신') || bName.includes('기말고사')) {
-        if (Math.random() < 0.20) {
+        // 순간이동 주문서 1개 고정 드랍 (100%)
+        this.addItem('item_teleport_scroll', '순간이동 주문서', 1, '📜', {
+          type: 'consumable',
+          effect: '등록된 주요 장소로 즉시 공간이동'
+        });
+        rewardItemsList.push('📜 순간이동 주문서 1개 (확정 전리품)');
+
+        // 4티어 헤리티지 부츠 (20% 확률)
+        if (Math.random() * 100 < 20) {
           this.addItem('equip_heritage_boots', '👑 1897 숭실 헤리티지 부츠', 1, '👟', {
             type: 'equipment',
             slot: 'shoes',
             stats: { atk: 6, def: 6, hp: 15 },
             effect: '4티어 신발'
           });
-          rewardItemsList.push('👟 👑 1897 숭실 헤리티지 부츠 (4티어 전설 신발 드랍 - 20% 확률!)');
-        } else {
-          this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '공격력 +45, 방어력 +5' });
-          rewardItemsList.push('🖊️ 컴싸 마법봉 (희귀 무기!)');
+          rewardItemsList.push('👟 👑 1897 숭실 헤리티지 부츠 (4티어 전설 신발 득템 - 20% 확률!)');
+        }
+
+        // 컴싸 마법봉 (40% 확률)
+        if (Math.random() * 100 < 40) {
+          this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', {
+            type: 'equipment',
+            slot: 'weapon',
+            stats: { atk: 45, def: 5, hp: 30 },
+            effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5'
+          });
+          rewardItemsList.push('🖊️ 컴싸 마법봉 (40% 희귀 무기 드랍!)');
+        }
+
+        // 합심의 황금 은행잎 부적 (1% 대박 드랍)
+        if (Math.random() * 100 < 1) {
+          this.addItem('equip_ginkgo_talisman', '합심의 황금 은행잎 부적', 1, '🍂', {
+            type: 'equipment',
+            slot: 'accessory',
+            stats: { atk: 20, def: 12, hp: 40 },
+            effect: '공격력 +20, 방어력 +12, 체력 +40'
+          });
+          rewardItemsList.push('🍂 합심의 황금 은행잎 부적 (1% 초특급 대박 장신구 득템!)');
         }
       }
 
@@ -8430,12 +8458,8 @@ class MainApp {
           btn.addEventListener('click', () => {
             tabContainer.querySelectorAll('.codex-tab-btn').forEach(b => {
               b.classList.remove('active');
-              b.style.background = '#ffffff';
-              b.style.color = '#475569';
             });
             btn.classList.add('active');
-            btn.style.background = '#2563eb';
-            btn.style.color = '#ffffff';
             this.currentCodexTab = btn.dataset.tab;
             this.renderCodexItems();
           });

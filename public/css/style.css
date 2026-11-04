@@ -2656,6 +2656,30 @@ body, html {
 .btn-top-quick:active {
   transform: translateY(0);
 }
+.codex-tab-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 11.5px !important;
+  font-weight: 800 !important;
+  border-radius: 6px !important;
+  border: 1.5px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  user-select: none !important;
+  transition: all 0.15s ease !important;
+}
+.codex-tab-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #1e293b !important;
+}
 .codex-tab-btn.active {
   background: #2563eb !important;
   color: #ffffff !important;

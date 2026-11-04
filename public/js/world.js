@@ -156,7 +156,7 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
-      { id: "door_secret_history", type: "door_secret_history", x: 1, y: 10, name: "🗝️ 비밀의 방 입구", prompt: "비밀의 방 들어가기 (SPACE)" },
+      { id: "door_secret_history", type: "door_secret_history", x: 1, y: 10, name: "", prompt: "비밀의 방 들어가기 (SPACE)" },
       { id: "hist_vitrine_1", type: "history_vitrine", vitrineIndex: 1, x: 6, y: 7, name: "🏛️ [제1전시관] 1897 평양 창립관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 민족신앙 수호관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },

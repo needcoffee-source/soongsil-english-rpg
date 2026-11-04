@@ -8576,17 +8576,8 @@ class GameEngine {
     ctx.textBaseline = 'middle';
     ctx.fillText(isUnlocked ? '✨' : '🗝️', dx + 6, dy + bob);
 
-    // 5. Sharp informative label
-    const doorLabel = isUnlocked ? '🗝️ 비밀의 방 (개방됨)' : '🔒 비밀의 방 결계 입구';
-    this.drawSharpLabel(dx + 6, dy + 32, doorLabel, {
-      bgColor: 'rgba(15, 23, 42, 0.95)',
-      borderColor: isUnlocked ? '#38bdf8' : '#f59e0b',
-      borderWidth: 1.5,
-      textColor: isUnlocked ? '#bae6fd' : '#fef08a',
-      fontSize: 11,
-      paddingX: 8,
-      height: 20
-    });
+    // 5. Secret Easter egg archway - text label hidden as requested
+    // (Player can interact naturally via SPACE prompt)
 
     ctx.restore();
   }
