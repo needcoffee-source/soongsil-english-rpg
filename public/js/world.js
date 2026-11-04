@@ -247,12 +247,7 @@ const WORLD_DATA = {
   classroom_secret_history: {
     name: "🗝️ 숭실 비밀의 서고 (Secret Archive)",
     exitDoor: { x: 8, y: 17 },
-    blackboard: {
-      x: 8,
-      y: 2,
-      name: "🗝️ 숭실 127년 비밀 역사 보물관",
-      prompt: ""
-    },
+    blackboard: null,
     teacherDesk: null,
     gatherSpots: [],
     desks: [],

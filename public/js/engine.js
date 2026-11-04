@@ -5104,13 +5104,12 @@ class GameEngine {
     // 2. High-Res Classroom Blackboard & School Motto
     const isCareerRoom = (this.player.room === 'room_career');
     const isStaffOffice = (this.player.room === 'room_staff_office');
+    const isSecretHistory = (this.player.room === 'room_secret_history');
     const centerTileX = isStaffOffice ? 45 : (isCareerRoom ? 30 : 15);
-    if (!isStaffOffice) {
+    if (!isStaffOffice && !isSecretHistory) {
       this.drawHighResBlackboard(cr, centerTileX);
+      this.drawHighResWallClock(centerTileX * 32, 16);
     }
-
-    // 3. Wall Clock above Blackboard (Center Top)
-    this.drawHighResWallClock(centerTileX * 32, 16);
 
     // 4. Back Wall Student Lockers (Row of Lockers along Back Wall)
     if (isStaffOffice) {
@@ -5118,7 +5117,7 @@ class GameEngine {
     } else if (isCareerRoom) {
       this.drawHighResLockers(4, 17, 6);
       this.drawHighResLockers(50, 17, 6);
-    } else if (this.player.room === 'room_history' || this.player.room === 'room_705') {
+    } else if (this.player.room === 'room_history' || this.player.room === 'room_705' || this.player.room === 'room_secret_history') {
       // Museum and Alchemy Lab have custom atmospheric layouts without standard school lockers
     } else {
       this.drawHighResLockers(3, 17, 5);
@@ -8621,7 +8620,7 @@ class GameEngine {
     }
 
     // 3. Wall Banner
-    this.drawSharpLabel(8 * 32, 1.8 * 32, '🗝️ [숭실 비밀의 서고] 127년 역사의 비전과 숨겨진 보물', {
+    this.drawSharpLabel(8 * 32, 1.8 * 32, '🗝️ [숭실 비밀의 서고]', {
       bgColor: 'rgba(15, 23, 42, 0.96)',
       borderColor: '#fbbf24',
       borderWidth: 2,
