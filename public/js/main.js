@@ -442,6 +442,17 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
   {
+    id: 'equip_heritage_ring',
+    name: '1897 숭실 헤리티지 반지',
+    icon: '💍',
+    category: 'equip',
+    tierBadge: '4티어 전설 장신구',
+    tierColor: '#38bdf8',
+    effect: '공격력 +25, 방어력 +25, 체력 +50',
+    source: '숭실역사관 비밀의 방 고대 비전의 보물함 (이스터에그)',
+    recipe: '4대 전시관 답사 + 암호 1897 + 갓준철 응원 쪽지 + 사명석 1개 & 역사의 정수 5개 결계 공양'
+  },
+  {
     id: 'equip_shoes_samdidas',
     name: '삼디다스 실내화',
     icon: '👟',
@@ -517,6 +528,7 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
   'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
   'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
+  'equip_heritage_ring': { name: '🌟 1897 숭실 헤리티지 반지', icon: '💍', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 25, def: 25, hp: 50 }, effect: '4티어 전설 장신구 · 숭실 127년 역사관 비밀의 방 보물 · 공격력 +25, 방어력 +25, 체력 +50' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
@@ -573,6 +585,7 @@ const ITEM_SELL_PRICES = {
   'equip_heritage_blade': 30, // 제작비 150G -> 20% = 30G
   'equip_heritage_helmet': 24, // 제작비 120G -> 20% = 24G
   'equip_heritage_armor': 28, // 제작비 140G -> 20% = 28G
+  'equip_heritage_ring': 50, // 전설 장신구 특별 매각가
 
   // 7. 최상위 엔드 레이드 전리품
   'equip_omr_wand': 20,
@@ -724,6 +737,13 @@ const CAREER_ESCAPE_CLUES = [
 ];
 
 const TITLE_DEFINITIONS = [
+  {
+    id: 'title_history_secret_master',
+    name: '🏛️ 역사의 진실을 밝힌 자',
+    desc: '숭실 127년 역사관 비밀의 방 결계를 모두 풀고 고대 비전의 보물을 손에 넣은 전설의 탐험가! (공격력 +15, 방어력 +15, 체력 +50)',
+    costType: 'quest',
+    costAmount: 0
+  },
   {
     id: 'title_history_bearer',
     name: '🏛️ 역사를 기억하는 자',
@@ -1060,6 +1080,8 @@ class MainApp {
       equippedTitle: null,
       quests: {},
       juncheolGuestbookNote: '',
+      secretHistoryRoomUnlocked: false,
+      openedSecretHistoryChest: false,
       inventory: []
     };
 
@@ -1561,6 +1583,12 @@ class MainApp {
       this.handleQuestUsbPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
+    } else if (target.type === 'door_secret_history') {
+      this.handleSecretHistoryDoor();
+    } else if (target.type === 'chest_secret_history') {
+      this.handleSecretHistoryChest();
+    } else if (target.type === 'secret_history_book') {
+      this.handleSecretHistoryBook(target.data || target);
     }
   }
 
@@ -2640,30 +2668,181 @@ class MainApp {
     }
   }
 
-  // 🔨 4티어 헤리티지 무기·방어구 제작 제단
+  // 🗝️ 숭실역사관 서쪽 비밀의 방 결계 봉인 해제 시스템
   handleSecretHistoryDoor() {
-    if (window.AudioManager && typeof window.AudioManager.playWarp === 'function') {
-      window.AudioManager.playWarp();
+    if (!this.playerData) return;
+
+    // 이미 영구 해제된 경우: 즉시 자유 입장
+    if (this.playerData.secretHistoryRoomUnlocked) {
+      if (window.AudioManager && typeof window.AudioManager.playWarp === 'function') {
+        window.AudioManager.playWarp();
+      }
+      this.showToast('🗝️ [숭실 비밀의 서고] 127년 역사의 비전이 잠든 비밀의 방으로 입장합니다.', 'success');
+      this.engine.teleportTo(0, 'room_secret_history', 8 * 32, 14 * 32);
+      return;
     }
-    this.showToast('🗝️ [이스터에그] 숭실역사관 서쪽 벽 이음새 너머 비밀의 방에 입장했습니다!', 'success');
+
+    // 4가지 조건 검증:
+    // 조건 1. 4대 전시관 모두 조사
+    const vitrines = Array.isArray(this.playerData.historyVitrines)
+      ? this.playerData.historyVitrines
+      : (Array.isArray(this.playerData.historyClues) ? this.playerData.historyClues : [false, false, false, false]);
+    const vitrinesCount = vitrines.filter(Boolean).length;
+    const cond1Met = (vitrinesCount >= 4);
+
+    // 조건 3. 갓준철에게 메시지 남기기 (6층 교무실 26번 책상 방명록)
+    const studentId = this.playerData.studentId || '';
+    let localJuncheolNote = '';
+    if (studentId) {
+      try {
+        localJuncheolNote = localStorage.getItem('soongsil_juncheol_guestbook_' + studentId) || '';
+      } catch (e) {}
+    }
+    const currentNote = (this.playerData && this.playerData.juncheolGuestbookNote) || localJuncheolNote || '';
+    const cond3Met = (typeof currentNote === 'string' && currentNote.trim().length > 0);
+
+    // 조건 4. 사명석 1개와 역사의 정수 5개 바치기
+    const stoneCount = this.getItemCount('item_unyielding_stone');
+    const essenceCount = this.getItemCount('item_history_essence');
+    const cond4Met = (stoneCount >= 1 && essenceCount >= 5);
+
+    // 사전 조건(조건 1, 3, 4) 미충족 시 현황 안내창 출력
+    if (!cond1Met || !cond3Met || !cond4Met) {
+      if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+        window.AudioManager.playSelect();
+      }
+      const status1 = cond1Met ? '✅ 완수 (4/4개 완료)' : `❌ 미완수 (${vitrinesCount}/4개 조사됨)`;
+      const status2 = '🔒 봉인 중 (조건 1, 3, 4 충족 시 입력 가능)';
+      const status3 = cond3Met ? '✅ 완수 (응원 쪽지 작성됨)' : '❌ 미완수 (6층 교무실 26번 갓준철 책상에 쪽지 작성 필요)';
+      const status4 = cond4Met
+        ? `✅ 완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유)`
+        : `❌ 미완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유 중)`;
+
+      alert(
+        `🔒 [숭실역사관 비밀의 방 결계 봉인]\n\n` +
+        `단단한 서쪽 석벽 틈새에 고대 룬 결계가 서려 있습니다.\n` +
+        `비밀의 방에 입장하려면 아래 4가지 사명의 조건을 모두 완수해야 합니다!\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `[조건 1] 🏛️ 4대 전시관 모두 조사: ${status1}\n` +
+        `[조건 2] 🗝️ 비밀 암호 4자리 해독: ${status2}\n` +
+        `[조건 3] ✍️ 갓준철에게 메시지 남기기: ${status3}\n` +
+        `[조건 4] 💎 결계 봉인 제물 바치기: ${status4}\n` +
+        `   • 💎 꺾이지 않는 사명석 1개 (${stoneCount}/1)\n` +
+        `   • 🏛️ 숭실 역사의 정수 5개 (${essenceCount}/5)\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `💡 4대 전시관을 답사하고, 6층 교무실 26번 책상에 응원 쪽지를 남긴 뒤,\n` +
+        `   역사관 몬스터를 토벌하여 사명석과 정수를 모아오세요!`
+      );
+      return;
+    }
+
+    // 조건 1, 3, 4 충족 완료 -> 조건 2. 비밀 암호 입력 프롬프트
+    const inputPw = prompt(
+      `✨ [숭실역사관 비밀의 방 결계 해제 의식]\n\n` +
+      `4대 전시관 완벽 답사, 갓준철 응원 메시지, 그리고 봉인 제물(사명석 1개, 역사의 정수 5개)이 모두 갖추어졌습니다!\n\n` +
+      `숭실이 평양에서 처음 시작된 역사적인 창립 연도(암호 4자리)를 입력하세요:\n\n` +
+      `⚠️ [주의] 결계 해제 시 사명석 1개와 역사의 정수 5개가 제단에 바쳐집니다.`
+    );
+
+    if (inputPw === null) {
+      return; // 취소 버튼 클릭 시 종료
+    }
+
+    if (inputPw.trim() !== '1897') {
+      alert(
+        `❌ [결계 봉인 해제 실패]\n\n` +
+        `입력하신 암호 [${inputPw.trim()}]는 올바르지 않습니다.\n\n` +
+        `💡 힌트: 숭실역사관 제1전시관의 현판과 평양 숭실학당 창립 연도를 확인해보세요!`
+      );
+      return;
+    }
+
+    // 4가지 조건 모두 최종 달성!
+    // 제물 공양 (아이템 소모)
+    this.removeItem('item_unyielding_stone', 1);
+    this.removeItem('item_history_essence', 5);
+
+    // 영구 개방 플래그 저장
+    this.playerData.secretHistoryRoomUnlocked = true;
+    if (studentId) {
+      try {
+        localStorage.setItem('soongsil_secret_history_unlocked_' + studentId, 'true');
+      } catch (e) {}
+    }
+    this.saveProgress(true);
+
+    if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+      window.AudioManager.playFanfare();
+    }
+
+    alert(
+      `🎉 [숭실역사관 비밀의 방 결계 전면 해제!]\n\n` +
+      `"1897년 평양에서 타오른 불멸의 사명과 갓준철을 향한 진심이 공명하며,\n` +
+      `굳게 닫혀 있던 서쪽 석벽이 열리고 비밀의 통로가 드러났습니다!"\n\n` +
+      `💎 꺾이지 않는 사명석 1개와 🏛️ 숭실 역사의 정수 5개가 결계에 바쳐졌습니다.\n` +
+      `이제부터 비밀의 방을 언제든 자유롭게 드나들 수 있습니다!`
+    );
+
+    this.showToast('🗝️ [이스터에그 봉인 해제!] 숭실 127년 비밀의 서고에 입장합니다!', 'success');
     this.engine.teleportTo(0, 'room_secret_history', 8 * 32, 14 * 32);
   }
 
   handleSecretHistoryChest() {
     if (!this.playerData) return;
     if (this.playerData.openedSecretHistoryChest) {
-      alert('✨ [숭실 고대 비전의 보물함]\n\n"이미 127년 역사의 비전이 담긴 보물을 획득했습니다. 사명을 가슴에 품고 전진하세요!"');
+      alert('✨ [숭실 고대 비전의 보물함]\n\n"이미 127년 역사의 비전이 담긴 전설의 보물을 모두 획득했습니다. 사명을 가슴에 품고 전진하세요!"');
       return;
     }
     this.playerData.openedSecretHistoryChest = true;
-    this.addGold(500);
-    this.addExp(300);
-    this.saveProgress();
+    const studentId = this.playerData.studentId;
+    if (studentId) {
+      try {
+        localStorage.setItem('soongsil_secret_history_chest_' + studentId, 'true');
+      } catch (e) {}
+    }
+
+    // 확실한 보상 1: 황금 1,000 G
+    this.addGold(1000);
+
+    // 확실한 보상 2: 경험치 500 EXP
+    this.addExp(500);
+
+    // 확실한 보상 3: 전설 4티어 장신구 🌟 1897 숭실 헤리티지 반지
+    this.addItem('equip_heritage_ring', '🌟 1897 숭실 헤리티지 반지', 1, '💍', {
+      type: 'equipment',
+      slot: 'accessory',
+      stats: { atk: 25, def: 25, hp: 50 },
+      effect: '4티어 전설 장신구 · 숭실 127년 역사관 비밀의 방 보물 · 공격력 +25, 방어력 +25, 체력 +50'
+    });
+
+    // 확실한 보상 4: 특별 한정판 명예 칭호
+    const secretTitle = '🏛️ 역사의 진실을 밝힌 자';
+    this.playerData.titles = this.playerData.titles || [];
+    if (!this.playerData.titles.includes(secretTitle)) {
+      this.playerData.titles.push(secretTitle);
+    }
+    this.equipTitle(secretTitle);
+
+    this.recalcCombatStats();
+    this.saveProgress(true);
+
     if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
       window.AudioManager.playFanfare();
     }
-    alert('🎉 [이스터에그 대성공! 숭실 고대 비전의 보물함 개방]\n\n"1897년 평양에서 시작된 숭실 127년 사명의 비밀을 발견한 자에게 주어지는 고대 보물입니다!"\n\n🪙 +500 G (골드 획득)\n🌟 +300 EXP (경험치 획득)');
-    this.showToast('🎉 [이스터에그 달성!] 500 G & 300 EXP를 획득했습니다!', 'success');
+
+    alert(
+      `🎉 [이스터에그 대성공! 숭실 고대 비전의 보물함 개방]\n\n` +
+      `"1897년 평양에서 시작된 숭실 127년 사명의 비밀을 밝혀낸 위대한 모험가에게 주어지는 고대 전설의 보물입니다!"\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `🪙 +1,000 G (골드 대량 획득)\n` +
+      `🌟 +500 EXP (경험치 대량 획득)\n` +
+      `💍 [전설 4티어 장신구] 🌟 1897 숭실 헤리티지 반지 획득!\n` +
+      `   • 능력치: 공격력 +25, 방어력 +25, 체력 +50\n` +
+      `👑 특별 한정 칭호 [${secretTitle}] 획득 및 자동 장착!\n` +
+      `   • 칭호 효과: 공격력 +15, 방어력 +15, 체력 +50 추가 상승!\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━`
+    );
+    this.showToast('🎉 [전설 보물 획득!] 1,000 G, 500 EXP, 1897 헤리티지 반지를 획득했습니다!', 'success');
   }
 
   handleSecretHistoryBook(target) {
@@ -3132,6 +3311,14 @@ class MainApp {
               if (localQuests) this.playerData.quests = JSON.parse(localQuests);
             } catch (e) {}
           }
+          this.playerData.secretHistoryRoomUnlocked = !!saved.secretHistoryRoomUnlocked;
+          if (!this.playerData.secretHistoryRoomUnlocked && studentId) {
+            this.playerData.secretHistoryRoomUnlocked = (localStorage.getItem('soongsil_secret_history_unlocked_' + studentId) === 'true');
+          }
+          this.playerData.openedSecretHistoryChest = !!saved.openedSecretHistoryChest;
+          if (!this.playerData.openedSecretHistoryChest && studentId) {
+            this.playerData.openedSecretHistoryChest = (localStorage.getItem('soongsil_secret_history_chest_' + studentId) === 'true');
+          }
           console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}, 704클리어: ${this.playerData.hasClearedClass704}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
@@ -3163,6 +3350,8 @@ class MainApp {
           }
           this.playerData.titles = [];
           this.playerData.equippedTitle = null;
+          this.playerData.secretHistoryRoomUnlocked = (studentId && localStorage.getItem('soongsil_secret_history_unlocked_' + studentId) === 'true');
+          this.playerData.openedSecretHistoryChest = (studentId && localStorage.getItem('soongsil_secret_history_chest_' + studentId) === 'true');
           this.playerData.quests = {};
           if (studentId) {
             try {
@@ -3263,6 +3452,8 @@ class MainApp {
               solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
               titles: this.playerData.titles || [],
               equippedTitle: this.playerData.equippedTitle || null,
+              secretHistoryRoomUnlocked: !!this.playerData.secretHistoryRoomUnlocked,
+              openedSecretHistoryChest: !!this.playerData.openedSecretHistoryChest,
               updatedAt: Date.now()
             };
             try {
@@ -3685,6 +3876,10 @@ class MainApp {
     if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
       bonusAtk += 10;
       bonusHp += 30;
+    } else if (this.playerData.equippedTitle === '🏛️ 역사의 진실을 밝힌 자') {
+      bonusAtk += 15;
+      bonusDef += 15;
+      bonusHp += 50;
     }
 
     // 🔥 용기의 물약 버프 (공격력 +5 증가)
@@ -6606,6 +6801,8 @@ class MainApp {
         titles: this.playerData.titles || [],
         equippedTitle: this.playerData.equippedTitle || null,
         quests: this.playerData.quests || {},
+        secretHistoryRoomUnlocked: !!this.playerData.secretHistoryRoomUnlocked,
+        openedSecretHistoryChest: !!this.playerData.openedSecretHistoryChest,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
@@ -6627,10 +6824,16 @@ class MainApp {
       if (Array.isArray(this.playerData.solvedMoralQuestionIds)) {
         try { localStorage.setItem('soongsil_class704_solved_' + this.playerData.studentId, JSON.stringify(this.playerData.solvedMoralQuestionIds)); } catch (e) {}
       }
+      if (this.playerData.secretHistoryRoomUnlocked) {
+        try { localStorage.setItem('soongsil_secret_history_unlocked_' + this.playerData.studentId, 'true'); } catch (e) {}
+      }
+      if (this.playerData.openedSecretHistoryChest) {
+        try { localStorage.setItem('soongsil_secret_history_chest_' + this.playerData.studentId, 'true'); } catch (e) {}
+      }
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
       // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasReadDevNote2}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${saveData.job}_${saveData.hasEscapedCareerRoom}_${(saveData.careerClues || []).join(',')}_${(saveData.historyVitrines || []).join(',')}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}`;
+      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasReadDevNote2}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${saveData.job}_${saveData.hasEscapedCareerRoom}_${(saveData.careerClues || []).join(',')}_${(saveData.historyVitrines || []).join(',')}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}_${saveData.secretHistoryRoomUnlocked}_${saveData.openedSecretHistoryChest}`;
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }

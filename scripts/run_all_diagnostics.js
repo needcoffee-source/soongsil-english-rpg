@@ -16,7 +16,8 @@ const tests = [
   'test_staff_office_quests.js',
   'test_render_strict.js',
   'test_student_admin_api.js',
-  'test_teacher_login.js'
+  'test_teacher_login.js',
+  'test_secret_history_gatekeeper.js'
 ];
 
 console.log('==============================================');

@@ -1145,11 +1145,16 @@ class GameEngine {
           }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           if (dist < 64 && dist < minDist) {
+            let promptText = item.prompt || '조사하기 (SPACE)';
+            if (item.type === 'door_secret_history') {
+              const isUnlocked = !!(window.MainApp && window.MainApp.playerData && window.MainApp.playerData.secretHistoryRoomUnlocked);
+              promptText = isUnlocked ? '비밀의 방 들어가기 (SPACE)' : '비밀의 방 결계 봉인 해제 (SPACE)';
+            }
             closest = {
               type: item.type,
               data: item,
               name: item.name,
-              prompt: item.prompt || '조사하기 (SPACE)'
+              prompt: promptText
             };
             minDist = dist;
           }
@@ -6490,6 +6495,14 @@ class GameEngine {
       } else if (gear.accessory === 'ginkgo' && front) {
         r(6, 12, 1, 1, '#78350f'); r(9, 12, 1, 1, '#78350f');
         r(7, 13, 2, 2, '#fbbf24'); r(7, 13, 1, 1, '#fef3c7');
+      } else if (gear.accessory === 'heritage') {
+        if (front) {
+          r(13, 17 + rDy, 2, 2, '#38bdf8');
+          r(13, 17 + rDy, 1, 1, '#ffffff');
+        } else {
+          r(2, 17 + lDy, 2, 2, '#38bdf8');
+          r(2, 17 + lDy, 1, 1, '#ffffff');
+        }
       }
       return;
     }
@@ -6609,6 +6622,7 @@ class GameEngine {
     }
     r(hx, 17, 2, 1, S.skin);
     if (gear.accessory === 'forsythia') r(hx, 17, 1, 1, '#facc15');
+    else if (gear.accessory === 'heritage') r(hx, 17, 1, 1, '#38bdf8');
   }
 
   // Builds (or reuses) an outlined sprite canvas for the given look
@@ -6694,6 +6708,7 @@ class GameEngine {
     const gearSrc = p.gear || {};
     const tier = (id) => {
       if (!id) return null;
+      if (id.includes('heritage')) return 'heritage';
       if (id.includes('bronze')) return 'bronze';
       if (id.includes('leather')) return 'leather';
       if (id.includes('forsythia')) return 'forsythia';
@@ -8453,7 +8468,11 @@ class GameEngine {
 
   renderHistoryMuseum(cr) {
     const app = window.MainApp;
-    const clues = (app && app.playerData && Array.isArray(app.playerData.historyClues)) ? app.playerData.historyClues : [false, false, false, false];
+    let clues = [false, false, false, false];
+    if (app && app.playerData) {
+      if (Array.isArray(app.playerData.historyVitrines)) clues = app.playerData.historyVitrines;
+      else if (Array.isArray(app.playerData.historyClues)) clues = app.playerData.historyClues;
+    }
     const solvedCount = clues.filter(Boolean).length;
     const now = Date.now();
 
@@ -8516,6 +8535,8 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
 
+    const app = window.MainApp;
+    const isUnlocked = !!(app && app.playerData && app.playerData.secretHistoryRoomUnlocked);
     const time = Date.now() / 300;
     const pulse = 0.5 + 0.5 * Math.sin(time);
 
@@ -8525,13 +8546,17 @@ class GameEngine {
     ctx.roundRect(dx - 12, dy - 20, 36, 56, [14, 14, 0, 0]);
     ctx.fill();
 
-    // 2. Subtle ancient golden rune outline
-    ctx.strokeStyle = `rgba(245, 158, 11, ${0.4 + 0.4 * pulse})`;
+    // 2. Subtle ancient golden or cyan rune outline
+    ctx.strokeStyle = isUnlocked
+      ? `rgba(56, 189, 248, ${0.6 + 0.4 * pulse})`
+      : `rgba(245, 158, 11, ${0.4 + 0.4 * pulse})`;
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // 3. Shimmering mystical particle glow inside the portal
-    ctx.fillStyle = `rgba(251, 191, 36, ${0.15 + 0.15 * pulse})`;
+    ctx.fillStyle = isUnlocked
+      ? `rgba(56, 189, 248, ${0.2 + 0.2 * pulse})`
+      : `rgba(251, 191, 36, ${0.15 + 0.15 * pulse})`;
     ctx.beginPath();
     ctx.roundRect(dx - 8, dy - 16, 28, 48, [12, 12, 0, 0]);
     ctx.fill();
@@ -8541,14 +8566,15 @@ class GameEngine {
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🗝️', dx + 6, dy + bob);
+    ctx.fillText(isUnlocked ? '✨' : '🗝️', dx + 6, dy + bob);
 
     // 5. Sharp informative label
-    this.drawSharpLabel(dx + 6, dy + 32, '🗝️ 비밀의 방 입구', {
+    const doorLabel = isUnlocked ? '🗝️ 비밀의 방 (개방됨)' : '🔒 비밀의 방 결계 입구';
+    this.drawSharpLabel(dx + 6, dy + 32, doorLabel, {
       bgColor: 'rgba(15, 23, 42, 0.95)',
-      borderColor: '#f59e0b',
+      borderColor: isUnlocked ? '#38bdf8' : '#f59e0b',
       borderWidth: 1.5,
-      textColor: '#fef08a',
+      textColor: isUnlocked ? '#bae6fd' : '#fef08a',
       fontSize: 11,
       paddingX: 8,
       height: 20
