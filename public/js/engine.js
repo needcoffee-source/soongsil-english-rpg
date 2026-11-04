@@ -923,7 +923,7 @@ class GameEngine {
               closest = {
                 type: 'quest_kimmijin_book',
                 data: pg.sketchbook,
-                name: pg.sketchbook.name || '🎨 김미진의 풍경화 스케치북',
+                name: pg.sketchbook.name || '🎨 김진믜의 풍경화 스케치북',
                 prompt: pg.sketchbook.prompt || '스케치북 회수하기 (SPACE)'
               };
               minDist = sbDist;
@@ -1121,8 +1121,8 @@ class GameEngine {
               continue;
             }
           }
-          if (item.type === 'quest_yosunyu_book') {
-            if (window.MainApp && typeof window.MainApp.isQuestMusicBookCollected === 'function' && window.MainApp.isQuestMusicBookCollected()) {
+          if (item.type === 'quest_yosunyu_usb') {
+            if (window.MainApp && typeof window.MainApp.isQuestUsbCollected === 'function' && window.MainApp.isQuestUsbCollected()) {
               continue;
             }
           }
@@ -1301,7 +1301,7 @@ class GameEngine {
                 return {
                   type: 'quest_kimmijin_book',
                   data: pg.sketchbook,
-                  name: pg.sketchbook.name || '🎨 김미진의 풍경화 스케치북',
+                  name: pg.sketchbook.name || '🎨 김진믜의 풍경화 스케치북',
                   prompt: pg.sketchbook.prompt || '스케치북 회수하기 (SPACE)'
                 };
               }
@@ -1407,8 +1407,8 @@ class GameEngine {
               continue;
             }
           }
-          if (item.type === 'quest_yosunyu_book') {
-            if (window.MainApp && typeof window.MainApp.isQuestMusicBookCollected === 'function' && window.MainApp.isQuestMusicBookCollected()) {
+          if (item.type === 'quest_yosunyu_usb') {
+            if (window.MainApp && typeof window.MainApp.isQuestUsbCollected === 'function' && window.MainApp.isQuestUsbCollected()) {
               continue;
             }
           }
@@ -5200,7 +5200,7 @@ class GameEngine {
           this.ctx.fillStyle = '#f59e0b';
           this.ctx.fillRect(px + 14, py + 22, 4, 4);
         } else {
-          // 교사 NPC (조슈아, 옥촣한, 김미진 등) - 단정한 딥블루 교사 스프라이트
+          // 교사 NPC (조슈아, 옥촣한, 김진믜 등) - 단정한 딥블루 교사 스프라이트
           this.ctx.fillStyle = isTeacherNpc ? '#1e3a8a' : '#047857';
           this.ctx.beginPath();
           this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
@@ -9489,8 +9489,8 @@ class GameEngine {
           this.drawStaffOfficeSocialBook(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'quest_kimmijin_book') {
           this.drawStaffOfficeArtSketchbook(obj.x * 32, obj.y * 32);
-        } else if (obj.type === 'quest_yosunyu_book') {
-          this.drawStaffOfficeMusicBook(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_yosunyu_usb') {
+          this.drawStaffOfficeUsb(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -9673,7 +9673,7 @@ class GameEngine {
     ctx.restore();
   }
 
-  // 6층 교무실 상담실 테이블에 놓인 김미진 선생님의 풍경화 스케치북 렌더링
+  // 6층 교무실 상담실 테이블에 놓인 김진믜 선생님의 풍경화 스케치북 렌더링
   drawStaffOfficeArtSketchbook(x, y) {
     if (window.MainApp && typeof window.MainApp.isQuestSketchbookCollected === 'function' && window.MainApp.isQuestSketchbookCollected()) {
       return;
@@ -9734,7 +9734,7 @@ class GameEngine {
     // 텍스트 라벨 (펄스)
     const labelOpacity = 0.85 + Math.sin(Date.now() / 250) * 0.15;
     ctx.globalAlpha = labelOpacity;
-    this.drawSharpLabel(x + 16, by - 6, '🎨 김미진의 스케치북', {
+    this.drawSharpLabel(x + 16, by - 6, '🎨 김진믜의 스케치북', {
       bgColor: 'rgba(30, 27, 75, 0.92)',
       borderColor: '#f472b6',
       textColor: '#fbcfe8',
@@ -9746,9 +9746,9 @@ class GameEngine {
     ctx.restore();
   }
 
-  // 6층 교무실 소회의실 대형 테이블에 놓인 요션유 선생님의 오선지 악보집 렌더링
-  drawStaffOfficeMusicBook(x, y) {
-    if (window.MainApp && typeof window.MainApp.isQuestMusicBookCollected === 'function' && window.MainApp.isQuestMusicBookCollected()) {
+  // 6층 교무실 소회의실 대형 테이블에 놓인 요션유 선생님의 알고리즘 USB 렌더링
+  drawStaffOfficeUsb(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestUsbCollected === 'function' && window.MainApp.isQuestUsbCollected()) {
       return;
     }
     const ctx = this.ctx;
@@ -9760,57 +9760,59 @@ class GameEngine {
     // 바닥 부드러운 그림자
     ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
     ctx.beginPath();
-    ctx.ellipse(x + 16, y + 24, 13, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 16, y + 24, 12, 5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 신비한 보라빛 음악적 글로우 아우라 (Musical Glow)
-    ctx.fillStyle = 'rgba(168, 85, 247, 0.32)';
+    // 사이버틱 네온 사이언 글로우 아우라 (Cybernetic Blue/Cyan Glow)
+    const glowPulse = 0.25 + Math.sin(Date.now() / 180) * 0.12;
+    ctx.fillStyle = `rgba(6, 182, 212, ${glowPulse})`;
     ctx.beginPath();
     ctx.arc(x + 16, by + 12, 16, 0, Math.PI * 2);
     ctx.fill();
 
-    // 악보집 바깥 표지 (로열 바이올렛 양장 제본)
-    ctx.fillStyle = '#3b0764';
+    // USB 본체 금속 케이스 (미드나잇 블루 & 딥 슬레이트 바디)
+    ctx.fillStyle = '#0f172a';
     ctx.beginPath();
-    ctx.roundRect(x + 4, by + 2, 24, 18, 2);
+    ctx.roundRect(x + 9, by + 4, 14, 16, 2);
     ctx.fill();
-    ctx.strokeStyle = '#c084fc';
+    ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 1.3;
     ctx.stroke();
 
-    // 펼쳐진 크림 화이트 오선지 내지
-    ctx.fillStyle = '#faf5ff';
-    ctx.fillRect(x + 6, by + 4, 20, 14);
+    // USB 앞단 금색/실버 단자 (USB-A Connector)
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(x + 12, by + 1, 8, 4);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(x + 13.5, by + 2, 2, 2);
+    ctx.fillRect(x + 16.5, by + 2, 2, 2);
 
-    // 오선지 줄 (Five-line staff)
-    ctx.strokeStyle = 'rgba(107, 114, 128, 0.6)';
-    ctx.lineWidth = 0.8;
-    for (let sy = by + 6; sy <= by + 14; sy += 2) {
-      ctx.beginPath();
-      ctx.moveTo(x + 7, sy);
-      ctx.lineTo(x + 25, sy);
-      ctx.stroke();
-    }
+    // USB 본체 중앙 미니 칩 라인
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(x + 11, by + 7, 10, 8);
 
-    // 골드 높은음자리표 & 음표 (♪ ♫)
-    ctx.fillStyle = '#eab308';
-    ctx.font = 'bold 9px "Segoe UI Symbol", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('𝄞', x + 10, by + 11);
+    // 깜빡이는 동작 LED (Blinking Cyan Activity LED)
+    const ledOn = Math.sin(Date.now() / 150) > 0;
+    ctx.fillStyle = ledOn ? '#06b6d4' : '#0e7490';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 11, 2, 0, Math.PI * 2);
+    ctx.fill();
 
-    ctx.fillStyle = '#4c1d95';
-    ctx.font = '8px sans-serif';
-    ctx.fillText('♪', x + 16, by + 10);
-    ctx.fillText('♫', x + 21, by + 9);
+    // 고리 구멍 (Keyring Hole)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 17, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     // 텍스트 라벨 (펄스)
     const labelOpacity = 0.85 + Math.sin(Date.now() / 250) * 0.15;
     ctx.globalAlpha = labelOpacity;
-    this.drawSharpLabel(x + 16, by - 6, '🎼 요션유의 악보집', {
-      bgColor: 'rgba(59, 7, 100, 0.94)',
-      borderColor: '#c084fc',
-      textColor: '#f3e8ff',
+    this.drawSharpLabel(x + 16, by - 6, '💾 요션유의 알고리즘 USB', {
+      bgColor: 'rgba(8, 47, 73, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#e0f2fe',
       fontSize: 10,
       paddingX: 6,
       height: 16

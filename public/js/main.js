@@ -525,8 +525,8 @@ const ALL_GAME_ITEMS = {
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
-  'item_kimmijin_sketchbook': { name: '김미진의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북' } },
-  'item_yosunyu_sheetmusic': { name: '요션유의 오선지 악보집', icon: '🎼', count: 1, meta: { type: 'quest', effect: '18번 좌석 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집' } }
+  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
+  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } }
 
 };
 
@@ -900,14 +900,14 @@ const QUEST_DEFINITIONS = {
   'quest_kimmijin_art': {
     id: 'quest_kimmijin_art',
     teacherId: 'npc_teacher_kimmijin',
-    teacherName: '김미진 선생님',
+    teacherName: '김진믜 선생님',
     teacherRole: '미술',
     teacherSeat: '15번',
     teacherAvatar: '🎨',
     category: '🎨 숭실 예술 프로젝트 (Fine Arts Quest)',
-    title: '[미술] 김미진 선생님의 예술 프로젝트: 숭실의 색채',
+    title: '[미술] 김진믜 선생님의 예술 프로젝트: 숭실의 색채',
     cleanupItem: 'item_kimmijin_sketchbook',
-    story: `반갑다! 숭실중학교에서 미술을 가르치는 김미진 선생님이란다. 🎨
+    story: `반갑다! 숭실중학교에서 미술을 가르치는 김진믜 선생님이란다. 🎨
 
 미술은 우리 주변의 아름다운 색채를 관찰하고 표현하는 예술이란다!
 
@@ -915,12 +915,12 @@ const QUEST_DEFINITIONS = {
 
 첫째, 풍경화에 화사한 봄빛을 입힐 천연 안료 재료로 [노란 개나리 꽃잎] 3송이가 필요하단다. (1학년 1반 채집장이나 가방에서 마련할 수 있단다!)
 
-둘째, 지난번 운동장 벤치에서 교내 풍경을 스케치하다가 벤치 왼쪽편에 내 [김미진의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
+둘째, 지난번 운동장 벤치에서 교내 풍경을 스케치하다가 벤치 왼쪽편에 내 [김진믜의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
 
 운동장 벤치 왼쪽편에서 내 스케치북을 찾아와 주면, 고마운 마음을 담아 향긋한 [노란 개나리 꽃잎] 3개와 골드, 경험치를 선물로 줄게!`,
     inProgressStory: `어서 오렴! 아직 미술 프로젝트 준비물이 모두 모이지 않았더구나!
 
-풍경화 채색용 [노란 개나리 꽃잎 3송이]와 운동장 벤치 왼쪽편에 놓인 [김미진의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
+풍경화 채색용 [노란 개나리 꽃잎 3송이]와 운동장 벤치 왼쪽편에 놓인 [김진믜의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
     completeStory: `어머나, 정말 고마워! 완벽하게 구해왔구나! 👏
 
 덕분에 운동장 벤치 옆에 떨어져 있던 소중한 스케치북을 되찾았고, 아름다운 풍경화를 완성할 수 있게 되었단다!
@@ -942,7 +942,7 @@ const QUEST_DEFINITIONS = {
       },
       {
         id: 'sketchbook',
-        text: '운동장 벤치 왼쪽편에서 [김미진의 풍경화 스케치북] 회수하기',
+        text: '운동장 벤치 왼쪽편에서 [김진믜의 풍경화 스케치북] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.sketchbookCollected ? 1 : 0)
       }
@@ -953,51 +953,51 @@ const QUEST_DEFINITIONS = {
       { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
     ]
   },
-  quest_yosunyu_music: {
-    id: 'quest_yosunyu_music',
+  quest_yosunyu_info: {
+    id: 'quest_yosunyu_info',
     teacherId: 'npc_teacher_yosunyu',
     teacherName: '요션유 선생님',
-    teacherRole: '음악',
+    teacherRole: '정보',
     teacherSeat: '18번',
-    teacherAvatar: '🎵',
-    category: '🎵 숭실 음악 프로젝트 (Music Harmony Quest)',
-    title: '[음악] 요션유 선생님의 음악 프로젝트: 숭실의 하모니',
-    cleanupItem: 'item_yosunyu_sheetmusic',
-    story: `반갑다! 숭실중학교에서 음악을 가르치는 요션유 선생님이란다. 🎵
+    teacherAvatar: '💻',
+    category: '💻 숭실 정보·알고리즘 프로젝트 (Informatics Quest)',
+    title: '[정보] 요션유 선생님의 알고리즘 과제: 디지털 숭실',
+    cleanupItem: 'item_yosunyu_usb',
+    story: `반갑다! 숭실중학교에서 정보를 가르치는 요션유 선생님이란다. 💻
 
-음악은 마음을 하나로 이어주고 지친 일상에 아름다운 울림을 주는 예술이란다!
+정보 수업은 컴퓨터의 원리와 코딩, 논리적인 알고리즘적 사고력을 기르는 미래의 핵심 과목이란다!
 
-이번에 교내 음악 발표회를 준비하고 있는데, 두 가지 도움이 필요하단다.
+이번에 교내 프로그래밍 실습과 알고리즘 과제를 준비하고 있는데, 두 가지 도움이 필요하단다.
 
-첫째, 1학년 4반 교실에 마련된 [숭실 락앤롤 드럼 세트]를 직접 두드려 신나는 비트(리듬)를 1회 연주해 보렴! (음악의 기본은 가슴을 울리는 신나는 비트란다!)
+첫째, 1학년 3반 컴퓨터실에 있는 [선생님 메인 서버]가 잘 작동하고 있는지 직접 가서 시스템을 1회 점검(확인)해 주렴! (학교 전산망이 정상이어야 코딩 실습을 원활히 진행할 수 있단다!)
 
-둘째, 지난번 교무실 소회의실에서 음악과 회의를 하다가 대형 회의 테이블에 내 [요션유의 오선지 악보집]을 깜빡 두고 왔지 뭐니!
+둘째, 지난번 교무실 소회의실에서 정보 교과 회의를 하다가 대형 회의 테이블에 내 [요션유의 알고리즘 USB]를 깜빡 두고 왔지 뭐니! (전교생 정보 수업 코딩 예제와 실습 슬라이드가 모두 담겨있단다!)
 
-드럼 연주로 멋진 리듬감을 보여주고 소회의실에서 내 악보집을 찾아와 주면, 고마운 마음을 담아 [황금 은행잎] 3개와 골드, 경험치를 선물로 줄게!`,
-    inProgressStory: `어서 오렴! 아직 음악 프로젝트 준비물이 모두 모이지 않았더구나!
+컴퓨터실 메인 서버를 점검하고 소회의실에서 내 알고리즘 USB를 찾아와 주면, 고마운 마음을 담아 [황금 은행잎] 3개와 골드, 경험치를 선물로 줄게!`,
+    inProgressStory: `어서 오렴! 아직 정보 프로젝트 준비물이 모두 모이지 않았더구나!
 
-1학년 4반 교실의 [드럼 세트 연주]와 6층 교무실 소회의실 대형 테이블에 놓인 [요션유의 오선지 악보집]을 찾아와 주렴! 🎵`,
-    completeStory: `어머나, 정말 멋지구나! 완벽하게 해냈어! 👏
+1학년 3반 컴퓨터실의 [선생님 메인 서버 점검]과 6층 교무실 소회의실 대형 테이블에 놓인 [요션유의 알고리즘 USB]를 찾아와 주렴! 💻`,
+    completeStory: `어머나, 정말 훌륭하구나! 완벽하게 처리해 주었어! 👏
 
-1학년 4반에서 울려 퍼진 너의 힘찬 드럼 비트 소리를 여기까지 들었단다! 잃어버렸던 소중한 악보집도 무사히 되찾았고 말이야!
+컴퓨터실 메인 서버도 이상 없이 잘 가동 중이고, 중요한 코딩 강의 자료가 담긴 알고리즘 USB도 무사히 되찾았단다!
 
-약속했던 보상으로 향긋한 [황금 은행잎 3개]와 골드, 경험치를 선물로 줄게! 너의 뛰어난 음악적 감성과 박자감을 응원한다!`,
-    doneStory: `너 덕분에 이번 숭실 음악 발표회 하모니가 정말 멋지게 완성될 것 같구나!
+약속했던 보상으로 싱싱한 [황금 은행잎 3개]와 골드, 경험치를 선물로 줄게! 너의 뛰어난 디지털 정보 감각과 논리적 사고력을 응원한다!`,
+    doneStory: `너 덕분에 이번 숭실 정보 알고리즘 실습이 완벽하게 진행될 수 있겠구나!
 
-언제든 음악과 악기에 대해 이야기를 나누고 싶다면 18번 자리로 편하게 찾아오렴! 🎵✨`,
+언제든 코딩이나 컴퓨터, 알고리즘에 대해 궁금한 점이 있다면 18번 자리로 편하게 찾아오렴! 💻✨`,
     objectives: [
       {
-        id: 'drum',
-        text: '1학년 4반 교실에서 [숭실 드럼 세트] 1회 연주하기',
+        id: 'server',
+        text: '1학년 3반 컴퓨터실에서 [선생님 메인 서버] 1회 점검하기',
         targetCount: 1,
         unit: '회',
-        getCount: (quest) => (quest && quest.drumPlayed ? 1 : 0)
+        getCount: (quest) => (quest && quest.serverInspected ? 1 : 0)
       },
       {
-        id: 'sheetmusic',
-        text: '6층 교무실 소회의실 대형 테이블에서 [요션유의 오선지 악보집] 회수하기',
+        id: 'usb',
+        text: '6층 교무실 소회의실 대형 테이블에서 [요션유의 알고리즘 USB] 회수하기',
         targetCount: 1,
-        getCount: (quest) => (quest && quest.sheetMusicCollected ? 1 : 0)
+        getCount: (quest) => (quest && quest.usbCollected ? 1 : 0)
       }
     ],
     rewards: [
@@ -1447,7 +1447,8 @@ class MainApp {
         return;
       }
       if (target.name && target.name.includes('서버')) {
-        alert('🎛️ [컴퓨터실 메인 서버]\n\n"숭실 영어 타자 훈련 시스템 네트워크가 정상 가동 중입니다. (PING 1ms / 안정적)"');
+        this.onComputerServerInspected();
+        alert('🎛️ [컴퓨터실 메인 서버]\n\n"숭실 인트라넷 전산망 및 정보 실습 시스템이 정상 가동 중입니다. (PING 1ms / 상태: 최적)"');
         return;
       }
       this.quizManager.triggerQuiz(target.name, target.type, target.data);
@@ -1557,8 +1558,8 @@ class MainApp {
       this.handleQuestSocialBookPickup(target.data || target);
     } else if (target.type === 'quest_kimmijin_book') {
       this.handleQuestSketchbookPickup(target.data || target);
-    } else if (target.type === 'quest_yosunyu_book') {
-      this.handleQuestMusicBookPickup(target.data || target);
+    } else if (target.type === 'quest_yosunyu_usb') {
+      this.handleQuestUsbPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     }
@@ -2095,7 +2096,6 @@ class MainApp {
     if (window.AudioManager && typeof window.AudioManager.playDrumBeat === 'function') {
       window.AudioManager.playDrumBeat();
     }
-    this.onDrumKitPlayed();
 
     const curHp = this.playerData.hp || 0;
     const maxHp = this.playerData.maxHp || 100;
@@ -6497,10 +6497,10 @@ class MainApp {
               if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
                 window.AudioManager.playFanfare();
               }
-              this.showToast('🎉 [김미진 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김미진 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+              this.showToast('🎉 [김진믜 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김진믜 선생님께 돌아가 의뢰를 완료하세요!', 'success');
             }, 500);
           } else {
-            this.showToast('🌼 [김미진 선생님의 미술 프로젝트] 개나리 꽃잎 3송이 수집 완료! (스케치북 회수 필요)', 'info');
+            this.showToast('🌼 [김진믜 선생님의 미술 프로젝트] 개나리 꽃잎 3송이 수집 완료! (스케치북 회수 필요)', 'info');
           }
         }
       }
@@ -8304,52 +8304,52 @@ class MainApp {
     return !!q.textbookCollected;
   }
 
-  isQuestMusicBookCollected() {
+  isQuestUsbCollected() {
     if (!this.playerData || !this.playerData.quests) return false;
-    const q = this.playerData.quests['quest_yosunyu_music'];
+    const q = this.playerData.quests['quest_yosunyu_info'];
     if (!q) return false;
-    return !!q.sheetMusicCollected;
+    return !!q.usbCollected;
   }
 
-  onDrumKitPlayed() {
+  onComputerServerInspected() {
     if (!this.playerData || !this.playerData.quests) return;
-    const quest = this.playerData.quests['quest_yosunyu_music'];
+    const quest = this.playerData.quests['quest_yosunyu_info'];
     if (!quest || quest.status !== 'in_progress') return;
 
-    if (!quest.drumPlayed) {
-      quest.drumPlayed = true;
+    if (!quest.serverInspected) {
+      quest.serverInspected = true;
       this.saveProgress();
       this.updateQuestTracker();
-      this.showToast('🥁 [요션유 선생님의 음악 프로젝트] 1학년 4반 드럼 연주 완수! 신나는 리듬감을 증명했습니다! (1/1)', 'info');
+      this.showToast('💻 [요션유 선생님의 정보 과제] 1학년 3반 컴퓨터실 메인 서버 점검 완료! (1/1)', 'info');
 
-      if (quest.sheetMusicCollected) {
+      if (quest.usbCollected) {
         setTimeout(() => {
           if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
             window.AudioManager.playFanfare();
           }
-          this.showToast('🎉 [요션유 선생님의 음악 프로젝트] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+          this.showToast('🎉 [요션유 선생님의 정보 과제] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
         }, 500);
       }
     }
   }
 
-  handleQuestMusicBookPickup(itemData) {
+  handleQuestUsbPickup(itemData) {
     if (!this.playerData.quests) this.playerData.quests = {};
-    const quest = this.playerData.quests['quest_yosunyu_music'];
+    const quest = this.playerData.quests['quest_yosunyu_info'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('🎼 [소회의실 대형 테이블에 놓인 오선지 악보집]\n\n"교무실 18번 좌석에 앉아 계신 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집 같습니다.\n\n먼저 6층 교무실 18번 좌석의 요션유 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      alert('💾 [소회의실 대형 테이블에 놓인 고속 알고리즘 USB]\n\n"교무실 18번 좌석에 앉아 계신 정보 요션유 선생님의 파이썬 코딩 강의 자료가 담긴 USB 같습니다.\n\n먼저 6층 교무실 18번 좌석의 요션유 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
       return;
     }
 
-    if (quest.sheetMusicCollected) {
-      this.showToast('이미 악보집을 회수했습니다.', 'info');
+    if (quest.usbCollected) {
+      this.showToast('이미 알고리즘 USB를 회수했습니다.', 'info');
       return;
     }
 
-    quest.sheetMusicCollected = true;
-    this.addItem('item_yosunyu_sheetmusic', '요션유의 오선지 악보집', 1, '🎼', {
+    quest.usbCollected = true;
+    this.addItem('item_yosunyu_usb', '요션유의 알고리즘 USB', 1, '💾', {
       type: 'quest',
-      effect: '18번 좌석 음악 요션유 선생님의 아름다운 멜로디가 적힌 오선지 악보집'
+      effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB'
     });
     this.saveProgress();
     this.updateQuestTracker();
@@ -8358,14 +8358,14 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    this.showToast('🎼 교무실 소회의실에서 [요션유의 오선지 악보집]을 회수했습니다!', 'success');
+    this.showToast('💾 교무실 소회의실에서 [요션유의 알고리즘 USB]를 회수했습니다!', 'success');
 
-    if (quest.drumPlayed) {
+    if (quest.serverInspected) {
       setTimeout(() => {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [요션유 선생님의 음악 프로젝트] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [요션유 선생님의 정보 과제] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -8677,7 +8677,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kimmijin_art'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('🎨 [운동장 벤치 옆에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김미진 선생님의 풍경화 스케치북 같습니다.\n\n먼저 6층 교무실 15번 좌석의 김미진 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      alert('🎨 [운동장 벤치 옆에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김진믜 선생님의 풍경화 스케치북 같습니다.\n\n먼저 6층 교무실 15번 좌석의 김진믜 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
       return;
     }
 
@@ -8687,9 +8687,9 @@ class MainApp {
     }
 
     quest.sketchbookCollected = true;
-    this.addItem('item_kimmijin_sketchbook', '김미진의 풍경화 스케치북', 1, '🎨', {
+    this.addItem('item_kimmijin_sketchbook', '김진믜의 풍경화 스케치북', 1, '🎨', {
       type: 'quest',
-      effect: '15번 좌석 미술 김미진 선생님의 섬세한 풍경화 스케치북'
+      effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북'
     });
     this.saveProgress();
     this.updateQuestTracker();
@@ -8698,7 +8698,7 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    this.showToast('🎨 운동장 벤치 왼쪽편에서 [김미진의 풍경화 스케치북]을 회수했습니다!', 'success');
+    this.showToast('🎨 운동장 벤치 왼쪽편에서 [김진믜의 풍경화 스케치북]을 회수했습니다!', 'success');
 
     const curFlowers = (this.getItemCount('item_forsythia') || 0);
     if (curFlowers >= 3) {
@@ -8706,7 +8706,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [김미진 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김미진 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [김진믜 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김진믜 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
