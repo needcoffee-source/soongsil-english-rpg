@@ -307,12 +307,12 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_leather_shoes',
     name: '날렵한 가죽 운동화 (Leather Sneakers)',
     icon: '👟',
-    category: 'shoes', subCategory: 'shoes',
+    category: 'shoes',
+    subCategory: 'shoes',
     tierBadge: '2티어 신발',
     tierColor: '#b45309',
-    effect: '공격력 +3, 방어력 +3, 체력 +10 · 질주(속도 4.56, +20%) 활성화',
-    source: '운동장 농구장/풋살장 엘리트 몬스터 토벌 시 드랍 (10% 확률 완제품 드랍)',
-    recipe: '농구장/풋살장 엘리트 몹 10% 완제품 드랍'
+    effect: '공격력 +3, 방어력 +3, 체력 +10',
+    source: '농구장/풋살장 엘리트 몬스터 토벌 시 드랍'
   },
 
   // 5. Tier 3 Bronze Equipment (3티어 청동 장비 - craft_recipes.json 공식 레시피)
@@ -445,34 +445,34 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_bronze_shoes',
     name: '청동 스파이크 (Bronze Spikes)',
     icon: '👟',
-    category: 'shoes', subCategory: 'shoes',
+    category: 'shoes',
+    subCategory: 'shoes',
     tierBadge: '3티어 신발',
     tierColor: '#047857',
-    effect: '공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화',
-    source: '숭실역사관 비밀의 방 고대 비전의 보물함 (이스터에그 5대 관문 돌파)',
-    recipe: '비밀의 방 5대 관문 통과 보상'
+    effect: '공격력 +5, 방어력 +5, 체력 +10',
+    source: '숭실역사관 고대 비전의 보물함'
   },
   {
     id: 'equip_heritage_boots',
     name: '1897 숭실 헤리티지 부츠 (1897 Heritage Boots)',
     icon: '👟',
-    category: 'shoes', subCategory: 'shoes',
+    category: 'shoes',
+    subCategory: 'shoes',
     tierBadge: '4티어 신발',
     tierColor: '#6366f1',
-    effect: '공격력 +6, 방어력 +6, 체력 +15 · 고속 질주(속도 4.75, +25%) 활성화',
-    source: '기말고사 파멸신 레이드 토벌 시 20% 확률 드랍',
-    recipe: '기말고사 파멸신 레이드 20% 드랍'
+    effect: '공격력 +6, 방어력 +6, 체력 +15',
+    source: '기말고사 파멸신 레이드 토벌 시 드랍'
   },
   {
     id: 'equip_shoes_samdidas',
     name: '삼디다스 실내화',
     icon: '👟',
-    category: 'shoes', subCategory: 'shoes',
+    category: 'shoes',
+    subCategory: 'shoes',
     tierBadge: '1티어 신발',
     tierColor: '#059669',
-    effect: '공격력 +2, 방어력 +2, 체력 +10 (Shift 키 질주 기능 활성화)',
-    source: '🏅 호칭 교환소 특별 교환 (백점만점 시험지 또는 A+ 만점 수행평가지 1장)',
-    recipe: '백점만점 시험지 또는 A+ 만점 수행평가지 교환'
+    effect: '공격력 +2, 방어력 +2, 체력 +10',
+    source: '🏅 호칭 교환소 특별 교환 (백점만점 시험지 또는 A+ 만점 수행평가지 1장)'
   },
   {
     id: 'equip_omr_wand',
@@ -524,7 +524,7 @@ const ALL_GAME_ITEMS = {
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
   'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
   'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '공격력 +3, 방어력 +3, 체력 +10, 질주 활성화' } },
+  'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
@@ -539,9 +539,9 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
   'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
   'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
-  'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화' } },
-  'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발 · 기말고사 파멸신 토벌 전리품 · 공격력 +6, 방어력 +6, 체력 +15 · 고속 질주(속도 4.75, +25%) 활성화' } },
-  'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
+  'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 보물' } },
+  'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
+  'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
@@ -2842,7 +2842,7 @@ class MainApp {
       type: 'equipment',
       slot: 'shoes',
       stats: { atk: 5, def: 5, hp: 10 },
-      effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화'
+      effect: '3티어 신발 · 숭실 역사관 보물'
     });
 
     this.recalcCombatStats();
@@ -4765,7 +4765,7 @@ class MainApp {
             type: 'equipment',
             slot: 'shoes',
             stats: { atk: 6, def: 6, hp: 15 },
-            effect: '4티어 신발 · 기말고사 파멸신 토벌 전리품 · 공격력 +6, 방어력 +6, 체력 +15 · 고속 질주(속도 4.75, +25%) 활성화'
+            effect: '4티어 신발'
           });
           rewardItemsList.push('👟 👑 1897 숭실 헤리티지 부츠 (4티어 전설 신발 드랍 - 20% 확률!)');
         } else {
@@ -5364,7 +5364,7 @@ class MainApp {
           type: 'equipment',
           slot: 'shoes',
           stats: { atk: 3, def: 3, hp: 10 },
-          effect: '2티어 신발 · 공격력 +3, 방어력 +3, 체력 +10 · 질주(속도 4.56, +20%) 활성화'
+          effect: '2티어 고급 신발'
         });
         dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 10% 완제품 드랍!)');
       }
@@ -5392,7 +5392,7 @@ class MainApp {
           type: 'equipment',
           slot: 'shoes',
           stats: { atk: 3, def: 3, hp: 10 },
-          effect: '2티어 신발 · 공격력 +3, 방어력 +3, 체력 +10 · 질주(속도 4.56, +20%) 활성화'
+          effect: '2티어 고급 신발'
         });
         dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 10% 완제품 드랍!)');
       }
@@ -7644,7 +7644,7 @@ class MainApp {
             type: 'equipment',
             slot: 'shoes',
             stats: { atk: 2, def: 2, hp: 10 },
-            effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 3초간 약한 질주가 가능합니다.'
+            effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
           });
           this.equipItem('equip_shoes_samdidas');
           this.updateDashButtonUI();
@@ -8562,9 +8562,10 @@ class MainApp {
           </div>
         </div>
 
+        ${item.recipe ? `
         <div style="font-size: 10.5px; color: #64748b; text-align: right; margin-top: 4px;">
           제작: <span style="font-weight: 700; color: #0f172a;">${item.recipe}</span>
-        </div>
+        </div>` : ''}
       `;
 
       grid.appendChild(card);
