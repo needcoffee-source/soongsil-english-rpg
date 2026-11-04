@@ -11361,7 +11361,7 @@ class GameEngine {
     }
 
     // Main Gate Illuminated Signboard Badge
-    this.drawSharpLabel(roadW * 0.5, gateY - 50, '🏛️ [숭실 정문 & 교직원 차량 차단기]', {
+    this.drawSharpLabel(roadW * 0.5, gateY - 50, '🏛️ [숭실중학교 정문]', {
       bgColor: 'rgba(15, 23, 42, 0.98)',
       borderColor: '#f59e0b',
       borderWidth: 2,
@@ -11455,18 +11455,128 @@ class GameEngine {
       ctx.fillRect(bx - 8, floor2Y + 56, 16, 2);
     }
 
-    // 3. 1st Floor Granite Building Base (ty: 7..11)
+    // 3. 1st Floor Architectural Granite Building Wall & Windows (ty: 7..11, y: 224..352)
     const floor1Y = 7 * 32;
     const floor1H = 4 * 32;
 
-    ctx.fillStyle = '#334155'; // dark granite
+    // 3-A. Architectural Granite Stone Wall Cladding (#475569)
+    ctx.fillStyle = '#475569';
     ctx.fillRect(startX, floor1Y, facadeW, floor1H);
 
-    // Horizontal Cornice Trim
+    // Ashlar Granite Masonry Joint Seams (가로 및 세로 석재 메지 라인)
+    ctx.fillStyle = '#334155';
+    for (let my = floor1Y + 32; my < floor1Y + floor1H; my += 32) {
+      ctx.fillRect(startX, my, facadeW, 1.5);
+    }
+    for (let mx = startX + 32; mx < startX + facadeW; mx += 64) {
+      ctx.fillRect(mx, floor1Y, 1.5, floor1H);
+    }
+
+    // Top Architectural Cornice & Spandrel Frieze
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(startX, floor1Y, facadeW, 8);
     ctx.fillStyle = '#64748b';
-    ctx.fillRect(startX, floor1Y, facadeW, 6);
+    ctx.fillRect(startX, floor1Y + 2, facadeW, 4);
     ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(startX, floor1Y + 4, facadeW, 2);
+    ctx.fillRect(startX, floor1Y + 6, facadeW, 2);
+
+    // 3-B. 1st Floor Panoramic Ground View Windows (1층 대형 로비 전망창: 건물이 확실히 보이도록 배치)
+    // Left & Center window banks between startX and the entrance portico
+    const winLeft = startX + 24;
+    const winRight = 41.5 * 32 - 16;
+    const winY = floor1Y + 20;
+    const winH = floor1H - 34; // 94px high
+    const winW = winRight - winLeft;
+
+    if (winW > 100) {
+      // Dark window frame casing
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(winLeft - 4, winY - 4, winW + 8, winH + 8);
+
+      // Deep cyan/navy tinted glass with warm indoor lobby lighting
+      const winGrad = ctx.createLinearGradient(0, winY, 0, winY + winH);
+      winGrad.addColorStop(0, '#0f2744');
+      winGrad.addColorStop(0.5, '#1e3a5f');
+      winGrad.addColorStop(1, '#0f172a');
+      ctx.fillStyle = winGrad;
+      ctx.fillRect(winLeft, winY, winW, winH);
+
+      // Warm interior lobby glow radiating from inside
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.18)';
+      ctx.fillRect(winLeft, winY, winW, winH);
+
+      // Diagonal specular glass sheen reflections
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      for (let gx = winLeft; gx < winRight; gx += 80) {
+        ctx.beginPath();
+        ctx.moveTo(gx, winY + winH);
+        ctx.lineTo(gx + 24, winY);
+        ctx.lineTo(gx + 44, winY);
+        ctx.lineTo(gx + 20, winY + winH);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Aluminum window mullions
+      ctx.fillStyle = '#334155';
+      for (let mx = winLeft + 48; mx < winRight; mx += 48) {
+        ctx.fillRect(mx, winY, 3, winH);
+      }
+      ctx.fillRect(winLeft, winY + winH * 0.45, winW, 3); // horizontal transom
+
+      // Indoor Silhouettes: Lobby plants, reception lights, gym equipment
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.25)';
+      for (let hx = winLeft + 48; hx < winRight; hx += 96) {
+        ctx.beginPath();
+        ctx.arc(hx, winY + 16, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Heavy granite windowsill
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(winLeft - 6, winY + winH, winW + 12, 5);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(winLeft - 6, winY + winH + 3, winW + 12, 2);
+    }
+
+    // 3-C. Architectural LED Up/Down Wall Sconces along piers
+    for (let lx of [startX + 18, 20 * 32, 32 * 32, 40 * 32]) {
+      // Light cones
+      const sconceY = floor1Y + 36;
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.12)';
+      ctx.beginPath();
+      ctx.moveTo(lx, sconceY);
+      ctx.lineTo(lx - 16, floor1Y + 6);
+      ctx.lineTo(lx + 16, floor1Y + 6);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(lx, sconceY);
+      ctx.lineTo(lx - 20, floor1Y + floor1H - 8);
+      ctx.lineTo(lx + 20, floor1Y + floor1H - 8);
+      ctx.closePath();
+      ctx.fill();
+
+      // Sconce fixture
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(lx - 3, sconceY - 6, 6, 12);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(lx - 2, sconceY - 1, 4, 2);
+    }
+
+    // 3-D. Heavy Foundation Plinth Baseboard (건물 바닥 석재 기단)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(startX, floor1Y + floor1H - 8, facadeW, 8);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(startX, floor1Y + floor1H - 8, facadeW, 2);
+
+    // 3-E. Deep Ambient Drop Shadow cast onto the asphalt ground (건물 외벽이 수직으로 서 있음을 명확히 보여주는 그림자)
+    const shadowGrad = ctx.createLinearGradient(0, floor1Y + floor1H, 0, floor1Y + floor1H + 16);
+    shadowGrad.addColorStop(0, 'rgba(0, 0, 0, 0.55)');
+    shadowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.fillRect(startX, floor1Y + floor1H, facadeW, 16);
 
     // 4. Polished Approach Plaza leading from promenade to Entrance (tx: 41..51, ty: 12..19)
     const entryPlazaX = 41.5 * 32;
@@ -11549,7 +11659,7 @@ class GameEngine {
     ctx.fillRect(dX + dW / 2 - 3, dY - 3, 6, 2);
 
     // 6. Monumental Embossed Golden Signboard above Entrance (Centered at 46.5 * 32)
-    this.drawSharpLabel(centerX, 7.2 * 32, '🏛️ 숭실 체육관 · SOONGSIL GYMNASIUM', {
+    this.drawSharpLabel(centerX, 7.6 * 32, '🏛️ 숭실 체육관 · SOONGSIL GYMNASIUM', {
       bgColor: 'rgba(15, 23, 42, 0.98)',
       borderColor: '#fbbf24',
       borderWidth: 2.5,
@@ -11559,17 +11669,7 @@ class GameEngine {
       height: 28
     });
 
-    this.drawSharpLabel(centerX, 8.4 * 32, '[7층 종합 실내 체육시설 · B1 유도관 ~ 1F 로비 ~ 2-7F 대강당 코트 & 관람석]', {
-      bgColor: 'rgba(30, 41, 59, 0.92)',
-      borderColor: '#60a5fa',
-      borderWidth: 1,
-      textColor: '#bae6fd',
-      fontSize: 9.5,
-      paddingX: 10,
-      height: 18
-    });
-
-    // (스포츠헤리티지관 및 트로피관 삭제 완료 - 정돈된 화강암 파사드 벽면)
+    // (하단 설명 배지 및 스포츠헤리티지관·트로피관 삭제 완료 - 정돈된 화강암 파사드)
 
     ctx.restore();
   }
