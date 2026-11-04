@@ -11,6 +11,8 @@ const WORLD_DATA = {
   HALLWAY_WIDTH: 60,
   CAREER_WIDTH: 60,
   CAREER_HEIGHT: 20,
+  SECRET_HISTORY_WIDTH: 16, // 역사관 절반 사이즈 비밀의 방 (16 x 20 타일)
+  SECRET_HISTORY_HEIGHT: 20,
   STAFF_OFFICE_WIDTH: 106, // 교실 3.5개 사이즈 대형 본관 교무실 (106 x 26 타일)
   STAFF_OFFICE_HEIGHT: 26, // 상단 부속실(소회의실·탕비실·인쇄실·교1~3·상담실) + 중앙 통로 + 하단 교4~25 6분단 수용
   PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
@@ -154,6 +156,7 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
+      { id: "door_secret_history", type: "door_secret_history", x: 1, y: 10, name: "🗝️ 비밀의 방 입구", prompt: "비밀의 방 들어가기 (SPACE)" },
       { id: "hist_vitrine_1", type: "history_vitrine", vitrineIndex: 1, x: 6, y: 7, name: "🏛️ [제1전시관] 1897 평양 창립관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 민족신앙 수호관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },
@@ -236,6 +239,50 @@ const WORLD_DATA = {
         goldReward: 18,
         expReward: 40,
         respawnSec: 15
+      }
+    ]
+  },
+
+  // 🗝️ 숭실역사관 서쪽 비밀의 방 (이스터에그 - 역사관 절반 사이즈: 16 x 20)
+  classroom_secret_history: {
+    name: "🗝️ 숭실 비밀의 서고 (Secret Archive)",
+    exitDoor: { x: 8, y: 17 },
+    blackboard: {
+      x: 8,
+      y: 2,
+      name: "🗝️ 숭실 127년 비밀 역사 보물관",
+      prompt: ""
+    },
+    teacherDesk: null,
+    gatherSpots: [],
+    desks: [],
+    npcs: [],
+    interactive: [
+      {
+        id: "chest_secret_history",
+        type: "chest_secret_history",
+        x: 8,
+        y: 5,
+        name: "✨ 숭실 고대 비전의 보물함",
+        prompt: "비밀 보물함 열기 (SPACE)"
+      },
+      {
+        id: "bookshelf_secret_1",
+        type: "secret_history_book",
+        bookIndex: 1,
+        x: 3,
+        y: 6,
+        name: "📚 숭실 독립운동 비화록 (평양편)",
+        prompt: "고문서 읽기 (SPACE)"
+      },
+      {
+        id: "bookshelf_secret_2",
+        type: "secret_history_book",
+        bookIndex: 2,
+        x: 12,
+        y: 6,
+        name: "📚 숭실 127년 비전 사명록 (서울편)",
+        prompt: "고문서 읽기 (SPACE)"
       }
     ]
   },
@@ -636,8 +683,8 @@ const WORLD_DATA = {
     sketchbook: {
       id: "quest_kimmijin_sketchbook",
       type: "quest_kimmijin_book",
-      x: 24,
-      y: 16,
+      x: 20,
+      y: 7,
       name: "🎨 김진믜의 풍경화 스케치북",
       prompt: "스케치북 회수하기 (SPACE)"
     },

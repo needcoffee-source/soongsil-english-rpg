@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=152">
+  <link rel="manifest" href="/manifest.json?v=153">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=152">
+  <link rel="stylesheet" href="css/style.css?v=153">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -228,20 +228,31 @@
         <div class="gm-btn-grid">
           <button class="gm-btn" id="btn-gm-noclip">⚡ 공간돌파: OFF</button>
           <select class="gm-select" id="select-gm-warp">
-            <option value="">🚀 공간 이동</option>
-            <option value="6_hallway">🏛️ 6층 복도 (교무실 구역)</option>
-            <option value="6_room_staff_office">🏛️ 교무실 (6층)</option>
-            <option value="5_hallway">🌟 5층 복도 (진로 구역)</option>
-            <option value="5_room_career">🌟 진로실 (5층)</option>
-            <option value="7_hallway">🏫 7층 복도 (1학년 구역)</option>
-            <option value="7_room_701">1학년 1반 (채집실)</option>
-            <option value="7_room_702">1학년 2반 (보스 레이드)</option>
-            <option value="7_room_703">1학년 3반 (산성비 타자실)</option>
-            <option value="7_room_704">1학년 4반 (도덕 드럼실)</option>
-            <option value="0_room_history">🏛️ 숭실역사관 (운동장)</option>
-            <option value="0_playground_soccer">⚽ 운동장 축구장</option>
-            <option value="0_playground_basketball">🏀 운동장 농구장</option>
-            <option value="0_playground_futsal">🥅 운동장 풋살장</option>
+            <option value="">🚀 공간 이동 (워프 선택)</option>
+            <optgroup label="🏫 7층 — 1학년 구역">
+              <option value="7_hallway">🏫 7층 복도 (1학년 메인 복도)</option>
+              <option value="7_room_701">📝 1학년 1반 (노가다 채집실)</option>
+              <option value="7_room_702">👾 1학년 2반 (보스 레이드실)</option>
+              <option value="7_room_703">💻 1학년 3반 (컴퓨터실 · 산성비)</option>
+              <option value="7_room_704">🥁 1학년 4반 (도덕 드럼실)</option>
+              <option value="7_room_705">⚗️ 1학년 5반 (연금과학 연구실)</option>
+            </optgroup>
+            <optgroup label="🏛️ 6층 — 교무실 & 2학년 구역">
+              <option value="6_hallway">🏛️ 6층 복도</option>
+              <option value="6_room_staff_office">🏛️ 본관 교무실 (선생님 좌석)</option>
+            </optgroup>
+            <optgroup label="🌟 5층 — 진로 & 특별 구역">
+              <option value="5_hallway">🌟 5층 복도</option>
+              <option value="5_room_career">🌟 진로상담실 (진로 방탈출)</option>
+            </optgroup>
+            <optgroup label="🌳 지상 — 운동장 & 역사관">
+              <option value="0_playground">🏃 숭실 대운동장 (중앙 광장)</option>
+              <option value="0_playground_soccer">⚽ 운동장 축구장</option>
+              <option value="0_playground_basketball">🏀 운동장 농구장</option>
+              <option value="0_playground_futsal">🥅 운동장 풋살장</option>
+              <option value="0_room_history">🏛️ 숭실역사관 (독립운동 기념관)</option>
+              <option value="0_room_secret_history">🗝️ 역사관 비밀의 방 (이스터에그)</option>
+            </optgroup>
           </select>
           <button class="gm-btn teacher-admin-btn" id="btn-teacher">👩‍🏫 교사 실시간 관제탑</button>
           <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" class="gm-btn gm-excel-btn" id="btn-download-excel" title="전체 아이템 획득경로 및 드랍테이블 엑셀 다운로드">📥 드랍테이블</a>
@@ -2091,18 +2102,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=152"></script>
-  <script src="js/dialog.js?v=152"></script>
+  <script src="js/audio.js?v=153"></script>
+  <script src="js/dialog.js?v=153"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=152"></script>
-  <script src="js/engine.js?v=152"></script>
-  <script src="js/quiz.js?v=152"></script>
-  <script src="js/crafting.js?v=152"></script>
-  <script src="js/network.js?v=152"></script>
-  <script src="js/acid_rain.js?v=152"></script>
-  <script src="js/brawl_ball.js?v=152"></script>
-  <script src="js/main.js?v=152"></script>
+  <script src="js/world.js?v=153"></script>
+  <script src="js/engine.js?v=153"></script>
+  <script src="js/quiz.js?v=153"></script>
+  <script src="js/crafting.js?v=153"></script>
+  <script src="js/network.js?v=153"></script>
+  <script src="js/acid_rain.js?v=153"></script>
+  <script src="js/brawl_ball.js?v=153"></script>
+  <script src="js/main.js?v=153"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

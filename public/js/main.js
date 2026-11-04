@@ -915,15 +915,15 @@ const QUEST_DEFINITIONS = {
 
 첫째, 풍경화에 화사한 봄빛을 입힐 천연 안료 재료로 [노란 개나리 꽃잎] 3송이가 필요하단다. (1학년 1반 채집장이나 가방에서 마련할 수 있단다!)
 
-둘째, 지난번 운동장 벤치에서 교내 풍경을 스케치하다가 벤치 왼쪽편에 내 [김진믜의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
+둘째, 지난번 운동장 스탠드에서 교내 풍경을 스케치하다가 위쪽 파란색 벤치(좌석)에 내 [김진믜의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
 
-운동장 벤치 왼쪽편에서 내 스케치북을 찾아와 주면, 고마운 마음을 담아 향긋한 [노란 개나리 꽃잎] 3개와 골드, 경험치를 선물로 줄게!`,
+운동장 스탠드 파란색 벤치에서 내 스케치북을 찾아와 주면, 고마운 마음을 담아 향긋한 [노란 개나리 꽃잎] 3개와 골드, 경험치를 선물로 줄게!`,
     inProgressStory: `어서 오렴! 아직 미술 프로젝트 준비물이 모두 모이지 않았더구나!
 
-풍경화 채색용 [노란 개나리 꽃잎 3송이]와 운동장 벤치 왼쪽편에 놓인 [김진믜의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
+풍경화 채색용 [노란 개나리 꽃잎 3송이]와 운동장 스탠드 파란색 벤치에 놓인 [김진믜의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
     completeStory: `어머나, 정말 고마워! 완벽하게 구해왔구나! 👏
 
-덕분에 운동장 벤치 옆에 떨어져 있던 소중한 스케치북을 되찾았고, 아름다운 풍경화를 완성할 수 있게 되었단다!
+덕분에 운동장 스탠드 파란색 벤치에 떨어져 있던 소중한 스케치북을 되찾았고, 아름다운 풍경화를 완성할 수 있게 되었단다!
 
 약속했던 보상으로 싱싱한 [노란 개나리 꽃잎 3개]와 골드, 경험치를 선물로 줄게! 너의 따뜻한 예술적 감성을 응원한다!`,
     doneStory: `너 덕분에 이번 숭실 미술전 작품이 멋지게 완성될 것 같구나!
@@ -942,7 +942,7 @@ const QUEST_DEFINITIONS = {
       },
       {
         id: 'sketchbook',
-        text: '운동장 벤치 왼쪽편에서 [김진믜의 풍경화 스케치북] 회수하기',
+        text: '운동장 스탠드 파란색 벤치에서 [김진믜의 풍경화 스케치북] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.sketchbookCollected ? 1 : 0)
       }
@@ -2641,6 +2641,40 @@ class MainApp {
   }
 
   // 🔨 4티어 헤리티지 무기·방어구 제작 제단
+  handleSecretHistoryDoor() {
+    if (window.AudioManager && typeof window.AudioManager.playWarp === 'function') {
+      window.AudioManager.playWarp();
+    }
+    this.showToast('🗝️ [이스터에그] 숭실역사관 서쪽 벽 이음새 너머 비밀의 방에 입장했습니다!', 'success');
+    this.engine.teleportTo(0, 'room_secret_history', 8 * 32, 14 * 32);
+  }
+
+  handleSecretHistoryChest() {
+    if (!this.playerData) return;
+    if (this.playerData.openedSecretHistoryChest) {
+      alert('✨ [숭실 고대 비전의 보물함]\n\n"이미 127년 역사의 비전이 담긴 보물을 획득했습니다. 사명을 가슴에 품고 전진하세요!"');
+      return;
+    }
+    this.playerData.openedSecretHistoryChest = true;
+    this.addGold(500);
+    this.addExp(300);
+    this.saveProgress();
+    if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+      window.AudioManager.playFanfare();
+    }
+    alert('🎉 [이스터에그 대성공! 숭실 고대 비전의 보물함 개방]\n\n"1897년 평양에서 시작된 숭실 127년 사명의 비밀을 발견한 자에게 주어지는 고대 보물입니다!"\n\n🪙 +500 G (골드 획득)\n🌟 +300 EXP (경험치 획득)');
+    this.showToast('🎉 [이스터에그 달성!] 500 G & 300 EXP를 획득했습니다!', 'success');
+  }
+
+  handleSecretHistoryBook(target) {
+    const isFirst = (target && target.bookIndex === 1);
+    if (isFirst) {
+      alert('📜 [숭실 독립운동 비화록 (평양편)]\n\n"1897년 평양 신양리에서 윌리엄 M. 베어드(W. M. Baird) 박사에 의해 설립된 숭실학당.\n일제의 신사참배 강요에 맞서 1938년 자진 폐교를 선택하며 민족의 신앙과 자주성을 지켜낸 불멸의 사명과 역사가 여기에 기록되어 있다."');
+    } else {
+      alert(`📜 [숭실 127년 비전 사명록 (서울편)]\n\n"1954년 서울 상도동 언덕에서 재건되어 오늘에 이르기까지, 수많은 민족의 지도자와 애국지사를 배출한 숭실.\n\n'진리와 봉사(Truth & Service)'의 교훈 아래 배움과 모험을 이어가는 후배들을 축복하노라!"`);
+    }
+  }
+
   handleHistoryAltarInteraction() {
     if (this.craftingManager) {
       this.craftingManager.open('equipment');
@@ -4882,19 +4916,23 @@ class MainApp {
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
+    const isHistory = (mob.court === 'history');
     const isFutsal = (mob.court === 'futsal');
+    const unitName = (isHistory || isFutsal) ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)';
     const logEl = document.getElementById('battle-action-log');
     if (logEl) {
-      logEl.innerHTML = `⚔️ <b>${isFutsal ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)'}</b> 영어 문제를 맞히면 공격하고, 틀리면 <b>풀HP의 20% 피해</b>를 입습니다!`;
+      logEl.innerHTML = `⚔️ <b>${unitName}</b> 영어 문제를 맞히면 공격하고, 틀리면 <b>풀HP의 20% 피해</b>를 입습니다!`;
     }
   }
 
   loadNextFieldBattleQuestion() {
+    const isHistory = (this.currentFieldMob && this.currentFieldMob.court === 'history');
     const isFutsal = (this.currentFieldMob && this.currentFieldMob.court === 'futsal');
-    const unitFilter = isFutsal ? '6단원' : '5단원';
+    const unitFilter = (isHistory || isFutsal) ? '6단원' : '5단원';
+
     const q = this.quizManager.getRandomQuestion(unitFilter);
     if (!q) {
-      alert(`출제할 ${isFutsal ? '6단원' : '5단원'} 영어 문제가 없습니다.`);
+      alert(`출제할 ${unitFilter} 영어 문제가 없습니다.`);
       return;
     }
     this.fieldBattleQuestion = q;
@@ -8277,6 +8315,11 @@ class MainApp {
     if (id === 'npc_teacher_joshua') questId = 'quest_joshua_intro';
     if (id === 'npc_teacher_okchohan') questId = 'quest_okchohan_social';
     if (id === 'npc_teacher_kimmijin') questId = 'quest_kimmijin_art';
+    if (id === 'npc_teacher_yosunyu') questId = 'quest_yosunyu_info';
+    if (!QUEST_DEFINITIONS[questId]) {
+      const found = Object.values(QUEST_DEFINITIONS).find(q => q.teacherId === id);
+      if (found) questId = found.id;
+    }
     const qDef = QUEST_DEFINITIONS[questId];
     if (!qDef) return null;
 
@@ -8676,7 +8719,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kimmijin_art'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('🎨 [운동장 벤치 옆에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김진믜 선생님의 풍경화 스케치북 같습니다.\n\n먼저 6층 교무실 15번 좌석의 김진믜 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      alert('🎨 [운동장 스탠드 파란색 벤치에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김진믜 선생님의 풍경화 스케치북 같습니다.\n\n먼저 6층 교무실 15번 좌석의 김진믜 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
       return;
     }
 
@@ -8697,7 +8740,7 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    this.showToast('🎨 운동장 벤치 왼쪽편에서 [김진믜의 풍경화 스케치북]을 회수했습니다!', 'success');
+    this.showToast('🎨 운동장 스탠드 파란색 벤치에서 [김진믜의 풍경화 스케치북]을 회수했습니다!', 'success');
 
     const curFlowers = (this.getItemCount('item_forsythia') || 0);
     if (curFlowers >= 3) {

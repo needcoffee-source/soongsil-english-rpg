@@ -66,9 +66,9 @@ const officeSketchbook = office.interactive.find(i => i.id === 'quest_kimmijin_s
 assert(!officeSketchbook, 'Sketchbook must no longer be in staff office');
 const pgSketchbook = w.playground.sketchbook;
 assert(pgSketchbook, 'Kim Jin-mui sketchbook must exist in playground');
-assert.strictEqual(pgSketchbook.x, 24, 'Sketchbook must be to the left of the bench at x=24');
-assert.strictEqual(pgSketchbook.y, 16, 'Sketchbook must be at y=16');
-console.log('✔ 6. Kim Jin-mui sketchbook on playground bench left (x: 24, y: 16) verified');
+assert.strictEqual(pgSketchbook.x, 20, 'Sketchbook must be on the blue bleacher bench at x=20');
+assert.strictEqual(pgSketchbook.y, 7, 'Sketchbook must be at y=7');
+console.log('✔ 6. Kim Jin-mui sketchbook on playground blue bleachers (x: 20, y: 7) verified');
 
 const officeUsb = office.interactive.find(i => i.id === 'quest_yosunyu_usb');
 assert(!officeUsb, 'Yo Sun-yu algorithm USB must no longer be in staff office');

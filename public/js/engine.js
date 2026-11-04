@@ -336,6 +336,9 @@ class GameEngine {
     if (this.player && this.player.room === 'room_career') {
       return WORLD_DATA.CAREER_WIDTH || 60;
     }
+    if (this.player && this.player.room === 'room_secret_history') {
+      return WORLD_DATA.SECRET_HISTORY_WIDTH || 16;
+    }
     return WORLD_DATA.MAP_WIDTH || 30;
   }
 
@@ -345,6 +348,9 @@ class GameEngine {
     }
     if (this.player && this.player.room === 'room_staff_office') {
       return WORLD_DATA.STAFF_OFFICE_HEIGHT || 26;
+    }
+    if (this.player && this.player.room === 'room_secret_history') {
+      return WORLD_DATA.SECRET_HISTORY_HEIGHT || 20;
     }
     return WORLD_DATA.MAP_HEIGHT || 20;
   }
@@ -449,6 +455,7 @@ class GameEngine {
 
   getCurrentClassroomData() {
     if (this.player.room === 'room_history' && WORLD_DATA.classroom_history) return WORLD_DATA.classroom_history;
+    if (this.player.room === 'room_secret_history' && WORLD_DATA.classroom_secret_history) return WORLD_DATA.classroom_secret_history;
     if (this.player.room === 'room_staff_office' && WORLD_DATA.classroom_staff_office) return WORLD_DATA.classroom_staff_office;
     if (this.player.room === 'room_204' && WORLD_DATA.classroom_204) return WORLD_DATA.classroom_204;
     if (this.player.room === 'room_205' && WORLD_DATA.classroom_205) return WORLD_DATA.classroom_205;
@@ -604,6 +611,10 @@ class GameEngine {
       this.warpToRoom('playground', '숭실 운동장', 87 * 32, 51 * 32);
       return;
     }
+    if (this.player.room === 'room_secret_history') {
+      this.warpToRoom('room_history', '🏛️ 숭실역사관 (History Hall)', 2 * 32, 10 * 32);
+      return;
+    }
     if (this.player.room === 'room_staff_office') {
       this.player.floor = 6;
       const f6 = WORLD_DATA.floors[6];
@@ -643,7 +654,7 @@ class GameEngine {
     if (roomId === 'playground') this.player.floor = 1;
     else if (roomId === 'room_career') this.player.floor = 5;
     else if (roomId === 'room_staff_office') this.player.floor = 6;
-    else if (roomId === 'room_history') this.player.floor = 0;
+    else if (roomId === 'room_history' || roomId === 'room_secret_history') this.player.floor = 0;
     this.player.roomName = roomName;
     this.player.x = x;
     this.player.y = y;
@@ -738,6 +749,12 @@ class GameEngine {
         this.player.x = 15 * 32;
         this.player.y = 13 * 32;
         this.player.roomName = '🏛️ 숭실역사관';
+      } else if (room === 'room_secret_history') {
+        this.player.floor = 0;
+        this.player.room = 'room_secret_history';
+        this.player.x = 8 * 32;
+        this.player.y = 14 * 32;
+        this.player.roomName = '🗝️ 역사관 비밀의 방 (Secret Archive)';
       } else {
         this.player.room = room || 'room_701';
         this.player.x = 15 * 32;
@@ -749,7 +766,7 @@ class GameEngine {
       if (this.player.room === 'playground') this.player.floor = 1;
       else if (this.player.room === 'room_career') this.player.floor = 5;
       else if (this.player.room === 'room_staff_office') this.player.floor = 6;
-      else if (this.player.room === 'room_history') this.player.floor = 0;
+      else if (this.player.room === 'room_history' || this.player.room === 'room_secret_history') this.player.floor = 0;
       if (this.onLocationChangeCallback) {
         this.onLocationChangeCallback({
           floor: this.player.floor,
@@ -1009,7 +1026,7 @@ class GameEngine {
         for (const npc of cr.npcs) {
           const nDist = Math.hypot(npc.x * 32 - this.player.x, npc.y * 32 - this.player.y);
           const qStatus = (npc.questId && window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
-            ? window.MainApp.getTeacherQuestStatus(npc.id || npc.questId)
+            ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
             : null;
           let prompt = `대화하기 (${npc.name})`;
           if (qStatus === 'available') {
@@ -1104,7 +1121,7 @@ class GameEngine {
           }
         }
       }
-      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702') && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702' || this.player.room === 'room_history' || this.player.room === 'room_secret_history') && cr.interactive) {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
@@ -1390,7 +1407,7 @@ class GameEngine {
           }
         }
       }
-      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702') && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702' || this.player.room === 'room_history' || this.player.room === 'room_secret_history') && cr.interactive) {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
@@ -5156,6 +5173,8 @@ class GameEngine {
       this.renderCareerEscapeRoom(cr);
     } else if (this.player.room === 'room_history') {
       this.renderHistoryMuseum(cr);
+    } else if (this.player.room === 'room_secret_history') {
+      this.renderSecretHistoryRoom(cr);
     } else if (this.player.room === 'room_staff_office') {
       this.renderStaffOffice(cr);
     } else if (this.player.floor === 5) {
@@ -5229,7 +5248,7 @@ class GameEngine {
         // 8-C-1. 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
         if (npc.questId) {
           const qStatus = (window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
-            ? window.MainApp.getTeacherQuestStatus(npc.id || npc.questId)
+            ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
             : 'available';
           if (qStatus && qStatus !== 'done') {
             this.drawFloatingQuestMarker(px + 16, py - 18, qStatus);
@@ -5562,7 +5581,7 @@ class GameEngine {
     this.drawHighResBench(76 * 32, 28 * 32 + 6);
 
     // 10-B. Kim Mi-jin Art Quest Sketchbook (운동장 벤치 왼쪽편: x: 24, y: 16)
-    const pgSketchbook = (WORLD_DATA.playground && WORLD_DATA.playground.sketchbook) || { x: 24, y: 16 };
+    const pgSketchbook = (WORLD_DATA.playground && WORLD_DATA.playground.sketchbook) || { x: 20, y: 7 };
     this.drawStaffOfficeArtSketchbook(pgSketchbook.x * 32, pgSketchbook.y * 32);
 
     // Drinking Fountain between fields (x: 59, y: 5)
@@ -8487,6 +8506,275 @@ class GameEngine {
 
     // 6. Render History Monsters (시간의 수호석상, 불멸의 파수병, 기록관 골렘, 사명의 기사)
     this.renderHistoryMonsters();
+
+    // 7. Far Left Wall Secret Room Easter Egg Doorway (x: 1, y: 10)
+    this.drawHistorySecretDoor(1 * 32, 10 * 32);
+  }
+
+  // Far Left Wall Secret Room Easter Egg Doorway in History Hall
+  drawHistorySecretDoor(dx, dy) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const time = Date.now() / 300;
+    const pulse = 0.5 + 0.5 * Math.sin(time);
+
+    // 1. Secret stone archway shadow and carved opening into left wall
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.roundRect(dx - 12, dy - 20, 36, 56, [14, 14, 0, 0]);
+    ctx.fill();
+
+    // 2. Subtle ancient golden rune outline
+    ctx.strokeStyle = `rgba(245, 158, 11, ${0.4 + 0.4 * pulse})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 3. Shimmering mystical particle glow inside the portal
+    ctx.fillStyle = `rgba(251, 191, 36, ${0.15 + 0.15 * pulse})`;
+    ctx.beginPath();
+    ctx.roundRect(dx - 8, dy - 16, 28, 48, [12, 12, 0, 0]);
+    ctx.fill();
+
+    // 4. Floating ancient key icon
+    const bob = Math.sin(time * 2) * 3;
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🗝️', dx + 6, dy + bob);
+
+    // 5. Sharp informative label
+    this.drawSharpLabel(dx + 6, dy + 32, '🗝️ 비밀의 방 입구', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#f59e0b',
+      borderWidth: 1.5,
+      textColor: '#fef08a',
+      fontSize: 11,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // ========================================================
+  // SCENE RENDERING: SECRET HISTORY ARCHIVE (역사관 절반 크기 비밀의 방)
+  // ========================================================
+  renderSecretHistoryRoom(cr) {
+    const curW = this.getMapWidth(); // 16
+    const curH = this.getMapHeight(); // 20
+
+    // 1. Ancient Gilded Sanctuary Floor & Wall Bounds
+    for (let tx = 0; tx < curW; tx++) {
+      for (let ty = 0; ty < curH; ty++) {
+        if (ty <= 2 || tx === 0 || tx === curW - 1 || ty >= curH - 2) {
+          this.drawHighResWall(tx, ty, true);
+        } else {
+          // Dark royal slate marble floor tiles with subtle rune borders
+          const isAlt = (tx + ty) % 2 === 0;
+          this.ctx.fillStyle = isAlt ? '#0f172a' : '#1e293b';
+          this.ctx.fillRect(tx * 32, ty * 32, 32, 32);
+          this.ctx.strokeStyle = 'rgba(245, 158, 11, 0.08)';
+          this.ctx.lineWidth = 1;
+          this.ctx.strokeRect(tx * 32, ty * 32, 32, 32);
+        }
+      }
+    }
+
+    // 2. Central Plush Crimson Velvet Runner (from door at x: 8, y: 17 to chest at x: 8, y: 5)
+    this.ctx.fillStyle = '#881337'; // royal burgundy
+    this.ctx.fillRect(7 * 32 + 2, 5 * 32, 2 * 32 - 4, 12 * 32);
+    this.ctx.strokeStyle = '#f59e0b';
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(7 * 32 + 2, 5 * 32, 2 * 32 - 4, 12 * 32);
+
+    // Velvet gold fringe trims
+    this.ctx.fillStyle = '#fbbf24';
+    for (let gy = 5.2 * 32; gy < 17 * 32; gy += 16) {
+      this.ctx.fillRect(7 * 32 + 1, gy, 2, 4);
+      this.ctx.fillRect(9 * 32 - 3, gy, 2, 4);
+    }
+
+    // 3. Wall Banner
+    this.drawSharpLabel(8 * 32, 1.8 * 32, '🗝️ [숭실 비밀의 서고] 127년 역사의 비전과 숨겨진 보물', {
+      bgColor: 'rgba(15, 23, 42, 0.96)',
+      borderColor: '#fbbf24',
+      borderWidth: 2,
+      textColor: '#fef08a',
+      fontSize: 12,
+      paddingX: 14,
+      height: 24
+    });
+
+    // 4. Wall Torches on North Wall
+    this.drawWallTorch(4 * 32, 2 * 32 + 8);
+    this.drawWallTorch(12 * 32, 2 * 32 + 8);
+
+    // 5. Secret Treasure Chest (x: 8, y: 5)
+    this.drawSecretTreasureChest(8 * 32, 5 * 32);
+
+    // 6. Ancient Secret Bookshelves on Left & Right
+    this.drawSecretBookshelf(3 * 32, 6 * 32, '📚 독립운동 비화록 (평양편)');
+    this.drawSecretBookshelf(12 * 32, 6 * 32, '📚 127년 사명록 (서울편)');
+
+    // 7. Exit Door Archway (x: 8, y: 17)
+    this.drawSecretRoomExitDoor(8 * 32, 17 * 32);
+  }
+
+  // Draw Wall Torch / Sconce with animated flame
+  drawWallTorch(x, y) {
+    const ctx = this.ctx;
+    ctx.save();
+    // Iron bracket
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(x + 14, y + 10, 4, 12);
+    ctx.fillRect(x + 11, y + 8, 10, 4);
+    // Torch cup
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(x + 12, y + 5, 8, 4);
+    // Animated flickering flame
+    const flicker = Math.sin(Date.now() / 80 + x) * 2;
+    const flameH = 10 + Math.sin(Date.now() / 110 + y) * 3;
+    // Outer glow
+    ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
+    ctx.beginPath();
+    ctx.arc(x + 16, y - 2, 14, 0, Math.PI * 2);
+    ctx.fill();
+    // Flame
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.ellipse(x + 16 + flicker, y - 2, 5, flameH / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath();
+    ctx.ellipse(x + 16 + flicker * 0.5, y - 1, 2.5, flameH / 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Draw Ancient Secret Bookshelf
+  drawSecretBookshelf(x, y, label) {
+    const ctx = this.ctx;
+    ctx.save();
+    // Mahogany wood frame
+    ctx.fillStyle = '#3b1706';
+    ctx.fillRect(x, y, 44, 52);
+    ctx.fillStyle = '#54230b';
+    ctx.fillRect(x + 3, y + 3, 38, 46);
+    // Shelf divider
+    ctx.fillStyle = '#3b1706';
+    ctx.fillRect(x + 3, y + 25, 38, 4);
+    // Leather book spines
+    const bookColors = ['#991b1b', '#1e3a8a', '#15803d', '#b45309', '#581c87', '#0f766e'];
+    for (let bx = x + 5; bx < x + 38; bx += 5) {
+      ctx.fillStyle = bookColors[(bx * 7) % bookColors.length];
+      ctx.fillRect(bx, y + 7, 4, 18);
+      ctx.fillRect(bx, y + 29, 4, 18);
+      // Gold foil ribbing
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(bx, y + 12, 4, 1.5);
+      ctx.fillRect(bx, y + 34, 4, 1.5);
+    }
+    this.drawSharpLabel(x + 22, y + 54, label, {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#fbbf24',
+      borderWidth: 1.2,
+      textColor: '#fef08a',
+      fontSize: 10,
+      paddingX: 6,
+      height: 18
+    });
+    ctx.restore();
+  }
+
+  // Draw Secret Treasure Chest
+  drawSecretTreasureChest(x, y) {
+    const ctx = this.ctx;
+    ctx.save();
+    const app = window.MainApp;
+    const isOpened = app && app.playerData && app.playerData.openedSecretHistoryChest;
+    const time = Date.now() / 250;
+    const bob = Math.sin(time) * 2;
+
+    // Altar pedestal
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(x - 8, y + 14, 48, 16);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x - 8, y + 14, 48, 16);
+
+    // Glowing aura
+    const pulse = 0.3 + 0.2 * Math.sin(time * 1.5);
+    ctx.fillStyle = isOpened ? 'rgba(148, 163, 184, 0.2)' : `rgba(245, 158, 11, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(x + 16, y + 8 + bob, 22, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Chest Body (Ancient Gilded Mahogany)
+    ctx.fillStyle = '#451a03';
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y + 2 + bob, 28, 18, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Gold Straps
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(x + 6, y + 2 + bob, 3, 18);
+    ctx.fillRect(x + 23, y + 2 + bob, 3, 18);
+
+    // Keyhole or Opened Glow
+    if (isOpened) {
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(x + 16, y + 7 + bob, 5, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(x + 16, y + 10 + bob, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(x + 15, y + 10 + bob, 2, 4);
+    }
+
+    // Label
+    const chestLabel = isOpened ? '✨ 숭실 고대 비전의 보물함 (개방됨)' : '✨ 숭실 고대 비전의 보물함';
+    this.drawSharpLabel(x + 16, y + 28, chestLabel, {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: isOpened ? '#94a3b8' : '#f59e0b',
+      borderWidth: 1.5,
+      textColor: isOpened ? '#94a3b8' : '#fef08a',
+      fontSize: 11,
+      paddingX: 8,
+      height: 20
+    });
+    ctx.restore();
+  }
+
+  // Draw Secret Room Exit Door leading back to History Museum
+  drawSecretRoomExitDoor(x, y) {
+    const ctx = this.ctx;
+    ctx.save();
+    // Archway
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.roundRect(x - 20, y - 6, 72, 14, [4, 4, 0, 0]);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    this.drawSharpLabel(x + 16, y - 10, '🏛️ 숭실역사관으로 나가기', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#38bdf8',
+      borderWidth: 1.5,
+      textColor: '#fef08a',
+      fontSize: 11,
+      paddingX: 10,
+      height: 20
+    });
+    ctx.restore();
   }
 
   // Draw Gilded Museum Oil Painting Portrait
