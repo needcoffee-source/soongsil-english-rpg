@@ -310,9 +310,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'equip',
     tierBadge: '2티어 신발',
     tierColor: '#b45309',
-    effect: '공격력 +3, 방어력 +3, 체력 +10 · 고속 질주(B) 가능',
-    source: '기말고사 파멸신 레이드 전리품 드랍 (드랍 확률 25% / 제작 불가)',
-    recipe: '제작 불가 (보스 레이드 전용 25% 드랍)'
+    effect: '공격력 +3, 방어력 +3, 체력 +10 · 질주(속도 4.56, +20%) 활성화',
+    source: '운동장 농구장 몬스터 토벌 시 드랍 (10% 확률 완제품 드랍)',
+    recipe: '농구장 몬스터 10% 완제품 드랍'
   },
 
   // 5. Tier 3 Bronze Equipment (3티어 청동 장비 - craft_recipes.json 공식 레시피)
@@ -443,14 +443,25 @@ window.ITEM_CODEX_DATABASE = [
   },
   {
     id: 'equip_bronze_shoes',
-    name: '1897 청동 질주화 (Bronze Sprint Shoes)',
+    name: '청동 스파이크 (Bronze Spikes)',
     icon: '👟',
     category: 'equip',
     tierBadge: '3티어 신발',
     tierColor: '#047857',
-    effect: '공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화',
+    effect: '공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화',
     source: '숭실역사관 비밀의 방 고대 비전의 보물함 (이스터에그 5대 관문 돌파)',
     recipe: '비밀의 방 5대 관문 통과 보상'
+  },
+  {
+    id: 'equip_heritage_boots',
+    name: '1897 숭실 헤리티지 부츠 (1897 Heritage Boots)',
+    icon: '👟',
+    category: 'equip',
+    tierBadge: '4티어 신발',
+    tierColor: '#6366f1',
+    effect: '공격력 +8, 방어력 +8, 체력 +25 · 광속 질주(속도 5.15, +35%) 활성화',
+    source: '기말고사 파멸신 레이드 토벌 시 25% 확률 드랍',
+    recipe: '기말고사 파멸신 레이드 25% 드랍'
   },
   {
     id: 'equip_shoes_samdidas',
@@ -528,7 +539,8 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
   'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
   'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
-  'equip_bronze_shoes': { name: '🥉 1897 청동 질주화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 20 }, effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화' } },
+  'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화' } },
+  'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 8, def: 8, hp: 25 }, effect: '4티어 신발 · 기말고사 파멸신 토벌 전리품 · 공격력 +8, 방어력 +8, 체력 +25 · 광속 질주(속도 5.15, +35%) 활성화' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
@@ -586,6 +598,7 @@ const ITEM_SELL_PRICES = {
   'equip_heritage_helmet': 24, // 제작비 120G -> 20% = 24G
   'equip_heritage_armor': 28, // 제작비 140G -> 20% = 28G
   'equip_bronze_shoes': 16, // 3티어 청동 신발 매각가
+  'equip_heritage_boots': 30, // 4티어 헤리티지 신발 매각가
 
   // 7. 최상위 엔드 레이드 전리품
   'equip_omr_wand': 20,
@@ -2824,12 +2837,12 @@ class MainApp {
     // 보상 2: 경험치 500 EXP
     this.addExp(500);
 
-    // 보상 3: 3티어 신발 획득 (🥉 1897 청동 질주화)
-    this.addItem('equip_bronze_shoes', '🥉 1897 청동 질주화', 1, '👟', {
+    // 보상 3: 3티어 신발 획득 (🥉 청동 스파이크: 공+5, 방+5, 체+10, 질주 4.75)
+    this.addItem('equip_bronze_shoes', '🥉 청동 스파이크', 1, '👟', {
       type: 'equipment',
       slot: 'shoes',
-      stats: { atk: 6, def: 6, hp: 20 },
-      effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화'
+      stats: { atk: 5, def: 5, hp: 10 },
+      effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화'
     });
 
     this.recalcCombatStats();
@@ -2845,12 +2858,12 @@ class MainApp {
       `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `🪙 +500 G (골드 획득)\n` +
       `🌟 +500 EXP (경험치 획득)\n` +
-      `👟 [3티어 신발] 🥉 1897 청동 질주화 획득!\n` +
-      `   • 능력치: 공격력 +6, 방어력 +6, 체력 +20\n` +
-      `   • 특수 효과: 초고속 질주(속도 5.15, +35%) 활성화!\n` +
+      `👟 [3티어 신발] 🥉 청동 스파이크 획득!\n` +
+      `   • 능력치: 공격력 +5, 방어력 +5, 체력 +10\n` +
+      `   • 특수 효과: 고속 질주(속도 4.75, +25%) 활성화!\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━`
     );
-    this.showToast('🎉 [보물함 개방!] 500 G, 500 EXP, 3티어 청동 질주화를 획득했습니다!', 'success');
+    this.showToast('🎉 [보물함 개방!] 500 G, 500 EXP, 3티어 청동 스파이크를 획득했습니다!', 'success');
   }
 
   handleSecretHistoryBook(target) {
@@ -4745,11 +4758,16 @@ class MainApp {
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
       }
 
-      // 7. 기말고사 파멸신 전용 드랍 (2티어 농구화 드랍확률 25% 하향)
+      // 7. 기말고사 파멸신 전용 드랍: 4티어 헤리티지 부츠 (25% 전설 신발) or 컴싸 마법봉 (75%)
       if (bName.includes('파멸신') || bName.includes('기말고사')) {
         if (Math.random() < 0.25) {
-          this.addItem('equip_leather_shoes', '날렵한 가죽 농구화', 1, '👟', { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '공격력 +3, 방어력 +3, 체력 +10, 고속 질주 가능' });
-          rewardItemsList.push('👟 날렵한 가죽 농구화 (2티어 신발 전리품 드랍 - 25% 확률!)');
+          this.addItem('equip_heritage_boots', '👑 1897 숭실 헤리티지 부츠', 1, '👟', {
+            type: 'equipment',
+            slot: 'shoes',
+            stats: { atk: 8, def: 8, hp: 25 },
+            effect: '4티어 신발 · 기말고사 파멸신 토벌 전리품 · 공격력 +8, 방어력 +8, 체력 +25 · 광속 질주(속도 5.15, +35%) 활성화'
+          });
+          rewardItemsList.push('👟 👑 1897 숭실 헤리티지 부츠 (4티어 전설 신발 드랍 - 25% 확률!)');
         } else {
           this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '공격력 +45, 방어력 +5' });
           rewardItemsList.push('🖊️ 컴싸 마법봉 (희귀 무기!)');
@@ -5355,6 +5373,17 @@ class MainApp {
           effect: '개나리 반지 및 주홍 물약 재료'
         });
         dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
+      }
+
+      // 2티어 신발: 날렵한 가죽 농구화 드랍 (농구장 몬스터 10% 대박 완제품 드랍!)
+      if (Math.random() * 100 < 10) {
+        this.addItem('equip_leather_shoes', '날렵한 가죽 농구화', 1, '👟', {
+          type: 'equipment',
+          slot: 'shoes',
+          stats: { atk: 3, def: 3, hp: 10 },
+          effect: '2티어 신발 · 공격력 +3, 방어력 +3, 체력 +10 · 질주(속도 4.56, +20%) 활성화'
+        });
+        dropsList.push('👟 날렵한 가죽 농구화 (2티어 신발 10% 대박 완제품 드랍!)');
       }
 
       if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {

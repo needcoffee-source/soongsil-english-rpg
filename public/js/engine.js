@@ -164,11 +164,18 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    // 신발 종류 확인: 실내화(4.37, +15%), 2티어 농구화(4.75, +25%), 3티어 청동 질주화(5.15, +35%)
+    // 신발 종류 확인: 1티어 실내화(4.37), 2티어 농구화(4.56), 3티어 청동 스파이크(4.75), 4티어 헤리티지 부츠(5.15)
     const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
-    const isBronzeShoes = !!(equippedShoes && (equippedShoes.item === 'equip_bronze_shoes'));
-    const isBasketballShoes = !!(equippedShoes && (equippedShoes.item === 'equip_leather_shoes'));
-    const dashSpeed = isBronzeShoes ? 5.15 : (isBasketballShoes ? 4.75 : 4.37);
+    let dashSpeed = 4.37; // 기본 1티어 실내화 (+15% 속도)
+    if (equippedShoes) {
+      if (equippedShoes.item === 'equip_heritage_boots') {
+        dashSpeed = 5.15; // 4티어 헤리티지 부츠 (+35% 광속 질주)
+      } else if (equippedShoes.item === 'equip_bronze_shoes') {
+        dashSpeed = 4.75; // 3티어 청동 스파이크 (+25% 고속 질주)
+      } else if (equippedShoes.item === 'equip_leather_shoes') {
+        dashSpeed = 4.56; // 2티어 가죽 농구화 (+20% 질주)
+      }
+    }
     this.player.speed = isDashing ? dashSpeed : baseWalkSpeed;
   }
 

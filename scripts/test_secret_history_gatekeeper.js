@@ -11,7 +11,9 @@ const worldJs = fs.readFileSync(path.join(__dirname, '../public/js/world.js'), '
 const engineJs = fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8');
 
 assert(serverJs.includes('equip_bronze_shoes'), 'server.js must define equip_bronze_shoes');
+assert(serverJs.includes('equip_heritage_boots'), 'server.js must define equip_heritage_boots');
 assert(mainJs.includes('equip_bronze_shoes'), 'main.js must define equip_bronze_shoes');
+assert(mainJs.includes('equip_heritage_boots'), 'main.js must define equip_heritage_boots');
 assert(worldJs.includes('classroom_secret_history'), 'world.js must define classroom_secret_history');
 assert(worldJs.includes('door_secret_history'), 'world.js must define door_secret_history');
 assert(engineJs.includes('room_secret_history'), 'engine.js must support room_secret_history');
@@ -182,10 +184,10 @@ function createMockApp() {
   app.playerData.openedSecretHistoryChest = true;
   app.addGold(500);
   app.addExp(500);
-  app.addItem('equip_bronze_shoes', '🥉 1897 청동 질주화', 1, '👟', {
+  app.addItem('equip_bronze_shoes', '🥉 청동 스파이크', 1, '👟', {
     type: 'equipment',
     slot: 'shoes',
-    stats: { atk: 6, def: 6, hp: 20 }
+    stats: { atk: 5, def: 5, hp: 10 }
   });
 
   assert.strictEqual(app.playerData.gold, 550, '500 Gold awarded');
