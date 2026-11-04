@@ -433,19 +433,19 @@ class GameEngine {
       // Left Hillside retaining wall (tx <= 1)
       if (tileX <= 1) return true;
       // Gym Building North Wall (tx >= 9, ty <= 10)
-      // Entrance portico is passable at tx 30..34, ty >= 9
+      // Entrance portico is passable between EV Charger & School Bus at tx 45..48, ty >= 9
       if (tileX >= 9 && tileY <= 10) {
-        if (tileX >= 30 && tileX <= 34 && tileY >= 9) return false;
+        if (tileX >= 45 && tileX <= 48 && tileY >= 9) return false;
         return true;
       }
-      // Pillars in front of entrance
-      if ((tileX === 24 || tileX === 28 || tileX === 36 || tileX === 40) && (tileY === 9 || tileY === 10)) {
+      // Granite Columns flanking the entrance
+      if ((tileX === 42 || tileX === 51) && (tileY === 9 || tileY === 10)) {
         return true;
       }
-      // Vertical School Bus (tx: 44..48, ty: 13..19)
-      if (tileX >= 44 && tileX <= 48 && tileY >= 13 && tileY <= 19) return true;
-      // Parking bays cars (tx: 11..43, ty: 13..18)
-      if (tileX >= 11 && tileX <= 43 && tileY >= 13 && tileY <= 18) return true;
+      // Vertical School Bus pushed tight against the right wall (tx: 52..54, ty: 13..19)
+      if (tileX >= 52 && tileX <= 54 && tileY >= 13 && tileY <= 19) return true;
+      // Parking bays cars (tx: 11..40, ty: 13..18)
+      if (tileX >= 11 && tileX <= 40 && tileY >= 13 && tileY <= 18) return true;
       // Security booth (tx: 39..43, ty: 27..30)
       if (tileX >= 39 && tileX <= 43 && tileY >= 27 && tileY <= 30) return true;
       return false;
@@ -11216,8 +11216,8 @@ class GameEngine {
     // 4. Upper-Middle Area (ty: 12..19): [교직원 주차 구역] 6구역
     this.drawSixParkingBays();
 
-    // 5. Right of Parking (tx: 44..48, ty: 13..19): 🚌 숭실 25인승 노란색 스쿨버스 |(세로)
-    this.drawVerticalSchoolBus(45.5 * 32, 13 * 32);
+    // 5. Far Right (tx: 52..54.6, ty: 13..19): 🚌 숭실 25인승 노란색 스쿨버스 |(오른쪽 벽에 바짝 붙임)
+    this.drawVerticalSchoolBus(52 * 32, 13 * 32);
 
     // 6. Middle Promenade (ty: 20..25): 보도블록 보행로 (보라색 화단, 황동 가로등, 볼라드 & 소나무 가로수 🌲)
     this.drawPromenadeAndLandscaping(mapW);
@@ -11437,19 +11437,40 @@ class GameEngine {
     ctx.fillStyle = '#cbd5e1';
     ctx.fillRect(startX, floor1Y + 4, facadeW, 2);
 
-    // 4. Grand Central Entrance Portico (tx: 24..40, ty: 7.5..11)
-    const pX = 24 * 32;
-    const pW = 16 * 32;
+    // 4. Polished Approach Plaza leading from promenade to Entrance (tx: 41..51, ty: 12..19)
+    const entryPlazaX = 41.5 * 32;
+    const entryPlazaW = 10 * 32;
+    const entryPlazaY = 12 * 32;
+    const entryPlazaH = 8 * 32;
+
+    // Elegant Light Granite Pavers entryway
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(entryPlazaX, entryPlazaY, entryPlazaW, entryPlazaH);
+    ctx.fillStyle = '#94a3b8';
+    for (let px = entryPlazaX; px < entryPlazaX + entryPlazaW; px += 24) {
+      for (let py = entryPlazaY; py < entryPlazaY + entryPlazaH; py += 16) {
+        ctx.fillRect(px, py, 22, 14);
+      }
+    }
+    // Subtle walkway border curbs
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(entryPlazaX - 2, entryPlazaY, 2, entryPlazaH);
+    ctx.fillRect(entryPlazaX + entryPlazaW, entryPlazaY, 2, entryPlazaH);
+
+    // 5. Grand Entrance Portico located between EV Charger & School Bus (centerX = 46.5 * 32)
+    const centerX = 46.5 * 32;
+    const pX = 42.5 * 32;
+    const pW = 8 * 32;
     const pY = 8 * 32;
 
-    // Polished Light Marble Steps
+    // Polished Light Marble Steps (3 tiers)
     for (let s = 0; s < 3; s++) {
       ctx.fillStyle = s % 2 === 0 ? '#cbd5e1' : '#94a3b8';
-      ctx.fillRect(pX - s * 8, pY + s * 10, pW + s * 16, 10);
+      ctx.fillRect(pX - s * 6, pY + s * 10, pW + s * 12, 10);
     }
 
-    // Four Massive Grand Cylindrical Granite Columns (tx: 24, 28, 36, 40)
-    for (const cx of [24, 28, 36, 40]) {
+    // Four Massive Grand Cylindrical Granite Columns (flanking the entrance at tx: 42.5, 44, 49, 50.5)
+    for (const cx of [42.5, 44.2, 48.8, 50.5]) {
       const colX = cx * 32;
       const colY = floor1Y + 6;
       const colH = floor1H - 6;
@@ -11461,28 +11482,28 @@ class GameEngine {
       colGrad.addColorStop(0.7, '#cbd5e1');
       colGrad.addColorStop(1, '#475569');
       ctx.fillStyle = colGrad;
-      ctx.fillRect(colX - 8, colY, 24, colH);
+      ctx.fillRect(colX - 8, colY, 20, colH);
 
       // Capital & Plinth
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(colX - 11, colY, 30, 6);
-      ctx.fillRect(colX - 11, colY + colH - 6, 30, 6);
+      ctx.fillRect(colX - 10, colY, 24, 6);
+      ctx.fillRect(colX - 10, colY + colH - 6, 24, 6);
     }
 
-    // Grand Automatic Sliding Glass Doors (tx: 30..34, ty: 9..11)
-    const dX = 30.5 * 32;
-    const dY = 9 * 32;
-    const dW = 3 * 32;
+    // Grand Automatic Sliding Glass Doors (tx: 45..48, ty: 9..11)
+    const dW = 3.2 * 32;
     const dH = 2 * 32;
+    const dX = centerX - dW / 2;
+    const dY = 9 * 32;
 
     // Dark Lobby Interior Glow
     ctx.fillStyle = '#020617';
     ctx.fillRect(dX, dY, dW, dH);
-    ctx.fillStyle = 'rgba(254, 240, 138, 0.25)';
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.28)';
     ctx.fillRect(dX, dY, dW, dH);
 
     // Cyan Tinted Glass Doors
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.38)';
     ctx.fillRect(dX + 4, dY + 4, dW / 2 - 6, dH - 4);
     ctx.fillRect(dX + dW / 2 + 2, dY + 4, dW / 2 - 6, dH - 4);
     ctx.strokeStyle = '#e2e8f0';
@@ -11496,30 +11517,30 @@ class GameEngine {
     ctx.fillStyle = '#22c55e';
     ctx.fillRect(dX + dW / 2 - 3, dY - 3, 6, 2);
 
-    // 5. Monumental Embossed Golden Signboard above Entrance
-    this.drawSharpLabel(32 * 32, 7.2 * 32, '🏛️ 숭실 체육관 · SOONGSIL GYMNASIUM', {
+    // 6. Monumental Embossed Golden Signboard above Entrance (Centered at 46.5 * 32)
+    this.drawSharpLabel(centerX, 7.2 * 32, '🏛️ 숭실 체육관 · SOONGSIL GYMNASIUM', {
       bgColor: 'rgba(15, 23, 42, 0.98)',
       borderColor: '#fbbf24',
       borderWidth: 2.5,
       textColor: '#fef08a',
-      fontSize: 13.5,
-      paddingX: 18,
+      fontSize: 13,
+      paddingX: 16,
       height: 28
     });
 
-    this.drawSharpLabel(32 * 32, 8.4 * 32, '[7층 종합 실내 체육시설 · B1 유도관 ~ 1F 로비 ~ 2-7F 대강당 코트 & 관람석]', {
+    this.drawSharpLabel(centerX, 8.4 * 32, '[7층 종합 실내 체육시설 · B1 유도관 ~ 1F 로비 ~ 2-7F 대강당 코트 & 관람석]', {
       bgColor: 'rgba(30, 41, 59, 0.92)',
       borderColor: '#60a5fa',
       borderWidth: 1,
       textColor: '#bae6fd',
-      fontSize: 10,
+      fontSize: 9.5,
       paddingX: 10,
       height: 18
     });
 
-    // 6. Trophy Showcase Display Windows on Left & Right
-    this.drawTrophyDisplayWindow(16 * 32, 9 * 32, '🏆 전국대회 우승기 & 트로피관');
-    this.drawTrophyDisplayWindow(48 * 32, 9 * 32, '🏀 숭실 스포츠 헤리티지관');
+    // 7. Trophy Showcase Display Windows on Left & Center (Balancing the long facade)
+    this.drawTrophyDisplayWindow(18 * 32, 9 * 32, '🏆 전국대회 우승기 & 트로피관');
+    this.drawTrophyDisplayWindow(30 * 32, 9 * 32, '🏀 숭실 스포츠 헤리티지관');
 
     ctx.restore();
   }
@@ -11787,7 +11808,7 @@ class GameEngine {
     ctx.fillRect(x + 2, y + h - 44, 5, 18);
     ctx.fillRect(x + w - 7, y + h - 44, 5, 18);
 
-    const tag = model === 'suv' ? '🚙 교직원 SUV' : (color === '#f8fafc' ? '🤍 교직원 세단' : (color === '#991b1b' ? '🍷 음악선생님 해치백' : '🚘 교직원 럭셔리 세단'));
+    const tag = model === 'suv' ? '🚙 교직원 SUV' : (color === '#f8fafc' ? '🤍 교직원 세단' : (color === '#991b1b' ? '🍷 음악선생님 해치백' : (color === '#2563eb' ? '⚡ 친환경 전기차 (충전 중)' : '🚘 교직원 럭셔리 세단')));
     this.drawSharpLabel(x + w / 2, y - 8, tag, {
       bgColor: 'rgba(15, 23, 42, 0.88)',
       borderColor: '#94a3b8',

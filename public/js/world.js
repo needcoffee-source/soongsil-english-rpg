@@ -648,7 +648,7 @@ const WORLD_DATA = {
     gymEntrance: {
       id: "gym_entrance",
       type: "gym_entrance",
-      x: 32,
+      x: 46.5,
       y: 10,
       name: "🏛️ 숭실 종합 체육관 메인 로비",
       prompt: "체육관 입장 (개관 준비 중)"
@@ -656,7 +656,7 @@ const WORLD_DATA = {
     schoolBus: {
       id: "gym_school_bus",
       type: "gym_school_bus",
-      x: 46,
+      x: 53.2,
       y: 16,
       name: "🚌 숭실 통학 스쿨버스",
       prompt: "스쿨버스 살펴보기"
