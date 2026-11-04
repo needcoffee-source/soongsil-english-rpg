@@ -446,8 +446,8 @@ class GameEngine {
       if (tileX >= 52 && tileX <= 54 && tileY >= 13 && tileY <= 19) return true;
       // Parking bays cars (tx: 11..40, ty: 13..18)
       if (tileX >= 11 && tileX <= 40 && tileY >= 13 && tileY <= 18) return true;
-      // Security booth (tx: 39..43, ty: 27..30)
-      if (tileX >= 39 && tileX <= 43 && tileY >= 27 && tileY <= 30) return true;
+      // Main gate barrier post at start of uphill road (tx: 7..8, ty: 31..33)
+      if ((tileX === 7 || tileX === 8) && tileY >= 31 && tileY <= 33) return true;
       return false;
     }
     if (this.player.room === 'hallway') {
@@ -11225,8 +11225,7 @@ class GameEngine {
     // 7. Bottom Driving Aisles (ty: 26..35): 아스팔트 주행 차로 & 방향 화살표
     this.drawDrivingAisles(mapW, mapH);
 
-    // 8. Security / Parking Control Booth & Boom Barrier (tx: 40..44, ty: 27..30)
-    this.drawHighResSecurityBooth(40 * 32, 27 * 32);
+    // 8. Main Gate Barrier is rendered at the start of Uphill Road (tx: 0..8, ty: 31..33)
 
     // 9. East Exit Gate to Soccer Field (tx: 50..55, ty: 28..32)
     const exitX = 51 * 32;
@@ -11253,7 +11252,7 @@ class GameEngine {
   }
 
   // ========================================================
-  // [언덕길] 서쪽 급경사 언덕길 & 옹벽 (tx: 0..8, ty: 0..35)
+  // [언덕길 & 정문 차단기] 서쪽 급경사 언덕길 & 옹벽 (tx: 0..8, ty: 0..35)
   // ========================================================
   drawHighResHillsideRoad(mapH) {
     const ctx = this.ctx;
@@ -11291,12 +11290,10 @@ class GameEngine {
     ctx.fillRect(24, 0, 3, roadH);
     ctx.fillRect(roadW - 16, 0, 3, roadH);
 
-    // 5. Steep Uphill Road Chevron Stencils (▲) & "20" Speed Limits
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-    ctx.font = '900 11px "Pretendard", sans-serif';
-    ctx.textAlign = 'center';
-    for (let y = 120; y < roadH; y += 180) {
-      // Uphill chevron arrows
+    // 5. Clean Uphill Road Chevron Lines (바닥 텍스트 글씨 완전 삭제)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 2;
+    for (let y = 140; y < roadH - 180; y += 220) {
       ctx.beginPath();
       ctx.moveTo(roadW * 0.3, y + 10);
       ctx.lineTo(roadW * 0.3, y);
@@ -11304,12 +11301,6 @@ class GameEngine {
       ctx.moveTo(roadW * 0.3, y);
       ctx.lineTo(roadW * 0.3 + 8, y + 8);
       ctx.stroke();
-
-      ctx.fillText('▲ 서문 언덕길', roadW * 0.3, y + 26);
-      ctx.fillText('급경사 주의', roadW * 0.3, y + 40);
-
-      // Downhill lane stencil
-      ctx.fillText('서행 20', roadW * 0.72, y + 30);
     }
 
     // 6. East Guardrail & Curb separating Hillside from Parking/Plaza
@@ -11325,19 +11316,59 @@ class GameEngine {
 
     // Steel guardrail posts
     ctx.fillStyle = '#cbd5e1';
-    for (let y = 16; y < roadH; y += 48) {
+    for (let y = 16; y < roadH - 140; y += 48) {
       ctx.fillRect(roadW - 6, y, 4, 18);
     }
 
-    // 7. Hillside Road Signpost at south entrance
-    this.drawSharpLabel(roadW * 0.5, roadH - 60, '▲ [숭실 서문 언덕길 · 급경사 주의]', {
-      bgColor: 'rgba(15, 23, 42, 0.95)',
+    // 7. 🏛️ 숭실 정문 & 교직원 차량 차단기 (언덕길 시작부분: 차단이자 정문)
+    const gateY = roadH - 96;
+    const bx = roadW - 14;
+
+    // Small Security Booth on the Island Curb
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(bx - 6, gateY - 32, 22, 54);
+    ctx.fillStyle = '#991b1b'; // canopy roof
+    ctx.fillRect(bx - 9, gateY - 36, 28, 6);
+    // Security booth window
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+    ctx.fillRect(bx - 3, gateY - 24, 16, 16);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(bx - 3, gateY - 24, 16, 16);
+
+    // Boom barrier housing (yellow steel post)
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(bx - 14, gateY + 6, 12, 32);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(bx - 12, gateY + 10, 8, 6);
+
+    // Flashing Red LED Beacon on top
+    const now = Date.now();
+    const flashAlpha = 0.5 + Math.sin(now / 150) * 0.45;
+    ctx.fillStyle = 'rgba(239, 68, 68, ' + flashAlpha + ')';
+    ctx.beginPath();
+    ctx.arc(bx - 8, gateY + 2, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Horizontal barrier arm extending across the uphill road
+    const armW = roadW - 46;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(bx - 14 - armW, gateY + 18, armW, 5);
+    // Red diagonal hazard stripes on arm
+    ctx.fillStyle = '#dc2626';
+    for (let rx = bx - 14 - armW + 6; rx < bx - 14; rx += 16) {
+      ctx.fillRect(rx, gateY + 18, 8, 5);
+    }
+
+    // Main Gate Illuminated Signboard Badge
+    this.drawSharpLabel(roadW * 0.5, gateY - 50, '🏛️ [숭실 정문 & 교직원 차량 차단기]', {
+      bgColor: 'rgba(15, 23, 42, 0.98)',
       borderColor: '#f59e0b',
-      borderWidth: 1.5,
+      borderWidth: 2,
       textColor: '#fef08a',
-      fontSize: 10,
-      paddingX: 8,
-      height: 20
+      fontSize: 10.5,
+      paddingX: 12,
+      height: 22
     });
 
     ctx.restore();
@@ -11538,9 +11569,7 @@ class GameEngine {
       height: 18
     });
 
-    // 7. Trophy Showcase Display Windows on Left & Center (Balancing the long facade)
-    this.drawTrophyDisplayWindow(18 * 32, 9 * 32, '🏆 전국대회 우승기 & 트로피관');
-    this.drawTrophyDisplayWindow(30 * 32, 9 * 32, '🏀 숭실 스포츠 헤리티지관');
+    // (스포츠헤리티지관 및 트로피관 삭제 완료 - 정돈된 화강암 파사드 벽면)
 
     ctx.restore();
   }
@@ -12050,28 +12079,7 @@ class GameEngine {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // White directional pavement arrows
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-    ctx.font = '900 11px "Pretendard", sans-serif';
-    ctx.textAlign = 'center';
-
-    for (let ax of [16 * 32, 28 * 32]) {
-      // Eastbound arrow (➡️ towards soccer field)
-      ctx.fillText('➡️ 축구장 방면 (EAST)', ax, laneY + laneH * 0.75);
-
-      // Westbound arrow (⬅️ towards uphill road)
-      ctx.fillText('⬅️ 서문 언덕길 (WEST)', ax, laneY + laneH * 0.3);
-    }
-
-    // Speed limit circle stencil
-    ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(22 * 32, laneY + laneH * 0.5, 16, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 11px sans-serif';
-    ctx.fillText('20', 22 * 32, laneY + laneH * 0.5 + 4);
+    // (바닥 글씨: 서문언덕길, 축구장방면, 20 삭제 완료 - 깨끗한 아스팔트 주행 차로)
 
     ctx.restore();
   }
