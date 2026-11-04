@@ -2719,7 +2719,7 @@ class MainApp {
       }
       const status1 = cond1Met ? '✅ 완수 (4/4개 완료)' : `❌ 미완수 (${vitrinesCount}/4개 조사됨)`;
       const status2 = '🔒 봉인 중 (조건 1, 3, 4 충족 시 교훈 암호 입력 가능)';
-      const status3 = cond3Met ? '✅ 완수 (응원 쪽지 작성됨)' : '❌ 미완수 (6층 교무실 26번 책상에 쪽지 작성 필요)';
+      const status3 = cond3Met ? '✅ 완수' : '❌ 미완수';
       const status4 = cond4Met
         ? `✅ 완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유)`
         : `❌ 미완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유 중)`;
