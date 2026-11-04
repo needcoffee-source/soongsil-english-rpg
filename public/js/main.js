@@ -442,15 +442,15 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
   {
-    id: 'equip_heritage_ring',
-    name: '1897 숭실 헤리티지 반지',
-    icon: '💍',
+    id: 'equip_bronze_shoes',
+    name: '1897 청동 질주화 (Bronze Sprint Shoes)',
+    icon: '👟',
     category: 'equip',
-    tierBadge: '4티어 전설 장신구',
-    tierColor: '#38bdf8',
-    effect: '공격력 +25, 방어력 +25, 체력 +50',
-    source: '숭실역사관 비밀의 방 고대 비전의 보물함 (이스터에그)',
-    recipe: '4대 전시관 답사 + 암호 1897 + 갓준철 응원 쪽지 + 사명석 1개 & 역사의 정수 5개 결계 공양'
+    tierBadge: '3티어 신발',
+    tierColor: '#047857',
+    effect: '공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화',
+    source: '숭실역사관 비밀의 방 고대 비전의 보물함 (이스터에그 5대 관문 돌파)',
+    recipe: '비밀의 방 5대 관문 통과 보상'
   },
   {
     id: 'equip_shoes_samdidas',
@@ -528,7 +528,7 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
   'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
   'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
-  'equip_heritage_ring': { name: '🌟 1897 숭실 헤리티지 반지', icon: '💍', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 25, def: 25, hp: 50 }, effect: '4티어 전설 장신구 · 숭실 127년 역사관 비밀의 방 보물 · 공격력 +25, 방어력 +25, 체력 +50' } },
+  'equip_bronze_shoes': { name: '🥉 1897 청동 질주화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 20 }, effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '대시(B) 기능 잠금 해제' } },
 
   // 6. Legendary Season Boss Artifacts & Rewards
@@ -585,7 +585,7 @@ const ITEM_SELL_PRICES = {
   'equip_heritage_blade': 30, // 제작비 150G -> 20% = 30G
   'equip_heritage_helmet': 24, // 제작비 120G -> 20% = 24G
   'equip_heritage_armor': 28, // 제작비 140G -> 20% = 28G
-  'equip_heritage_ring': 50, // 전설 장신구 특별 매각가
+  'equip_bronze_shoes': 16, // 3티어 청동 신발 매각가
 
   // 7. 최상위 엔드 레이드 전리품
   'equip_omr_wand': 20,
@@ -737,13 +737,6 @@ const CAREER_ESCAPE_CLUES = [
 ];
 
 const TITLE_DEFINITIONS = [
-  {
-    id: 'title_history_secret_master',
-    name: '🏛️ 역사의 진실을 밝힌 자',
-    desc: '숭실 127년 역사관 비밀의 방 결계를 모두 풀고 고대 비전의 보물을 손에 넣은 전설의 탐험가! (공격력 +15, 방어력 +15, 체력 +50)',
-    costType: 'quest',
-    costAmount: 0
-  },
   {
     id: 'title_history_bearer',
     name: '🏛️ 역사를 기억하는 자',
@@ -2712,7 +2705,7 @@ class MainApp {
         window.AudioManager.playSelect();
       }
       const status1 = cond1Met ? '✅ 완수 (4/4개 완료)' : `❌ 미완수 (${vitrinesCount}/4개 조사됨)`;
-      const status2 = '🔒 봉인 중 (조건 1, 3, 4 충족 시 입력 가능)';
+      const status2 = '🔒 봉인 중 (조건 1, 3, 4 충족 시 교훈 암호 입력 가능)';
       const status3 = cond3Met ? '✅ 완수 (응원 쪽지 작성됨)' : '❌ 미완수 (6층 교무실 26번 갓준철 책상에 쪽지 작성 필요)';
       const status4 = cond4Met
         ? `✅ 완수 (사명석 ${stoneCount}/1개, 정수 ${essenceCount}/5개 보유)`
@@ -2724,7 +2717,7 @@ class MainApp {
         `비밀의 방에 입장하려면 아래 4가지 사명의 조건을 모두 완수해야 합니다!\n\n` +
         `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
         `[조건 1] 🏛️ 4대 전시관 모두 조사: ${status1}\n` +
-        `[조건 2] 🗝️ 비밀 암호 4자리 해독: ${status2}\n` +
+        `[조건 2] 📜 숭실 교훈 암호 입력: ${status2}\n` +
         `[조건 3] ✍️ 갓준철에게 메시지 남기기: ${status3}\n` +
         `[조건 4] 💎 결계 봉인 제물 바치기: ${status4}\n` +
         `   • 💎 꺾이지 않는 사명석 1개 (${stoneCount}/1)\n` +
@@ -2736,23 +2729,26 @@ class MainApp {
       return;
     }
 
-    // 조건 1, 3, 4 충족 완료 -> 조건 2. 비밀 암호 입력 프롬프트
+    // 조건 1, 3, 4 충족 완료 -> 조건 2. 숭실 교훈 입력 프롬프트
     const inputPw = prompt(
       `✨ [숭실역사관 비밀의 방 결계 해제 의식]\n\n` +
       `4대 전시관 완벽 답사, 갓준철 응원 메시지, 그리고 봉인 제물(사명석 1개, 역사의 정수 5개)이 모두 갖추어졌습니다!\n\n` +
-      `숭실이 평양에서 처음 시작된 역사적인 창립 연도(암호 4자리)를 입력하세요:\n\n` +
-      `⚠️ [주의] 결계 해제 시 사명석 1개와 역사의 정수 5개가 제단에 바쳐집니다.`
+      `비밀의 문을 열기 위해 숭실의 숭고한 교훈 문구를 입력하세요:\n\n` +
+      `⚠️ [주의] 결계 해제 시 사명석 1개와 역사의 정수 5개가 제단에 바쳐집니다.\n` +
+      `💡 힌트: 역사관 칠판 상단 교훈 액자 ("참과 사랑에 사는 사명인")`
     );
 
     if (inputPw === null) {
       return; // 취소 버튼 클릭 시 종료
     }
 
-    if (inputPw.trim() !== '1897') {
+    const cleanInput = (inputPw || '').trim().replace(/\s+/g, '');
+    if (cleanInput !== '참과사랑에사는사명인') {
       alert(
         `❌ [결계 봉인 해제 실패]\n\n` +
-        `입력하신 암호 [${inputPw.trim()}]는 올바르지 않습니다.\n\n` +
-        `💡 힌트: 숭실역사관 제1전시관의 현판과 평양 숭실학당 창립 연도를 확인해보세요!`
+        `입력하신 교훈 문구가 일치하지 않습니다.\n\n` +
+        `💡 힌트: 역사관 칠판 상단에 걸린 숭실의 교훈 액자를 확인해보세요!\n` +
+        `("참과 사랑에 사는 사명인")`
       );
       return;
     }
@@ -2777,7 +2773,7 @@ class MainApp {
 
     alert(
       `🎉 [숭실역사관 비밀의 방 결계 전면 해제!]\n\n` +
-      `"1897년 평양에서 타오른 불멸의 사명과 갓준철을 향한 진심이 공명하며,\n` +
+      `"참과 사랑에 사는 사명인의 정신과 갓준철을 향한 진심이 공명하며,\n` +
       `굳게 닫혀 있던 서쪽 석벽이 열리고 비밀의 통로가 드러났습니다!"\n\n` +
       `💎 꺾이지 않는 사명석 1개와 🏛️ 숭실 역사의 정수 5개가 결계에 바쳐졌습니다.\n` +
       `이제부터 비밀의 방을 언제든 자유롭게 드나들 수 있습니다!`
@@ -2793,6 +2789,27 @@ class MainApp {
       alert('✨ [숭실 고대 비전의 보물함]\n\n"이미 127년 역사의 비전이 담긴 전설의 보물을 모두 획득했습니다. 사명을 가슴에 품고 전진하세요!"');
       return;
     }
+
+    // 비밀의 방에서 보상 획득을 위한 마지막 퀴즈 조건 5: 1897
+    const quizAnswer = prompt(
+      `✨ [숭실 고대 비전의 보물함 개방 퀴즈 (마지막 관문)]\n\n` +
+      `비밀의 보물함을 열기 위한 마지막 5번째 조건입니다!\n\n` +
+      `"1897년 평양 신양리에서 윌리엄 M. 베어드 박사에 의해 시작된 숭실학당!\n` +
+      `숭실이 처음 창립된 역사적인 연도(4자리 숫자)를 입력하세요:"\n\n` +
+      `💡 힌트: 숭실역사관 제1전시관의 창립 연도 (1897)`
+    );
+
+    if (quizAnswer === null) return;
+
+    if (quizAnswer.trim() !== '1897') {
+      alert(
+        `❌ [보물함 봉인 해제 실패]\n\n` +
+        `입력하신 연도 [${quizAnswer.trim()}]는 올바르지 않습니다.\n\n` +
+        `💡 힌트: 숭실이 평양에서 처음 시작된 창립 연도 4자리를 다시 확인해보세요! (1897)`
+      );
+      return;
+    }
+
     this.playerData.openedSecretHistoryChest = true;
     const studentId = this.playerData.studentId;
     if (studentId) {
@@ -2801,27 +2818,19 @@ class MainApp {
       } catch (e) {}
     }
 
-    // 확실한 보상 1: 황금 1,000 G
-    this.addGold(1000);
+    // 보상 1: 골드 500 G
+    this.addGold(500);
 
-    // 확실한 보상 2: 경험치 500 EXP
+    // 보상 2: 경험치 500 EXP
     this.addExp(500);
 
-    // 확실한 보상 3: 전설 4티어 장신구 🌟 1897 숭실 헤리티지 반지
-    this.addItem('equip_heritage_ring', '🌟 1897 숭실 헤리티지 반지', 1, '💍', {
+    // 보상 3: 3티어 신발 획득 (🥉 1897 청동 질주화)
+    this.addItem('equip_bronze_shoes', '🥉 1897 청동 질주화', 1, '👟', {
       type: 'equipment',
-      slot: 'accessory',
-      stats: { atk: 25, def: 25, hp: 50 },
-      effect: '4티어 전설 장신구 · 숭실 127년 역사관 비밀의 방 보물 · 공격력 +25, 방어력 +25, 체력 +50'
+      slot: 'shoes',
+      stats: { atk: 6, def: 6, hp: 20 },
+      effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화'
     });
-
-    // 확실한 보상 4: 특별 한정판 명예 칭호
-    const secretTitle = '🏛️ 역사의 진실을 밝힌 자';
-    this.playerData.titles = this.playerData.titles || [];
-    if (!this.playerData.titles.includes(secretTitle)) {
-      this.playerData.titles.push(secretTitle);
-    }
-    this.equipTitle(secretTitle);
 
     this.recalcCombatStats();
     this.saveProgress(true);
@@ -2831,18 +2840,17 @@ class MainApp {
     }
 
     alert(
-      `🎉 [이스터에그 대성공! 숭실 고대 비전의 보물함 개방]\n\n` +
-      `"1897년 평양에서 시작된 숭실 127년 사명의 비밀을 밝혀낸 위대한 모험가에게 주어지는 고대 전설의 보물입니다!"\n\n` +
+      `🎉 [비밀의 방 최종 관문 통과! 고대 보물함 개방]\n\n` +
+      `"1897년 평양 창립의 역사를 증명하고 마침내 숭실 127년 역사의 비전을 손에 넣었습니다!"\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `🪙 +1,000 G (골드 대량 획득)\n` +
-      `🌟 +500 EXP (경험치 대량 획득)\n` +
-      `💍 [전설 4티어 장신구] 🌟 1897 숭실 헤리티지 반지 획득!\n` +
-      `   • 능력치: 공격력 +25, 방어력 +25, 체력 +50\n` +
-      `👑 특별 한정 칭호 [${secretTitle}] 획득 및 자동 장착!\n` +
-      `   • 칭호 효과: 공격력 +15, 방어력 +15, 체력 +50 추가 상승!\n` +
+      `🪙 +500 G (골드 획득)\n` +
+      `🌟 +500 EXP (경험치 획득)\n` +
+      `👟 [3티어 신발] 🥉 1897 청동 질주화 획득!\n` +
+      `   • 능력치: 공격력 +6, 방어력 +6, 체력 +20\n` +
+      `   • 특수 효과: 초고속 질주(속도 5.15, +35%) 활성화!\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━`
     );
-    this.showToast('🎉 [전설 보물 획득!] 1,000 G, 500 EXP, 1897 헤리티지 반지를 획득했습니다!', 'success');
+    this.showToast('🎉 [보물함 개방!] 500 G, 500 EXP, 3티어 청동 질주화를 획득했습니다!', 'success');
   }
 
   handleSecretHistoryBook(target) {
@@ -3876,10 +3884,6 @@ class MainApp {
     if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
       bonusAtk += 10;
       bonusHp += 30;
-    } else if (this.playerData.equippedTitle === '🏛️ 역사의 진실을 밝힌 자') {
-      bonusAtk += 15;
-      bonusDef += 15;
-      bonusHp += 50;
     }
 
     // 🔥 용기의 물약 버프 (공격력 +5 증가)

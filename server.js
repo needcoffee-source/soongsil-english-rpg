@@ -582,7 +582,7 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
   'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
   'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
-  'equip_heritage_ring': { name: '🌟 1897 숭실 헤리티지 반지', icon: '💍', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 25, def: 25, hp: 50 }, effect: '4티어 전설 장신구 · 숭실 127년 역사관 비밀의 방 보물 · 공격력 +25, 방어력 +25, 체력 +50' } },
+  'equip_bronze_shoes': { name: '🥉 1897 청동 질주화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 20 }, effect: '3티어 신발 · 숭실 역사관 비밀의 방 보물 · 공격력 +6, 방어력 +6, 체력 +20 · 초고속 질주(속도 5.15, +35%) 활성화' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 3초간 약한 질주(속도 15% 증가)가 가능합니다.' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },

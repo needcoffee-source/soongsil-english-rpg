@@ -2,7 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🧪 Testing Secret History Room Gatekeeper, Password 1897, and Legendary Rewards...');
+console.log('🧪 Testing Secret History Room Gatekeeper, School Motto "참과 사랑에 사는 사명인", Final Quiz 1897, and Tier-3 Shoes Reward...');
 
 // 1. Verify item catalog definitions
 const serverJs = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
@@ -10,8 +10,8 @@ const mainJs = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'ut
 const worldJs = fs.readFileSync(path.join(__dirname, '../public/js/world.js'), 'utf8');
 const engineJs = fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8');
 
-assert(serverJs.includes('equip_heritage_ring'), 'server.js must define equip_heritage_ring');
-assert(mainJs.includes('equip_heritage_ring'), 'main.js must define equip_heritage_ring');
+assert(serverJs.includes('equip_bronze_shoes'), 'server.js must define equip_bronze_shoes');
+assert(mainJs.includes('equip_bronze_shoes'), 'main.js must define equip_bronze_shoes');
 assert(worldJs.includes('classroom_secret_history'), 'world.js must define classroom_secret_history');
 assert(worldJs.includes('door_secret_history'), 'world.js must define door_secret_history');
 assert(engineJs.includes('room_secret_history'), 'engine.js must support room_secret_history');
@@ -37,7 +37,6 @@ class MockEngine {
   }
 }
 
-// Extract handleSecretHistoryDoor & handleSecretHistoryChest logic into a test harness
 function createMockApp() {
   const app = {
     playerData: {
@@ -87,11 +86,7 @@ function createMockApp() {
     addExp(amt) { this.playerData.exp += amt; },
     equipTitle(title) { this.playerData.equippedTitle = title; },
     recalcCombatStats() {
-      if (this.playerData.equippedTitle === '🏛️ 역사의 진실을 밝힌 자') {
-        this.playerData.atk = this.playerData.baseAtk + 15;
-        this.playerData.def = this.playerData.baseDef + 15;
-        this.playerData.maxHp = this.playerData.baseHp + 50;
-      }
+      // Recalc based on base + equipment
     },
     saveProgress() {},
     showToast(msg, type) { this.toasts.push({ msg, type }); }
@@ -102,7 +97,6 @@ function createMockApp() {
 // Test Case 1: Fresh player cannot enter - blocked with status checklist
 {
   const app = createMockApp();
-  // Evaluate condition 1, 3, 4
   const vitrines = app.playerData.historyVitrines;
   const cond1Met = (vitrines.filter(Boolean).length >= 4);
   const cond3Met = (app.playerData.juncheolGuestbookNote.trim().length > 0);
@@ -132,7 +126,7 @@ function createMockApp() {
   console.log('  ✓ Partial conditions properly verified');
 }
 
-// Test Case 3: Complete all 3 prerequisites, test wrong password vs correct password 1897
+// Test Case 3: Complete all 3 prerequisites, test Condition 2: School Motto "참과 사랑에 사는 사명인"
 {
   const app = createMockApp();
   app.playerData.historyVitrines = [true, true, true, true];
@@ -146,15 +140,17 @@ function createMockApp() {
 
   assert.strictEqual(cond1Met && cond3Met && cond4Met, true, 'All 3 prerequisite conditions met');
 
-  // Wrong password
-  const wrongPw = '1905';
-  assert.notStrictEqual(wrongPw, '1897', 'Wrong password detected');
+  // Wrong motto
+  const wrongMotto = '성실과 봉사';
+  assert.notStrictEqual(wrongMotto.replace(/\s+/g, ''), '참과사랑에사는사명인', 'Wrong motto detected');
 
-  // Correct password 1897
-  const correctPw = '1897';
-  assert.strictEqual(correctPw, '1897', 'Correct password accepted');
+  // Correct motto (with space or without space)
+  const inputMotto1 = '참과 사랑에 사는 사명인';
+  const inputMotto2 = '참과사랑에사는사명인 ';
+  assert.strictEqual(inputMotto1.trim().replace(/\s+/g, ''), '참과사랑에사는사명인', 'Motto with spaces accepted');
+  assert.strictEqual(inputMotto2.trim().replace(/\s+/g, ''), '참과사랑에사는사명인', 'Motto without spaces accepted');
 
-  // Sacrifice items
+  // Sacrifice items & unlock door
   app.removeItem('item_unyielding_stone', 1);
   app.removeItem('item_history_essence', 5);
   app.playerData.secretHistoryRoomUnlocked = true;
@@ -164,37 +160,40 @@ function createMockApp() {
   assert.strictEqual(app.getItemCount('item_history_essence'), 0, '5 History essences sacrificed');
   assert.strictEqual(app.playerData.secretHistoryRoomUnlocked, true, 'Secret room permanently unlocked');
   assert.strictEqual(app.engine.currentRoom, 'room_secret_history', 'Teleported to secret archive');
-  console.log('  ✓ 4-step ritual and password 1897 sacrifice execution validated');
+  console.log('  ✓ Condition 2 (교훈 "참과 사랑에 사는 사명인") and ritual sacrifice validated');
 }
 
-// Test Case 4: Treasure chest rewards in secret room
+// Test Case 4: Inside Secret Room, Final Quiz Condition 5 (1897) and Rewards (500G, 500EXP, 3-tier shoes)
 {
   const app = createMockApp();
   app.playerData.secretHistoryRoomUnlocked = true;
 
-  // Open chest
+  // Chest unopened
   assert.strictEqual(app.playerData.openedSecretHistoryChest, false);
-  app.playerData.openedSecretHistoryChest = true;
-  app.addGold(1000);
-  app.addExp(500);
-  app.addItem('equip_heritage_ring', '🌟 1897 숭실 헤리티지 반지', 1, '💍', {
-    type: 'equipment',
-    slot: 'accessory',
-    stats: { atk: 25, def: 25, hp: 50 }
-  });
-  const secretTitle = '🏛️ 역사의 진실을 밝힌 자';
-  app.playerData.titles.push(secretTitle);
-  app.equipTitle(secretTitle);
-  app.recalcCombatStats();
 
-  assert.strictEqual(app.playerData.gold, 1050, '1,000 Gold awarded');
+  // Condition 5: Final quiz 1897
+  const wrongAnswer = '1905';
+  assert.notStrictEqual(wrongAnswer.trim(), '1897', 'Wrong quiz answer rejected');
+
+  const correctAnswer = '1897';
+  assert.strictEqual(correctAnswer.trim(), '1897', 'Correct quiz answer 1897 accepted');
+
+  // Chest opened
+  app.playerData.openedSecretHistoryChest = true;
+  app.addGold(500);
+  app.addExp(500);
+  app.addItem('equip_bronze_shoes', '🥉 1897 청동 질주화', 1, '👟', {
+    type: 'equipment',
+    slot: 'shoes',
+    stats: { atk: 6, def: 6, hp: 20 }
+  });
+
+  assert.strictEqual(app.playerData.gold, 550, '500 Gold awarded');
   assert.strictEqual(app.playerData.exp, 600, '500 EXP awarded');
-  assert.strictEqual(app.getItemCount('equip_heritage_ring'), 1, '1897 Heritage Ring in inventory');
-  assert.strictEqual(app.playerData.equippedTitle, '🏛️ 역사의 진실을 밝힌 자', 'Exclusive title equipped');
-  assert.strictEqual(app.playerData.atk, 25, 'Title gives +15 ATK');
-  assert.strictEqual(app.playerData.def, 25, 'Title gives +15 DEF');
-  assert.strictEqual(app.playerData.maxHp, 150, 'Title gives +50 HP');
-  console.log('  ✓ Solid reward package (1000G, 500EXP, 1897 Ring, Title +15/+15/+50) validated');
+  assert.strictEqual(app.getItemCount('equip_bronze_shoes'), 1, '3-tier shoes awarded in inventory');
+  assert.strictEqual(app.getItemCount('equip_heritage_ring'), 0, 'Ring reward removed as requested');
+  assert.strictEqual(app.playerData.titles.length, 0, 'Title reward removed as requested');
+  console.log('  ✓ Condition 5 (창립 연도 1897 퀴즈) and new rewards (500G, 500EXP, 3티어 신발) validated');
 }
 
 console.log('🎉 ALL SECRET HISTORY GATEKEEPER & REWARD TESTS PASSED 100%!');

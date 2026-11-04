@@ -164,10 +164,11 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    // 신발 종류 확인: 날렵한 가죽 농구화 착용 시 실내화(4.37, +15%)보다 소폭 빠른 고속 질주(4.75, +25%) 적용
+    // 신발 종류 확인: 실내화(4.37, +15%), 2티어 농구화(4.75, +25%), 3티어 청동 질주화(5.15, +35%)
     const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
+    const isBronzeShoes = !!(equippedShoes && (equippedShoes.item === 'equip_bronze_shoes'));
     const isBasketballShoes = !!(equippedShoes && (equippedShoes.item === 'equip_leather_shoes'));
-    const dashSpeed = isBasketballShoes ? 4.75 : 4.37;
+    const dashSpeed = isBronzeShoes ? 5.15 : (isBasketballShoes ? 4.75 : 4.37);
     this.player.speed = isDashing ? dashSpeed : baseWalkSpeed;
   }
 
