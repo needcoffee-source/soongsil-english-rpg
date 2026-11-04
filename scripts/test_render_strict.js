@@ -53,7 +53,7 @@ eval(engineJs.replace('class GameEngine', 'global.GameEngine = class GameEngine'
 const canvas = { width: 1200, height: 800, getContext: () => makeCtx(), getBoundingClientRect: () => ({ left: 0, top: 0, width: 1200, height: 800 }), addEventListener: () => {} };
 const engine = new GameEngine(canvas);
 
-const rooms = ['hallway', 'playground', 'room_staff_office', 'room_career', 'room_history', 'room_701', 'room_702', 'room_703', 'room_704', 'room_705', 'room_706'];
+const rooms = ['hallway', 'playground', 'playground_gym', 'room_staff_office', 'room_career', 'room_history', 'room_701', 'room_702', 'room_703', 'room_704', 'room_705', 'room_706'];
 const variants = [
   { label: 'student', isTeacher: false, isFallen: false, gear: {} },
   { label: 'teacher', isTeacher: true, isFallen: false, gear: {}, noclip: true },

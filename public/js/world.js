@@ -16,7 +16,9 @@ const WORLD_DATA = {
   STAFF_OFFICE_WIDTH: 106, // 교실 3.5개 사이즈 대형 본관 교무실 (106 x 26 타일)
   STAFF_OFFICE_HEIGHT: 26, // 상단 부속실(소회의실·탕비실·인쇄실·교1~3·상담실) + 중앙 통로 + 하단 교4~25 6분단 수용
   PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
-  PLAYGROUND_HEIGHT: 54, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
+  PLAYGROUND_HEIGHT: 54,
+  GYM_PLAZA_WIDTH: 56, // 숭실 7층 체육관 & 주차장 광장 (56 x 36 타일)
+  GYM_PLAZA_HEIGHT: 36, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
   MAP_HEIGHT: 20,
 
   floors: {
@@ -630,6 +632,44 @@ const WORLD_DATA = {
   },
 
   // 숭실 야외 종합 체육공간 (축구장, 농구장, 신규 인조잔디 풋살장, 관람석 스탠드)
+    // 🏛️ 숭실 7층 종합 체육관 & 지상 주차장 광장 (56 x 36 타일)
+  playground_gym: {
+    name: "숭실 체육관 & 주차장 광장",
+    width: 56,
+    height: 36,
+    exitGate: {
+      id: "gym_exit_gate",
+      type: "gym_exit_gate",
+      x: 54,
+      y: 28,
+      name: "⚽ 숭실 운동장(축구장) 방면",
+      prompt: "운동장으로 나가기"
+    },
+    gymEntrance: {
+      id: "gym_entrance",
+      type: "gym_entrance",
+      x: 28,
+      y: 10,
+      name: "🏛️ 숭실 종합 체육관 메인 로비",
+      prompt: "체육관 입장 (개관 준비 중)"
+    },
+    schoolBus: {
+      id: "gym_school_bus",
+      type: "gym_school_bus",
+      x: 11,
+      y: 20,
+      name: "🚌 숭실 통학 스쿨버스",
+      prompt: "스쿨버스 살펴보기"
+    },
+    evCharger: {
+      id: "gym_ev_charger",
+      type: "gym_ev_charger",
+      x: 40,
+      y: 20,
+      name: "⚡ 전기차 급속 충전소",
+      prompt: "충전소 확인하기"
+    }
+  },
   playground: {
     name: "숭실 운동장",
     width: 90,
@@ -643,6 +683,14 @@ const WORLD_DATA = {
       y: 52,
       name: "🏛️ 숭실역사관",
       prompt: "🏛️ 숭실역사관"
+    },
+    gymGate: {
+      id: "gym_gate",
+      type: "gym_gate",
+      x: 2,
+      y: 35,
+      name: "🚗 숭실 체육관 & 주차장 진입 게이트",
+      prompt: "체육관 & 주차장 진입"
     },
     store: {
       id: "store_canteen",

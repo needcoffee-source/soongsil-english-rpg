@@ -1498,6 +1498,24 @@ class MainApp {
       this.engine.triggerFadeWarp(() => {
         this.engine.warpToRoom('room_history', '🏛️ 숭실역사관 (History Hall)', 15 * 32, 13 * 32);
       });
+        } else if (target.type === 'gym_gate') {
+      if (!this.playerData.isTeacher) {
+        alert('🚫 [교직원 전용 시설 관리 구역]\n\n"🚗 숭실 체육관 및 주차장 구역은 현재 교직원 전용 관리 구역입니다.\n(교사 계정으로 로그인 후 출입할 수 있습니다.)"');
+        return;
+      }
+      this.engine.triggerFadeWarp(() => {
+        this.engine.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 28 * 32);
+      });
+    } else if (target.type === 'gym_exit_gate') {
+      this.engine.triggerFadeWarp(() => {
+        this.engine.warpToRoom('playground', '숭실 운동장', 4 * 32, 35 * 32);
+      });
+    } else if (target.type === 'gym_entrance') {
+      alert('🏛️ [숭실 종합 체육관 (7층 대형 복합 스포츠 센터)]\n\n"지하 1층(유도·탁구장), 1층(종합 안내 로비), 2~3층(정규 규격 실내 농구·배구 코트), 4~7층(대형 관람석 및 피트니스 센터)을 갖춘 숭실의 랜드마크 7층 체육관입니다.\n\n(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');
+    } else if (target.type === 'gym_school_bus') {
+      alert('🚌 [숭실 통학 스쿨버스]\n\n"노란색 25인승 숭실 안전 통학버스입니다. 교직원 주차 구역에 반짝반짝 세차된 상태로 정차되어 있습니다."');
+    } else if (target.type === 'gym_ev_charger') {
+      alert('⚡ [친환경 전기차 급속 충전기]\n\n"교직원 전용 100kW DC 콤보 초급속 전기차 충전기입니다. 파란색 충전 완료 LED가 점등되어 있습니다."');
     } else if (target.type === 'cafeteria') {
       alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
     } else if (target.type === 'alchemy_cauldron') {
