@@ -12,8 +12,12 @@ const engineJs = fs.readFileSync(path.join(__dirname, '../public/js/engine.js'),
 
 assert(serverJs.includes('equip_bronze_shoes'), 'server.js must define equip_bronze_shoes');
 assert(serverJs.includes('equip_heritage_boots'), 'server.js must define equip_heritage_boots');
+assert(serverJs.includes('날렵한 가죽 운동화'), 'server.js must define 날렵한 가죽 운동화');
 assert(mainJs.includes('equip_bronze_shoes'), 'main.js must define equip_bronze_shoes');
 assert(mainJs.includes('equip_heritage_boots'), 'main.js must define equip_heritage_boots');
+assert(mainJs.includes('날렵한 가죽 운동화'), 'main.js must define 날렵한 가죽 운동화');
+assert(!mainJs.includes('날렵한 가죽 농구화'), 'main.js must not contain 날렵한 가죽 농구화');
+assert(!serverJs.includes('날렵한 가죽 농구화'), 'server.js must not contain 날렵한 가죽 농구화');
 assert(worldJs.includes('classroom_secret_history'), 'world.js must define classroom_secret_history');
 assert(worldJs.includes('door_secret_history'), 'world.js must define door_secret_history');
 assert(engineJs.includes('room_secret_history'), 'engine.js must support room_secret_history');
