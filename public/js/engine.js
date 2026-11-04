@@ -423,35 +423,32 @@ class GameEngine {
       return false;
     }
 
-        if (this.player.room === 'playground') {
-      const pg = WORLD_DATA.playground;
-      const gymGate = (pg && pg.gymGate) || { x: 2, y: 35 };
-      // Check if player stepped on the west gym gate (x: 1~3, y: 34~36)
-      if (Math.abs(tileX - gymGate.x) <= 1 && Math.abs(tileY - gymGate.y) <= 1) {
-        if (!this.player.isTeacher) {
-          this.player.x = 4.2 * 32;
-          if (!this._lastGymNotice || Date.now() - this._lastGymNotice > 2000) {
-            this._lastGymNotice = Date.now();
-            alert('🚫 [교직원 전용 시설 관리 구역]\n\n"🚗 숭실 체육관 및 주차장 구역은 교직원 전용 시설 관리 구역입니다.\n(교사 계정으로 로그인 후 출입할 수 있습니다.)"');
-          }
-          return;
-        }
-
-        // 0.3s fade warp to Gym Plaza
-        this.triggerFadeWarp(() => {
-          this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 28 * 32);
-        });
-        return;
+    if (this.player.room === 'playground_gym') {
+      // East gate opening to playground (tileX >= curMapWidth - 3, tileY between 28 and 32) is passable
+      const curW = curMapWidth;
+      if (tileX >= curW - 3 && tileY >= 28 && tileY <= 32) return false;
+      // Outer boundaries
+      if (tileX < 1 || tileX >= curMapWidth - 1) return true;
+      if (tileY < 1 || tileY >= curMapHeight - 1) return true;
+      // Left Hillside retaining wall (tx <= 1)
+      if (tileX <= 1) return true;
+      // Gym Building North Wall (tx >= 9, ty <= 10)
+      // Entrance portico is passable at tx 30..34, ty >= 9
+      if (tileX >= 9 && tileY <= 10) {
+        if (tileX >= 30 && tileX <= 34 && tileY >= 9) return false;
+        return true;
       }
-    } else if (this.player.room === 'playground_gym') {
-      const curW = this.getMapWidth();
-      // Stepping on east exit gate leading back to soccer field
-      if (tileX >= curW - 3 && Math.abs(tileY - 28) <= 1) {
-        this.triggerFadeWarp(() => {
-          this.warpToRoom('playground', '숭실 운동장', 4 * 32, 35 * 32);
-        });
-        return;
+      // Pillars in front of entrance
+      if ((tileX === 24 || tileX === 28 || tileX === 36 || tileX === 40) && (tileY === 9 || tileY === 10)) {
+        return true;
       }
+      // Vertical School Bus (tx: 44..48, ty: 13..19)
+      if (tileX >= 44 && tileX <= 48 && tileY >= 13 && tileY <= 19) return true;
+      // Parking bays cars (tx: 11..43, ty: 13..18)
+      if (tileX >= 11 && tileX <= 43 && tileY >= 13 && tileY <= 18) return true;
+      // Security booth (tx: 39..43, ty: 27..30)
+      if (tileX >= 39 && tileX <= 43 && tileY >= 27 && tileY <= 30) return true;
+      return false;
     }
     if (this.player.room === 'hallway') {
       if (tileY >= curMapHeight - 1) return true;
@@ -600,9 +597,35 @@ class GameEngine {
         });
         return;
       }
-    } else if (this.player.room === 'playground' || (this.player.room && this.player.room.startsWith('playground_'))) {
-      // 운동장 내부: 출구 도어 워프 없음 (축구장/농구장/풋살장 전 구역 자유 보행 가능)
-      return;
+    } else if (this.player.room === 'playground') {
+      const pg = WORLD_DATA.playground;
+      const gymGate = (pg && pg.gymGate) || { x: 2, y: 48 };
+      // Check if player stepped on the west gym gate (x: 1~3, y: 47~49)
+      if (Math.abs(tileX - gymGate.x) <= 1 && Math.abs(tileY - gymGate.y) <= 1) {
+        if (!this.player.isTeacher) {
+          this.player.x = 4.2 * 32;
+          if (!this._lastGymNotice || Date.now() - this._lastGymNotice > 2000) {
+            this._lastGymNotice = Date.now();
+            alert('🚫 [교직원 전용 시설 관리 구역]\n\n"🚗 숭실 체육관 및 주차장 구역은 교직원 전용 시설 관리 구역입니다.\n(교사 계정으로 로그인 후 출입할 수 있습니다.)"');
+          }
+          return;
+        }
+
+        // 0.3s fade warp to Gym Plaza
+        this.triggerFadeWarp(() => {
+          this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 30 * 32);
+        });
+        return;
+      }
+    } else if (this.player.room === 'playground_gym') {
+      const curW = this.getMapWidth();
+      // Stepping on east exit gate leading back to soccer field (tx >= curW - 3, ty around 30)
+      if (tileX >= curW - 3 && Math.abs(tileY - 30) <= 2) {
+        this.triggerFadeWarp(() => {
+          this.warpToRoom('playground', '숭실 운동장', 4 * 32, 48 * 32);
+        });
+        return;
+      }
     } else if (this.player.room && (this.player.room.startsWith('room_') || this.player.room.startsWith('classroom'))) {
       // 교실 내부에서만 출구 문 밟았을 때 복도로 나가기 실행
       if (this.player.room === 'room_staff_office') {
@@ -5457,8 +5480,8 @@ class GameEngine {
     // 4-B. 숭실역사관 입구 (풋살장 우측 하단: x: 87, y: 52)
     this.drawHighResHistoryEntrance(87 * 32, 52 * 32);
 
-    // 4-C. 서쪽 숭실 체육관 & 주차장 진입 게이트 (트랙 서쪽 x: 2, y: 35)
-    this.drawHighResGymGate(2 * 32, 35 * 32);
+    // 4-C. 서쪽 숭실 체육관 & 주차장 진입 게이트 (트랙 서쪽 하단 x: 2, y: 48)
+    this.drawHighResGymGate(2 * 32, 48 * 32);
 
     // 4-B. Store NPC (매점 - 엘리베이터 좌측 넓은 공터: x: 72, y: 4)
     const pgStore = (WORLD_DATA.playground && WORLD_DATA.playground.store) || { x: 72, y: 4 };
@@ -11073,93 +11096,99 @@ class GameEngine {
   drawHighResGymGate(px, py) {
     this.ctx.save();
 
-    // 1. Asphalt Road Connection branching off West from Tartan Track (tx: 0..4, ty: 33..37)
+    // 1. Asphalt Road Connection branching off West from Tartan Track (tx: 0..3.6, ty: 47..49)
     const roadX = 0;
-    const roadY = (33 * 32);
-    const roadW = (4.5 * 32);
-    const roadH = (4 * 32);
+    const roadW = Math.max(3.6 * 32, px + 24);
+    const roadY = py - 36;
+    const roadH = 72;
 
     this.ctx.fillStyle = '#1e293b'; // dark asphalt
     this.ctx.fillRect(roadX, roadY, roadW, roadH);
 
     // White safety lane lines & curbs
     this.ctx.fillStyle = '#f8fafc';
-    this.ctx.fillRect(roadX, roadY, roadW, 4);
-    this.ctx.fillRect(roadX, roadY + roadH - 4, roadW, 4);
+    this.ctx.fillRect(roadX, roadY, roadW, 3);
+    this.ctx.fillRect(roadX, roadY + roadH - 3, roadW, 3);
 
-    // 2. Yellow & Black Hazard Stripes & Zebra Pedestrian Crosswalk
-    for (let i = 0; i < 4; i++) {
-      const zx = roadX + i * 28 + 12;
+    // 2. Yellow Zebra Pedestrian Crosswalk stripes
+    const stripeCount = 4;
+    for (let i = 0; i < stripeCount; i++) {
+      const zx = roadX + 10 + i * 22;
       this.ctx.fillStyle = '#fef08a';
-      this.ctx.fillRect(zx, roadY + 8, 14, roadH - 16);
+      this.ctx.fillRect(zx, roadY + 6, 12, roadH - 12);
     }
 
     // Road Stencil Surface Marking
     this.ctx.save();
     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    this.ctx.font = '700 10.5px "Pretendard", sans-serif';
+    this.ctx.font = '700 9.5px "Pretendard", sans-serif';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText('⬅️ 체육관·주차장 [교직원 전용]', roadX + roadW / 2 + 10, roadY + roadH / 2);
     this.ctx.restore();
 
-    // 3. Boom Barrier / Parking Gate (차단기)
-    const bx = px + 10;
-    const by = py - 18;
+    // 3. Boom Barrier / Parking Gate (차단기) on North curb
+    const bx = roadX + roadW - 18;
+    const by = roadY - 14;
 
     // Heavy yellow steel housing post
     this.ctx.fillStyle = '#eab308';
-    this.ctx.fillRect(bx, by, 14, 38);
+    this.ctx.fillRect(bx, by, 12, 34);
     this.ctx.fillStyle = '#1e293b';
-    this.ctx.fillRect(bx + 2, by + 4, 10, 8); // control box window
-    this.ctx.fillRect(bx + 2, by + 18, 10, 3);
-    this.ctx.fillRect(bx + 2, by + 26, 10, 3);
+    this.ctx.fillRect(bx + 2, by + 4, 8, 7); // control box window
+    this.ctx.fillRect(bx + 2, by + 16, 8, 3);
+    this.ctx.fillRect(bx + 2, by + 23, 8, 3);
 
     // Flashing Red LED Beacon on top
     const now = Date.now();
     const flashAlpha = 0.5 + Math.sin(now / 180) * 0.45;
     this.ctx.fillStyle = 'rgba(239, 68, 68, ' + flashAlpha + ')';
     this.ctx.beginPath();
-    this.ctx.arc(bx + 7, by - 4, 6, 0, Math.PI * 2);
+    this.ctx.arc(bx + 6, by - 4, 5, 0, Math.PI * 2);
     this.ctx.fill();
     this.ctx.fillStyle = '#dc2626';
-    this.ctx.fillRect(bx + 5, by - 2, 4, 3);
+    this.ctx.fillRect(bx + 4, by - 2, 4, 3);
 
     // Horizontal barrier arm (차단봉) extending across road
     this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillRect(bx - 36, by + 14, 36, 5);
-    // Red diagonal stripes on arm
+    this.ctx.fillRect(bx - 32, by + 16, 32, 4);
+    // Red stripes on arm
     this.ctx.fillStyle = '#dc2626';
-    for (let rx = bx - 34; rx < bx; rx += 10) {
-      this.ctx.fillRect(rx, by + 14, 5, 5);
+    for (let rx = bx - 30; rx < bx; rx += 9) {
+      this.ctx.fillRect(rx, by + 16, 4, 4);
     }
 
-    // 4. Direction Signpost (방향 표지판)
-    this.drawSharpLabel(px + 18, py - 38, '🚗 [숭실 체육관 & 주차장]', {
+    // 4. Direction Signpost (방향 표지판) - cleanly placed ABOVE road on sand
+    const signY = roadY - 50;
+    // Signpost pole
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(px + 18, signY + 10, 4, roadY - (signY + 10));
+
+    this.drawSharpLabel(px + 20, signY, '🚗 [숭실 체육관 & 주차장]', {
       bgColor: 'rgba(15, 23, 42, 0.95)',
       borderColor: '#f59e0b',
       borderWidth: 2,
       textColor: '#fef08a',
-      fontSize: 11.5,
-      paddingX: 12,
-      height: 22
+      fontSize: 11,
+      paddingX: 10,
+      height: 20
     });
 
-    this.drawSharpLabel(px + 18, py - 16, '⬅️ 교직원 전용 진입 게이트', {
+    this.drawSharpLabel(px + 20, signY + 22, '⬅️ 교직원 전용 진입로', {
       bgColor: 'rgba(30, 41, 59, 0.9)',
       borderColor: '#38bdf8',
       borderWidth: 1,
       textColor: '#bae6fd',
-      fontSize: 10,
+      fontSize: 9.5,
       paddingX: 8,
-      height: 18
+      height: 17
     });
 
     this.ctx.restore();
   }
 
   // ========================================================
-  // 🏛️ 숭실 7층 종합 체육관 & 지상 주차장 광장 렌더러
+  // 🏛️ 숭실 7층 종합 체육관 & 지상 주차장 광장 렌더러 (설계도 완전 반영)
   // ========================================================
   renderGymPlaza() {
     const mapW = this.getMapWidth();
@@ -11172,99 +11201,47 @@ class GameEngine {
     // Micro asphalt speckle texture
     this.ctx.fillStyle = 'rgba(148, 163, 184, 0.12)';
     for (let ax = 0; ax < mapW; ax += 2) {
-      for (let ay = 11; ay < mapH; ay += 2) {
+      for (let ay = 0; ay < mapH; ay += 2) {
         this.ctx.fillRect(ax * 32 + 8, ay * 32 + 6, 1.5, 1.5);
         this.ctx.fillRect(ax * 32 + 20, ay * 32 + 18, 1, 1);
       }
     }
 
-    // 2. Towering 7-Story Gymnasium Building Facade (ty: 0..11)
+    // 2. West Edge (tx: 0..8): 언덕길 (Uphill Hillside Road & Retaining Wall)
+    this.drawHighResHillsideRoad(mapH);
+
+    // 3. North Area (tx: 9..55, ty: 0..11): 7-Story Gymnasium Building Facade
     this.drawHighResGymBuildingFacade(mapW);
 
-    // 3. Pedestrian Promenade & Landscaped Sidewalk (ty: 11..13)
-    const walkY = 11 * 32;
-    const walkH = 3 * 32;
+    // 4. Upper-Middle Area (ty: 12..19): [교직원 주차 구역] 6구역
+    this.drawSixParkingBays();
 
-    // Interlocking Light Grey Concrete Pavers
-    this.ctx.fillStyle = '#94a3b8';
-    this.ctx.fillRect(0, walkY, mapW * 32, walkH);
-    this.ctx.fillStyle = '#cbd5e1';
-    for (let px = 0; px < mapW * 32; px += 24) {
-      for (let py = walkY; py < walkY + walkH; py += 16) {
-        this.ctx.fillRect(px, py, 22, 14);
-      }
-    }
+    // 5. Right of Parking (tx: 44..48, ty: 13..19): 🚌 숭실 25인승 노란색 스쿨버스 |(세로)
+    this.drawVerticalSchoolBus(45.5 * 32, 13 * 32);
 
-    // Curb edge separating sidewalk from driving lane
-    this.ctx.fillStyle = '#64748b';
-    this.ctx.fillRect(0, walkY + walkH - 4, mapW * 32, 4);
+    // 6. Middle Promenade (ty: 20..25): 보도블록 보행로 (보라색 화단, 황동 가로등, 볼라드 & 소나무 가로수 🌲)
+    this.drawPromenadeAndLandscaping(mapW);
 
-    // Manicured Campus Planter Beds & Pine Trees
-    for (let tx of [6, 14, 22, 34, 42, 50]) {
-      this.drawGymPlanterTree(tx * 32, walkY + 12);
-    }
+    // 7. Bottom Driving Aisles (ty: 26..35): 아스팔트 주행 차로 & 방향 화살표
+    this.drawDrivingAisles(mapW, mapH);
 
-    // Double-headed Modern Campus Street Lamps along Promenade
-    for (let tx of [10, 26, 38, 48]) {
-      this.drawHighResStreetLamp(tx * 32, walkY + 4);
-    }
+    // 8. Security / Parking Control Booth & Boom Barrier (tx: 40..44, ty: 27..30)
+    this.drawHighResSecurityBooth(40 * 32, 27 * 32);
 
-    // Stainless Steel Safety Bollards
-    this.ctx.fillStyle = '#cbd5e1';
-    for (let bx = 32; bx < mapW * 32 - 32; bx += 48) {
-      this.ctx.fillRect(bx, walkY + walkH - 12, 6, 10);
-      this.ctx.fillStyle = '#ef4444';
-      this.ctx.fillRect(bx, walkY + walkH - 9, 6, 2); // reflective stripe
-      this.ctx.fillStyle = '#cbd5e1';
-    }
-
-    // 4. Parking Driving Aisles & Painted Directional Stencils (ty: 14..35)
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-    this.ctx.lineWidth = 2;
-    this.ctx.setLineDash([12, 8]);
-    // Center driving lane divider
-    this.ctx.beginPath();
-    this.ctx.moveTo(32, 27 * 32);
-    this.ctx.lineTo(mapW * 32 - 32, 27 * 32);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
-
-    // 5. Teacher Parking Bays (주차 구역 라인 & 스토퍼)
-    this.drawParkingBays(mapW);
-
-    // 6. Parked Vehicles (노란색 숭실 스쿨버스, 교직원 세단/SUV, 전기차)
-    // 🚌 숭실 25인승 스쿨버스 (tx: 8..14, ty: 17)
-    this.drawHighResSchoolBus(8 * 32, 17.5 * 32);
-
-    // 🚘 교직원 럭셔리 블랙 세단 (tx: 20)
-    this.drawHighResParkedCar(20 * 32, 18.5 * 32, '#0f172a', 'sedan');
-
-    // 🚙 숭실 실버 SUV (tx: 26)
-    this.drawHighResParkedCar(26 * 32, 18.5 * 32, '#64748b', 'suv');
-
-    // 🤍 펄 화이트 세단 (tx: 32)
-    this.drawHighResParkedCar(32 * 32, 18.5 * 32, '#f8fafc', 'sedan');
-
-    // ⚡ 친환경 전기차 & 급속 충전 스테이션 (tx: 38..41)
-    this.drawHighResEVCharger(38 * 32, 18.5 * 32);
-
-    // 7. Security / Parking Control Booth (주차 관리실: tx: 46..50, ty: 22..25)
-    this.drawHighResSecurityBooth(46 * 32, 22 * 32);
-
-    // 8. East Exit Road leading back to Soccer Field (tx: 52..55, ty: 26..30)
-    const exitX = (mapW - 4) * 32;
-    const exitY = 26 * 32;
-    const exitW = 4 * 32;
+    // 9. East Exit Gate to Soccer Field (tx: 50..55, ty: 28..32)
+    const exitX = 51 * 32;
+    const exitY = 28 * 32;
+    const exitW = 5 * 32;
     const exitH = 4.5 * 32;
 
     // Crosswalk Zebra Stripes
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       this.ctx.fillStyle = '#ffffff';
       this.ctx.fillRect(exitX + i * 26 + 10, exitY + 8, 14, exitH - 16);
     }
 
     // Direction Signpost to Soccer Field
-    this.drawSharpLabel(exitX + 16, exitY - 14, '⚽ [숭실 운동장·축구장 방면 ➡️]', {
+    this.drawSharpLabel(exitX + 24, exitY - 14, '⚽ [축구장 복귀 게이트 (동쪽) ➡️]', {
       bgColor: 'rgba(15, 23, 42, 0.95)',
       borderColor: '#22c55e',
       borderWidth: 2,
@@ -11276,22 +11253,116 @@ class GameEngine {
   }
 
   // ========================================================
-  // 7층 높이 웅장한 체육관 파사드 연출 (화면에는 2층 높이 + 상층부 원근 투영)
+  // [언덕길] 서쪽 급경사 언덕길 & 옹벽 (tx: 0..8, ty: 0..35)
+  // ========================================================
+  drawHighResHillsideRoad(mapH) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const roadW = 8.5 * 32;
+    const roadH = mapH * 32;
+
+    // 1. Asphalt Road Surface with uphill gradient shading
+    const grad = ctx.createLinearGradient(0, roadH, 0, 0);
+    grad.addColorStop(0, '#0f172a');
+    grad.addColorStop(0.5, '#1e293b');
+    grad.addColorStop(1, '#334155');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, roadW, roadH);
+
+    // 2. Concrete Retaining Wall along West edge (x: 0..20)
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(0, 0, 20, roadH);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(18, 0, 2, roadH);
+    // Expansion joints every 48px
+    ctx.fillStyle = '#1e293b';
+    for (let y = 0; y < roadH; y += 48) {
+      ctx.fillRect(0, y, 20, 2);
+    }
+
+    // 3. Double Solid Yellow Center Dividing Line
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(roadW / 2 - 4, 0, 3, roadH);
+    ctx.fillRect(roadW / 2 + 1, 0, 3, roadH);
+
+    // 4. White Road Shoulder lines
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(24, 0, 3, roadH);
+    ctx.fillRect(roadW - 16, 0, 3, roadH);
+
+    // 5. Steep Uphill Road Chevron Stencils (▲) & "20" Speed Limits
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+    ctx.font = '900 11px "Pretendard", sans-serif';
+    ctx.textAlign = 'center';
+    for (let y = 120; y < roadH; y += 180) {
+      // Uphill chevron arrows
+      ctx.beginPath();
+      ctx.moveTo(roadW * 0.3, y + 10);
+      ctx.lineTo(roadW * 0.3, y);
+      ctx.lineTo(roadW * 0.3 - 8, y + 8);
+      ctx.moveTo(roadW * 0.3, y);
+      ctx.lineTo(roadW * 0.3 + 8, y + 8);
+      ctx.stroke();
+
+      ctx.fillText('▲ 서문 언덕길', roadW * 0.3, y + 26);
+      ctx.fillText('급경사 주의', roadW * 0.3, y + 40);
+
+      // Downhill lane stencil
+      ctx.fillText('서행 20', roadW * 0.72, y + 30);
+    }
+
+    // 6. East Guardrail & Curb separating Hillside from Parking/Plaza
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(roadW - 10, 0, 10, roadH);
+    // Yellow/Black diagonal hazard stripes on curb
+    for (let y = 0; y < roadH; y += 32) {
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(roadW - 10, y, 10, 16);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(roadW - 10, y + 16, 10, 16);
+    }
+
+    // Steel guardrail posts
+    ctx.fillStyle = '#cbd5e1';
+    for (let y = 16; y < roadH; y += 48) {
+      ctx.fillRect(roadW - 6, y, 4, 18);
+    }
+
+    // 7. Hillside Road Signpost at south entrance
+    this.drawSharpLabel(roadW * 0.5, roadH - 60, '▲ [숭실 서문 언덕길 · 급경사 주의]', {
+      bgColor: 'rgba(15, 23, 42, 0.95)',
+      borderColor: '#f59e0b',
+      borderWidth: 1.5,
+      textColor: '#fef08a',
+      fontSize: 10,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // ========================================================
+  // 7층 높이 웅장한 체육관 파사드 연출 (tx: 9..55, ty: 0..11)
   // ========================================================
   drawHighResGymBuildingFacade(mapW) {
     const ctx = this.ctx;
     ctx.save();
+
+    const startX = 8.5 * 32;
+    const facadeW = mapW * 32 - startX;
 
     // 1. Towering Skyward Perspective Upper Layer (ty: 0..3)
     const gradSky = ctx.createLinearGradient(0, 0, 0, 3 * 32);
     gradSky.addColorStop(0, '#020617');
     gradSky.addColorStop(1, '#0f172a');
     ctx.fillStyle = gradSky;
-    ctx.fillRect(0, 0, mapW * 32, 3 * 32);
+    ctx.fillRect(startX, 0, facadeW, 3 * 32);
 
-    // Towering Vertical Architectural Louvers (7층으로 뻗어 올라가는 착시 효과)
+    // Towering Vertical Architectural Louvers (7층으로 뻗어 올라가는 원근 투영)
     ctx.fillStyle = '#1e293b';
-    for (let lx = 16; lx < mapW * 32; lx += 32) {
+    for (let lx = startX + 16; lx < mapW * 32; lx += 32) {
       ctx.fillRect(lx, 0, 6, 3 * 32);
       ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
       ctx.fillRect(lx + 6, 0, 2, 3 * 32);
@@ -11302,7 +11373,7 @@ class GameEngine {
     ctx.font = '900 13px "Pretendard", sans-serif';
     ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
     ctx.textAlign = 'center';
-    ctx.fillText('SOONGSIL MULTI-PURPOSE GYMNASIUM · SINCE 1897', (mapW * 32) / 2, 1.4 * 32);
+    ctx.fillText('SOONGSIL MULTI-PURPOSE GYMNASIUM · SINCE 1897', startX + facadeW / 2, 1.4 * 32);
 
     // 2. 2nd Floor High Glass Curtain Wall (ty: 3..7)
     const floor2Y = 3 * 32;
@@ -11314,11 +11385,11 @@ class GameEngine {
     glassGrad.addColorStop(0.5, '#1e3a5f');
     glassGrad.addColorStop(1, '#0f2744');
     ctx.fillStyle = glassGrad;
-    ctx.fillRect(0, floor2Y, mapW * 32, floor2H);
+    ctx.fillRect(startX, floor2Y, facadeW, floor2H);
 
     // Diagonal Glass Specular Sheen Reflections
     ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-    for (let gx = 0; gx < mapW * 32; gx += 96) {
+    for (let gx = startX; gx < mapW * 32; gx += 96) {
       ctx.beginPath();
       ctx.moveTo(gx, floor2Y + floor2H);
       ctx.lineTo(gx + 36, floor2Y);
@@ -11330,18 +11401,27 @@ class GameEngine {
 
     // Heavy Aluminum Mullion Grids
     ctx.fillStyle = '#334155';
-    for (let mx = 0; mx < mapW * 32; mx += 48) {
+    for (let mx = startX; mx < mapW * 32; mx += 48) {
       ctx.fillRect(mx, floor2Y, 4, floor2H);
     }
-    ctx.fillRect(0, floor2Y + floor2H / 2, mapW * 32, 4);
+    ctx.fillRect(startX, floor2Y + floor2H / 2, facadeW, 4);
 
     // Interior Silhouettes: High Ceiling Trusses & Basketball Hoops
     ctx.fillStyle = 'rgba(254, 240, 138, 0.15)';
-    for (let hx of [12 * 32, 28 * 32, 44 * 32]) {
+    for (let hx of [16 * 32, 28 * 32, 40 * 32, 50 * 32]) {
       // Warm stadium halogen floodlight glow
       ctx.beginPath();
       ctx.arc(hx, floor2Y + 24, 20, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    // Basketball hoop & net silhouettes
+    for (let bx of [20 * 32, 44 * 32]) {
+      ctx.strokeStyle = '#f97316';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(bx - 12, floor2Y + 40, 24, 16);
+      ctx.fillStyle = '#ea580c';
+      ctx.fillRect(bx - 8, floor2Y + 56, 16, 2);
     }
 
     // 3. 1st Floor Granite Building Base (ty: 7..11)
@@ -11349,16 +11429,16 @@ class GameEngine {
     const floor1H = 4 * 32;
 
     ctx.fillStyle = '#334155'; // dark granite
-    ctx.fillRect(0, floor1Y, mapW * 32, floor1H);
+    ctx.fillRect(startX, floor1Y, facadeW, floor1H);
 
     // Horizontal Cornice Trim
     ctx.fillStyle = '#64748b';
-    ctx.fillRect(0, floor1Y, mapW * 32, 6);
+    ctx.fillRect(startX, floor1Y, facadeW, 6);
     ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(0, floor1Y + 4, mapW * 32, 2);
+    ctx.fillRect(startX, floor1Y + 4, facadeW, 2);
 
-    // 4. Grand Central Entrance Portico (tx: 20..36, ty: 7.5..11)
-    const pX = 20 * 32;
+    // 4. Grand Central Entrance Portico (tx: 24..40, ty: 7.5..11)
+    const pX = 24 * 32;
     const pW = 16 * 32;
     const pY = 8 * 32;
 
@@ -11368,8 +11448,8 @@ class GameEngine {
       ctx.fillRect(pX - s * 8, pY + s * 10, pW + s * 16, 10);
     }
 
-    // Four Massive Grand Cylindrical Granite Columns (tx: 22, 26, 30, 34)
-    for (const cx of [22, 26, 30, 34]) {
+    // Four Massive Grand Cylindrical Granite Columns (tx: 24, 28, 36, 40)
+    for (const cx of [24, 28, 36, 40]) {
       const colX = cx * 32;
       const colY = floor1Y + 6;
       const colH = floor1H - 6;
@@ -11389,8 +11469,8 @@ class GameEngine {
       ctx.fillRect(colX - 11, colY + colH - 6, 30, 6);
     }
 
-    // Grand Automatic Sliding Glass Doors (tx: 26..30, ty: 9..11)
-    const dX = 26.5 * 32;
+    // Grand Automatic Sliding Glass Doors (tx: 30..34, ty: 9..11)
+    const dX = 30.5 * 32;
     const dY = 9 * 32;
     const dW = 3 * 32;
     const dH = 2 * 32;
@@ -11417,7 +11497,7 @@ class GameEngine {
     ctx.fillRect(dX + dW / 2 - 3, dY - 3, 6, 2);
 
     // 5. Monumental Embossed Golden Signboard above Entrance
-    this.drawSharpLabel(28 * 32, 7.2 * 32, '🏛️ 숭실 체육관 · SOONGSIL GYMNASIUM', {
+    this.drawSharpLabel(32 * 32, 7.2 * 32, '🏛️ 숭실 체육관 · SOONGSIL GYMNASIUM', {
       bgColor: 'rgba(15, 23, 42, 0.98)',
       borderColor: '#fbbf24',
       borderWidth: 2.5,
@@ -11427,7 +11507,7 @@ class GameEngine {
       height: 28
     });
 
-    this.drawSharpLabel(28 * 32, 8.4 * 32, '[7층 종합 실내 체육시설 · B1 유도관 ~ 1F 로비 ~ 2-7F 대강당 코트 & 관람석]', {
+    this.drawSharpLabel(32 * 32, 8.4 * 32, '[7층 종합 실내 체육시설 · B1 유도관 ~ 1F 로비 ~ 2-7F 대강당 코트 & 관람석]', {
       bgColor: 'rgba(30, 41, 59, 0.92)',
       borderColor: '#60a5fa',
       borderWidth: 1,
@@ -11438,8 +11518,8 @@ class GameEngine {
     });
 
     // 6. Trophy Showcase Display Windows on Left & Right
-    this.drawTrophyDisplayWindow(12 * 32, 9 * 32, '🏆 전국대회 우승기 & 트로피관');
-    this.drawTrophyDisplayWindow(44 * 32, 9 * 32, '🏀 숭실 스포츠 헤리티지관');
+    this.drawTrophyDisplayWindow(16 * 32, 9 * 32, '🏆 전국대회 우승기 & 트로피관');
+    this.drawTrophyDisplayWindow(48 * 32, 9 * 32, '🏀 숭실 스포츠 헤리티지관');
 
     ctx.restore();
   }
@@ -11466,103 +11546,192 @@ class GameEngine {
     });
   }
 
-  // Parking Bays with crisp lines & stoppers
-  drawParkingBays(mapW) {
+  // ========================================================
+  // [교직원 주차 구역] 총 6구역 주차 공간 & 차량들 (ty: 12..19)
+  // ========================================================
+  drawSixParkingBays() {
     const ctx = this.ctx;
     ctx.save();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2.5;
 
-    // Teacher Bay Row 1: y: 18..23
-    const bayY = 18 * 32;
-    const bayH = 4.5 * 32;
+    const bayY = 12 * 32;
+    const bayH = 7 * 32;
 
-    const bayXs = [19, 25, 31, 37];
+    // 6 Parking Bays: tx: 11.5, 16.5, 21.5, 26.5, 31.5, 36.5
+    const bayXs = [11.5, 16.5, 21.5, 26.5, 31.5, 36.5];
+    const bayLabels = [
+      '[교직원 전용] 1',
+      '[교직원 전용] 2',
+      '[교직원 전용] 3',
+      '[교직원 전용] 4',
+      '[교직원 전용] 5',
+      '⚡ EV ONLY 6'
+    ];
+
     for (let i = 0; i < bayXs.length; i++) {
       const bx = bayXs[i] * 32;
-      const bw = 4.5 * 32;
+      const bw = 4.2 * 32;
 
-      // White stall lines
+      // Stall white outline
       ctx.strokeRect(bx, bayY, bw, bayH);
 
       // Yellow wheel stoppers (카스토퍼)
       ctx.fillStyle = '#eab308';
-      ctx.fillRect(bx + 14, bayY + 12, bw - 28, 6);
+      ctx.fillRect(bx + 12, bayY + 12, bw - 24, 6);
       ctx.fillStyle = '#0f172a';
-      for (let sx = bx + 18; sx < bx + bw - 18; sx += 14) {
+      for (let sx = bx + 16; sx < bx + bw - 16; sx += 14) {
         ctx.fillRect(sx, bayY + 12, 6, 6);
       }
 
-      // Asphalt Stencil: [교직원]
+      // Asphalt Stencil Label
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.font = '700 10px "Pretendard", sans-serif';
+      ctx.font = '700 9.5px "Pretendard", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(i === 3 ? '⚡ EV ONLY' : '[교직원 전용]', bx + bw / 2, bayY + bayH - 12);
+      ctx.fillText(bayLabels[i], bx + bw / 2, bayY + bayH - 10);
     }
+
+    // 1. Bay 1: 🚘 교장선생님 럭셔리 블랙 세단
+    this.drawHighResParkedCar(11.8 * 32, 13.5 * 32, '#0f172a', 'sedan');
+
+    // 2. Bay 2: 🚙 체육부장 메탈릭 네이비 SUV
+    this.drawHighResParkedCar(16.8 * 32, 13.5 * 32, '#1e3a5f', 'suv');
+
+    // 3. Bay 3: 🤍 교무부장 펄 화이트 세단
+    this.drawHighResParkedCar(21.8 * 32, 13.5 * 32, '#f8fafc', 'sedan');
+
+    // 4. Bay 4: 🩶 진로진학부장 모던 실버 세단
+    this.drawHighResParkedCar(26.8 * 32, 13.5 * 32, '#94a3b8', 'sedan');
+
+    // 5. Bay 5: 🍷 음악선생님 크림슨 레드 해치백
+    this.drawHighResParkedCar(31.8 * 32, 13.5 * 32, '#991b1b', 'sedan');
+
+    // 6. Bay 6: ⚡ EV 급속 충전 스테이션 & 🩵 블루 전기차
+    this.drawHighResEVCharger(36.8 * 32, 13 * 32);
+
     ctx.restore();
   }
 
-  // 🚌 숭실 25인승 노란색 스쿨버스 (High-Res)
-  drawHighResSchoolBus(x, y) {
+  // ========================================================
+  // 🚌 숭실 25인승 노란색 스쿨버스 |(세로 배치) (tx: 44..48, ty: 13..19)
+  // ========================================================
+  drawVerticalSchoolBus(x, y) {
     const ctx = this.ctx;
     ctx.save();
 
-    const w = 5.5 * 32;
-    const h = 3.6 * 32;
+    const w = 2.6 * 32; // 83px width
+    const h = 5.5 * 32; // 176px length
 
-    // Bus shadow
+    // Bus Ground Shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.beginPath();
-    ctx.ellipse(x + w / 2, y + h - 4, w / 2 + 6, 12, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w / 2, y + h / 2 + 4, w / 2 + 8, h / 2 + 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Yellow bus body
-    ctx.fillStyle = '#f59e0b'; // school bus chrome yellow
-    ctx.beginPath();
-    ctx.roundRect(x, y, w, h - 12, 10);
-    ctx.fill();
-
-    // Black heavy rubber bumper
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(x - 2, y + h - 20, w + 4, 8);
-
-    // Dark Tinted Windshield & Side Windows
+    // Heavy Rubber Tires protruding on sides (Front and Rear Axles)
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(x + 10, y + 8, w - 20, 24);
-    // Window dividers
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillRect(x + w * 0.32, y + 8, 4, 24);
-    ctx.fillRect(x + w * 0.64, y + 8, 4, 24);
+    ctx.fillRect(x - 5, y + 24, 7, 24); // Front Left
+    ctx.fillRect(x + w - 2, y + 24, 7, 24); // Front Right
+    ctx.fillRect(x - 5, y + h - 48, 7, 26); // Rear Left
+    ctx.fillRect(x + w - 2, y + h - 48, 7, 26); // Rear Right
 
-    // Front headlights
+    // School Bus Yellow Body (#f59e0b / #eab308)
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 14);
+    ctx.fill();
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Black Rubber Bumpers (Top and Bottom)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(x + 4, y, w - 8, 8); // Top bumper
+    ctx.fillRect(x + 4, y + h - 8, w - 8, 8); // Bottom bumper
+
+    // Front Windshield (Bottom facing)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + h - 34, w - 12, 22, 6);
+    ctx.fill();
+
+    // Windshield reflection
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.beginPath();
+    ctx.moveTo(x + 8, y + h - 14);
+    ctx.lineTo(x + 22, y + h - 32);
+    ctx.lineTo(x + 30, y + h - 32);
+    ctx.lineTo(x + 16, y + h - 14);
+    ctx.closePath();
+    ctx.fill();
+
+    // Headlights (Bottom corners)
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.arc(x + 14, y + h - 28, 5, 0, Math.PI * 2);
-    ctx.arc(x + w - 14, y + h - 28, 5, 0, Math.PI * 2);
+    ctx.arc(x + 12, y + h - 4, 4, 0, Math.PI * 2);
+    ctx.arc(x + w - 12, y + h - 4, 4, 0, Math.PI * 2);
     ctx.fill();
 
-    // Bus Logo / Stencil
-    ctx.fillStyle = '#1e3a8a';
-    ctx.font = '900 11px "Pretendard", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('숭실 안전 통학버스 🚌', x + w / 2, y + h - 30);
+    // Turn indicator amber lights
+    ctx.fillStyle = '#f97316';
+    ctx.fillRect(x + 4, y + h - 6, 4, 3);
+    ctx.fillRect(x + w - 8, y + h - 6, 4, 3);
 
-    // Wheels
+    // Rear Window (Top facing)
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(x + 16, y + h - 14, 22, 10);
-    ctx.fillRect(x + w - 38, y + h - 14, 22, 10);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(x + 22, y + h - 11, 10, 4);
-    ctx.fillRect(x + w - 32, y + h - 11, 10, 4);
+    ctx.beginPath();
+    ctx.roundRect(x + 8, y + 10, w - 16, 12, 4);
+    ctx.fill();
 
-    this.drawSharpLabel(x + w / 2, y - 10, '🚌 숭실 통학 스쿨버스 (25인승)', {
+    // Side Passenger Windows (along left & right)
+    ctx.fillStyle = '#1e293b';
+    for (let wy = y + 30; wy < y + h - 42; wy += 20) {
+      ctx.fillRect(x + 4, wy, 8, 14);
+      ctx.fillRect(x + w - 12, wy, 8, 14);
+    }
+
+    // Roof Center Air Conditioner Unit & Emergency Hatch
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.roundRect(x + w / 2 - 12, y + 42, 24, 28, 4);
+    ctx.fill();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(x + w / 2 - 9, y + 48, 18, 3);
+    ctx.fillRect(x + w / 2 - 9, y + 56, 18, 3);
+
+    // Emergency Roof Hatch
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(x + w / 2 - 10, y + 84, 20, 14);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 7px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('EXIT', x + w / 2, y + 94);
+
+    // Yellow Flashing Roof Beacon Lights
+    ctx.fillStyle = '#eab308';
+    ctx.beginPath();
+    ctx.arc(x + 8, y + 6, 3, 0, Math.PI * 2);
+    ctx.arc(x + w - 8, y + 6, 3, 0, Math.PI * 2);
+    ctx.arc(x + 8, y + h - 8, 3, 0, Math.PI * 2);
+    ctx.arc(x + w - 8, y + h - 8, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Vertical Decal: "숭실 스쿨버스"
+    ctx.save();
+    ctx.fillStyle = '#1e3a8a';
+    ctx.font = '900 9.5px "Pretendard", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('숭실 스쿨버스 🚌', x + w / 2, y + 124);
+    ctx.restore();
+
+    this.drawSharpLabel(x + w / 2, y - 10, '🚌 숭실 25인승 스쿨버스 (셔틀)', {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#f59e0b',
       borderWidth: 1.5,
       textColor: '#fef08a',
-      fontSize: 10.5,
+      fontSize: 10,
       paddingX: 8,
-      height: 20
+      height: 18
     });
 
     ctx.restore();
@@ -11573,18 +11742,18 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
     const w = 3.6 * 32;
-    const h = 2.6 * 32;
+    const h = 4.8 * 32;
 
     // Ground shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.beginPath();
-    ctx.ellipse(x + w / 2, y + h - 4, w / 2 + 4, 8, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + w / 2, y + h / 2, w / 2 + 4, h / 2 + 2, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Car Body
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.roundRect(x, y + 4, w, h - 12, 8);
+    ctx.roundRect(x + 6, y + 10, w - 12, h - 20, 10);
     ctx.fill();
     ctx.strokeStyle = '#475569';
     ctx.lineWidth = 1.2;
@@ -11592,19 +11761,33 @@ class GameEngine {
 
     // Windshield & Rear glass
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(x + 10, y + 10, w - 20, 14);
+    ctx.beginPath();
+    ctx.roundRect(x + 12, y + 24, w - 24, 18, 4); // Rear glass
+    ctx.roundRect(x + 12, y + h - 46, w - 24, 20, 4); // Windshield
+    ctx.fill();
+
+    // Sunroof or roof panel
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fillRect(x + 16, y + 50, w - 32, 34);
 
     // Headlights
     ctx.fillStyle = '#fef08a';
-    ctx.fillRect(x + 6, y + h - 18, 6, 6);
-    ctx.fillRect(x + w - 12, y + h - 18, 6, 6);
+    ctx.fillRect(x + 10, y + h - 14, 8, 4);
+    ctx.fillRect(x + w - 18, y + h - 14, 8, 4);
 
-    // Wheels
+    // Tail lights
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(x + 10, y + 10, 8, 4);
+    ctx.fillRect(x + w - 18, y + 10, 8, 4);
+
+    // Wheels on sides
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(x + 8, y + h - 10, 14, 6);
-    ctx.fillRect(x + w - 22, y + h - 10, 14, 6);
+    ctx.fillRect(x + 2, y + 24, 5, 18);
+    ctx.fillRect(x + w - 7, y + 24, 5, 18);
+    ctx.fillRect(x + 2, y + h - 44, 5, 18);
+    ctx.fillRect(x + w - 7, y + h - 44, 5, 18);
 
-    const tag = model === 'suv' ? '🚙 교직원 SUV' : (color === '#f8fafc' ? '🤍 교직원 세단' : '🚘 교직원 럭셔리 세단');
+    const tag = model === 'suv' ? '🚙 교직원 SUV' : (color === '#f8fafc' ? '🤍 교직원 세단' : (color === '#991b1b' ? '🍷 음악선생님 해치백' : '🚘 교직원 럭셔리 세단'));
     this.drawSharpLabel(x + w / 2, y - 8, tag, {
       bgColor: 'rgba(15, 23, 42, 0.88)',
       borderColor: '#94a3b8',
@@ -11624,42 +11807,250 @@ class GameEngine {
     ctx.save();
 
     // Vivid Green Epoxy EV Bay Base
-    ctx.fillStyle = 'rgba(5, 150, 105, 0.25)';
-    ctx.fillRect(x - 6, y - 4, 4.2 * 32, 3.8 * 32);
+    ctx.fillStyle = 'rgba(5, 150, 105, 0.22)';
+    ctx.fillRect(x - 4, y, 4 * 32, 6 * 32);
     ctx.strokeStyle = '#10b981';
     ctx.lineWidth = 2;
-    ctx.strokeRect(x - 6, y - 4, 4.2 * 32, 3.8 * 32);
+    ctx.strokeRect(x - 4, y, 4 * 32, 6 * 32);
 
     // EV Charger Pedestal (기둥)
-    const px = x + 12;
+    const px = x + 8;
     const py = y + 8;
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(px, py, 18, 38);
+    ctx.fillRect(px, py, 16, 36);
     ctx.fillStyle = '#10b981';
-    ctx.fillRect(px + 2, py + 2, 14, 8); // screen
+    ctx.fillRect(px + 2, py + 2, 12, 8); // screen
     ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(px + 4, py + 14, 10, 3); // LED light
+    ctx.fillRect(px + 3, py + 14, 10, 3); // LED light
 
     // Parked Blue Electric Car
-    this.drawHighResParkedCar(x + 36, y + 4, '#2563eb', 'sedan');
+    this.drawHighResParkedCar(x + 6, y + 42, '#2563eb', 'sedan');
 
     // Charging Cable
     ctx.strokeStyle = '#22c55e';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(px + 14, py + 24);
-    ctx.bezierCurveTo(px + 26, py + 40, px + 30, py + 30, x + 44, y + 24);
+    ctx.moveTo(px + 12, py + 24);
+    ctx.bezierCurveTo(px + 24, py + 40, px + 28, py + 50, x + 34, y + 60);
     ctx.stroke();
 
-    this.drawSharpLabel(x + 20, y - 10, '⚡ 100kW DC 전기차 급속 충전소', {
+    this.drawSharpLabel(x + 2 * 32, y - 10, '⚡ 100kW DC 전기차 급속 충전소', {
       bgColor: 'rgba(6, 78, 59, 0.95)',
       borderColor: '#34d399',
       borderWidth: 1.5,
       textColor: '#a7f3d0',
-      fontSize: 10,
+      fontSize: 9.5,
       paddingX: 8,
-      height: 20
+      height: 18
     });
+
+    ctx.restore();
+  }
+
+  // ========================================================
+  // [보행로 & 조경] 보도블록 보행로, 보라색 화단, 황동 가로등, 볼라드, 소나무 (ty: 20..25)
+  // ========================================================
+  drawPromenadeAndLandscaping(mapW) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const startX = 8.5 * 32;
+    const walkY = 20 * 32;
+    const walkW = mapW * 32 - startX;
+    const walkH = 5 * 32;
+
+    // 1. Interlocking Concrete Paver Base (보도블록 바닥)
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(startX, walkY, walkW, walkH);
+
+    // Distinct paver block pattern
+    ctx.fillStyle = '#cbd5e1';
+    for (let px = startX; px < mapW * 32; px += 24) {
+      for (let py = walkY; py < walkY + walkH; py += 16) {
+        ctx.fillRect(px, py, 22, 14);
+      }
+    }
+
+    // Granite Curbs (Top and Bottom)
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(startX, walkY, walkW, 4);
+    ctx.fillRect(startX, walkY + walkH - 4, walkW, 4);
+
+    // 2. 보라색 화단 (Purple Flower Beds)
+    for (let tx of [13, 25, 37]) {
+      this.drawPurpleFlowerBed(tx * 32, walkY + 1.2 * 32);
+    }
+
+    // 3. 황동 가로등 (Brass Street Lamps)
+    for (let tx of [19, 31, 43]) {
+      this.drawBrassStreetLamp(tx * 32, walkY + 1.5 * 32);
+    }
+
+    // 4. 소나무 가로수 🌲 (Pine Trees on the right promenade)
+    for (let tx of [47, 52]) {
+      this.drawPineTree(tx * 32, walkY + 2.2 * 32);
+    }
+
+    // 5. Stainless Steel & Red Reflective Safety Bollards along bottom curb
+    for (let bx = startX + 24; bx < mapW * 32 - 160; bx += 40) {
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(bx, walkY + walkH - 12, 6, 10);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(bx, walkY + walkH - 9, 6, 2); // reflective stripe
+    }
+
+    ctx.restore();
+  }
+
+  // 🌸 보라색 화단 (Purple Flower Bed)
+  drawPurpleFlowerBed(x, y) {
+    const ctx = this.ctx;
+    const w = 2.4 * 32;
+    const h = 1.3 * 32;
+
+    // Granite curbing frame
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 6);
+    ctx.fill();
+
+    // Dark fertile garden soil
+    ctx.fillStyle = '#451a03';
+    ctx.beginPath();
+    ctx.roundRect(x + 3, y + 3, w - 6, h - 6, 4);
+    ctx.fill();
+
+    // Lush green foliage base
+    ctx.fillStyle = '#16a34a';
+    for (let fx = x + 8; fx < x + w - 8; fx += 10) {
+      ctx.fillRect(fx, y + 8, 8, h - 14);
+    }
+
+    // Vibrant Purple / Violet Blooming Petals (Lavender / Salvia)
+    const petals = ['#8b5cf6', '#a855f7', '#c084fc', '#7c3aed', '#6d28d9'];
+    for (let i = 0; i < 18; i++) {
+      const px = x + 6 + (i * 13) % (w - 12);
+      const py = y + 6 + ((i * 7) % (h - 12));
+      ctx.fillStyle = petals[i % petals.length];
+      ctx.beginPath();
+      ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // 💡 황동 가로등 (Brass Street Lamp)
+  drawBrassStreetLamp(x, y) {
+    const ctx = this.ctx;
+    // Ambient warm ground glow
+    const glow = ctx.createRadialGradient(x, y + 36, 4, x, y + 36, 42);
+    glow.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
+    glow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x, y + 36, 42, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Classical Antique Brass Pole (#b45309, #d97706, #f59e0b)
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(x - 2, y, 4, 38);
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(x - 5, y + 34, 10, 4); // base pedestal
+
+    // Ornamental Curved Arm Bracket
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(x - 8, y + 2, 16, 3);
+
+    // Hexagonal Brass Lantern Head
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.moveTo(x, y - 6);
+    ctx.lineTo(x + 7, y);
+    ctx.lineTo(x + 5, y + 10);
+    ctx.lineTo(x - 5, y + 10);
+    ctx.lineTo(x - 7, y);
+    ctx.closePath();
+    ctx.fill();
+
+    // Glowing Lantern Core
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(x, y + 4, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 🌲 소나무 가로수 (Korean Red Pine)
+  drawPineTree(x, y) {
+    const ctx = this.ctx;
+    // Gnarled Red-Brown Pine Trunk
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(x - 4, y - 10, 8, 38);
+    ctx.fillStyle = '#9a3412';
+    ctx.fillRect(x - 2, y - 8, 4, 34);
+
+    // Multi-tiered umbrella pine needle canopies
+    const pineTiers = [
+      { yOff: -34, r: 24, c: '#14532d' },
+      { yOff: -22, r: 28, c: '#166534' },
+      { yOff: -10, r: 32, c: '#15803d' }
+    ];
+
+    for (let t of pineTiers) {
+      ctx.fillStyle = t.c;
+      ctx.beginPath();
+      ctx.arc(x, y + t.yOff, t.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // ========================================================
+  // [주행 차로 & 방향 화살표] (ty: 26..35)
+  // ========================================================
+  drawDrivingAisles(mapW, mapH) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const startX = 8.5 * 32;
+    const laneY = 26 * 32;
+    const laneW = mapW * 32 - startX;
+    const laneH = (mapH - 26) * 32;
+
+    // Solid white shoulder line
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(startX, laneY + 4, laneW, 3);
+    ctx.fillRect(startX, laneY + laneH - 6, laneW, 3);
+
+    // Yellow dashed center divider
+    ctx.strokeStyle = '#eab308';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([16, 12]);
+    ctx.beginPath();
+    ctx.moveTo(startX, laneY + laneH * 0.5);
+    ctx.lineTo(mapW * 32 - 120, laneY + laneH * 0.5);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // White directional pavement arrows
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.font = '900 11px "Pretendard", sans-serif';
+    ctx.textAlign = 'center';
+
+    for (let ax of [16 * 32, 28 * 32]) {
+      // Eastbound arrow (➡️ towards soccer field)
+      ctx.fillText('➡️ 축구장 방면 (EAST)', ax, laneY + laneH * 0.75);
+
+      // Westbound arrow (⬅️ towards uphill road)
+      ctx.fillText('⬅️ 서문 언덕길 (WEST)', ax, laneY + laneH * 0.3);
+    }
+
+    // Speed limit circle stencil
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(22 * 32, laneY + laneH * 0.5, 16, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 11px sans-serif';
+    ctx.fillText('20', 22 * 32, laneY + laneH * 0.5 + 4);
 
     ctx.restore();
   }
@@ -11670,9 +12061,9 @@ class GameEngine {
     ctx.save();
 
     const w = 4 * 32;
-    const h = 3.2 * 32;
+    const h = 3.4 * 32;
 
-    // Booth building
+    // Booth building base
     ctx.fillStyle = '#334155';
     ctx.fillRect(x, y, w, h);
     ctx.fillStyle = '#991b1b'; // red roof canopy
@@ -11689,16 +12080,26 @@ class GameEngine {
     ctx.fillStyle = 'rgba(254, 240, 138, 0.25)';
     ctx.fillRect(x + 12, y + 14, w - 24, 20);
 
-    // Mini barrier arm
+    // Boom barrier housing
     ctx.fillStyle = '#eab308';
-    ctx.fillRect(x - 12, y + h - 16, 8, 16);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x - 40, y + h - 12, 28, 4);
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(x - 34, y + h - 12, 6, 4);
-    ctx.fillRect(x - 20, y + h - 12, 6, 4);
+    ctx.fillRect(x - 12, y + h - 22, 10, 22);
 
-    this.drawSharpLabel(x + w / 2, y - 14, '🛡️ 체육관 주차 관리실', {
+    // Flashing beacon
+    const now = Date.now();
+    const flashAlpha = 0.5 + Math.sin(now / 150) * 0.45;
+    ctx.fillStyle = 'rgba(239, 68, 68, ' + flashAlpha + ')';
+    ctx.beginPath();
+    ctx.arc(x - 7, y + h - 26, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Horizontal barrier arm
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x - 44, y + h - 14, 32, 4);
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(x - 38, y + h - 14, 6, 4);
+    ctx.fillRect(x - 22, y + h - 14, 6, 4);
+
+    this.drawSharpLabel(x + w / 2, y - 14, '🛡️ 주차 관리실 & 차단기', {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#94a3b8',
       borderWidth: 1,
@@ -11709,57 +12110,6 @@ class GameEngine {
     });
 
     ctx.restore();
-  }
-
-  // Planter Box with Ornamental Pine Tree
-  drawGymPlanterTree(x, y) {
-    const ctx = this.ctx;
-    // Stone planter box
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(x - 14, y + 14, 28, 12);
-    ctx.fillStyle = '#78350f'; // soil
-    ctx.fillRect(x - 12, y + 15, 24, 4);
-
-    // Pine tree trunk
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(x - 3, y - 4, 6, 20);
-
-    // Lush conical evergreen pine foliage
-    ctx.fillStyle = '#166534';
-    ctx.beginPath();
-    ctx.moveTo(x, y - 24);
-    ctx.lineTo(x + 16, y);
-    ctx.lineTo(x - 16, y);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = '#15803d';
-    ctx.beginPath();
-    ctx.moveTo(x, y - 16);
-    ctx.lineTo(x + 13, y + 8);
-    ctx.lineTo(x - 13, y + 8);
-    ctx.closePath();
-    ctx.fill();
-
-    // Yellow forsythia flowers around base
-    ctx.fillStyle = '#facc15';
-    ctx.fillRect(x - 8, y + 16, 4, 3);
-    ctx.fillRect(x + 4, y + 16, 4, 3);
-  }
-
-  // High-Res Street Lamp
-  drawHighResStreetLamp(x, y) {
-    const ctx = this.ctx;
-    // Black steel pole
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(x - 2, y, 4, 34);
-    ctx.fillRect(x - 5, y + 30, 10, 4); // base plate
-    // Double cross arm
-    ctx.fillRect(x - 12, y + 2, 24, 3);
-    // Lantern heads
-    ctx.fillStyle = '#fef08a';
-    ctx.fillRect(x - 14, y + 5, 6, 6);
-    ctx.fillRect(x + 8, y + 5, 6, 6);
   }
 
 }

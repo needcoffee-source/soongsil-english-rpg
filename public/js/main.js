@@ -1504,11 +1504,11 @@ class MainApp {
         return;
       }
       this.engine.triggerFadeWarp(() => {
-        this.engine.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 28 * 32);
+        this.engine.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 30 * 32);
       });
     } else if (target.type === 'gym_exit_gate') {
       this.engine.triggerFadeWarp(() => {
-        this.engine.warpToRoom('playground', '숭실 운동장', 4 * 32, 35 * 32);
+        this.engine.warpToRoom('playground', '숭실 운동장', 4 * 32, 48 * 32);
       });
     } else if (target.type === 'gym_entrance') {
       alert('🏛️ [숭실 종합 체육관 (7층 대형 복합 스포츠 센터)]\n\n"지하 1층(유도·탁구장), 1층(종합 안내 로비), 2~3층(정규 규격 실내 농구·배구 코트), 4~7층(대형 관람석 및 피트니스 센터)을 갖춘 숭실의 랜드마크 7층 체육관입니다.\n\n(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');

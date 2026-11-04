@@ -640,15 +640,15 @@ const WORLD_DATA = {
     exitGate: {
       id: "gym_exit_gate",
       type: "gym_exit_gate",
-      x: 54,
-      y: 28,
+      x: 53,
+      y: 30,
       name: "⚽ 숭실 운동장(축구장) 방면",
       prompt: "운동장으로 나가기"
     },
     gymEntrance: {
       id: "gym_entrance",
       type: "gym_entrance",
-      x: 28,
+      x: 32,
       y: 10,
       name: "🏛️ 숭실 종합 체육관 메인 로비",
       prompt: "체육관 입장 (개관 준비 중)"
@@ -656,16 +656,16 @@ const WORLD_DATA = {
     schoolBus: {
       id: "gym_school_bus",
       type: "gym_school_bus",
-      x: 11,
-      y: 20,
+      x: 46,
+      y: 16,
       name: "🚌 숭실 통학 스쿨버스",
       prompt: "스쿨버스 살펴보기"
     },
     evCharger: {
       id: "gym_ev_charger",
       type: "gym_ev_charger",
-      x: 40,
-      y: 20,
+      x: 38,
+      y: 16,
       name: "⚡ 전기차 급속 충전소",
       prompt: "충전소 확인하기"
     }
@@ -688,7 +688,7 @@ const WORLD_DATA = {
       id: "gym_gate",
       type: "gym_gate",
       x: 2,
-      y: 35,
+      y: 48,
       name: "🚗 숭실 체육관 & 주차장 진입 게이트",
       prompt: "체육관 & 주차장 진입"
     },
