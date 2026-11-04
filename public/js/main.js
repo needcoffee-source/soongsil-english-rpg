@@ -239,7 +239,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_wood_sword',
     name: '나무검 (Wooden Sword)',
     icon: '🗡️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '1티어 무기',
     tierColor: '#854d0e',
     effect: '공격력(ATK) +15 증가',
@@ -250,7 +250,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_wood_helmet',
     name: '나무투구 (Wooden Helmet)',
     icon: '🪖',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '1티어 투구',
     tierColor: '#854d0e',
     effect: '방어력(DEF) +8, 체력(HP) +25 증가',
@@ -261,7 +261,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_wood_armor',
     name: '나무갑옷 (Wooden Armor)',
     icon: '🛡️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '1티어 갑옷',
     tierColor: '#854d0e',
     effect: '방어력(DEF) +15, 체력(HP) +15 증가',
@@ -274,7 +274,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_leather_sword',
     name: '가죽손잡이 세이버 (Leather-Grip Saber)',
     icon: '🗡️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '2티어 무기',
     tierColor: '#b45309',
     effect: '공격력(ATK) +22 증가',
@@ -285,7 +285,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_leather_helmet',
     name: '가죽투구 (Leather Helmet)',
     icon: '⛑️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '2티어 투구',
     tierColor: '#b45309',
     effect: '방어력(DEF) +12, 체력(HP) +28 증가',
@@ -296,7 +296,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_leather_armor',
     name: '가죽갑옷 (Leather Armor)',
     icon: '🥋',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '2티어 갑옷',
     tierColor: '#b45309',
     effect: '방어력(DEF) +17, 체력(HP) +20 증가',
@@ -307,7 +307,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_leather_shoes',
     name: '날렵한 가죽 운동화 (Leather Sneakers)',
     icon: '👟',
-    category: 'equip',
+    category: 'shoes', subCategory: 'shoes',
     tierBadge: '2티어 신발',
     tierColor: '#b45309',
     effect: '공격력 +3, 방어력 +3, 체력 +10 · 질주(속도 4.56, +20%) 활성화',
@@ -320,7 +320,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_bronze_sword',
     name: '청동검 (Bronze Sword)',
     icon: '⚔️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '3티어 무기',
     tierColor: '#047857',
     effect: '공격력(ATK) +30 증가',
@@ -331,7 +331,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_bronze_helmet',
     name: '청동투구 (Bronze Helmet)',
     icon: '🪖',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '3티어 투구',
     tierColor: '#047857',
     effect: '방어력(DEF) +14, 체력(HP) +35 증가',
@@ -342,7 +342,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_bronze_armor',
     name: '청동갑옷 (Bronze Armor)',
     icon: '🛡️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '3티어 갑옷',
     tierColor: '#047857',
     effect: '방어력(DEF) +22, 체력(HP) +25 증가',
@@ -355,7 +355,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_forsythia_ring',
     name: '성실의 개나리 반지 (Forsythia Ring)',
     icon: '🌼',
-    category: 'equip',
+    category: 'accessory', subCategory: 'accessory',
     tierBadge: '교화 장신구',
     tierColor: '#ca8a04',
     effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
@@ -366,7 +366,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_ginkgo_talisman',
     name: '합심의 황금 은행잎 부적 (Ginkgo Talisman)',
     icon: '🍂',
-    category: 'equip',
+    category: 'accessory', subCategory: 'accessory',
     tierBadge: '교목 장신구',
     tierColor: '#d97706',
     effect: '공격력 +20, 방어력 +12, 체력 +40 증가',
@@ -377,7 +377,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_elevator_pass',
     name: '엘리베이터 작동권',
     icon: '🪪',
-    category: 'equip',
+    category: 'accessory', subCategory: 'accessory',
     tierBadge: '퀘스트 인가증',
     tierColor: '#2563eb',
     effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
@@ -412,7 +412,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_heritage_blade',
     name: '1897 숭실 헤리티지 소드',
     icon: '⚔️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '4티어 무기',
     tierColor: '#6366f1',
     effect: '공격력 +45, 체력 +35',
@@ -423,7 +423,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_heritage_helmet',
     name: '1897 숭실 헤리티지 투구',
     icon: '👑',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '4티어 투구',
     tierColor: '#6366f1',
     effect: '방어력 +20, 체력 +35',
@@ -434,7 +434,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_heritage_armor',
     name: '1897 숭실 헤리티지 갑옷',
     icon: '🛡️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '4티어 갑옷',
     tierColor: '#6366f1',
     effect: '방어력 +30, 체력 +45',
@@ -445,7 +445,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_bronze_shoes',
     name: '청동 스파이크 (Bronze Spikes)',
     icon: '👟',
-    category: 'equip',
+    category: 'shoes', subCategory: 'shoes',
     tierBadge: '3티어 신발',
     tierColor: '#047857',
     effect: '공격력 +5, 방어력 +5, 체력 +10 · 고속 질주(속도 4.75, +25%) 활성화',
@@ -456,7 +456,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_heritage_boots',
     name: '1897 숭실 헤리티지 부츠 (1897 Heritage Boots)',
     icon: '👟',
-    category: 'equip',
+    category: 'shoes', subCategory: 'shoes',
     tierBadge: '4티어 신발',
     tierColor: '#6366f1',
     effect: '공격력 +6, 방어력 +6, 체력 +15 · 고속 질주(속도 4.75, +25%) 활성화',
@@ -467,7 +467,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_shoes_samdidas',
     name: '삼디다스 실내화',
     icon: '👟',
-    category: 'equip',
+    category: 'shoes', subCategory: 'shoes',
     tierBadge: '1티어 신발',
     tierColor: '#059669',
     effect: '공격력 +2, 방어력 +2, 체력 +10 (Shift 키 질주 기능 활성화)',
@@ -478,7 +478,7 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_omr_wand',
     name: '컴싸 마법봉 (OMR Magic Wand)',
     icon: '🖊️',
-    category: 'equip',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '전설 무기',
     tierColor: '#7e22ce',
     effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
@@ -8479,9 +8479,26 @@ class MainApp {
     if (fillEl) fillEl.style.width = `${pct}%`;
     if (pctEl) pctEl.innerText = `${pct}%`;
 
-    // Filter by tab
+    // Filter by tab (전체 / 무기·방어구 / 신발 / 장신구 / 재료 / 소비품)
     const tab = this.currentCodexTab || 'all';
-    const filtered = (tab === 'all') ? db : db.filter(item => item.category === tab);
+    let filtered = db;
+    if (tab === 'all') {
+      filtered = db;
+    } else if (tab === 'weapon_armor') {
+      filtered = db.filter(item => item.category === 'weapon_armor' || item.subCategory === 'weapon_armor' || (item.category === 'equip' && !item.id.includes('shoes') && !item.id.includes('boots') && !item.id.includes('ring') && !item.id.includes('talisman') && !item.id.includes('pass')));
+    } else if (tab === 'shoes') {
+      filtered = db.filter(item => item.category === 'shoes' || item.subCategory === 'shoes' || item.id.includes('shoes') || item.id.includes('boots'));
+    } else if (tab === 'accessory') {
+      filtered = db.filter(item => item.category === 'accessory' || item.subCategory === 'accessory' || item.id.includes('ring') || item.id.includes('talisman') || item.id.includes('pass'));
+    } else if (tab === 'equip') {
+      filtered = db.filter(item => item.category === 'equip' || ['weapon_armor', 'shoes', 'accessory'].includes(item.category));
+    } else if (tab === 'material') {
+      filtered = db.filter(item => item.category === 'material');
+    } else if (tab === 'consumable') {
+      filtered = db.filter(item => item.category === 'consumable');
+    } else {
+      filtered = db.filter(item => item.category === tab);
+    }
 
     filtered.forEach(item => {
       const inInv = checkInInv(item.id);
