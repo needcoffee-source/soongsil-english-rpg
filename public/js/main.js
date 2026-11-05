@@ -172,7 +172,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '주홍 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '고급 물약',
+    tierBadge: '고급 회복 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
     source: '소비품 제작대(C)에서 조제 / 보스 레이드 전리품',
@@ -205,7 +205,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '부활 주문서',
     icon: '📜',
     category: 'consumable',
-    tierBadge: '특수 주문서',
+    tierBadge: '주문서',
     tierColor: '#7c3aed',
     effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
     source: '소비품 제작대(C)에서 제작',
@@ -227,7 +227,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '순간이동 주문서',
     icon: '📜',
     category: 'consumable',
-    tierBadge: '비전 주문서',
+    tierBadge: '주문서',
     tierColor: '#9333ea',
     effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
     source: '소비품 제작대(C)에서 제작',
@@ -402,7 +402,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '숭실 역사의 정수',
     icon: '🏛️',
     category: 'material',
-    tierBadge: '4티어 역사 재료',
+    tierBadge: '야외 전리품',
     tierColor: '#4f46e5',
     effect: '4대 역사관 탐구와 시련을 통해 정제된 영광의 숨결 (4티어 헤리티지 무기·방어구 필수 재료)',
     source: '숭실역사관 몬스터(일제 순사 등) 토벌 시 드랍',
@@ -413,7 +413,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '꺾이지 않는 사명석',
     icon: '💎',
     category: 'material',
-    tierBadge: '4티어 역사 재료',
+    tierBadge: '야외 전리품',
     tierColor: '#0284c7',
     effect: '1938 신사참배 거부와 폐교의 아픔을 견뎌낸 굳은 의지 (4티어 헤리티지 무기·방어구 핵심 재료)',
     source: '숭실역사관 몬스터 토벌 시 드랍',
@@ -479,7 +479,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '컴싸 마법봉 (OMR Magic Wand)',
     icon: '🖊️',
     category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '전설 무기',
+    tierBadge: '4티어 무기',
     tierColor: '#7e22ce',
     effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
     source: '기말고사 파멸신 레이드 전리품 드랍',
@@ -1557,7 +1557,9 @@ class MainApp {
         this.engine.warpToRoom('playground', '숭실 운동장', 4 * 32, 48 * 32);
       });
     } else if (target.type === 'gym_entrance') {
-      alert('🏛️ [숭실 종합 체육관 (7층 대형 복합 스포츠 센터)]\n\n"지하 1층(유도·탁구장), 1층(종합 안내 로비), 2~3층(정규 규격 실내 농구·배구 코트), 4~7층(대형 관람석 및 피트니스 센터)을 갖춘 숭실의 랜드마크 7층 체육관입니다.\n\n(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');
+      alert('🏛️ [숭실 종합 체육관]\n\n"(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');
+    } else if (target.type === 'gym_teacher_car') {
+      this.handleTeacherCarEasterEgg();
     } else if (target.type === 'gym_school_bus') {
       this.handleSchoolBusEasterEgg();
     } else if (target.type === 'gym_ev_charger') {
@@ -2423,6 +2425,49 @@ class MainApp {
       `• 🧪 빨간 물약 x2개 획득! (HP +10 회복)\n\n` +
       `(우측 상단 가방(🎒)을 열어 획득한 물약을 확인할 수 있습니다.)`
     );
+  }
+
+  // 🚗 교직원 럭셔리 세단 이스터에그 (감히 선생님 차에 손을 대다니! 1초 마비 + HP -20)
+  handleTeacherCarEasterEgg() {
+    if (this.playerData.isTeacher) {
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '🚗 교직원 럭셔리 세단',
+          `"삑-삑- 🎵 스마트키 인식 완료!"\n\n『교직원 전용 스마트키가 정상 감지되었습니다.\n오늘도 학생들을 위해 열정 넘치는 하루 보내십시오, 선생님!』`,
+          '🚗'
+        );
+      } else {
+        alert('🚗 [교직원 럭셔리 세단]\n\n"삑-삑- 🎵 스마트키 인식 완료!\n오늘도 안전운전 하십시오, 선생님!"');
+      }
+      return;
+    }
+
+    if (window.AudioManager && typeof window.AudioManager.playElectricShock === 'function') {
+      window.AudioManager.playElectricShock();
+    }
+
+    if (this.engine) {
+      if (typeof this.engine.triggerElectricZapEffect === 'function') {
+        this.engine.triggerElectricZapEffect();
+      }
+      this.engine.player.stunnedUntil = Date.now() + 1000;
+    }
+
+    const prevHp = this.playerData.hp;
+    this.playerData.hp = Math.max(1, this.playerData.hp - 20);
+    const damageDealt = prevHp - this.playerData.hp;
+    this.updateHUD();
+    this.saveProgress(true);
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '🚨 교직원 전용 차량 보안 경보',
+        `"삐요- 삐요- 삐요-!! 📢⚡"\n\n『감히 선생님의 차에 손을 대다니!!』\n\n최첨단 방범 전기 충격 장치가 격렬하게 작동했습니다!\n\n⚡ [패널티 발동]\n• ⚡ 1초간 온몸이 마비되어 움직일 수 없습니다!\n• 💔 체력(HP) -${damageDealt} 감소 (${this.playerData.hp}/${this.playerData.maxHp})`,
+        '🚨'
+      );
+    } else {
+      alert(`🚨 [보안 경보 발동!]\n\n"감히 선생님의 차에 손을 대다니!!"\n1초간 마비되며 HP가 ${damageDealt} 감소했습니다!`);
+    }
   }
 
   // 🚌 숭실 축구부 버스 이스터에그 (클랙슨 빵빵! & 축구부 기사님의 달콤한 믹스커피)

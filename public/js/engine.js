@@ -239,8 +239,8 @@ class GameEngine {
     const isTeacherNoclip = !!(this.player.isTeacher && this.player.noclip);
     const isBrawlStunned = !isTeacherNoclip && !!(window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
     const isBrawlKickoffWait = !isTeacherNoclip && !!(window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam && window.BrawlBall.kickoffUntil && Date.now() < window.BrawlBall.kickoffUntil);
-    const isMovementLocked = !!((!isTeacherNoclip && this.player.isFallen) || isBrawlStunned || isBrawlKickoffWait);
-    if (this.player.isFallen || isBrawlStunned) {
+    const isMovementLocked = !!((!isTeacherNoclip && this.player.isFallen) || isBrawlStunned || isBrawlKickoffWait || (this.player.stunnedUntil && Date.now() < this.player.stunnedUntil));
+    if (this.player.isFallen || isBrawlStunned || (this.player.stunnedUntil && Date.now() < this.player.stunnedUntil)) {
       this.keys.up = false;
       this.keys.down = false;
       this.keys.left = false;
@@ -1011,6 +1011,26 @@ class GameEngine {
               hiddenPrompt: true
             };
             minDist = evDist;
+          }
+        }
+        // 5. Teacher Luxury Sedan & Parked Cars (교직원 럭셔리 세단 이스터에그)
+        if (gymData.teacherCar) {
+          const carBayXs = [13.1, 18.1, 23.1, 28.1, 33.1];
+          let closestCarDist = 99999;
+          for (const cx of carBayXs) {
+            const carDx = Math.max(0, Math.abs(this.player.x - cx * 32) - 1.3 * 32);
+            const carDy = Math.max(0, Math.abs(this.player.y - 16.0 * 32) - 2.5 * 32);
+            const cDist = Math.hypot(carDx, carDy);
+            if (cDist < closestCarDist) closestCarDist = cDist;
+          }
+          if (closestCarDist < 52 && closestCarDist < minDist) {
+            closest = {
+              type: 'gym_teacher_car',
+              name: gymData.teacherCar.name || '🚗 교직원 럭셔리 세단',
+              prompt: gymData.teacherCar.prompt || '',
+              hiddenPrompt: true
+            };
+            minDist = closestCarDist;
           }
         }
       }
@@ -7023,6 +7043,18 @@ class GameEngine {
       height: 21
     });
 
+    if (p.stunnedUntil && now < p.stunnedUntil) {
+      this.drawSharpLabel(px + 12, plateY - 18, '⚡ 1초 마비!', {
+        bgColor: 'rgba(234, 88, 12, 0.95)',
+        borderColor: '#fde047',
+        borderWidth: 1.5,
+        textColor: '#ffffff',
+        fontSize: 10,
+        paddingX: 6,
+        height: 16
+      });
+    }
+
     // Chat speech bubble if active
     if (p.chatBubble && Date.now() < p.chatBubbleExpires) {
       this.renderChatBubble(px + 12, plateY - 16, p.chatBubble);
@@ -11298,12 +11330,12 @@ class GameEngine {
     }
 
     // 4. Direction Signpost (방향 표지판) - cleanly placed ABOVE road on sand
-    const signY = roadY - 50;
+    const signY = roadY - 42;
     // Signpost pole
     this.ctx.fillStyle = '#334155';
     this.ctx.fillRect(px + 18, signY + 10, 4, roadY - (signY + 10));
 
-    this.drawSharpLabel(px + 20, signY, '🚗 [숭실 체육관 & 주차장]', {
+    this.drawSharpLabel(px + 20, signY, '🚗 [체육관 & 주차장]', {
       bgColor: 'rgba(15, 23, 42, 0.95)',
       borderColor: '#f59e0b',
       borderWidth: 2,
@@ -11311,16 +11343,6 @@ class GameEngine {
       fontSize: 11,
       paddingX: 10,
       height: 20
-    });
-
-    this.drawSharpLabel(px + 20, signY + 22, '⬅️ 교직원 전용 진입로', {
-      bgColor: 'rgba(30, 41, 59, 0.9)',
-      borderColor: '#38bdf8',
-      borderWidth: 1,
-      textColor: '#bae6fd',
-      fontSize: 9.5,
-      paddingX: 8,
-      height: 17
     });
 
     this.ctx.restore();

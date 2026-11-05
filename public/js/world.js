@@ -675,6 +675,14 @@ const WORLD_DATA = {
       name: "🏛️ 숭실 종합 체육관 메인 로비",
       prompt: "체육관 입장 (개관 준비 중)"
     },
+    teacherCar: {
+      id: "gym_teacher_car",
+      type: "gym_teacher_car",
+      x: 13,
+      y: 16,
+      name: "🚗 교직원 럭셔리 세단",
+      prompt: ""
+    },
     schoolBus: {
       id: "gym_school_bus",
       type: "gym_school_bus",
@@ -711,7 +719,7 @@ const WORLD_DATA = {
       type: "gym_gate",
       x: 2,
       y: 48,
-      name: "🚗 숭실 체육관 & 주차장 진입 게이트",
+      name: "🚗 체육관 & 주차장 진입 게이트",
       prompt: "체육관 & 주차장 진입"
     },
     store: {
