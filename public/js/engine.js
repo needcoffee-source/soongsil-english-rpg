@@ -232,9 +232,10 @@ class GameEngine {
     }
 
     // 기절(isFallen 또는 brawl stunned) 및 브롤볼 킥오프 대기 상태 시 플레이어 이동만 정지 (월드/브롤볼 업데이트는 계속 실행)
-    const isBrawlStunned = !!(window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
-    const isBrawlKickoffWait = !!(window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam && window.BrawlBall.kickoffUntil && Date.now() < window.BrawlBall.kickoffUntil);
-    const isMovementLocked = !!(this.player.isFallen || isBrawlStunned || isBrawlKickoffWait);
+    const isTeacherNoclip = !!(this.player.isTeacher && this.player.noclip);
+    const isBrawlStunned = !isTeacherNoclip && !!(window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
+    const isBrawlKickoffWait = !isTeacherNoclip && !!(window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam && window.BrawlBall.kickoffUntil && Date.now() < window.BrawlBall.kickoffUntil);
+    const isMovementLocked = !!((!isTeacherNoclip && this.player.isFallen) || isBrawlStunned || isBrawlKickoffWait);
     if (this.player.isFallen || isBrawlStunned) {
       this.keys.up = false;
       this.keys.down = false;
@@ -393,13 +394,13 @@ class GameEngine {
   }
 
   checkCollision(x, y) {
-    // Active Brawl Ball match boundaries & crates apply even when Teacher Noclip is enabled
+    // Teacher Noclip (공간돌파 무적 벽통과: 브롤볼 경기장 및 모든 장애물 자유 관전/통과)
+    if (this.player.noclip) return false;
+
+    // Active Brawl Ball match boundaries & crates apply for regular match players
     if (this.player.room === 'playground' && window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam) {
       if (window.BrawlBall.isCollisionBlocked(this.player.x, this.player.y, x, y)) return true;
     }
-
-    // Teacher Noclip (공간돌파 무적 벽통과)
-    if (this.player.noclip) return false;
 
     const tileX = Math.floor(x / 32);
     const tileY = Math.floor(y / 32);
@@ -788,6 +789,11 @@ class GameEngine {
         this.player.roomName = '숭실 운동장 (풋살장)';
         this.player.x = 74 * 32; // 인조잔디 풋살장 센터
         this.player.y = 40 * 32;
+      } else if (room === 'playground_gym') {
+        this.player.room = 'playground_gym';
+        this.player.roomName = '🏛️ 숭실 체육관 & 주차장 광장';
+        this.player.x = 50 * 32;
+        this.player.y = 30 * 32;
       } else if (room === 'playground') {
         this.player.room = 'playground';
         this.player.roomName = '숭실 운동장';

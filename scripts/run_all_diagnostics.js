@@ -18,7 +18,8 @@ const tests = [
   'test_student_admin_api.js',
   'test_teacher_login.js',
   'test_secret_history_gatekeeper.js',
-  'test_gym_plaza_gatekeeper.js'
+  'test_gym_plaza_gatekeeper.js',
+  'test_teacher_noclip_brawl.js'
 ];
 
 console.log('==============================================');

@@ -502,6 +502,7 @@ class BrawlBallManager {
   trySuper() {
     if (!this.engine || !this.engine.player) return false;
     const p = this.engine.player;
+    if (p.noclip || !this.myTeam) return false;
     if (p.room !== 'playground' || !this.isInsideCourtBox(p.x, p.y)) return false;
 
     const now = Date.now();
@@ -710,6 +711,11 @@ class BrawlBallManager {
   }
 
   isCollisionBlocked(curX, curY, nextX, nextY) {
+    // If local player has noclip active (공간통과), do not block collision
+    if (this.engine && this.engine.player && this.engine.player.noclip) {
+      return false;
+    }
+
     // 0. Freeze matched players at kickoff spot during 3-2-1 countdown
     if (this.match && this.myTeam && this.kickoffUntil && Date.now() < this.kickoffUntil) {
       return true;
@@ -853,9 +859,10 @@ class BrawlBallManager {
 
   updatePowerupSpawns() {
     const now = Date.now();
-    // Check pickup by local player inside court
+    // Check pickup by local player inside court (Teacher with noclip or spectator does not collect powerups)
     if (!this.engine || !this.engine.player) return;
     const p = this.engine.player;
+    if (p.noclip || !this.myTeam) return;
     if (!this.isInsideCourtBox(p.x, p.y)) return;
     const pos = this.getEntityVisualPos(p);
 
@@ -906,6 +913,7 @@ class BrawlBallManager {
   tryTackle() {
     if (!this.engine || !this.engine.player) return;
     const p = this.engine.player;
+    if (p.noclip || !this.myTeam) return;
     if (p.room !== 'playground' || !this.isInsideCourtBox(p.x, p.y)) return;
 
     const now = Date.now();
@@ -1059,6 +1067,7 @@ class BrawlBallManager {
   tryKick() {
     if (!this.engine || !this.engine.player) return false;
     const p = this.engine.player;
+    if (p.noclip || !this.myTeam) return false;
     if (this.kickoffUntil && Date.now() < this.kickoffUntil) return false;
     const myId = (this.network && this.network.socket) ? this.network.socket.id : 'me';
 
@@ -1326,8 +1335,9 @@ class BrawlBallManager {
     if (!this.engine || !this.engine.player) return;
     if (this.engine.player.room !== 'playground') return;
 
-    // Ensure players cannot stay trapped inside the walled court when no active match is assigned to them
-    if ((!this.match || !this.myTeam) && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y)) {
+    // Ensure players cannot stay trapped inside the walled court unless Teacher Noclip is enabled
+    const isTeacherNoclip = !!(this.engine.player.isTeacher && this.engine.player.noclip);
+    if (!isTeacherNoclip && (!this.match || !this.myTeam) && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y)) {
       this.teleportMatchPlayer(43 * 32, 20 * 32, 'up');
     }
 
@@ -1357,8 +1367,8 @@ class BrawlBallManager {
       if (ft.life <= 0) this.floatingTexts.splice(i, 1);
     }
 
-    // 4. Stun & Kickoff Countdown freeze
-    if (now < this.stunnedUntil || (this.match && this.myTeam && this.kickoffUntil && now < this.kickoffUntil)) {
+    // 4. Stun & Kickoff Countdown freeze (Skip for teacher in noclip mode so they can observe freely)
+    if (!isTeacherNoclip && (now < this.stunnedUntil || (this.match && this.myTeam && this.kickoffUntil && now < this.kickoffUntil))) {
       this.engine.player.vx = 0;
       this.engine.player.vy = 0;
       if (this.match && this.myTeam && this.kickoffUntil && now < this.kickoffUntil) {
@@ -1372,7 +1382,7 @@ class BrawlBallManager {
     }
 
     // 5. Passive Dribble Super Charge
-    if (this.ball.carrierId === myId) {
+    if (this.ball.carrierId === myId && !isTeacherNoclip) {
       this.addSuperGauge(dt * 8); // +8% per second while dribbling!
     }
 
@@ -1464,8 +1474,8 @@ class BrawlBallManager {
         }
       }
 
-      // Ball pickup by local player
-      const canPickupMatch = this.match && this.match.status === 'playing' && (!this.kickoffUntil || now >= this.kickoffUntil);
+      // Ball pickup by local player (Teacher with noclip or spectator cannot pick up or affect the ball)
+      const canPickupMatch = !isTeacherNoclip && this.myTeam && this.match && this.match.status === 'playing' && (!this.kickoffUntil || now >= this.kickoffUntil);
       if (canPickupMatch && this.isInsideCourtBox(this.engine.player.x, this.engine.player.y) && now >= this.ball.pickupCooldown && now >= this.stunnedUntil) {
         const pPos = this.getEntityVisualPos(this.engine.player);
         const dist = Math.hypot(pPos.cx - this.ball.x, pPos.cy - this.ball.y);
@@ -1500,7 +1510,7 @@ class BrawlBallManager {
     // 9. Toggle mobile Super Button visibility
     const mobileSuperBtn = document.getElementById('btn-mobile-super');
     if (mobileSuperBtn) {
-      if (this.isPlayerInCourt(this.engine.player.x, this.engine.player.y)) {
+      if (this.isPlayerInCourt(this.engine.player.x, this.engine.player.y) && !isTeacherNoclip && this.myTeam) {
         mobileSuperBtn.classList.remove('hidden');
         if (this.superGauge >= 100) {
           mobileSuperBtn.classList.add('super-ready');
@@ -2507,11 +2517,17 @@ class BrawlBallManager {
     ctx.fillStyle = canTackle ? '#4ade80' : '#f59e0b';
 
     let teamText = '⚽ 매치 대기 중 (코치에게 3v3 신청)';
-    if (this.match) {
+    if (p.isTeacher && p.noclip) {
+      teamText = '👑 교사 공간통과 (자유 관전 중 · 경기 불간섭)';
+    } else if (this.match) {
       teamText = this.myTeam ? (this.myTeam === 'blue' ? '🔵 내 팀: 블루' : '🔴 내 팀: 레드') : '👀 관전 중';
     }
 
-    ctx.fillText(`${teamText} | ⚡ SHIFT/B키 태클 [${tackleRemaining}] | ⚽ SPACE키: 슛 / Q키: 필살슛${buffStr ? ` | ${buffStr}` : ''}`, hudX + hudW / 2, hudY + hudH + 15);
+    if (p.isTeacher && p.noclip) {
+      ctx.fillText(`${teamText} | 👻 물리 통과 활성화 · 경기 방해 없음 | 패트롤 모드`, hudX + hudW / 2, hudY + hudH + 15);
+    } else {
+      ctx.fillText(`${teamText} | ⚡ SHIFT/B키 태클 [${tackleRemaining}] | ⚽ SPACE키: 슛 / Q키: 필살슛${buffStr ? ` | ${buffStr}` : ''}`, hudX + hudW / 2, hudY + hudH + 15);
+    }
 
     ctx.restore();
   }

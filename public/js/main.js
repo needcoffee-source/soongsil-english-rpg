@@ -1215,7 +1215,7 @@ class MainApp {
       if (!this.engine || !this.engine.player) return;
 
       // 3v3 Brawl Ball Sliding Tackle
-      if (window.BrawlBall && this.engine.player.room === 'playground' && window.BrawlBall.isPlayerInCourt(this.engine.player.x, this.engine.player.y)) {
+      if (window.BrawlBall && !this.engine.player.noclip && this.engine.player.room === 'playground' && window.BrawlBall.isPlayerInCourt(this.engine.player.x, this.engine.player.y)) {
         window.BrawlBall.tryTackle();
       }
 
