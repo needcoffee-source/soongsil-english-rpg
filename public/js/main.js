@@ -2509,10 +2509,10 @@ class MainApp {
           dot.style.border = '1.5px solid #86efac';
           dot.innerText = '✓';
         } else if (i === jumpCount) {
-          dot.style.background = '#ef4444';
+          dot.style.background = '#2563eb';
           dot.style.color = '#ffffff';
-          dot.style.border = '2px solid #fca5a5';
-          dot.style.boxShadow = '0 0 8px #ef4444';
+          dot.style.border = '2px solid #60a5fa';
+          dot.style.boxShadow = '0 0 8px #38bdf8';
           dot.innerText = (i + 1);
         } else {
           dot.style.background = '#334155';

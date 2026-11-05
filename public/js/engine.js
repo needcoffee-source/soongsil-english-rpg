@@ -7930,6 +7930,7 @@ class GameEngine {
   // High-Res School Canteen (매점 - 학생급식실 앞)
   // ========================================================
   // 🏃 숭실고 체육선생님 (주차장 1분 체력장 NPC: tx 44, ty 15)
+  // - 다른 교사들과 동일한 숭실 교사 시그니처 로열 블루 테마 적용
   // ========================================================
   drawHighResPETeacher(cx, cy) {
     const ctx = this.ctx;
@@ -7948,37 +7949,37 @@ class GameEngine {
     const bob = Math.sin(Date.now() / 220) * 1.8;
     const by = charY + bob;
 
-    // 2. Athletic Sneakers (빨강 & 흰색 포인트 러닝화)
-    ctx.fillStyle = '#ef4444';
+    // 2. Athletic Sneakers (네이비 & 화이트 러닝화)
+    ctx.fillStyle = '#1e3a8a';
     ctx.fillRect(charX - 9, cy + 24, 7, 5);
     ctx.fillRect(charX + 2, cy + 24, 7, 5);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(charX - 9, cy + 27, 7, 2);
     ctx.fillRect(charX + 2, cy + 27, 7, 2);
 
-    // 3. Sporty Tracksuit Pants (딥 네이비 트레이닝 바지 & 흰색 사이드 라인)
+    // 3. Sporty Tracksuit Pants (딥 네이비 트레이닝 바지 & 스카이블루 사이드 라인)
     ctx.fillStyle = '#1e3a8a';
     ctx.fillRect(charX - 8, by + 4, 6, 12);
     ctx.fillRect(charX + 2, by + 4, 6, 12);
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#60a5fa';
     ctx.fillRect(charX - 8, by + 4, 1.5, 12);
     ctx.fillRect(charX + 6.5, by + 4, 1.5, 12);
 
-    // 4. Athletic Zip-up Jacket (레드 & 로열블루 배색 집업)
-    ctx.fillStyle = '#dc2626';
+    // 4. Athletic Teacher Zip-up Jacket (로열 블루 & 딥 네이비 교사 유니폼 배색)
+    ctx.fillStyle = '#1e3a8a';
     ctx.beginPath();
     ctx.roundRect(charX - 10, by - 8, 20, 13, 3);
     ctx.fill();
 
-    // Blue accent panels & zipper
+    // Royal Blue accent panels & white zipper
     ctx.fillStyle = '#2563eb';
     ctx.fillRect(charX - 10, by - 6, 3, 11);
     ctx.fillRect(charX + 7, by - 6, 3, 11);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(charX - 1, by - 8, 2, 13); // white zipper
 
-    // 5. Golden Whistle & Lanyard hanging on chest (체육선생님의 황금 호루라기)
-    ctx.strokeStyle = '#000000';
+    // 5. Golden Whistle & Lanyard hanging on chest (황금 호루라기)
+    ctx.strokeStyle = '#172554';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(charX - 3, by - 7);
@@ -7993,7 +7994,7 @@ class GameEngine {
     ctx.fillStyle = '#fbbf24';
     ctx.fillRect(charX, by - 1.5, 3.5, 2.5); // whistle spout
 
-    // 6. Face & Head (활기찬 체육선생님 얼굴과 스포츠 헤어)
+    // 6. Face & Head (단정한 체육선생님 얼굴과 스포츠 헤어)
     ctx.fillStyle = '#fed7aa';
     ctx.beginPath();
     ctx.arc(charX, by - 14, 8, 0, Math.PI * 2);
@@ -8004,24 +8005,24 @@ class GameEngine {
     ctx.fillRect(charX - 4, by - 15, 2, 2.5);
     ctx.fillRect(charX + 2, by - 15, 2, 2.5);
 
-    // Dynamic sporty hair & Red athletic headband
+    // Dynamic sporty hair & Blue athletic headband
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
     ctx.arc(charX, by - 17, 8.5, Math.PI, Math.PI * 2);
     ctx.fill();
     ctx.fillRect(charX - 8.5, by - 18, 17, 4);
 
-    // Red headband
-    ctx.fillStyle = '#ef4444';
+    // Blue headband (교사 시그니처 로열 블루)
+    ctx.fillStyle = '#2563eb';
     ctx.fillRect(charX - 8, by - 16, 16, 3);
 
-    // 7. Overhead Nameplate Label
+    // 7. Overhead Nameplate Label (다른 교사 NPC와 100% 동일한 로열 블루 라벨)
     this.drawSharpLabel(charX, cy - 14, '🏃 숭실고 체육선생님', {
-      bgColor: 'rgba(220, 38, 38, 0.95)',
-      borderColor: '#f87171',
+      bgColor: 'rgba(30, 58, 138, 0.95)',
+      borderColor: '#60a5fa',
       borderWidth: 2,
-      textColor: '#ffffff',
-      fontSize: 12,
+      textColor: '#fef08a',
+      fontSize: 12.5,
       paddingX: 10,
       height: 22
     });
