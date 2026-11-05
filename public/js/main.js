@@ -9228,8 +9228,16 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    if (questId === 'quest_kwimjinsyong_career') {
-      this.showToast('🌟 [귐즨숑 선생님의 진로 의뢰] 수락! 5층 진로상담실에서 안내서를 챙기세요.', 'success');
+    if (questId === 'quest_joshua_intro') {
+      this.showToast('📜 [Joshua 선생님의 특별 지령] 수락 완료! 1-1 교실(영어 퀴즈 2회)과 6층 탕비실(단어 메모)을 조사하세요.', 'success');
+    } else if (questId === 'quest_okchohan_social') {
+      this.showToast('📜 [옥촣한 선생님의 사회 과제] 수락 완료! 1-3 컴퓨터실(산성비 1,000점)과 교무실 인쇄실(사회 교재)을 확인하세요.', 'success');
+    } else if (questId === 'quest_kimmijin_art') {
+      this.showToast('🎨 [김진믜 선생님의 미술 프로젝트] 수락 완료! 운동장 스탠드 파란 벤치(스케치북)와 개나리 꽃잎(3송이)을 모아오세요.', 'success');
+    } else if (questId === 'quest_yosunyu_info') {
+      this.showToast('💻 [요션유 선생님의 정보 과제] 수락 완료! 1-3 컴퓨터실(메인 서버 점검)과 1-2 교실 구석(알고리즘 USB)을 확인하세요.', 'success');
+    } else if (questId === 'quest_kwimjinsyong_career') {
+      this.showToast('🌟 [귐즨숑 선생님의 진로 의뢰] 수락 완료! 5층 진로상담실(안내서 회수) 후 6층 창가의 학생에게 전달하세요.', 'success');
     } else {
       this.showToast(`📜 [${(qDef && qDef.title) ? qDef.title : '의뢰'}] 수락 완료!`, 'success');
     }
