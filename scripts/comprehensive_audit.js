@@ -175,10 +175,10 @@ check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', 
 // 5. Version Cache-Buster Consistency
 console.log('\n--- 5. CACHE BUSTER CONSISTENCY AUDIT ---');
 const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-const vOldMatches = (indexHtml.match(/v=170/g) || []).length;
-const vCurMatches = (indexHtml.match(/v=171/g) || []).length;
-check('No stale v=170 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
-check('All assets use v=171 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=171 tags`);
+const vOldMatches = (indexHtml.match(/v=171/g) || []).length;
+const vCurMatches = (indexHtml.match(/v=172/g) || []).length;
+check('No stale v=171 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
+check('All assets use v=172 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=172 tags`);
 
 // 6. DOM Element ID Integrity Audit
 console.log('\n--- 6. DOM ELEMENT ID INTEGRITY AUDIT ---');

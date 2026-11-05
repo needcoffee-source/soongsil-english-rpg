@@ -1506,7 +1506,7 @@ class MainApp {
         return;
       }
       this.engine.triggerFadeWarp(() => {
-        this.engine.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 30 * 32);
+        this.engine.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장', 50 * 32, 30 * 32);
       });
     } else if (target.type === 'gym_exit_gate') {
       this.engine.triggerFadeWarp(() => {
@@ -2406,7 +2406,7 @@ class MainApp {
       return;
     }
 
-    // 최초 1회 보상: 50 Gold, 50 EXP, 주황 포션 2개, 초록 포션 1개, 특별 칭호
+    // 최초 1회 보상: 50 Gold, 50 EXP, 주황 포션 2개, 초록 포션 1개
     this.playerData.hasCheckedSchoolBus = true;
     try {
       localStorage.setItem(busKey, 'true');
@@ -2416,25 +2416,16 @@ class MainApp {
     this.addExp(50);
     this.addItem('item_orange_potion', '주황 포션', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
     this.addItem('item_green_potion', '초록 포션', 1, '🧪', { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' });
-
-    const titleName = '🚌 숭실 축구부 버스 우수 승객';
-    if (!Array.isArray(this.playerData.titles)) {
-      this.playerData.titles = [];
-    }
-    if (!this.playerData.titles.includes(titleName)) {
-      this.playerData.titles.push(titleName);
-    }
-    this.equipTitle(titleName);
     this.saveProgress(true);
 
     if (window.RPGDialog) {
       window.RPGDialog.show(
         '🚌 숭실 축구부 버스 (비상탈출문)',
-        `숭실 축구부 버스 뒤편의 빨간색 비상탈출문(EXIT) 손잡이를 살짝 만졌더니...\n\n"🚨 빵! 빵~~!!"\n우렁찬 클랙슨 경적이 온 주차장에 울려 퍼집니다!\n\n운전석 창문 너머로 친절한 축구부 버스 기사님이 껄껄 웃으시며 손을 흔드십니다.\n"하하! 비상문 점검 중이었니? 우리 숭실 학생, 오늘도 수고가 많다!\n숭실 축구부 선수들의 원정과 훈련을 책임지는 25인승 버스란다.\n이거 기사님이 아껴둔 비장의 달달한 믹스커피(신속 초록 포션)인데 마시고 힘내렴~!"\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +50G & 🌟 경험치 +50 EXP\n• 🧪 주황 포션 x2 (체력 +25 회복)\n• 🧪 초록 포션 x1 (1분간 이동속도 +10%)\n• 🎖️ 특별 칭호 [${titleName}] 획득 및 자동 장착!`,
+        `숭실 축구부 버스 뒤편의 빨간색 비상탈출문(EXIT) 손잡이를 살짝 만졌더니...\n\n"🚨 빵! 빵~~!!"\n우렁찬 클랙슨 경적이 온 주차장에 울려 퍼집니다!\n\n운전석 창문 너머로 친절한 축구부 버스 기사님이 껄껄 웃으시며 손을 흔드십니다.\n"하하! 비상문 점검 중이었니? 우리 숭실 학생, 오늘도 수고가 많다!\n숭실 축구부 선수들의 원정과 훈련을 책임지는 25인승 버스란다.\n이거 기사님이 아껴둔 비장의 달달한 믹스커피(신속 초록 포션)인데 마시고 힘내렴~!"\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +50G & 🌟 경험치 +50 EXP\n• 🧪 주황 포션 x2 (체력 +25 회복)\n• 🧪 초록 포션 x1 (1분간 이동속도 +10%)`,
         '🚌'
       );
     } else {
-      alert(`🚌 [숭실 축구부 버스 비상문 이스터에그 발견!]\n\n"🚨 빵! 빵~~!!"\n\n축구부 버스 기사님이 달달한 믹스커피(물약들)와 50G, 50 EXP, 특별 칭호 [${titleName}]을 선물해주셨습니다!`);
+      alert(`🚌 [숭실 축구부 버스 비상문 이스터에그 발견!]\n\n"🚨 빵! 빵~~!!"\n\n축구부 버스 기사님이 달달한 믹스커피(물약들)와 50G, 50 EXP를 선물해주셨습니다!`);
     }
   }
 
@@ -2465,7 +2456,7 @@ class MainApp {
       return;
     }
 
-    // 최초 1회 보상: 100 Gold, 100 EXP, 용기 포션 1개, 특별 칭호
+    // 최초 1회 보상: 100 Gold, 100 EXP, 용기 포션 1개
     this.playerData.hasShockedEVCharger = true;
     try {
       localStorage.setItem(evKey, 'true');
@@ -2474,25 +2465,16 @@ class MainApp {
     this.addGold(100);
     this.addExp(100);
     this.addItem('item_courage_potion', '용기 포션', 1, '🧪', { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' });
-
-    const titleName = '⚡ 찌릿찌릿 썬더볼트';
-    if (!Array.isArray(this.playerData.titles)) {
-      this.playerData.titles = [];
-    }
-    if (!this.playerData.titles.includes(titleName)) {
-      this.playerData.titles.push(titleName);
-    }
-    this.equipTitle(titleName);
     this.saveProgress(true);
 
     if (window.RPGDialog) {
       window.RPGDialog.show(
         '⚡ 100kW DC 초급속 충전기',
-        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (3분간 공격력 +5)\n• 🎖️ 특별 칭호 [${titleName}] 획득 및 자동 장착!`,
+        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (3분간 공격력 +5)`,
         '⚡'
       );
     } else {
-      alert(`⚡ [전기차 충전소 이스터에그 발견!]\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n\n짜릿한 정전기 감전과 함께 100G, 100 EXP, 용기 포션, 특별 칭호 [${titleName}]을 획득했습니다!`);
+      alert(`⚡ [전기차 충전소 이스터에그 발견!]\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n\n짜릿한 정전기 감전과 함께 100G, 100 EXP, 용기 포션을 획득했습니다!`);
     }
   }
 
@@ -7484,6 +7466,13 @@ class MainApp {
   // 🏷️ PLAYER NAME & TITLE DISPLAY HELPER
   // =========================================================================
   updatePlayerNameDisplay() {
+    const removedEggTitles = ['🚌 숭실 축구부 버스 우수 승객', '🚌 숭실 통학버스 우수 승객', '⚡ 찌릿찌릿 썬더볼트'];
+    if (removedEggTitles.includes(this.playerData.equippedTitle)) {
+      this.playerData.equippedTitle = null;
+    }
+    if (Array.isArray(this.playerData.titles)) {
+      this.playerData.titles = this.playerData.titles.filter(t => !removedEggTitles.includes(t));
+    }
     const title = this.playerData.equippedTitle;
     const name = this.playerData.name || '학생';
     const fullDisplayName = title ? `[${title}] ${name}` : name;

@@ -65,7 +65,7 @@ class MockEngine {
           return { status: 'blocked_student', message: '교직원 전용 구역' };
         }
         this.triggerFadeWarp(() => {
-          this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 30 * 32);
+          this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장', 50 * 32, 30 * 32);
         });
         return { status: 'warped_teacher', room: this.player.room };
       }

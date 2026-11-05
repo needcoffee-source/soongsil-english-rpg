@@ -618,7 +618,7 @@ class GameEngine {
 
         // 0.3s fade warp to Gym Plaza
         this.triggerFadeWarp(() => {
-          this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장 광장', 50 * 32, 30 * 32);
+          this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장', 50 * 32, 30 * 32);
         });
         return;
       }
@@ -804,7 +804,7 @@ class GameEngine {
         this.player.y = 40 * 32;
       } else if (room === 'playground_gym') {
         this.player.room = 'playground_gym';
-        this.player.roomName = '🏛️ 숭실 체육관 & 주차장 광장';
+        this.player.roomName = '🏛️ 숭실 체육관 & 주차장';
         this.player.x = 50 * 32;
         this.player.y = 30 * 32;
       } else if (room === 'playground') {
@@ -983,10 +983,12 @@ class GameEngine {
             minDist = geDist;
           }
         }
-        // 3. School bus (이스터에그: 평상시 안내 프롬프트 숨김 처리)
+        // 3. School bus (이스터에그: 평상시 안내 프롬프트 숨김 처리 - 버스 외곽 거리 계산)
         if (gymData.schoolBus) {
-          const sbDist = Math.hypot(gymData.schoolBus.x * 32 - this.player.x, gymData.schoolBus.y * 32 - this.player.y);
-          if (sbDist < 70 && sbDist < minDist) {
+          const sbDx = Math.max(0, Math.abs(this.player.x - 53.3 * 32) - 1.3 * 32);
+          const sbDy = Math.max(0, Math.abs(this.player.y - 15.75 * 32) - 2.75 * 32);
+          const sbDist = Math.hypot(sbDx, sbDy);
+          if (sbDist < 48 && sbDist < minDist) {
             closest = {
               type: 'gym_school_bus',
               name: gymData.schoolBus.name,
@@ -996,10 +998,12 @@ class GameEngine {
             minDist = sbDist;
           }
         }
-        // 4. EV charger (이스터에그: 평상시 안내 프롬프트 숨김 처리)
+        // 4. EV charger (이스터에그: 평상시 안내 프롬프트 숨김 처리 - 충전 베이 6 외곽 거리 계산)
         if (gymData.evCharger) {
-          const evDist = Math.hypot(gymData.evCharger.x * 32 - this.player.x, gymData.evCharger.y * 32 - this.player.y);
-          if (evDist < 64 && evDist < minDist) {
+          const evDx = Math.max(0, Math.abs(this.player.x - 38.8 * 32) - 1.8 * 32);
+          const evDy = Math.max(0, Math.abs(this.player.y - 15.5 * 32) - 2.8 * 32);
+          const evDist = Math.hypot(evDx, evDy);
+          if (evDist < 48 && evDist < minDist) {
             closest = {
               type: 'gym_ev_charger',
               name: gymData.evCharger.name,
@@ -1523,11 +1527,17 @@ class GameEngine {
         if (gymData.gymEntrance && Math.hypot(gymData.gymEntrance.x * 32 - x, (gymData.gymEntrance.y + 1) * 32 - y) < 64) {
           return { type: 'gym_entrance', name: gymData.gymEntrance.name, prompt: gymData.gymEntrance.prompt };
         }
-        if (gymData.schoolBus && Math.hypot(gymData.schoolBus.x * 32 - x, gymData.schoolBus.y * 32 - y) < 64) {
-          return { type: 'gym_school_bus', name: gymData.schoolBus.name, prompt: '', hiddenPrompt: true };
+        if (gymData.schoolBus && Math.abs(x - 53.3 * 32) < 2.5 * 32 && Math.abs(y - 15.75 * 32) < 3.5 * 32) {
+          const distToPlayer = Math.hypot(this.player.x - 53.3 * 32, this.player.y - 15.75 * 32);
+          if (distToPlayer < 140) {
+            return { type: 'gym_school_bus', name: gymData.schoolBus.name, prompt: '', hiddenPrompt: true };
+          }
         }
-        if (gymData.evCharger && Math.hypot(gymData.evCharger.x * 32 - x, gymData.evCharger.y * 32 - y) < 56) {
-          return { type: 'gym_ev_charger', name: gymData.evCharger.name, prompt: '', hiddenPrompt: true };
+        if (gymData.evCharger && Math.abs(x - 38.8 * 32) < 2.5 * 32 && Math.abs(y - 15.5 * 32) < 3.5 * 32) {
+          const distToPlayer = Math.hypot(this.player.x - 38.8 * 32, this.player.y - 15.5 * 32);
+          if (distToPlayer < 140) {
+            return { type: 'gym_ev_charger', name: gymData.evCharger.name, prompt: '', hiddenPrompt: true };
+          }
         }
       }
     } else {
@@ -11886,29 +11896,29 @@ class GameEngine {
     ctx.fillRect(x + w / 2 - 9, y + 48, 18, 3);
     ctx.fillRect(x + w / 2 - 9, y + 56, 18, 3);
 
-    // Emergency Roof Hatch
+    // Emergency Roof Hatch (EXIT)
     ctx.fillStyle = '#dc2626';
-    ctx.fillRect(x + w / 2 - 10, y + 84, 20, 14);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '700 7px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('EXIT', x + w / 2, y + 94);
-
-    // Yellow Flashing Roof Beacon Lights
-    ctx.fillStyle = '#eab308';
     ctx.beginPath();
-    ctx.arc(x + 8, y + 6, 3, 0, Math.PI * 2);
-    ctx.arc(x + w - 8, y + 6, 3, 0, Math.PI * 2);
-    ctx.arc(x + 8, y + h - 8, 3, 0, Math.PI * 2);
-    ctx.arc(x + w - 8, y + h - 8, 3, 0, Math.PI * 2);
+    ctx.roundRect(x + w / 2 - 13, y + 78, 26, 17, 3);
     ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 8.5px "Pretendard", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('EXIT', x + w / 2, y + 90);
+
+    // Yellow Roof Beacon Lights (4 corners - separate paths to prevent diagonal polygon overlap)
+    ctx.fillStyle = '#eab308';
+    ctx.beginPath(); ctx.arc(x + 8, y + 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + w - 8, y + 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 8, y + h - 8, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + w - 8, y + h - 8, 3, 0, Math.PI * 2); ctx.fill();
 
     // Vertical Decal: "숭실 축구부 버스"
     ctx.save();
     ctx.fillStyle = '#1e3a8a';
     ctx.font = '900 9.5px "Pretendard", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('숭실 축구부 버스 ⚽', x + w / 2, y + 124);
+    ctx.fillText('숭실 축구부 버스 ⚽', x + w / 2, y + 122);
     ctx.restore();
 
     this.drawSharpLabel(x + w / 2, y - 10, '🚌 숭실 축구부 버스', {

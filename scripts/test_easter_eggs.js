@@ -63,9 +63,9 @@ if (!mainCode.includes("this.addGold(20)") || !mainCode.includes("this.addExp(20
 if (!mainCode.includes("this.addGold(50)") || !mainCode.includes("this.addExp(30)")) {
   throw new Error('Lost box gold/exp rewards (50G, 30 EXP) not found in main.js');
 }
-// School Bus: 50 Gold, 50 EXP, 2 Orange Potions, 1 Green Potion, special title
-if (!mainCode.includes("handleSchoolBusEasterEgg()") || !mainCode.includes("'🚌 숭실 축구부 버스 우수 승객'")) {
-  throw new Error('School bus Easter egg rewards not found in main.js');
+// School Bus: 50 Gold, 50 EXP, 2 Orange Potions, 1 Green Potion (NO TITLE REWARD)
+if (!mainCode.includes("handleSchoolBusEasterEgg()")) {
+  throw new Error('School bus Easter egg handler not found in main.js');
 }
 if (!gymSchoolBus.name.includes('축구부')) {
   throw new Error('School bus name does not include 축구부');
@@ -76,9 +76,15 @@ if (gymSchoolBus.prompt !== '') {
 if (gymEVCharger.prompt !== '') {
   throw new Error('EV charger prompt should be hidden (empty string)');
 }
-// EV Charger: 100 Gold, 100 EXP, 1 Courage Potion, special title
-if (!mainCode.includes("handleEVChargerEasterEgg()") || !mainCode.includes("'⚡ 찌릿찌릿 썬더볼트'")) {
-  throw new Error('EV charger Easter egg rewards not found in main.js');
+// EV Charger: 100 Gold, 100 EXP, 1 Courage Potion (NO TITLE REWARD)
+if (!mainCode.includes("handleEVChargerEasterEgg()")) {
+  throw new Error('EV charger Easter egg handler not found in main.js');
+}
+// Verify title rewards are strictly not granted in Easter egg handlers
+const busFn = mainCode.slice(mainCode.indexOf('handleSchoolBusEasterEgg()'), mainCode.indexOf('handleEVChargerEasterEgg()'));
+const evFn = mainCode.slice(mainCode.indexOf('handleEVChargerEasterEgg()'), mainCode.indexOf('hasItem('));
+if (busFn.includes('equipTitle') || evFn.includes('equipTitle')) {
+  throw new Error('Title rewards should be removed from Easter egg handlers');
 }
 
 console.log(' - Mirror reward logic: 20 Gold, 20 EXP verified.');
