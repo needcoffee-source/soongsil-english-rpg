@@ -839,12 +839,12 @@ const QUEST_DEFINITIONS = {
 
 게다가 자네가 3학년 영어를 배울 기본기가 튼튼한지도 한번 점검해보고 싶군.
 
-1학년 1반(1-1) 칠판에서 영어 퀴즈 2문제를 멋지게 맞히고, 6층 교무실 탕비실 안쪽 싱크대 근처에 떨어진 내 [Joshua의 단어 메모]를 찾아와 주겠나?
+1-1 교실 교탁에서 영어 퀴즈 2문제를 멋지게 맞히고, 6층 교무실 탕비실 안쪽 싱크대 근처에 떨어진 내 [Joshua의 단어 메모]를 찾아와 주겠나?
 
 성공하면 든든한 골드와 경험치, 그리고 순간이동 주문서를 보상으로 지급하겠네!`,
     inProgressStory: `어서 오게나! 아직 임무가 완료되지 않았더군!
 
-1학년 1반(1-1) 교실 칠판에서 영어 퀴즈 2문제를 풀고, 6층 교무실 탕비실 안쪽 구석에 떨어진 내 단어 메모를 찾아와 주게나!`,
+1-1 교실 교탁에서 영어 퀴즈 2문제를 풀고, 6층 교무실 탕비실 안쪽 구석에 떨어진 내 단어 메모를 찾아와 주게나!`,
     completeStory: `Oh, brilliant! Wonderful work! 👏
 
 자네 덕분에 3학년 영어 단어장 메모를 무사히 되찾았고, 1학년 1반 영어 퀴즈도 멋지게 통과했더군!
@@ -856,7 +856,7 @@ const QUEST_DEFINITIONS = {
     objectives: [
       {
         id: 'quiz',
-        text: '1학년 1반(1-1) 칠판에서 영어 퀴즈 2회 정답 맞히기',
+        text: '1-1 교실 교탁 영어 퀴즈 2회 정답',
         targetCount: 2,
         getCount: (quest) => (quest ? (quest.quizCount || 0) : 0)
       },
@@ -8847,7 +8847,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📘 [진로상담실 책상에 놓인 진로 적성 검사 안내서]\n\n"교무실 24번 좌석에 앉아 계신 진로 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n\n먼저 6층 교무실 24번 좌석의 귐즨숑 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      const msg = '📘 [진로상담실 책상에 놓인 진로 적성 검사 안내서]\n\n"귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n\n먼저 귐즨숑 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
       if (window.RPGDialog) {
         window.RPGDialog.show('📘 진로 적성 검사 안내서', msg, '📘');
       } else {
@@ -8969,7 +8969,12 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_yosunyu_info'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('💾 [소회의실 대형 테이블에 놓인 고속 알고리즘 USB]\n\n"교무실 18번 좌석에 앉아 계신 정보 요션유 선생님의 파이썬 코딩 강의 자료가 담긴 USB 같습니다.\n\n먼저 6층 교무실 18번 좌석의 요션유 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      const msg = '💾 [소회의실 대형 테이블에 놓인 고속 알고리즘 USB]\n\n"요션유 선생님의 파이썬 코딩 강의 자료가 담긴 USB 같습니다.\n\n먼저 요션유 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('💾 알고리즘 USB', msg, '💾');
+      } else {
+        alert(msg);
+      }
       return;
     }
 
@@ -9229,7 +9234,7 @@ class MainApp {
     }
 
     if (questId === 'quest_joshua_intro') {
-      this.showToast('📜 [Joshua 선생님의 특별 지령] 수락 완료! 1-1 교실(영어 퀴즈 2회)과 6층 탕비실(단어 메모)을 조사하세요.', 'success');
+      this.showToast('📜 [Joshua 선생님의 특별 지령] 수락 완료! 1-1 교실 교탁(영어 퀴즈 2회)과 6층 탕비실(단어 메모)을 조사하세요.', 'success');
     } else if (questId === 'quest_okchohan_social') {
       this.showToast('📜 [옥촣한 선생님의 사회 과제] 수락 완료! 1-3 컴퓨터실(산성비 1,000점)과 교무실 인쇄실(사회 교재)을 확인하세요.', 'success');
     } else if (questId === 'quest_kimmijin_art') {
@@ -9293,7 +9298,12 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_okchohan_social'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('📘 [바닥에 놓인 사회 탐구 교재]\n\n"교무실 10번 좌석에 앉아 계신 사회 옥촣한 선생님의 사회 탐구 교재 같습니다.\n\n먼저 교무실 10번 좌석의 옥촣한 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      const msg = '📘 [바닥에 놓인 사회 탐구 교재]\n\n"옥촣한 선생님의 사회 탐구 교재 같습니다.\n\n먼저 옥촣한 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('📘 사회 탐구 교재', msg, '📘');
+      } else {
+        alert(msg);
+      }
       return;
     }
 
@@ -9330,7 +9340,12 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kimmijin_art'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('🎨 [운동장 스탠드 파란색 벤치에 놓인 풍경화 스케치북]\n\n"교무실 15번 좌석에 앉아 계신 미술 김진믜 선생님의 풍경화 스케치북 같습니다.\n\n먼저 6층 교무실 15번 좌석의 김진믜 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      const msg = '🎨 [운동장 스탠드 파란색 벤치에 놓인 풍경화 스케치북]\n\n"김진믜 선생님의 풍경화 스케치북 같습니다.\n\n먼저 김진믜 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🎨 풍경화 스케치북', msg, '🎨');
+      } else {
+        alert(msg);
+      }
       return;
     }
 
@@ -9368,7 +9383,12 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_joshua_intro'];
     if (!quest || quest.status !== 'in_progress') {
-      alert('📝 [바닥에 떨어진 영단어 메모]\n\n"교무실 3번 좌석에 앉아 계신 3학년 영어 Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n\n먼저 교무실 3번 좌석의 Joshua 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"');
+      const msg = '📝 [바닥에 떨어진 영단어 메모]\n\n"Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n\n먼저 Joshua 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('📝 영단어 메모', msg, '📝');
+      } else {
+        alert(msg);
+      }
       return;
     }
 
@@ -9576,7 +9596,7 @@ class MainApp {
         hintEl.style.borderColor = 'rgba(34, 197, 94, 0.4)';
         hintEl.style.color = '#bbf7d0';
       } else {
-        hintEl.innerHTML = `💡 1학년 1반(1-1) 칠판과 6층 탕비실 안쪽을 조사하세요.`;
+        hintEl.innerHTML = `💡 1-1 교실 교탁과 6층 탕비실 안쪽을 조사하세요.`;
         hintEl.style.background = 'rgba(245, 158, 11, 0.12)';
         hintEl.style.borderColor = 'rgba(245, 158, 11, 0.25)';
         hintEl.style.color = '#fbbf24';
