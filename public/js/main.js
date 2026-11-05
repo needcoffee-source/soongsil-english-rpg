@@ -8847,7 +8847,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📘 [진로상담실 책상에 놓인 진로 적성 검사 안내서]\n\n"귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n\n먼저 귐즨숑 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      const msg = '📘 [진로상담실 책상에 놓인 진로 적성 검사 안내서]\n\n"귐즨숑 선생님의 진로 적성 검사 안내서 같습니다."';
       if (window.RPGDialog) {
         window.RPGDialog.show('📘 진로 적성 검사 안내서', msg, '📘');
       } else {
@@ -8969,7 +8969,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_yosunyu_info'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '💾 [소회의실 대형 테이블에 놓인 고속 알고리즘 USB]\n\n"요션유 선생님의 파이썬 코딩 강의 자료가 담긴 USB 같습니다.\n\n먼저 요션유 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      const msg = '💾 [소회의실 대형 테이블에 놓인 고속 알고리즘 USB]\n\n"요션유 선생님의 파이썬 코딩 강의 자료가 담긴 USB 같습니다."';
       if (window.RPGDialog) {
         window.RPGDialog.show('💾 알고리즘 USB', msg, '💾');
       } else {
@@ -9298,7 +9298,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_okchohan_social'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📘 [바닥에 놓인 사회 탐구 교재]\n\n"옥촣한 선생님의 사회 탐구 교재 같습니다.\n\n먼저 옥촣한 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      const msg = '📘 [바닥에 놓인 사회 탐구 교재]\n\n"옥촣한 선생님의 사회 탐구 교재 같습니다."';
       if (window.RPGDialog) {
         window.RPGDialog.show('📘 사회 탐구 교재', msg, '📘');
       } else {
@@ -9340,7 +9340,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kimmijin_art'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '🎨 [운동장 스탠드 파란색 벤치에 놓인 풍경화 스케치북]\n\n"김진믜 선생님의 풍경화 스케치북 같습니다.\n\n먼저 김진믜 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      const msg = '🎨 [운동장 스탠드 파란색 벤치에 놓인 풍경화 스케치북]\n\n"김진믜 선생님의 풍경화 스케치북 같습니다."';
       if (window.RPGDialog) {
         window.RPGDialog.show('🎨 풍경화 스케치북', msg, '🎨');
       } else {
@@ -9383,7 +9383,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_joshua_intro'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📝 [바닥에 떨어진 영단어 메모]\n\n"Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n\n먼저 Joshua 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      const msg = '📝 [바닥에 떨어진 영단어 메모]\n\n"Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다."';
       if (window.RPGDialog) {
         window.RPGDialog.show('📝 영단어 메모', msg, '📝');
       } else {
