@@ -1044,12 +1044,12 @@ const QUEST_DEFINITIONS = {
     cleanupItem: 'item_career_guidebook',
     story: `안녕! 숭실의 미래를 밝혀줄 친구구나. 여기까지 찾아와 주어 고맙단다.
 
-최근 7층 복도 창가에서 한 학생이 자신이 무엇을 잘하는지 몰라 깊은 한숨을 쉬며 낙담해 있더구나.
+최근 6층 복도 창가에서 한 학생이 자신이 무엇을 잘하는지 몰라 깊은 한숨을 쉬며 낙담해 있더구나.
 
 모든 사람은 저마다 빛나는 재능의 씨앗을 품고 있는데 스스로를 믿지 못하는 모습이 참 안타까웠어.
 
 내가 정성껏 쓴 [귐즨숑의 진로 격려 편지]와 함께, 5층 진로상담실 책상에 놓인 [진로 적성 검사 안내서]를 챙겨서 전해주겠니?`,
-    inProgressStory: `어서 오렴! 5층 진로상담실 책상 위의 [진로 적성 검사 안내서]를 챙겨서 7층 복도 동쪽 창가의 [진로를 고민하는 학생]에게 나의 격려 편지와 함께 전해주렴! 🌟`,
+    inProgressStory: `어서 오렴! 5층 진로상담실 책상 위의 [진로 적성 검사 안내서]를 챙겨서 6층 복도 동쪽 창가의 [진로를 고민하는 학생]에게 나의 격려 편지와 함께 전해주렴! 🌟`,
     completeStory: `친구의 표정이 한결 밝아졌다고 하니 정말 다행이구나. 타인의 꿈을 응원해주는 너의 따뜻한 마음씨야말로 가장 훌륭한 재능이란다!
 
 약속했던 경험치와 앞으로의 여정에 큰 힘이 되어줄 용기 포션을 선물로 줄게! 너의 빛나는 앞날을 언제나 축복한단다!`,
@@ -1066,7 +1066,7 @@ const QUEST_DEFINITIONS = {
       },
       {
         id: 'deliver',
-        text: '7층 복도 동쪽 창가에 서 있는 [진로를 고민하는 학생]에게 편지와 안내서 전달',
+        text: '6층 복도 동쪽 창가에 서 있는 [진로를 고민하는 학생]에게 편지와 안내서 전달',
         targetCount: 1,
         unit: '명',
         getCount: (quest) => (quest && quest.studentComforted ? 1 : 0)
@@ -1471,7 +1471,7 @@ class MainApp {
       const npc = target.data;
       if (!npc) return;
 
-      // 7층 복도 동쪽 창가: 진로를 고민하는 학생 (귐즨숑 선생님 연계 NPC)
+      // 6층 복도 동쪽 창가: 진로를 고민하는 학생 (귐즨숑 선생님 연계 NPC)
       if (npc.id === 'npc_student_worried' || (npc.name && npc.name.includes('진로를 고민하는 학생'))) {
         this.handleWorriedStudentInteraction(npc);
         return;

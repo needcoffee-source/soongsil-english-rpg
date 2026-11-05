@@ -101,14 +101,14 @@ assert.strictEqual(guidebook.x, 45, 'Guidebook must be at mentoring desk x=45');
 assert.strictEqual(guidebook.y, 8, 'Guidebook must be at mentoring desk y=8');
 console.log('✔ 9. Career guidebook on mentoring desk in 5F career room (x: 45, y: 8) verified');
 
-// Test Worried Student on 7th floor hallway east window
-const f7 = w.floors[7];
-assert(f7, 'floor 7 must exist');
-const worriedStudent = f7.npcs && f7.npcs.find(n => n.id === 'npc_student_worried');
-assert(worriedStudent, 'Worried student NPC must exist on floor 7');
+// Test Worried Student on 6th floor hallway east window
+const f6 = w.floors[6];
+assert(f6, 'floor 6 must exist');
+const worriedStudent = f6.npcs && f6.npcs.find(n => n.id === 'npc_student_worried');
+assert(worriedStudent, 'Worried student NPC must exist on floor 6');
 assert.strictEqual(worriedStudent.x, 58, 'Worried student must be at east window x=58');
 assert.strictEqual(worriedStudent.y, 10, 'Worried student must be at east window y=10');
-console.log('✔ 10. Worried student on 7F hallway east window (x: 58, y: 10) verified');
+console.log('✔ 10. Worried student on 6F hallway east window (x: 58, y: 10) verified');
 
 // 2. Check main.js and server.js item catalog sync
 const mainCode = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');

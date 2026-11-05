@@ -61,7 +61,16 @@ const WORLD_DATA = {
         { id: "mirror_hallway_6", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
         { id: "water_purifier_hallway_6", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
-      npcs: []
+      npcs: [
+        {
+          id: "npc_student_worried",
+          name: "진로를 고민하는 학생",
+          x: 58,
+          y: 10,
+          avatar: "student_m1",
+          dialogue: "하아... 다들 자기가 하고 싶은 게 뚜렷한 것 같은데... 난 내가 뭘 잘하는지, 앞으로 뭐가 되고 싶은지 정말 모르겠어... 😔"
+        }
+      ]
     },
 
     7: {
@@ -88,14 +97,6 @@ const WORLD_DATA = {
         { id: "note_developer_hallway", type: "dev_note", x: 50, y: 17, name: "📜 떨어진 개발자노트 (제1편)", prompt: "개발자노트 읽기 (SPACE)" }
       ],
       npcs: [
-        {
-          id: "npc_student_worried",
-          name: "진로를 고민하는 학생",
-          x: 58,
-          y: 10,
-          avatar: "student_m1",
-          dialogue: "하아... 다들 자기가 하고 싶은 게 뚜렷한 것 같은데... 난 내가 뭘 잘하는지, 앞으로 뭐가 되고 싶은지 정말 모르겠어... 😔"
-        },
         {
           id: "npc_g1_helper",
           name: "졸업생",
