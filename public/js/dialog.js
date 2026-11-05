@@ -171,6 +171,13 @@ class RPGDialogManager {
     if (this.hintEl) this.hintEl.innerText = '스페이스바 / Enter: 넘기기 ｜ ESC: 닫기';
 
     if (this.overlay) {
+      // 🌟 Check if any modal is currently visible (Login, Inventory, Teacher Admin, etc.)
+      const isModalActive = !!document.querySelector('.modal-overlay:not(.hidden)');
+      if (isModalActive) {
+        this.overlay.classList.add('modal-active-centered');
+      } else {
+        this.overlay.classList.remove('modal-active-centered');
+      }
       this.overlay.classList.remove('hidden');
     }
 
@@ -237,6 +244,13 @@ class RPGDialogManager {
     if (this.hintEl) this.hintEl.innerText = '스페이스바 / Enter: 확인 ｜ ESC: 취소';
 
     if (this.overlay) {
+      // 🌟 Check if any modal is currently visible (Login, Inventory, Teacher Admin, etc.)
+      const isModalActive = !!document.querySelector('.modal-overlay:not(.hidden)');
+      if (isModalActive) {
+        this.overlay.classList.add('modal-active-centered');
+      } else {
+        this.overlay.classList.remove('modal-active-centered');
+      }
       this.overlay.classList.remove('hidden');
     }
 
@@ -326,6 +340,7 @@ class RPGDialogManager {
 
     if (this.overlay) {
       this.overlay.classList.add('hidden');
+      this.overlay.classList.remove('modal-active-centered');
     }
 
     if (window.AudioManager) {
