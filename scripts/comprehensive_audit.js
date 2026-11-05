@@ -176,9 +176,9 @@ check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', 
 console.log('\n--- 5. CACHE BUSTER CONSISTENCY AUDIT ---');
 const indexHtml = fs.readFileSync('public/index.html', 'utf8');
 const vOldMatches = (indexHtml.match(/v=171/g) || []).length;
-const vCurMatches = (indexHtml.match(/v=181/g) || []).length;
+const vCurMatches = (indexHtml.match(/v=182/g) || []).length;
 check('No stale v=171 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
-check('All assets use v=181 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=181 tags`);
+check('All assets use v=182 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=182 tags`);
 
 // 6. DOM Element ID Integrity Audit
 console.log('\n--- 6. DOM ELEMENT ID INTEGRITY AUDIT ---');
@@ -262,7 +262,7 @@ const brawlCode = fs.readFileSync('public/js/brawl_ball.js', 'utf8');
 const networkCode = fs.readFileSync('public/js/network.js', 'utf8');
 check('network.sendMove supports object & positional args safely', networkCode.includes('sendMove(dataOrX, y, direction)'));
 check('server.js normalizes singleton room floors (playground -> 1)', serverCode.includes('function normalizeSingletonRoomFloor'));
-check('engine.update does not early-return before BrawlBall.update when stunned', engineCode.includes('const isMovementLocked = !!(this.player.isFallen || isBrawlStunned || isBrawlKickoffWait);'));
+check('engine.update does not early-return before BrawlBall.update when stunned', engineCode.includes('const isMovementLocked =') && !engineCode.includes('if (isBrawlStunned) return;'));
 check('brawl_ball.js defines getEntityVisualPos and getPlayerTeam', brawlCode.includes('getEntityVisualPos(entity)') && brawlCode.includes('getPlayerTeam(p, isLocal'));
 check('brawl_ball.js defines isMatchHost() to prevent duplicate goal/bot packets', brawlCode.includes('isMatchHost()'));
 

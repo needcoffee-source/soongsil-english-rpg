@@ -1558,6 +1558,8 @@ class MainApp {
       });
     } else if (target.type === 'gym_entrance') {
       alert('🏛️ [숭실 종합 체육관]\n\n"(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');
+    } else if (target.type === 'gym_pe_teacher') {
+      this.handlePETeacherInteraction();
     } else if (target.type === 'gym_teacher_car') {
       this.handleTeacherCarEasterEgg();
     } else if (target.type === 'gym_school_bus') {
@@ -2428,6 +2430,262 @@ class MainApp {
   }
 
   // 🚗 교직원 럭셔리 세단 이스터에그 (감히 선생님 차에 손을 대다니! 1초 마비 + HP -20)
+  // ========================================================
+  // 🏃 숭실고 체육선생님 "주차장 1분 체력장" (제자리 점프 5회)
+  // ========================================================
+  handlePETeacherInteraction() {
+    const dialogText = `"어이 학생! 실내 코트가 수리 중이라고 기초 체력 단련을 쉴 순 없지! 나와 함께 제자리 점프 5회 도전해볼 텐가?"\n\n[🎁 완주 보상: 🧪 빨간회복물약 10개]`;
+
+    if (window.RPGDialog && typeof window.RPGDialog.showConfirm === 'function') {
+      window.RPGDialog.showConfirm(
+        '🏃 숭실고 체육선생님',
+        dialogText,
+        () => {
+          this.openPEJumpMiniGameModal();
+        },
+        () => {},
+        '🏃',
+        '도전하기! (SPACE)',
+        '다음에 하기 (ESC)'
+      );
+    } else {
+      if (confirm(`🏃 [숭실고 체육선생님]\n\n${dialogText}\n\n도전하시겠습니까?`)) {
+        this.openPEJumpMiniGameModal();
+      }
+    }
+  }
+
+  openPEJumpMiniGameModal() {
+    const modal = document.getElementById('modal-pe-jump-challenge');
+    if (!modal) return;
+
+    const btnCloseX = document.getElementById('btn-close-pe-jump-x');
+    const btnTrigger = document.getElementById('btn-pe-jump-trigger');
+    const btnComplete = document.getElementById('btn-pe-jump-complete');
+    const victoryOverlay = document.getElementById('pe-jump-victory-overlay');
+    const dotsContainer = document.getElementById('pe-jump-dots');
+    const speechEl = document.getElementById('pe-teacher-speech');
+    const judgmentEl = document.getElementById('pe-jump-judgment');
+    const stageTeacher = document.getElementById('pe-stage-teacher');
+    const stagePlayer = document.getElementById('pe-stage-player');
+    const trackEl = document.getElementById('pe-rhythm-track');
+    const indicatorEl = document.getElementById('pe-rhythm-indicator');
+
+    // Reset overlay
+    if (victoryOverlay) victoryOverlay.classList.add('hidden');
+
+    let jumpCount = 0;
+    const maxJumps = 5;
+    let animFrameId = null;
+    let isJumpingCooldown = false;
+    let isGameOver = false;
+
+    // Speeds for 5 rounds (gets slightly faster and more exciting each round!)
+    const roundSpeeds = [1900, 1650, 1450, 1250, 1050];
+    const roundSpeeches = [
+      "어이 학생! 호흡 가다듬고... 하나, 둘, 점프!!",
+      "좋아! 첫 번째 점프 완벽해! 다음 점프 준비!",
+      "헛둘! 무릎을 부드럽게 굽히고 리듬을 타라!",
+      "오호라! 체력이 제법인데? 4번째 점프 간다!",
+      "마지막 파이널 점프!! 온 힘을 다해 높게 뛰어올라라!!"
+    ];
+
+    const updateDots = () => {
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < maxJumps; i++) {
+        const dot = document.createElement('span');
+        dot.style.display = 'inline-flex';
+        dot.style.alignItems = 'center';
+        dot.style.justifyContent = 'center';
+        dot.style.width = '24px';
+        dot.style.height = '24px';
+        dot.style.borderRadius = '50%';
+        dot.style.fontSize = '12px';
+        dot.style.fontWeight = '900';
+        if (i < jumpCount) {
+          dot.style.background = '#22c55e';
+          dot.style.color = '#ffffff';
+          dot.style.border = '1.5px solid #86efac';
+          dot.innerText = '✓';
+        } else if (i === jumpCount) {
+          dot.style.background = '#ef4444';
+          dot.style.color = '#ffffff';
+          dot.style.border = '2px solid #fca5a5';
+          dot.style.boxShadow = '0 0 8px #ef4444';
+          dot.innerText = (i + 1);
+        } else {
+          dot.style.background = '#334155';
+          dot.style.color = '#94a3b8';
+          dot.style.border = '1px solid #475569';
+          dot.innerText = (i + 1);
+        }
+        dotsContainer.appendChild(dot);
+      }
+    };
+
+    updateDots();
+    if (speechEl) speechEl.innerText = roundSpeeches[0];
+
+    // Rhythm animation loop
+    let startTime = performance.now();
+    let currentLeftPercent = 0; // 0 to 100
+
+    const renderLoop = (now) => {
+      if (isGameOver) return;
+      const speed = roundSpeeds[Math.min(jumpCount, roundSpeeds.length - 1)];
+      const elapsed = now - startTime;
+      const cycle = (elapsed % speed) / speed;
+      // Ping-pong between 0 and 1
+      const t = Math.abs((cycle * 2) - 1);
+      currentLeftPercent = t * 100;
+
+      if (trackEl && indicatorEl) {
+        const trackW = trackEl.clientWidth || 400;
+        const indW = 28;
+        const maxPx = Math.max(0, trackW - indW);
+        const px = (t * maxPx);
+        indicatorEl.style.transform = `translateX(${px}px)`;
+      }
+
+      animFrameId = requestAnimationFrame(renderLoop);
+    };
+
+    animFrameId = requestAnimationFrame(renderLoop);
+
+    // Jump trigger handler
+    const doJump = () => {
+      if (isJumpingCooldown || isGameOver) return;
+      isJumpingCooldown = true;
+      setTimeout(() => { isJumpingCooldown = false; }, 260);
+
+      // Perfect zone is centered between 32% and 68%
+      const isHit = (currentLeftPercent >= 32 && currentLeftPercent <= 68);
+
+      if (isHit) {
+        if (window.AudioManager && typeof window.AudioManager.playWhistle === 'function') {
+          window.AudioManager.playWhistle();
+        }
+
+        // Animate Jump on sprites
+        if (stageTeacher) stageTeacher.style.transform = 'translateY(-26px) scale(1.1)';
+        if (stagePlayer) stagePlayer.style.transform = 'translateY(-26px) scale(1.1)';
+        setTimeout(() => {
+          if (stageTeacher) stageTeacher.style.transform = 'translateY(0) scale(1)';
+          if (stagePlayer) stagePlayer.style.transform = 'translateY(0) scale(1)';
+        }, 220);
+
+        // Flash judgment
+        if (judgmentEl) {
+          judgmentEl.innerText = `✨ PERFECT JUMP! (${jumpCount + 1}/${maxJumps})`;
+          judgmentEl.style.color = '#fef08a';
+          judgmentEl.style.opacity = '1';
+          judgmentEl.style.transform = 'scale(1.15)';
+          setTimeout(() => {
+            judgmentEl.style.opacity = '0';
+            judgmentEl.style.transform = 'scale(0.7)';
+          }, 320);
+        }
+
+        jumpCount++;
+        updateDots();
+
+        if (jumpCount >= maxJumps) {
+          // Victory!
+          isGameOver = true;
+          cancelAnimationFrame(animFrameId);
+          if (speechEl) speechEl.innerText = "와하하! 5회 완주 대성공이다! 훌륭하군!";
+
+          if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+            window.AudioManager.playFanfare();
+          }
+
+          setTimeout(() => {
+            if (victoryOverlay) victoryOverlay.classList.remove('hidden');
+          }, 350);
+        } else {
+          if (speechEl) speechEl.innerText = roundSpeeches[jumpCount];
+        }
+      } else {
+        // Missed timing
+        if (window.AudioManager && typeof window.AudioManager.playTextBlip === 'function') {
+          window.AudioManager.playTextBlip();
+        }
+
+        if (judgmentEl) {
+          judgmentEl.innerText = '💦 타이밍을 놓쳤다! 다시!';
+          judgmentEl.style.color = '#f87171';
+          judgmentEl.style.opacity = '1';
+          judgmentEl.style.transform = 'scale(0.9)';
+          setTimeout(() => {
+            judgmentEl.style.opacity = '0';
+            judgmentEl.style.transform = 'scale(0.7)';
+          }, 320);
+        }
+
+        if (speechEl) {
+          speechEl.innerText = "아깝다! 호흡 가다듬고 타이밍에 맞춰 다시 뛰어보자!";
+        }
+      }
+    };
+
+    // Button click
+    btnTrigger.onclick = (e) => {
+      e.preventDefault();
+      doJump();
+    };
+
+    // Keyboard listener for Space/Enter and ESC
+    const keyHandler = (e) => {
+      if (modal.classList.contains('hidden')) return;
+      if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isGameOver) {
+          if (btnComplete) btnComplete.click();
+        } else {
+          doJump();
+        }
+      } else if (e.code === 'Escape' || e.key === 'Escape') {
+        closeModal();
+      }
+    };
+
+    window.addEventListener('keydown', keyHandler);
+
+    const closeModal = () => {
+      isGameOver = true;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      window.removeEventListener('keydown', keyHandler);
+      modal.classList.add('hidden');
+    };
+
+    if (btnCloseX) {
+      btnCloseX.onclick = closeModal;
+    }
+
+    if (btnComplete) {
+      btnComplete.onclick = () => {
+        closeModal();
+
+        // Award 빨간회복물약 10개
+        this.addItem('item_red_potion', '빨간 물약', 10, '🧪', {
+          type: 'consumable',
+          slot: 'consumable',
+          heal: 10,
+          effect: '체력 +10 회복'
+        });
+
+        this.playerData.hasClearedPEJump = true;
+        this.saveProgress(true);
+
+        this.showToast('🧪 숭실고 체육선생님께 빨간회복물약 10개를 받았습니다!', 'success');
+      };
+    }
+
+    modal.classList.remove('hidden');
+  }
+
   handleTeacherCarEasterEgg() {
     if (this.playerData.isTeacher) {
       if (window.RPGDialog) {

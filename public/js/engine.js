@@ -1033,6 +1033,18 @@ class GameEngine {
             minDist = closestCarDist;
           }
         }
+        // 6. 숭실고 체육선생님 (주차장 1분 체력장)
+        if (gymData.peTeacher) {
+          const peDist = Math.hypot(gymData.peTeacher.x * 32 - this.player.x, (gymData.peTeacher.y + 0.5) * 32 - this.player.y);
+          if (peDist < 56 && peDist < minDist) {
+            closest = {
+              type: 'gym_pe_teacher',
+              name: gymData.peTeacher.name || '🏃 숭실고 체육선생님',
+              prompt: gymData.peTeacher.prompt || '체력 단련 도전하기 (SPACE)'
+            };
+            minDist = peDist;
+          }
+        }
       }
     } else if (this.player.room === 'playground') {
       const pg = WORLD_DATA.playground;
@@ -1563,6 +1575,9 @@ class GameEngine {
           if (distToPlayer < 140) {
             return { type: 'gym_ev_charger', name: gymData.evCharger.name, prompt: '', hiddenPrompt: true };
           }
+        }
+        if (gymData.peTeacher && Math.hypot(gymData.peTeacher.x * 32 - x, (gymData.peTeacher.y + 0.5) * 32 - y) < 56) {
+          return { type: 'gym_pe_teacher', name: gymData.peTeacher.name, prompt: gymData.peTeacher.prompt };
         }
       }
     } else {
@@ -7913,6 +7928,107 @@ class GameEngine {
   }
 
   // High-Res School Canteen (매점 - 학생급식실 앞)
+  // ========================================================
+  // 🏃 숭실고 체육선생님 (주차장 1분 체력장 NPC: tx 44, ty 15)
+  // ========================================================
+  drawHighResPETeacher(cx, cy) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const charX = cx + 16;
+    const charY = cy + 18;
+
+    // 1. Soft Dynamic Ground Shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(charX, cy + 28, 14, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Subtle warm-up breathing/bob animation
+    const bob = Math.sin(Date.now() / 220) * 1.8;
+    const by = charY + bob;
+
+    // 2. Athletic Sneakers (빨강 & 흰색 포인트 러닝화)
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(charX - 9, cy + 24, 7, 5);
+    ctx.fillRect(charX + 2, cy + 24, 7, 5);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(charX - 9, cy + 27, 7, 2);
+    ctx.fillRect(charX + 2, cy + 27, 7, 2);
+
+    // 3. Sporty Tracksuit Pants (딥 네이비 트레이닝 바지 & 흰색 사이드 라인)
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(charX - 8, by + 4, 6, 12);
+    ctx.fillRect(charX + 2, by + 4, 6, 12);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(charX - 8, by + 4, 1.5, 12);
+    ctx.fillRect(charX + 6.5, by + 4, 1.5, 12);
+
+    // 4. Athletic Zip-up Jacket (레드 & 로열블루 배색 집업)
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.roundRect(charX - 10, by - 8, 20, 13, 3);
+    ctx.fill();
+
+    // Blue accent panels & zipper
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(charX - 10, by - 6, 3, 11);
+    ctx.fillRect(charX + 7, by - 6, 3, 11);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(charX - 1, by - 8, 2, 13); // white zipper
+
+    // 5. Golden Whistle & Lanyard hanging on chest (체육선생님의 황금 호루라기)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(charX - 3, by - 7);
+    ctx.lineTo(charX, by - 1);
+    ctx.lineTo(charX + 3, by - 7);
+    ctx.stroke();
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(charX, by, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(charX, by - 1.5, 3.5, 2.5); // whistle spout
+
+    // 6. Face & Head (활기찬 체육선생님 얼굴과 스포츠 헤어)
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath();
+    ctx.arc(charX, by - 14, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(charX - 4, by - 15, 2, 2.5);
+    ctx.fillRect(charX + 2, by - 15, 2, 2.5);
+
+    // Dynamic sporty hair & Red athletic headband
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(charX, by - 17, 8.5, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(charX - 8.5, by - 18, 17, 4);
+
+    // Red headband
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(charX - 8, by - 16, 16, 3);
+
+    // 7. Overhead Nameplate Label
+    this.drawSharpLabel(charX, cy - 14, '🏃 숭실고 체육선생님', {
+      bgColor: 'rgba(220, 38, 38, 0.95)',
+      borderColor: '#f87171',
+      borderWidth: 2,
+      textColor: '#ffffff',
+      fontSize: 12,
+      paddingX: 10,
+      height: 22
+    });
+
+    ctx.restore();
+  }
+
   drawHighResStoreNPC(cx, cy) {
     this.ctx.save();
     const w = 72;
@@ -11379,6 +11495,9 @@ class GameEngine {
 
     // 5. Far Right (tx: 52..54.6, ty: 13..19): 🚌 숭실 25인승 노란색 스쿨버스 |(오른쪽 벽에 바짝 붙임)
     this.drawVerticalSchoolBus(52 * 32, 13 * 32);
+
+    // 5-B. 🏃 숭실고 체육선생님 (주차장 1분 체력장: tx: 44, ty: 15)
+    this.drawHighResPETeacher(44 * 32, 15 * 32);
 
     // 6. Middle Promenade (ty: 20..25): 보도블록 보행로 (보라색 화단, 황동 가로등, 볼라드 & 소나무 가로수 🌲)
     this.drawPromenadeAndLandscaping(mapW);

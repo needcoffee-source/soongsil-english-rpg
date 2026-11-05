@@ -33,6 +33,10 @@ const gymTeacherCar = WORLD_DATA.playground_gym && WORLD_DATA.playground_gym.tea
 if (!gymTeacherCar) throw new Error('Gym teacher car not found in playground_gym.teacherCar');
 console.log(' - Gym teacher car:', gymTeacherCar);
 
+const gymPETeacher = WORLD_DATA.playground_gym && WORLD_DATA.playground_gym.peTeacher;
+if (!gymPETeacher) throw new Error('Gym PE teacher not found in playground_gym.peTeacher');
+console.log(' - Gym PE teacher:', gymPETeacher);
+
 // Verify audio.js and engine.js Easter egg triggers
 const audioCode = fs.readFileSync('public/js/audio.js', 'utf8');
 const engineCode = fs.readFileSync('public/js/engine.js', 'utf8');
@@ -59,6 +63,12 @@ if (!mainCode.includes("handleEVChargerEasterEgg()")) {
 }
 if (!mainCode.includes("handleTeacherCarEasterEgg()")) {
   throw new Error('handleTeacherCarEasterEgg() missing in main.js');
+}
+if (!mainCode.includes("handlePETeacherInteraction()")) {
+  throw new Error('handlePETeacherInteraction() missing in main.js');
+}
+if (!mainCode.includes("openPEJumpMiniGameModal()")) {
+  throw new Error('openPEJumpMiniGameModal() missing in main.js');
 }
 
 // Check rewards

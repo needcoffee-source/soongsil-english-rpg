@@ -698,6 +698,14 @@ const WORLD_DATA = {
       y: 16,
       name: "⚡ 전기차 급속 충전소",
       prompt: ""
+    },
+    peTeacher: {
+      id: "gym_pe_teacher",
+      type: "gym_pe_teacher",
+      x: 44,
+      y: 15,
+      name: "🏃 숭실고 체육선생님",
+      prompt: "체력 단련 도전하기 (SPACE)"
     }
   },
   playground: {
