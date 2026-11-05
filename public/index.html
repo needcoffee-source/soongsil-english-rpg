@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=177">
+  <link rel="manifest" href="/manifest.json?v=179">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=177">
+  <link rel="stylesheet" href="css/style.css?v=179">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -255,7 +255,8 @@
               <option value="0_room_secret_history">🗝️ 역사관 비밀의 방 (이스터에그)</option>
             </optgroup>
           </select>
-          <button class="gm-btn teacher-admin-btn" id="btn-teacher">👩‍🏫 교사 실시간 관제탑</button>
+          <button class="gm-btn teacher-admin-btn" id="btn-teacher">👩‍🏫 관제탑</button>
+          <button class="gm-btn" id="btn-teacher-hud-server-toggle" style="background:#15803d; border-color:#4ade80; color:#fff;" title="서버 개방/차단 원클릭 스위치">🟢 서버 열림</button>
           <a href="/api/admin/download-item-drops-excel" download="숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx" class="gm-btn gm-excel-btn" id="btn-download-excel" title="전체 아이템 획득경로 및 드랍테이블 엑셀 다운로드">📥 드랍테이블</a>
         </div>
       </section>
@@ -320,6 +321,9 @@
                 <span id="login-server-badge" style="font-size:11px; font-weight:700; color:#22c55e; background:rgba(34, 197, 94, 0.2); padding:2px 8px; border-radius:10px; border:1px solid #22c55e;">접속 가능</span>
               </div>
             </label>
+            <div id="login-server-closed-alert" class="hidden" style="margin-top:6px; padding:8px 12px; background:rgba(239, 68, 68, 0.15); border:1.5px solid #ef4444; border-radius:8px; font-size:11.5px; color:#fca5a5; line-height:1.4;">
+              ⚠️ <strong>서버 닫힘 (수업 대기 중)</strong>: 현재 교사 점검 중입니다. 교사 계정으로만 입장할 수 있습니다.
+            </div>
           </div>
         </div>
         <input type="hidden" id="selected-avatar" value="student_m1">
@@ -1645,6 +1649,20 @@
         <button class="btn-modal-close" id="btn-close-teacher-x">✕</button>
       </div>
       <div class="modal-body teacher-body">
+        <!-- 🔒 Teacher Server Gate Controller Bar -->
+        <div id="teacher-server-control-bar" style="margin-bottom:12px; padding:12px 16px; background:linear-gradient(135deg, #0f172a, #1e293b); border:2px solid #334155; border-radius:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:18px;">🌐</span>
+            <div>
+              <div style="font-size:13.5px; font-weight:800; color:#f8fafc;">게임 서버 학생 입장 통제 (Server Gate)</div>
+              <div style="font-size:11px; color:#94a3b8;">서버를 닫으면 학생 진입이 차단되고, 수업 종료 시 안전 세이브 후 자동 퇴장됩니다.</div>
+            </div>
+            <span id="teacher-server-gate-badge" style="font-size:12px; font-weight:800; padding:4px 12px; border-radius:999px; background:rgba(34, 197, 94, 0.2); border:1.5px solid #22c55e; color:#4ade80;">🟢 서버 정상 개방 중</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button id="btn-teacher-toggle-server" type="button" class="btn-primary" style="padding:7px 18px; font-size:13px; font-weight:800; background:linear-gradient(135deg, #dc2626, #b91c1c); border:1.5px solid #f87171; border-radius:8px; cursor:pointer; box-shadow:0 2px 6px rgba(220,38,38,0.4);">🔴 서버 닫기 (수업 종료)</button>
+          </div>
+        </div>
         <div class="teacher-tab-row">
           <button class="tab-btn active" data-tab="tab-boss-raid">👾 보스레이드</button>
           <button class="tab-btn" data-tab="tab-pop-quiz">📢 돌발 퀴즈 & 보상</button>
@@ -2105,18 +2123,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=177"></script>
-  <script src="js/dialog.js?v=177"></script>
+  <script src="js/audio.js?v=179"></script>
+  <script src="js/dialog.js?v=179"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=177"></script>
-  <script src="js/engine.js?v=177"></script>
-  <script src="js/quiz.js?v=177"></script>
-  <script src="js/crafting.js?v=177"></script>
-  <script src="js/network.js?v=177"></script>
-  <script src="js/acid_rain.js?v=177"></script>
-  <script src="js/brawl_ball.js?v=177"></script>
-  <script src="js/main.js?v=177"></script>
+  <script src="js/world.js?v=179"></script>
+  <script src="js/engine.js?v=179"></script>
+  <script src="js/quiz.js?v=179"></script>
+  <script src="js/crafting.js?v=179"></script>
+  <script src="js/network.js?v=179"></script>
+  <script src="js/acid_rain.js?v=179"></script>
+  <script src="js/brawl_ball.js?v=179"></script>
+  <script src="js/main.js?v=179"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

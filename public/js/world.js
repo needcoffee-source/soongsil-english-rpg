@@ -664,7 +664,7 @@ const WORLD_DATA = {
       type: "gym_exit_gate",
       x: 53,
       y: 30,
-      name: "⚽ 숭실 운동장(축구장) 방면",
+      name: "[운동장 ➡️]",
       prompt: "운동장으로 나가기"
     },
     gymEntrance: {

@@ -11379,7 +11379,7 @@ class GameEngine {
     }
 
     // Direction Signpost to Soccer Field
-    this.drawSharpLabel(exitX + 24, exitY - 14, '⚽ [축구장 복귀 게이트 (동쪽) ➡️]', {
+    this.drawSharpLabel(exitX + 64, exitY - 14, '[운동장 ➡️]', {
       bgColor: 'rgba(15, 23, 42, 0.95)',
       borderColor: '#22c55e',
       borderWidth: 2,

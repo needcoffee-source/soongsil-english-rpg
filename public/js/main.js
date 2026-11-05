@@ -1093,6 +1093,9 @@ class MainApp {
       window.BrawlBall.init(this.engine, this.networkManager);
     }
 
+    this.isServerOpen = true;
+    this.serverClosedMessage = '';
+
     this.playerData = {
       name: '',
       studentId: '',
@@ -1187,33 +1190,7 @@ class MainApp {
 
   setServerStatus(isOnline) {
     this.isServerOnline = isOnline;
-    const box = document.getElementById('login-server-box');
-    const dot = document.getElementById('login-server-dot');
-    const title = document.getElementById('login-server-title');
-    const badge = document.getElementById('login-server-badge');
-    if (!box || !dot || !title || !badge) return;
-
-    if (isOnline) {
-      box.style.borderColor = '#22c55e';
-      box.style.background = 'rgba(34, 197, 94, 0.1)';
-      dot.style.background = '#22c55e';
-      dot.style.boxShadow = '0 0 8px #22c55e';
-      title.style.color = '#4ade80';
-      badge.style.color = '#22c55e';
-      badge.style.borderColor = '#22c55e';
-      badge.style.background = 'rgba(34, 197, 94, 0.2)';
-      badge.innerText = '접속 가능';
-    } else {
-      box.style.borderColor = '#ef4444';
-      box.style.background = 'rgba(239, 68, 68, 0.1)';
-      dot.style.background = '#ef4444';
-      dot.style.boxShadow = '0 0 8px #ef4444';
-      title.style.color = '#f87171';
-      badge.style.color = '#ef4444';
-      badge.style.borderColor = '#ef4444';
-      badge.style.background = 'rgba(239, 68, 68, 0.2)';
-      badge.innerText = '접속 불가';
-    }
+    this.updateServerGateUI();
   }
 
   initServerStatusMonitor() {
@@ -1221,8 +1198,23 @@ class MainApp {
     // 실시간 서버 상태는 NetworkManager의 Socket.IO 연결/해제 이벤트(connect/disconnect)로 동기화됩니다.
     // 최초 1회 경량 헬스체크만 수행하여 불필요한 전체 학생 데이터 폴링 부하를 제거합니다.
     fetch('/api/health', { method: 'GET', cache: 'no-store' })
-      .then(res => this.setServerStatus(res.ok))
-      .catch(() => this.setServerStatus(false));
+      .then(res => {
+        this.isServerOnline = res.ok;
+        this.updateServerGateUI();
+      })
+      .catch(() => {
+        this.isServerOnline = false;
+        this.updateServerGateUI();
+      });
+
+    fetch('/api/server-status', { method: 'GET', cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (data && typeof data.isOpen === 'boolean') {
+          this.onServerStateSync(data);
+        }
+      })
+      .catch(() => {});
   }
 
   initControls() {
@@ -3341,6 +3333,13 @@ class MainApp {
         if (!proceed) return;
       }
 
+      // 🔒 Server Gate Check: Block students when server is closed
+      if (!this.isServerOpen && !isTeacher) {
+        const msg = '⚠️ [서버 점검 및 수업 대기 안내]\n\n' + (this.serverClosedMessage || '지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!');
+        alert(msg);
+        return;
+      }
+
       if (isTeacher) {
         if (enteredPwd !== '03220322') {
           alert('🔒 교사 인증 암호가 일치하지 않습니다.');
@@ -3955,6 +3954,16 @@ class MainApp {
         this.modalTeacher.classList.remove('hidden');
         this.requestStudentList();
       });
+    }
+
+    // 🔒 Teacher Server Gate buttons
+    const btnToggleServer = document.getElementById('btn-teacher-toggle-server');
+    if (btnToggleServer) {
+      btnToggleServer.addEventListener('click', () => this.handleTeacherToggleServer());
+    }
+    const btnHudServerToggle = document.getElementById('btn-teacher-hud-server-toggle');
+    if (btnHudServerToggle) {
+      btnHudServerToggle.addEventListener('click', () => this.handleTeacherToggleServer());
     }
     document.getElementById('btn-close-teacher-x').addEventListener('click', () => {
       this.modalTeacher.classList.add('hidden');
@@ -8787,6 +8796,171 @@ class MainApp {
 
       grid.appendChild(card);
     });
+  }
+
+  // =========================================================================
+  // 🔒 교사 전용 서버 개방/차단 게이트 시스템 (Server Gate System)
+  // =========================================================================
+  handleTeacherToggleServer() {
+    if (this.isServerOpen) {
+      const confirmClose = confirm("🔴 정말로 서버를 닫고 수업을 종료하시겠습니까?\n\n• 현재 접속 중인 모든 학생의 경험치/아이템/진행도가 안전하게 저장됩니다.\n• 학생들은 대기 화면으로 이동되며 추가 입장이 차단됩니다.\n• 교사는 계속 서버에 남아 맵 점검 및 수업 준비를 진행할 수 있습니다.");
+      if (confirmClose) {
+        this.networkManager.toggleServerState(false);
+      }
+    } else {
+      const confirmOpen = confirm("🟢 서버를 개방하고 수업을 시작하시겠습니까?\n\n• 대기 중인 모든 학생이 즉시 입장할 수 있게 됩니다.");
+      if (confirmOpen) {
+        this.networkManager.toggleServerState(true);
+      }
+    }
+  }
+
+  updateServerGateUI() {
+    // 1. Update Login Modal Server Box & Badge
+    const box = document.getElementById('login-server-box');
+    const dot = document.getElementById('login-server-dot');
+    const title = document.getElementById('login-server-title');
+    const badge = document.getElementById('login-server-badge');
+    const alertBox = document.getElementById('login-server-closed-alert');
+
+    if (!this.isServerOnline) {
+      if (box) {
+        box.style.borderColor = '#ef4444';
+        box.style.background = 'rgba(239, 68, 68, 0.1)';
+      }
+      if (dot) {
+        dot.style.background = '#ef4444';
+        dot.style.boxShadow = '0 0 8px #ef4444';
+      }
+      if (title) {
+        title.innerText = '🌱 1학년 서버 (오프라인)';
+        title.style.color = '#f87171';
+      }
+      if (badge) {
+        badge.innerText = '접속 불가';
+        badge.style.color = '#ef4444';
+        badge.style.background = 'rgba(239, 68, 68, 0.2)';
+        badge.style.borderColor = '#ef4444';
+      }
+      if (alertBox) alertBox.classList.add('hidden');
+    } else if (!this.isServerOpen) {
+      if (box) {
+        box.style.borderColor = '#ef4444';
+        box.style.background = 'rgba(239, 68, 68, 0.12)';
+      }
+      if (dot) {
+        dot.style.background = '#ef4444';
+        dot.style.boxShadow = '0 0 8px #ef4444';
+      }
+      if (title) {
+        title.innerText = '🔒 1학년 서버 (수업 대기 중)';
+        title.style.color = '#f87171';
+      }
+      if (badge) {
+        badge.innerText = '서버 닫힘 🔴';
+        badge.style.color = '#ef4444';
+        badge.style.background = 'rgba(239, 68, 68, 0.2)';
+        badge.style.borderColor = '#ef4444';
+      }
+      if (alertBox) alertBox.classList.remove('hidden');
+    } else {
+      if (box) {
+        box.style.borderColor = '#22c55e';
+        box.style.background = 'rgba(34, 197, 94, 0.1)';
+      }
+      if (dot) {
+        dot.style.background = '#22c55e';
+        dot.style.boxShadow = '0 0 8px #22c55e';
+      }
+      if (title) {
+        title.innerText = '🌱 1학년 서버 (1~6단원)';
+        title.style.color = '#4ade80';
+      }
+      if (badge) {
+        badge.innerText = '접속 가능 🟢';
+        badge.style.color = '#22c55e';
+        badge.style.background = 'rgba(34, 197, 94, 0.2)';
+        badge.style.borderColor = '#22c55e';
+      }
+      if (alertBox) alertBox.classList.add('hidden');
+    }
+
+    // 2. Update Teacher Modal Controller Bar & HUD Button
+    const teacherBadge = document.getElementById('teacher-server-gate-badge');
+    const teacherBtn = document.getElementById('btn-teacher-toggle-server');
+    const hudBtn = document.getElementById('btn-teacher-hud-server-toggle');
+
+    if (this.isServerOpen) {
+      if (teacherBadge) {
+        teacherBadge.innerText = '🟢 서버 정상 개방 중';
+        teacherBadge.style.background = 'rgba(34, 197, 94, 0.2)';
+        teacherBadge.style.borderColor = '#22c55e';
+        teacherBadge.style.color = '#4ade80';
+      }
+      if (teacherBtn) {
+        teacherBtn.innerText = '🔴 서버 닫기 (수업 종료)';
+        teacherBtn.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
+        teacherBtn.style.borderColor = '#f87171';
+      }
+      if (hudBtn) {
+        hudBtn.innerText = '🟢 서버 열림';
+        hudBtn.style.background = '#15803d';
+        hudBtn.style.borderColor = '#4ade80';
+      }
+    } else {
+      if (teacherBadge) {
+        teacherBadge.innerText = '🔴 서버 닫힘 (교사 전용)';
+        teacherBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+        teacherBadge.style.borderColor = '#ef4444';
+        teacherBadge.style.color = '#f87171';
+      }
+      if (teacherBtn) {
+        teacherBtn.innerText = '🟢 서버 열기 (수업 시작)';
+        teacherBtn.style.background = 'linear-gradient(135deg, #15803d, #16a34a)';
+        teacherBtn.style.borderColor = '#86efac';
+      }
+      if (hudBtn) {
+        hudBtn.innerText = '🔴 서버 닫힘';
+        hudBtn.style.background = '#991b1b';
+        hudBtn.style.borderColor = '#f87171';
+      }
+    }
+  }
+
+  onServerStateSync(data) {
+    if (!data) return;
+    this.isServerOpen = !!data.isOpen;
+    if (data.closedMessage) this.serverClosedMessage = data.closedMessage;
+    this.updateServerGateUI();
+  }
+
+  onServerStateChanged(data) {
+    if (!data) return;
+    this.isServerOpen = !!data.isOpen;
+    if (data.closedMessage) this.serverClosedMessage = data.closedMessage;
+    this.updateServerGateUI();
+    const text = data.isOpen ? '🟢 선생님께서 서버를 개방했습니다! (수업 시작)' : '🔴 선생님께서 서버를 닫았습니다. (수업 종료/점검)';
+    if (this.showToast) {
+      this.showToast(text, data.isOpen ? 'success' : 'warning');
+    }
+  }
+
+  onServerEntryRejected(data) {
+    const msg = (data && data.message) ? data.message : '현재 서버가 닫혀 있습니다.';
+    alert('🔒 [서버 닫힘 안내]\n\n' + msg);
+    if (this.modalLogin) this.modalLogin.classList.remove('hidden');
+    const startBtn = document.getElementById('btn-start-game');
+    if (startBtn) {
+      startBtn.disabled = false;
+      startBtn.innerText = '숭실 오픈월드 입장하기 🚀';
+    }
+  }
+
+  onForceSaveAndExit(data) {
+    this.saveProgress();
+    const msg = (data && data.message) ? data.message : '선생님께서 수업을 종료하여 서버를 닫았습니다.\n모든 진행 상황이 안전하게 저장되었습니다.';
+    alert('📢 [수업 종료 안내]\n\n' + msg);
+    window.location.reload();
   }
 
   // =========================================================================

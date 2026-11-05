@@ -66,6 +66,30 @@ class NetworkManager {
       }
     });
 
+    this.socket.on('server_state_sync', (data) => {
+      if (window.MainApp && typeof window.MainApp.onServerStateSync === 'function') {
+        window.MainApp.onServerStateSync(data);
+      }
+    });
+
+    this.socket.on('server_state_changed', (data) => {
+      if (window.MainApp && typeof window.MainApp.onServerStateChanged === 'function') {
+        window.MainApp.onServerStateChanged(data);
+      }
+    });
+
+    this.socket.on('server_entry_rejected', (data) => {
+      if (window.MainApp && typeof window.MainApp.onServerEntryRejected === 'function') {
+        window.MainApp.onServerEntryRejected(data);
+      }
+    });
+
+    this.socket.on('force_save_and_exit', (data) => {
+      if (window.MainApp && typeof window.MainApp.onForceSaveAndExit === 'function') {
+        window.MainApp.onForceSaveAndExit(data);
+      }
+    });
+
     this.socket.on('init_self', (selfData) => {
       console.log('[Network] Self initialized:', selfData);
       this.engine.player.x = selfData.x;
@@ -658,6 +682,16 @@ class NetworkManager {
   sendBrawlPowerupCollected(data) {
     if (this.socket && this.socket.connected) {
       this.socket.emit('brawl_powerup_collected', data);
+    }
+  }
+
+  toggleServerState(isOpen, message) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('teacher_toggle_server_state', {
+        isOpen,
+        message,
+        pwd: '03220322'
+      });
     }
   }
 

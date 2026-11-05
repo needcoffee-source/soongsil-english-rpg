@@ -75,6 +75,35 @@ app.post('/api/admin/questions', (req, res) => {
 const PROGRESS_FILE = path.join(DATA_DIR, 'students_progress.json');
 const DELETED_FILE = path.join(DATA_DIR, 'deleted_students.json');
 const PLANT_FILE = path.join(DATA_DIR, 'plant_progress.json');
+const SERVER_STATE_FILE = path.join(DATA_DIR, 'server_state.json');
+
+// 🔒 Teacher Server Gate State (Persistent)
+let serverGateState = {
+  isOpen: true,
+  closedMessage: "지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!",
+  updatedAt: Date.now(),
+  updatedBy: "교사"
+};
+
+if (fs.existsSync(SERVER_STATE_FILE)) {
+  try {
+    const sData = JSON.parse(fs.readFileSync(SERVER_STATE_FILE, 'utf8'));
+    if (typeof sData.isOpen === 'boolean') serverGateState.isOpen = sData.isOpen;
+    if (sData.closedMessage) serverGateState.closedMessage = sData.closedMessage;
+    if (sData.updatedAt) serverGateState.updatedAt = sData.updatedAt;
+    if (sData.updatedBy) serverGateState.updatedBy = sData.updatedBy;
+  } catch (e) {
+    console.error('[Server State Load Error]', e);
+  }
+}
+
+function saveServerGateState() {
+  try {
+    fs.writeFileSync(SERVER_STATE_FILE, JSON.stringify(serverGateState, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Server State Save Error]', e);
+  }
+}
 
 let plantWaterCount = 0;
 if (fs.existsSync(PLANT_FILE)) {
@@ -266,6 +295,15 @@ app.post('/api/admin/restore-progress', (req, res) => {
   }
   saveStudentsProgress(allData, true);
   res.json({ success: true, count: Object.keys(allData).length });
+});
+
+app.get('/api/server-status', (req, res) => {
+  res.json({
+    isOpen: serverGateState.isOpen,
+    closedMessage: serverGateState.closedMessage,
+    updatedAt: serverGateState.updatedAt,
+    updatedBy: serverGateState.updatedBy
+  });
 });
 
 app.get('/api/admin/all-students-progress', (req, res) => {
@@ -673,10 +711,25 @@ function normalizeSingletonRoomFloor(room, floor) {
 io.on('connection', (socket) => {
   console.log(`[Connect] Socket ID: ${socket.id}`);
 
+  // 🔒 Send current server gate state immediately to new connection
+  socket.emit('server_state_sync', {
+    isOpen: serverGateState.isOpen,
+    closedMessage: serverGateState.closedMessage
+  });
+
   // Player Login
   socket.on('player_join', (data) => {
     const { name, grade, studentId, avatar, isTeacher, teacherPwd } = data;
     const isVerifiedTeacher = !!isTeacher && teacherPwd === '03220322';
+
+    // 🔒 Teacher Gate Enforcement: If server is closed and not a verified teacher, reject entry
+    if (!serverGateState.isOpen && !isVerifiedTeacher) {
+      socket.emit('server_entry_rejected', {
+        reason: 'server_closed',
+        message: serverGateState.closedMessage || "지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!"
+      });
+      return;
+    }
     const resolvedName = isVerifiedTeacher ? ((name && name !== '교사') ? name : '갓준철') : (name || '학생_' + socket.id.substr(0, 4));
     const initRoom = data.room || 'hallway';
     const initFloor = normalizeSingletonRoomFloor(initRoom, (data.floor !== undefined) ? parseInt(data.floor) : 7);
@@ -936,6 +989,46 @@ io.on('connection', (socket) => {
         socket.emit('teacher_action_alert', { message: '⚠️ 대상 학생이 접속 중이지 않습니다.' });
       }
     }
+  });
+
+  // 🔒 Teacher Server Open/Close Toggle (수업 시작 / 종료 제어)
+  socket.on('teacher_toggle_server_state', ({ isOpen, message, pwd }) => {
+    const isTeacher = socket.isTeacher || (players[socket.id] && players[socket.id].isTeacher) || (pwd === '03220322');
+    if (!isTeacher) {
+      socket.emit('teacher_action_alert', { message: '⚠️ 교사 권한이 없어 서버 상태를 변경할 수 없습니다.' });
+      return;
+    }
+
+    serverGateState.isOpen = !!isOpen;
+    if (message) serverGateState.closedMessage = message;
+    serverGateState.updatedAt = Date.now();
+    serverGateState.updatedBy = (players[socket.id] && players[socket.id].name) || '교사';
+    saveServerGateState();
+
+    // Broadcast state change to all clients
+    io.emit('server_state_changed', {
+      isOpen: serverGateState.isOpen,
+      closedMessage: serverGateState.closedMessage,
+      updatedBy: serverGateState.updatedBy
+    });
+
+    // When closing server, safely save & exit all current student players
+    if (!serverGateState.isOpen) {
+      const studentIds = Object.keys(players).filter(id => !players[id].isTeacher);
+      for (const sId of studentIds) {
+        const studentSocket = io.sockets.sockets.get(sId);
+        if (studentSocket) {
+          studentSocket.emit('force_save_and_exit', {
+            message: '선생님께서 수업을 종료하여 서버를 닫았습니다.\n지금까지의 모든 진행 상황이 안전하게 저장되었습니다.'
+          });
+        }
+        delete players[sId];
+      }
+      broadcastStudentList();
+    }
+
+    const statusText = serverGateState.isOpen ? '🟢 서버 개방 (수업 시작)' : '🔴 서버 닫힘 (수업 종료)';
+    io.emit('teacher_action_alert', { message: `[알림] 선생님에 의해 ${statusText} 상태로 전환되었습니다.` });
   });
 
   // Teacher Moderation Tools
