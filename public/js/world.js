@@ -658,8 +658,8 @@ const WORLD_DATA = {
       type: "gym_school_bus",
       x: 53.2,
       y: 16,
-      name: "🚌 숭실 통학 스쿨버스",
-      prompt: "비상탈출문 조사 (SPACE)"
+      name: "🚌 숭실 축구부 버스",
+      prompt: ""
     },
     evCharger: {
       id: "gym_ev_charger",
@@ -667,7 +667,7 @@ const WORLD_DATA = {
       x: 38,
       y: 16,
       name: "⚡ 전기차 급속 충전소",
-      prompt: "초급속 충전건 만져보기 (SPACE)"
+      prompt: ""
     }
   },
   playground: {

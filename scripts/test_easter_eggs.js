@@ -64,8 +64,17 @@ if (!mainCode.includes("this.addGold(50)") || !mainCode.includes("this.addExp(30
   throw new Error('Lost box gold/exp rewards (50G, 30 EXP) not found in main.js');
 }
 // School Bus: 50 Gold, 50 EXP, 2 Orange Potions, 1 Green Potion, special title
-if (!mainCode.includes("handleSchoolBusEasterEgg()") || !mainCode.includes("'🚌 숭실 통학버스 우수 승객'")) {
+if (!mainCode.includes("handleSchoolBusEasterEgg()") || !mainCode.includes("'🚌 숭실 축구부 버스 우수 승객'")) {
   throw new Error('School bus Easter egg rewards not found in main.js');
+}
+if (!gymSchoolBus.name.includes('축구부')) {
+  throw new Error('School bus name does not include 축구부');
+}
+if (gymSchoolBus.prompt !== '') {
+  throw new Error('School bus prompt should be hidden (empty string)');
+}
+if (gymEVCharger.prompt !== '') {
+  throw new Error('EV charger prompt should be hidden (empty string)');
 }
 // EV Charger: 100 Gold, 100 EXP, 1 Courage Potion, special title
 if (!mainCode.includes("handleEVChargerEasterEgg()") || !mainCode.includes("'⚡ 찌릿찌릿 썬더볼트'")) {

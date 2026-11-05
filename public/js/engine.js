@@ -983,26 +983,28 @@ class GameEngine {
             minDist = geDist;
           }
         }
-        // 3. School bus
+        // 3. School bus (이스터에그: 평상시 안내 프롬프트 숨김 처리)
         if (gymData.schoolBus) {
           const sbDist = Math.hypot(gymData.schoolBus.x * 32 - this.player.x, gymData.schoolBus.y * 32 - this.player.y);
           if (sbDist < 70 && sbDist < minDist) {
             closest = {
               type: 'gym_school_bus',
               name: gymData.schoolBus.name,
-              prompt: gymData.schoolBus.prompt
+              prompt: gymData.schoolBus.prompt || '',
+              hiddenPrompt: true
             };
             minDist = sbDist;
           }
         }
-        // 4. EV charger
+        // 4. EV charger (이스터에그: 평상시 안내 프롬프트 숨김 처리)
         if (gymData.evCharger) {
           const evDist = Math.hypot(gymData.evCharger.x * 32 - this.player.x, gymData.evCharger.y * 32 - this.player.y);
           if (evDist < 64 && evDist < minDist) {
             closest = {
               type: 'gym_ev_charger',
               name: gymData.evCharger.name,
-              prompt: gymData.evCharger.prompt
+              prompt: gymData.evCharger.prompt || '',
+              hiddenPrompt: true
             };
             minDist = evDist;
           }
@@ -1391,9 +1393,9 @@ class GameEngine {
     this.activeInteractable = closest;
     const promptEl = document.getElementById('interaction-prompt');
     const promptText = document.getElementById('prompt-text');
-    if (closest) {
+    if (closest && closest.prompt && !closest.hiddenPrompt) {
       promptEl.classList.remove('hidden');
-      promptText.innerText = closest.prompt || '조사하기';
+      promptText.innerText = closest.prompt;
     } else {
       promptEl.classList.add('hidden');
     }
@@ -1510,6 +1512,22 @@ class GameEngine {
               return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
             }
           }
+        }
+      }
+    } else if (this.player.room === 'playground_gym') {
+      const gymData = WORLD_DATA.playground_gym;
+      if (gymData) {
+        if (gymData.exitGate && Math.hypot(gymData.exitGate.x * 32 - x, gymData.exitGate.y * 32 - y) < 56) {
+          return { type: 'gym_exit_gate', name: gymData.exitGate.name, prompt: gymData.exitGate.prompt };
+        }
+        if (gymData.gymEntrance && Math.hypot(gymData.gymEntrance.x * 32 - x, (gymData.gymEntrance.y + 1) * 32 - y) < 64) {
+          return { type: 'gym_entrance', name: gymData.gymEntrance.name, prompt: gymData.gymEntrance.prompt };
+        }
+        if (gymData.schoolBus && Math.hypot(gymData.schoolBus.x * 32 - x, gymData.schoolBus.y * 32 - y) < 64) {
+          return { type: 'gym_school_bus', name: gymData.schoolBus.name, prompt: '', hiddenPrompt: true };
+        }
+        if (gymData.evCharger && Math.hypot(gymData.evCharger.x * 32 - x, gymData.evCharger.y * 32 - y) < 56) {
+          return { type: 'gym_ev_charger', name: gymData.evCharger.name, prompt: '', hiddenPrompt: true };
         }
       }
     } else {
@@ -1732,7 +1750,7 @@ class GameEngine {
 
     // Render deferred World, NPC, Material, and Guidance Labels ON TOP of characters!
     if (this.deferredWorldLabels && this.deferredWorldLabels.length > 0) {
-      const activeName = (this.activeInteractable && this.activeInteractable.name) ? this.activeInteractable.name : null;
+      const activeName = (this.activeInteractable && !this.activeInteractable.hiddenPrompt && this.activeInteractable.name) ? this.activeInteractable.name : null;
       let activeItem = null;
 
       // Single-pass render: 일반 라벨을 먼저 그리고, 활성 대상은 마지막에 최상단으로 렌더 (매 프레임 .sort() 제거)
@@ -11885,15 +11903,15 @@ class GameEngine {
     ctx.arc(x + w - 8, y + h - 8, 3, 0, Math.PI * 2);
     ctx.fill();
 
-    // Vertical Decal: "숭실 스쿨버스"
+    // Vertical Decal: "숭실 축구부 버스"
     ctx.save();
     ctx.fillStyle = '#1e3a8a';
     ctx.font = '900 9.5px "Pretendard", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('숭실 스쿨버스 🚌', x + w / 2, y + 124);
+    ctx.fillText('숭실 축구부 버스 ⚽', x + w / 2, y + 124);
     ctx.restore();
 
-    this.drawSharpLabel(x + w / 2, y - 10, '🚌 숭실 25인승 스쿨버스 (셔틀)', {
+    this.drawSharpLabel(x + w / 2, y - 10, '🚌 숭실 축구부 버스', {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#f59e0b',
       borderWidth: 1.5,
