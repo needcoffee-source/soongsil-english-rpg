@@ -51,6 +51,10 @@ class GameEngine {
       noclip: false
     };
 
+    // Easter Egg Visual Effects in Gym Plaza
+    this.busHornEffectUntil = 0;
+    this.electricZapEffectUntil = 0;
+
     // Other players in room
     this.otherPlayers = {};
 
@@ -752,6 +756,15 @@ class GameEngine {
         y: this.player.y
       });
     }
+  }
+
+  // Easter Egg Triggers (주차장 이스터에그 시각 효과)
+  triggerBusHornEffect() {
+    this.busHornEffectUntil = Date.now() + 1400;
+  }
+
+  triggerElectricZapEffect() {
+    this.electricZapEffectUntil = Date.now() + 1400;
   }
 
   // Teacher Instant Teleport (순간이동)
@@ -11890,6 +11903,33 @@ class GameEngine {
       height: 18
     });
 
+    // Bus Horn Sound Wave Animation (이스터에그 발동 시 빵! 빵~!)
+    if (this.busHornEffectUntil && Date.now() < this.busHornEffectUntil) {
+      const pulseTime = Math.max(0, (this.busHornEffectUntil - Date.now()) / 1400);
+      const ringRadius = 24 + (1 - pulseTime) * 48;
+      ctx.strokeStyle = `rgba(250, 204, 21, ${pulseTime * 0.9})`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x + w / 2, y + h - 14, ringRadius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(245, 158, 11, ${pulseTime * 0.6})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x + w / 2, y + h - 14, ringRadius + 18, 0, Math.PI * 2);
+      ctx.stroke();
+
+      this.drawSharpLabel(x + w / 2, y + h / 2, '📢 빵! 빵~~!! (HONK!)', {
+        bgColor: 'rgba(234, 88, 12, 0.95)',
+        borderColor: '#fde047',
+        borderWidth: 2,
+        textColor: '#ffffff',
+        fontSize: 12,
+        paddingX: 12,
+        height: 24
+      });
+    }
+
     ctx.restore();
   }
 
@@ -11999,6 +12039,35 @@ class GameEngine {
       paddingX: 8,
       height: 18
     });
+
+    // Electric Zap Shockwave & Sparks Animation (이스터에그 발동 시 찌릿찌릿 감전!)
+    if (this.electricZapEffectUntil && Date.now() < this.electricZapEffectUntil) {
+      const zapTime = Math.max(0, (this.electricZapEffectUntil - Date.now()) / 1400);
+      const zapR = 20 + (1 - zapTime) * 45;
+      ctx.strokeStyle = `rgba(56, 189, 248, ${zapTime * 0.9})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(px + 12, py + 24, zapR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#fef08a';
+      ctx.font = '700 15px sans-serif';
+      ctx.textAlign = 'center';
+      const offsets = [[-20, -16], [22, -10], [-16, 26], [20, 24]];
+      for (const [ox, oy] of offsets) {
+        ctx.fillText('⚡', px + 12 + ox, py + 24 + oy);
+      }
+
+      this.drawSharpLabel(px + 12, py - 26, '⚡ 찌릿찌릿!! (초강력 정전기 감전!)', {
+        bgColor: 'rgba(15, 23, 42, 0.95)',
+        borderColor: '#38bdf8',
+        borderWidth: 2,
+        textColor: '#7dd3fc',
+        fontSize: 11.5,
+        paddingX: 12,
+        height: 22
+      });
+    }
 
     ctx.restore();
   }

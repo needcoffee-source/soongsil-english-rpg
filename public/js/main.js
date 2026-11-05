@@ -1075,6 +1075,8 @@ class MainApp {
       hasOpenedSecretLocker: false,
       hasCheckedMirror: false,
       hasOpenedLostBox: false,
+      hasCheckedSchoolBus: false,
+      hasShockedEVCharger: false,
       hasClearedDragonRaid: false,
       hasClearedCerberusRaid: false,
       hasClearedClass704: false,
@@ -1513,9 +1515,9 @@ class MainApp {
     } else if (target.type === 'gym_entrance') {
       alert('🏛️ [숭실 종합 체육관 (7층 대형 복합 스포츠 센터)]\n\n"지하 1층(유도·탁구장), 1층(종합 안내 로비), 2~3층(정규 규격 실내 농구·배구 코트), 4~7층(대형 관람석 및 피트니스 센터)을 갖춘 숭실의 랜드마크 7층 체육관입니다.\n\n(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');
     } else if (target.type === 'gym_school_bus') {
-      alert('🚌 [숭실 통학 스쿨버스]\n\n"노란색 25인승 숭실 안전 통학버스입니다. 교직원 주차 구역에 반짝반짝 세차된 상태로 정차되어 있습니다."');
+      this.handleSchoolBusEasterEgg();
     } else if (target.type === 'gym_ev_charger') {
-      alert('⚡ [친환경 전기차 급속 충전기]\n\n"교직원 전용 100kW DC 콤보 초급속 전기차 충전기입니다. 파란색 충전 완료 LED가 점등되어 있습니다."');
+      this.handleEVChargerEasterEgg();
     } else if (target.type === 'cafeteria') {
       alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
     } else if (target.type === 'alchemy_cauldron') {
@@ -2375,6 +2377,123 @@ class MainApp {
       `• 🧪 빨간 물약 x2개 획득! (HP +10 회복)\n\n` +
       `(우측 상단 가방(🎒)을 열어 획득한 물약을 확인할 수 있습니다.)`
     );
+  }
+
+  // 🚌 숭실 통학 스쿨버스 이스터에그 (클랙슨 빵빵! & 기사님의 달콤한 믹스커피)
+  handleSchoolBusEasterEgg() {
+    const studentId = this.playerData.studentId || 'default';
+    const busKey = 'soongsil_bus_egg_' + studentId;
+    const alreadyFound = !!(this.playerData.hasCheckedSchoolBus || (studentId && localStorage.getItem(busKey) === 'true'));
+
+    if (window.AudioManager && typeof window.AudioManager.playBusHorn === 'function') {
+      window.AudioManager.playBusHorn();
+    }
+
+    if (this.engine && typeof this.engine.triggerBusHornEffect === 'function') {
+      this.engine.triggerBusHornEffect();
+    }
+
+    if (alreadyFound && !this.playerData.isTeacher) {
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '🚌 스쿨버스 기사님',
+          `"🚨 빵! 빵~~!!"\n\n친절한 기사님이 창문을 내리고 껄껄 웃으시며 손을 흔드십니다.\n\n"하하! 우리 숭실 학생이구나! 믹스커피는 맛있게 마셨니?\n언제든 비상문 쪽 조심해서 안전하게 등교하렴~ (빵빵!)"`,
+          '🚌'
+        );
+      } else {
+        alert(`🚌 [스쿨버스 기사님]\n\n"🚨 빵! 빵~~!!"\n\n"하하! 우리 숭실 학생이구나! 오늘도 안전하게 학교생활 잘하렴~!"`);
+      }
+      return;
+    }
+
+    // 최초 1회 보상: 50 Gold, 50 EXP, 주황 포션 2개, 초록 포션 1개, 특별 칭호
+    this.playerData.hasCheckedSchoolBus = true;
+    try {
+      localStorage.setItem(busKey, 'true');
+    } catch (e) {}
+
+    this.addGold(50);
+    this.addExp(50);
+    this.addItem('item_orange_potion', '주황 포션', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' });
+    this.addItem('item_green_potion', '초록 포션', 1, '🧪', { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' });
+
+    const titleName = '🚌 숭실 통학버스 우수 승객';
+    if (!Array.isArray(this.playerData.titles)) {
+      this.playerData.titles = [];
+    }
+    if (!this.playerData.titles.includes(titleName)) {
+      this.playerData.titles.push(titleName);
+    }
+    this.equipTitle(titleName);
+    this.saveProgress(true);
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '🚌 숭실 스쿨버스 (비상탈출문)',
+        `스쿨버스 뒤편의 빨간색 비상탈출문(EXIT) 손잡이를 살짝 만졌더니...\n\n"🚨 빵! 빵~~!!"\n우렁찬 클랙슨 경적이 온 주차장에 울려 퍼집니다!\n\n운전석 창문 너머로 친절한 버스 기사님이 껄껄 웃으시며 손을 흔드십니다.\n"하하! 비상문 점검 중이었니? 우리 숭실 학생, 오늘도 수고가 많다!\n이거 기사님이 아껴둔 비장의 달달한 믹스커피(신속 초록 포션)인데 마시고 힘내렴~!"\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +50G & 🌟 경험치 +50 EXP\n• 🧪 주황 포션 x2 (체력 +25 회복)\n• 🧪 초록 포션 x1 (1분간 이동속도 +10%)\n• 🎖️ 특별 칭호 [${titleName}] 획득 및 자동 장착!`,
+        '🚌'
+      );
+    } else {
+      alert(`🚌 [스쿨버스 비상문 이스터에그 발견!]\n\n"🚨 빵! 빵~~!!"\n\n기사님이 달달한 믹스커피(물약들)와 50G, 50 EXP, 특별 칭호 [${titleName}]을 선물해주셨습니다!`);
+    }
+  }
+
+  // ⚡ 100kW DC 전기차 급속 충전기 이스터에그 (짜릿한 정전기 감전 & 번개 스파크)
+  handleEVChargerEasterEgg() {
+    const studentId = this.playerData.studentId || 'default';
+    const evKey = 'soongsil_ev_egg_' + studentId;
+    const alreadyShocked = !!(this.playerData.hasShockedEVCharger || (studentId && localStorage.getItem(evKey) === 'true'));
+
+    if (window.AudioManager && typeof window.AudioManager.playElectricShock === 'function') {
+      window.AudioManager.playElectricShock();
+    }
+
+    if (this.engine && typeof this.engine.triggerElectricZapEffect === 'function') {
+      this.engine.triggerElectricZapEffect();
+    }
+
+    if (alreadyShocked && !this.playerData.isTeacher) {
+      if (window.RPGDialog) {
+        window.RPGDialog.show(
+          '⚡ 100kW DC 초급속 충전기',
+          `"찌릿! ⚡⚡"\n\n손끝에서 작은 정전기 스파크가 파지직 튀었습니다!\n\n[⚠️ 고전압 주의]\n"한 번 감전되었던 짜릿한 전율이 손끝에 아직 남아있습니다. 손잡이를 조심해서 다루세요!"`,
+          '⚡'
+        );
+      } else {
+        alert(`⚡ [초급속 충전기]\n\n"찌릿! ⚡⚡"\n\n손끝에서 파란 정전기 스파크가 파지직 튀었습니다!`);
+      }
+      return;
+    }
+
+    // 최초 1회 보상: 100 Gold, 100 EXP, 용기 포션 1개, 특별 칭호
+    this.playerData.hasShockedEVCharger = true;
+    try {
+      localStorage.setItem(evKey, 'true');
+    } catch (e) {}
+
+    this.addGold(100);
+    this.addExp(100);
+    this.addItem('item_courage_potion', '용기 포션', 1, '🧪', { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' });
+
+    const titleName = '⚡ 찌릿찌릿 썬더볼트';
+    if (!Array.isArray(this.playerData.titles)) {
+      this.playerData.titles = [];
+    }
+    if (!this.playerData.titles.includes(titleName)) {
+      this.playerData.titles.push(titleName);
+    }
+    this.equipTitle(titleName);
+    this.saveProgress(true);
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '⚡ 100kW DC 초급속 충전기',
+        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (3분간 공격력 +5)\n• 🎖️ 특별 칭호 [${titleName}] 획득 및 자동 장착!`,
+        '⚡'
+      );
+    } else {
+      alert(`⚡ [전기차 충전소 이스터에그 발견!]\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n\n짜릿한 정전기 감전과 함께 100G, 100 EXP, 용기 포션, 특별 칭호 [${titleName}]을 획득했습니다!`);
+    }
   }
 
   hasItem(itemId) {
@@ -6985,6 +7104,8 @@ class MainApp {
       localStorage.removeItem('soongsil_secret_locker_' + studentId);
       localStorage.removeItem('soongsil_mirror_' + studentId);
       localStorage.removeItem('soongsil_lost_box_' + studentId);
+      localStorage.removeItem('soongsil_bus_egg_' + studentId);
+      localStorage.removeItem('soongsil_ev_egg_' + studentId);
       localStorage.removeItem('soongsil_dev_note_1_' + studentId);
       localStorage.removeItem('soongsil_first_boss_cleared_' + studentId);
       localStorage.removeItem('soongsil_dragon_cleared_' + studentId);
@@ -7012,6 +7133,10 @@ class MainApp {
     this.playerData.hasOpenedSecretLocker = !!updatedProgress.hasOpenedSecretLocker;
     this.playerData.hasCheckedMirror = !!updatedProgress.hasCheckedMirror;
     this.playerData.hasOpenedLostBox = !!updatedProgress.hasOpenedLostBox;
+    this.playerData.hasCheckedSchoolBus = !!updatedProgress.hasCheckedSchoolBus;
+    this.playerData.hasShockedEVCharger = !!updatedProgress.hasShockedEVCharger;
+    this.playerData.hasCheckedSchoolBus = !!updatedProgress.hasCheckedSchoolBus;
+    this.playerData.hasShockedEVCharger = !!updatedProgress.hasShockedEVCharger;
     this.playerData.hasReadDevNote = !!updatedProgress.hasReadDevNote;
     this.playerData.hasClearedFirstBoss = !!updatedProgress.hasClearedFirstBoss;
     this.playerData.hasClearedDragonRaid = !!updatedProgress.hasClearedDragonRaid;
@@ -7023,6 +7148,8 @@ class MainApp {
       if (this.playerData.hasOpenedSecretLocker) localStorage.setItem('soongsil_secret_locker_' + sId, 'true'); else localStorage.removeItem('soongsil_secret_locker_' + sId);
       if (this.playerData.hasCheckedMirror) localStorage.setItem('soongsil_mirror_' + sId, 'true'); else localStorage.removeItem('soongsil_mirror_' + sId);
       if (this.playerData.hasOpenedLostBox) localStorage.setItem('soongsil_lost_box_' + sId, 'true'); else localStorage.removeItem('soongsil_lost_box_' + sId);
+      if (this.playerData.hasCheckedSchoolBus) localStorage.setItem('soongsil_bus_egg_' + sId, 'true'); else localStorage.removeItem('soongsil_bus_egg_' + sId);
+      if (this.playerData.hasShockedEVCharger) localStorage.setItem('soongsil_ev_egg_' + sId, 'true'); else localStorage.removeItem('soongsil_ev_egg_' + sId);
       if (this.playerData.hasReadDevNote) localStorage.setItem('soongsil_dev_note_1_' + sId, 'true'); else localStorage.removeItem('soongsil_dev_note_1_' + sId);
       if (this.playerData.hasClearedFirstBoss) localStorage.setItem('soongsil_first_boss_cleared_' + sId, 'true'); else localStorage.removeItem('soongsil_first_boss_cleared_' + sId);
       if (this.playerData.hasClearedDragonRaid) localStorage.setItem('soongsil_dragon_cleared_' + sId, 'true'); else localStorage.removeItem('soongsil_dragon_cleared_' + sId);

@@ -530,6 +530,67 @@ class AudioManager {
     this.playWrong();
   }
 
+  /**
+   * Play realistic double-honk bus horn sound ("빵! 빵~!")
+   */
+  playBusHorn() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      // Dual-tone bus horn: F#4 (370Hz) & A4 (440Hz)
+      const playBeep = (startTime, dur) => {
+        const freqs = [370, 440];
+        freqs.forEach(f => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(f, startTime);
+          gain.gain.setValueAtTime(0.18, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start(startTime);
+          osc.stop(startTime + dur);
+        });
+      };
+      // Honk 1 (0.13s) -> pause (0.07s) -> Honk 2 (0.22s)
+      playBeep(now, 0.13);
+      playBeep(now + 0.20, 0.22);
+    } catch (e) {}
+  }
+
+  /**
+   * Play comic electric zap / static shock sound ("⚡ BZZZZT-ZAP!")
+   */
+  playElectricShock() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+
+      // Rapidly fluctuating frequency for comic electric buzzing
+      osc.frequency.setValueAtTime(120, now);
+      osc.frequency.linearRampToValueAtTime(880, now + 0.05);
+      osc.frequency.linearRampToValueAtTime(220, now + 0.10);
+      osc.frequency.linearRampToValueAtTime(960, now + 0.18);
+      osc.frequency.linearRampToValueAtTime(150, now + 0.28);
+
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.30);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + 0.30);
+    } catch (e) {}
+  }
+
   playTackleHit() {
     if (this.muted) return;
     this.init();
