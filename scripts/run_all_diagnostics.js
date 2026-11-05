@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const tests = [
+  'check_all_syntax.js',
   'comprehensive_audit.js',
   'deep_audit.js',
   'debug_check.js',

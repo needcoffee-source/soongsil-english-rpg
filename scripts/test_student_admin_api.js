@@ -1,5 +1,6 @@
 const http = require('http');
 const { spawn } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 function postJson(urlPath, data) {
@@ -42,6 +43,8 @@ function getJson(urlPath) {
 }
 
 async function runTests() {
+  const deletedPath = path.join(__dirname, '..', 'data', 'deleted_students.json');
+  const backupDeleted = fs.existsSync(deletedPath) ? fs.readFileSync(deletedPath, 'utf8') : null;
   let serverProcess = null;
   try {
     await getJson('/');
@@ -100,6 +103,9 @@ async function runTests() {
 
   console.log('\n🎉 ALL TEACHER ADMIN STUDENT PROGRESS TESTS PASSED SUCCESSFULLY!');
   } finally {
+    if (backupDeleted !== null) {
+      try { fs.writeFileSync(deletedPath, backupDeleted, 'utf8'); } catch (e) {}
+    }
     if (serverProcess) {
       serverProcess.kill();
     }
