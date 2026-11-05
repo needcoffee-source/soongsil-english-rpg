@@ -550,7 +550,8 @@ const ALL_GAME_ITEMS = {
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
-  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } }
+  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
+  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } }
 
 };
 
@@ -1030,6 +1031,51 @@ const QUEST_DEFINITIONS = {
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' }
     ]
+  },
+  quest_kwimjinsyong_career: {
+    id: 'quest_kwimjinsyong_career',
+    teacherId: 'npc_teacher_kwimjinsyong',
+    teacherName: '귐즨숑 선생님',
+    teacherRole: '진로',
+    teacherSeat: '24번',
+    teacherAvatar: '🌟',
+    category: '🌟 숭실 진로·적성 멘토링 프로젝트 (Career Quest)',
+    title: '[진로] 귐즨숑 선생님의 진로 격려: 빛나는 재능의 씨앗',
+    cleanupItem: 'item_career_guidebook',
+    story: `안녕! 숭실의 미래를 밝혀줄 친구구나. 여기까지 찾아와 주어 고맙단다.
+
+최근 7층 복도 창가에서 한 학생이 자신이 무엇을 잘하는지 몰라 깊은 한숨을 쉬며 낙담해 있더구나.
+
+모든 사람은 저마다 빛나는 재능의 씨앗을 품고 있는데 스스로를 믿지 못하는 모습이 참 안타까웠어.
+
+내가 정성껏 쓴 [귐즨숑의 진로 격려 편지]와 함께, 5층 진로상담실 책상에 놓인 [진로 적성 검사 안내서]를 챙겨서 전해주겠니?`,
+    inProgressStory: `어서 오렴! 5층 진로상담실 책상 위의 [진로 적성 검사 안내서]를 챙겨서 7층 복도 동쪽 창가의 [진로를 고민하는 학생]에게 나의 격려 편지와 함께 전해주렴! 🌟`,
+    completeStory: `친구의 표정이 한결 밝아졌다고 하니 정말 다행이구나. 타인의 꿈을 응원해주는 너의 따뜻한 마음씨야말로 가장 훌륭한 재능이란다!
+
+약속했던 경험치와 앞으로의 여정에 큰 힘이 되어줄 용기 포션을 선물로 줄게! 너의 빛나는 앞날을 언제나 축복한단다!`,
+    doneStory: `그 친구가 진로상담실을 찾아와서 함께 즐겁게 상담을 나누었단다. 너의 따뜻한 관심이 한 친구의 미래를 활짝 열어주었어!
+
+언제든 꿈과 진로가 고민된다면 24번 자리로 찾아오렴! 🌟✨`,
+    objectives: [
+      {
+        id: 'guidebook',
+        text: '5층 진로상담실에 들러 책상 위의 [진로 적성 검사 안내서] 1부 회수',
+        targetCount: 1,
+        unit: '부',
+        getCount: (quest) => (quest && quest.guidebookCollected ? 1 : 0)
+      },
+      {
+        id: 'deliver',
+        text: '7층 복도 동쪽 창가에 서 있는 [진로를 고민하는 학생]에게 편지와 안내서 전달',
+        targetCount: 1,
+        unit: '명',
+        getCount: (quest) => (quest && quest.studentComforted ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기 포션', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' }, label: '🧪 용기 포션 x2 (새로운 길을 나아갈 용기! 3분간 공격력 +5)' }
+    ]
   }
 };
 
@@ -1425,6 +1471,12 @@ class MainApp {
       const npc = target.data;
       if (!npc) return;
 
+      // 7층 복도 동쪽 창가: 진로를 고민하는 학생 (귐즨숑 선생님 연계 NPC)
+      if (npc.id === 'npc_student_worried' || (npc.name && npc.name.includes('진로를 고민하는 학생'))) {
+        this.handleWorriedStudentInteraction(npc);
+        return;
+      }
+
       // 1학년 복도 담임 이상대 선생님 (중앙 엘리베이터 안내 NPC)
       if (npc.id === 'npc_teacher_sangdae' || (npc.name && npc.name.includes('이상대'))) {
         if (!this.isElevatorUnlocked()) {
@@ -1607,6 +1659,8 @@ class MainApp {
       this.handleQuestSketchbookPickup(target.data || target);
     } else if (target.type === 'quest_yosunyu_usb') {
       this.handleQuestUsbPickup(target.data || target);
+    } else if (target.type === 'quest_career_book') {
+      this.handleQuestCareerBookPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     } else if (target.type === 'door_secret_history') {
@@ -8744,6 +8798,7 @@ class MainApp {
     if (id === 'npc_teacher_okchohan') questId = 'quest_okchohan_social';
     if (id === 'npc_teacher_kimmijin') questId = 'quest_kimmijin_art';
     if (id === 'npc_teacher_yosunyu') questId = 'quest_yosunyu_info';
+    if (id === 'npc_teacher_kwimjinsyong') questId = 'quest_kwimjinsyong_career';
     if (!QUEST_DEFINITIONS[questId]) {
       const found = Object.values(QUEST_DEFINITIONS).find(q => q.teacherId === id);
       if (found) questId = found.id;
@@ -8779,6 +8834,113 @@ class MainApp {
     const q = this.playerData.quests['quest_yosunyu_info'];
     if (!q) return false;
     return !!q.usbCollected;
+  }
+
+  isQuestCareerBookCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_kwimjinsyong_career'];
+    if (!q) return false;
+    return !!q.guidebookCollected;
+  }
+
+  handleQuestCareerBookPickup(itemData) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests['quest_kwimjinsyong_career'];
+    if (!quest || quest.status !== 'in_progress') {
+      const msg = '📘 [진로상담실 책상에 놓인 진로 적성 검사 안내서]\n\n"교무실 24번 좌석에 앉아 계신 진로 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n\n먼저 6층 교무실 24번 좌석의 귐즨숑 선생님께 다가가 퀘스트를 수락한 후 회수해주세요!"';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('📘 진로 적성 검사 안내서', msg, '📘');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    if (quest.guidebookCollected) {
+      this.showToast('이미 진로 적성 검사 안내서를 회수했습니다.', 'info');
+      return;
+    }
+
+    quest.guidebookCollected = true;
+    this.addItem('item_career_guidebook', '진로 적성 검사 안내서', 1, '📘', {
+      type: 'quest',
+      effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서'
+    });
+    this.saveProgress();
+    this.updateQuestTracker();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast('📘 5층 진로상담실 책상에서 [진로 적성 검사 안내서]를 회수했습니다!', 'success');
+
+    if (quest.studentComforted) {
+      setTimeout(() => {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast('🎉 [귐즨숑 선생님의 진로 의뢰] 모든 목표 달성! 24번 귐즨숑 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+      }, 500);
+    }
+  }
+
+  handleWorriedStudentInteraction(npc) {
+    const quest = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_kwimjinsyong_career'] : null;
+
+    // Case 1: Quest is in progress and player has the guidebook
+    if (quest && quest.status === 'in_progress' && quest.guidebookCollected && !quest.studentComforted) {
+      const emotionalDialog = `"어...? 귐즨숑 선생님께서 나를 위해 이런 편지를...?!\n\n『누구나 처음부터 완벽한 길을 알 수는 없단다. 작은 호기심과 좋아하는 일부터 시작하면 그것이 너만의 멋진 길이 되는 거야. 선생님은 언제나 너의 가능성을 믿는단다.』\n\n...정말 고마워! 나만 뒤처진 것 같아 두려웠는데 큰 용기가 생겼어. 나도 용기를 내서 진로상담실에 가볼게!"`;
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show('진로를 고민하는 학생', emotionalDialog, '✨');
+      } else {
+        alert(`💬 [진로를 고민하는 학생]\n\n${emotionalDialog}`);
+      }
+
+      quest.studentComforted = true;
+      this.removeItem('item_career_guidebook', 1);
+      this.saveProgress();
+      this.updateQuestTracker();
+
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+
+      setTimeout(() => {
+        this.showToast('🎉 [진로를 고민하는 학생]에게 격려 편지와 안내서를 전달했습니다! 24번 귐즨숑 선생님께 보고하세요!', 'success');
+      }, 600);
+      return;
+    }
+
+    // Case 2: Quest is in progress but hasn't collected guidebook yet
+    if (quest && quest.status === 'in_progress' && !quest.guidebookCollected) {
+      const text = `"하아... 다들 자기가 하고 싶은 게 뚜렷한 것 같은데... 난 내가 뭘 잘하는지, 앞으로 뭐가 되고 싶은지 정말 모르겠어... 😔\n\n(💡 5층 진로상담실 책상에서 [진로 적성 검사 안내서]를 먼저 회수해야 귐즨숑 선생님의 격려 편지와 함께 전달할 수 있습니다.)"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('진로를 고민하는 학생', text, '😔');
+      } else {
+        alert(`💬 [진로를 고민하는 학생]\n\n${text}`);
+      }
+      return;
+    }
+
+    // Case 3: Already comforted or quest done
+    if (quest && (quest.studentComforted || quest.status === 'done' || quest.status === 'completed')) {
+      const text = `"귐즨숑 선생님의 편지 덕분에 큰 용기가 생겼어! 나도 용기를 내서 5층 진로상담실에 가볼 생각이야. 전해줘서 정말 고마워 친구야! 😊"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('진로를 고민하는 학생', text, '😊');
+      } else {
+        alert(`💬 [진로를 고민하는 학생]\n\n${text}`);
+      }
+      return;
+    }
+
+    // Case 4: Default dialogue (quest not yet started)
+    if (window.RPGDialog) {
+      window.RPGDialog.show('진로를 고민하는 학생', npc.dialogue, '😔');
+    } else {
+      alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
+    }
   }
 
   onComputerServerInspected() {
@@ -9042,11 +9204,20 @@ class MainApp {
   }
 
   acceptQuest(questId) {
+    const qDef = (typeof QUEST_DEFINITIONS !== 'undefined') ? QUEST_DEFINITIONS[questId] : null;
     if (!this.playerData.quests) this.playerData.quests = {};
     this.playerData.quests[questId] = {
       status: 'in_progress',
       quizCount: 0,
       memoCollected: false,
+      textbookCollected: false,
+      acidRainScore: 0,
+      sketchbookCollected: false,
+      jumpSuccess: false,
+      serverInspected: false,
+      usbCollected: false,
+      guidebookCollected: false,
+      studentComforted: false,
       acceptedAt: Date.now()
     };
     this.saveProgress();
@@ -9057,7 +9228,11 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    this.showToast('📜 [Joshua 선생님의 특별 지령] 수락 완료! 1-1 교실과 6층 탕비실을 조사하세요.', 'success');
+    if (questId === 'quest_kwimjinsyong_career') {
+      this.showToast('🌟 [귐즨숑 선생님의 진로 의뢰] 수락! 5층 진로상담실에서 안내서를 챙기세요.', 'success');
+    } else {
+      this.showToast(`📜 [${(qDef && qDef.title) ? qDef.title : '의뢰'}] 수락 완료!`, 'success');
+    }
   }
 
   completeQuest(questId) {

@@ -89,6 +89,14 @@ const WORLD_DATA = {
       ],
       npcs: [
         {
+          id: "npc_student_worried",
+          name: "진로를 고민하는 학생",
+          x: 58,
+          y: 10,
+          avatar: "student_m1",
+          dialogue: "하아... 다들 자기가 하고 싶은 게 뚜렷한 것 같은데... 난 내가 뭘 잘하는지, 앞으로 뭐가 되고 싶은지 정말 모르겠어... 😔"
+        },
+        {
           id: "npc_g1_helper",
           name: "졸업생",
           x: 14,
@@ -131,6 +139,7 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
+      { id: "quest_career_guidebook", type: "quest_career_book", x: 45, y: 8, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
       { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 10, y: 7, name: "🏥 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 20, y: 7, name: "🔬 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 15, y: 12, name: "💻 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },
@@ -341,6 +350,18 @@ const WORLD_DATA = {
         avatar: "teacher",
         questId: "quest_yosunyu_info",
         dialogue: "반갑다! 미래를 여는 코딩과 알고리즘을 가르치는 정보 요션유 선생님이란다. 💻"
+      },
+      {
+        id: "npc_teacher_kwimjinsyong",
+        name: "귐즨숑 선생님",
+        role: "진로",
+        seatId: 24,
+        seatLabel: "24",
+        x: 74.0,
+        y: 20.875,
+        avatar: "teacher",
+        questId: "quest_kwimjinsyong_career",
+        dialogue: "반갑다! 숭실 학생들의 꿈과 진로를 밝혀주는 진로 귐즨숑 선생님이란다. 🌟"
       }
     ],
     interactive: [

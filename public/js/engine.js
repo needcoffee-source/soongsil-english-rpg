@@ -1300,6 +1300,11 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_career_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestCareerBookCollected === 'function' && window.MainApp.isQuestCareerBookCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           if (dist < 64 && dist < minDist) {
             let promptText = item.prompt || '조사하기 (SPACE)';
@@ -1610,6 +1615,11 @@ class GameEngine {
           }
           if (item.type === 'quest_yosunyu_usb') {
             if (window.MainApp && typeof window.MainApp.isQuestUsbCollected === 'function' && window.MainApp.isQuestUsbCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_career_book') {
+            if (window.MainApp && typeof window.MainApp.isQuestCareerBookCollected === 'function' && window.MainApp.isQuestCareerBookCollected()) {
               continue;
             }
           }
@@ -2829,6 +2839,11 @@ class GameEngine {
     // 6. Draw Station 5: 🤝 Mentoring Desk (x: 45, y: 7)
     this.drawCareerStationMentor(45 * 32, 7 * 32);
     this.drawCareerClueLabel(45 * 32 + 16, 7 * 32 - 18, 5, '멘토링 데스크', 'M', clues[4]);
+
+    // 6-B. Draw Career Quest Guidebook on Mentoring Desk if not collected
+    if (!window.MainApp || typeof window.MainApp.isQuestCareerBookCollected !== 'function' || !window.MainApp.isQuestCareerBookCollected()) {
+      this.drawCareerQuestGuideBook(45 * 32 + 16, 8 * 32);
+    }
 
     // 7. Draw Station 6: 🔭 Astronomy Lab (x: 52, y: 7)
     this.drawCareerStationSpace(52 * 32, 7 * 32);
@@ -6343,6 +6358,16 @@ class GameEngine {
       this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
       this.ctx.fill();
       this.ctx.fillRect(px + 8, py + 18, 16, 14);
+
+      if (npc.id === 'npc_student_worried') {
+        const app = window.MainApp;
+        const q = (app && app.playerData && app.playerData.quests) ? app.playerData.quests['quest_kwimjinsyong_career'] : null;
+        if (q && q.status === 'in_progress' && q.guidebookCollected && !q.studentComforted) {
+          this.drawFloatingQuestMarker(px + 16, py - 18, 'completed');
+        } else if (q && q.status === 'in_progress' && !q.guidebookCollected) {
+          this.drawFloatingQuestMarker(px + 16, py - 18, 'in_progress');
+        }
+      }
 
       const labelIcon = isTeacherNpc ? '👨‍🏫' : (npc.avatar === 'graduate' || npc.name.includes('졸업') ? '🎓' : '💬');
       this.drawSharpLabel(px + 16, py + 38, `${labelIcon} ${npc.name}`, {
@@ -9987,6 +10012,8 @@ class GameEngine {
           this.drawStaffOfficeArtSketchbook(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'quest_yosunyu_usb') {
           this.drawStaffOfficeUsb(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_career_book') {
+          this.drawCareerQuestGuideBook(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -10237,6 +10264,71 @@ class GameEngine {
       fontSize: 10,
       paddingX: 6,
       height: 16
+    });
+
+    ctx.restore();
+  }
+
+  // 5층 진로상담실 멘토링 데스크에 놓인 귐즨숑 선생님의 진로 적성 검사 안내서 렌더링
+  drawCareerQuestGuideBook(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestCareerBookCollected === 'function' && window.MainApp.isQuestCareerBookCollected()) {
+      return;
+    }
+    const ctx = this.ctx;
+    ctx.save();
+
+    const bob = Math.sin(Date.now() / 200) * 2;
+    const by = y + bob;
+
+    // 바닥 부드러운 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 24, 12, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 희망찬 황금빛 & 스카이블루 아우라
+    const glowPulse = 0.25 + Math.sin(Date.now() / 180) * 0.15;
+    ctx.fillStyle = `rgba(56, 189, 248, ${glowPulse})`;
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 12, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 감청색/사파이어 블루 진로 안내서 표지
+    ctx.fillStyle = '#1d4ed8';
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(x + 6, by + 3, 20, 20, 3);
+    } else {
+      ctx.rect(x + 6, by + 3, 20, 20);
+    }
+    ctx.fill();
+    ctx.strokeStyle = '#93c5fd';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // 책 속지 (하얀색 내지)
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(x + 8, by + 5, 16, 16);
+
+    // 표지 금박 별 문양 (진로의 별 🌟)
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 13, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 책갈피 리본 (황금색)
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(x + 15, by + 17, 3, 7);
+
+    // 플로팅 아이콘 및 텍스트 뱃지
+    this.drawSharpLabel(x + 16, by - 6, '📘 진로 적성 검사 안내서', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#60a5fa',
+      borderWidth: 1.5,
+      textColor: '#fef08a',
+      fontSize: 10,
+      paddingX: 7,
+      height: 18
     });
 
     ctx.restore();
