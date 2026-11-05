@@ -704,7 +704,7 @@ const WORLD_DATA = {
       type: "gym_pe_teacher",
       x: 44,
       y: 15,
-      name: "🏃 숭실고 체육선생님",
+      name: "👨‍🏫 숭실고 체육선생님",
       prompt: "체력 단련 도전하기 (SPACE)"
     }
   },

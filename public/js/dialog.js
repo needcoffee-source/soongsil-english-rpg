@@ -198,6 +198,10 @@ class RPGDialogManager {
   /**
    * In-Game Confirmation Dialog (No native browser confirm -> NEVER drops fullscreen)
    */
+  showConfirm(speaker, text, avatar, onConfirm, onCancel, confirmText, cancelText) {
+    return this.confirm(speaker, text, avatar, onConfirm, onCancel, confirmText, cancelText);
+  }
+
   confirm(speaker = '안내', text = '', avatar = '❓', onConfirm = null, onCancel = null, confirmText = '확인', cancelText = '취소') {
     const cleanText = (text || '').trim();
     const now = Date.now();

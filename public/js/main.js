@@ -2436,22 +2436,20 @@ class MainApp {
   handlePETeacherInteraction() {
     const dialogText = `"어이 학생! 실내 코트가 수리 중이라고 기초 체력 단련을 쉴 순 없지! 나와 함께 제자리 점프 5회 도전해볼 텐가?"\n\n[🎁 완주 보상: 🧪 빨간회복물약 10개]`;
 
-    if (window.RPGDialog && typeof window.RPGDialog.showConfirm === 'function') {
-      window.RPGDialog.showConfirm(
-        '🏃 숭실고 체육선생님',
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '👨‍🏫 숭실고 체육선생님',
         dialogText,
+        '👨‍🏫',
         () => {
           this.openPEJumpMiniGameModal();
         },
         () => {},
-        '🏃',
-        '도전하기! (SPACE)',
+        '도전하기 (Enter)',
         '다음에 하기 (ESC)'
       );
     } else {
-      if (confirm(`🏃 [숭실고 체육선생님]\n\n${dialogText}\n\n도전하시겠습니까?`)) {
-        this.openPEJumpMiniGameModal();
-      }
+      this.openPEJumpMiniGameModal();
     }
   }
 
