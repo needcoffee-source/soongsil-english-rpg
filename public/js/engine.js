@@ -12468,14 +12468,6 @@ class GameEngine {
     ctx.beginPath(); ctx.arc(x + 8, y + h - 8, 3, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(x + w - 8, y + h - 8, 3, 0, Math.PI * 2); ctx.fill();
 
-    // Vertical Decal: "숭실 축구부 버스"
-    ctx.save();
-    ctx.fillStyle = '#1e3a8a';
-    ctx.font = '900 9.5px "Pretendard", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('숭실 축구부 버스 ⚽', x + w / 2, y + 122);
-    ctx.restore();
-
     this.drawSharpLabel(x + w / 2, y - 10, '🚌 숭실 축구부 버스', {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#f59e0b',
