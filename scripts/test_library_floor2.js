@@ -260,6 +260,12 @@ try {
   console.error(e);
 }
 assert(!shelfThrew, 'All 7 diverse bookshelf handlers execute cleanly');
+assert(Array.isArray(app.playerData.visitedBookshelves) && app.playerData.visitedBookshelves.length === 7, 'All 7 bookshelves tracked in visitedBookshelves');
+assert(app.playerData.titles.includes('title_avid_reader') || app.playerData.titles.includes('📖 다독왕'), 'Title [📖 다독왕] unlocked after completing all 7 bookshelves');
+
+app.playerData.equippedTitle = '📖 다독왕';
+app.updatePlayerNameDisplay();
+assert(app.hudName.innerText.includes('[📖 다독왕]'), 'Equipping [📖 다독왕] updates hudName correctly');
 
 // Test Central Reading Desk & Sitting Interaction
 let deskThrew = false;

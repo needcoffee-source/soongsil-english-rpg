@@ -803,6 +803,13 @@ const TITLE_DEFINITIONS = [
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
     costAmount: 0
+  },
+  {
+    id: 'title_avid_reader',
+    name: '📖 다독왕',
+    desc: '2층 숭실 도서관의 7대 테마 서가(문학, 자연과학, 어학, 역사, 예술·체육, 정기간행물, 교양만화)를 모두 탐독한 열정적인 독서가!',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -7690,8 +7697,55 @@ class MainApp {
     }
   }
 
+  // 📚 도서관 7대 테마 서가 완독 기록 및 [📖 다독왕] 칭호 지급
+  recordBookshelfVisit(shelfId) {
+    if (!this.playerData) return;
+    if (!this.playerData.visitedBookshelves) {
+      this.playerData.visitedBookshelves = [];
+    }
+
+    const allShelves = [
+      'bookshelf_lit',
+      'bookshelf_sci',
+      'bookshelf_eng',
+      'bookshelf_his',
+      'bookshelf_art',
+      'bookshelf_mag',
+      'bookshelf_comic'
+    ];
+
+    const isNew = !this.playerData.visitedBookshelves.includes(shelfId);
+    if (isNew) {
+      this.playerData.visitedBookshelves.push(shelfId);
+      this.saveProgress();
+    }
+
+    const visitedCount = allShelves.filter(s => this.playerData.visitedBookshelves.includes(s)).length;
+
+    const titleName = '📖 다독왕';
+    const titleId = 'title_avid_reader';
+    if (!this.playerData.titles) this.playerData.titles = [];
+
+    const alreadyHasTitle = this.playerData.titles.includes(titleId) || this.playerData.titles.includes(titleName);
+
+    if (visitedCount >= 7 && !alreadyHasTitle) {
+      this.playerData.titles.push(titleId);
+      this.playerData.titles.push(titleName);
+      this.saveProgress();
+
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+
+      this.showToast('🏅 [도서관 대업적 완수!] 7대 테마 서가를 모두 완독하여 칭호 [📖 다독왕]을 획득했습니다!', 'success');
+    } else if (isNew && visitedCount < 7) {
+      this.showToast(`📚 [서가 탐독 기록]: ${visitedCount}/7 서가 완독! (7곳 완독 시 '다독왕' 칭호 획득)`, 'info');
+    }
+  }
+
   // 2번 구현-A: 문학·철학 서가 (윤동주 시집 & 고전문학)
   handleBookshelfLitInteraction() {
+    this.recordBookshelfVisit('bookshelf_lit');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -7707,6 +7761,7 @@ class MainApp {
 
   // 2번 구현-B: 자연과학·연금 서가 (졍경슉 비전서 & 실험일지)
   handleBookshelfSciInteraction() {
+    this.recordBookshelfVisit('bookshelf_sci');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -7722,6 +7777,7 @@ class MainApp {
 
   // 2번 구현-C: 외국어·어학 서가 (Joshua 영단어 비법전서)
   handleBookshelfEngInteraction() {
+    this.recordBookshelfVisit('bookshelf_eng');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -7737,6 +7793,7 @@ class MainApp {
 
   // 추가 서가-D: 역사·사회 서가 (1897 숭실 독립사 & 인문고전)
   handleBookshelfHisInteraction() {
+    this.recordBookshelfVisit('bookshelf_his');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -7752,6 +7809,7 @@ class MainApp {
 
   // 추가 서가-E: 예술·체육 대형 서가 (명화 도록 & 스포츠 교본)
   handleBookshelfArtInteraction() {
+    this.recordBookshelfVisit('bookshelf_art');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -7767,6 +7825,7 @@ class MainApp {
 
   // 추가 서가-F: 정기간행물 서가 (최신 과학 잡지 & 시사 교지)
   handleBookshelfMagInteraction() {
+    this.recordBookshelfVisit('bookshelf_mag');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -7782,6 +7841,7 @@ class MainApp {
 
   // 추가 서가-G: 교양만화 서가 (세계 역사 & 과학 그래픽노블)
   handleBookshelfComicInteraction() {
+    this.recordBookshelfVisit('bookshelf_comic');
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -8790,6 +8850,9 @@ class MainApp {
           progressText = '(숭실역사관 4대 전시관 답사)';
         } else if (t.id === 'title_drummer') {
           progressText = '(1학년 4반 도덕 비트 20문제 완파)';
+        } else if (t.id === 'title_avid_reader') {
+          const visitedCount = (this.playerData.visitedBookshelves || []).length;
+          progressText = `(도서관 7대 서가 완독: ${visitedCount}/7)`;
         } else if (t.id && t.id.startsWith('title_job_')) {
           progressText = '(5층 진로상담실 방탈출 & 전직)';
         } else {
