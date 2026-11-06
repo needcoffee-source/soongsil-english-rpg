@@ -817,6 +817,13 @@ const TITLE_DEFINITIONS = [
     desc: '숭실중학교 정문 급경사 2,500m 언덕길을 지각 위기에서 폭풍처럼 질주하여 S랭크로 주파한 전설의 러너!',
     costType: 'quest',
     costAmount: 0
+  },
+  {
+    id: 'title_recycle_king',
+    name: '♻️ 분리수거왕',
+    desc: '6층 복도 철제 분리수거함에서 환경과 지구를 지키는 올바른 분리배출 퀴즈를 완벽하게 통과한 환경 지킴이!',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -1724,6 +1731,8 @@ class MainApp {
       this.handleWaterPurifier();
     } else if (target.type === 'mirror') {
       this.handleMirrorInteraction();
+    } else if (target.type === 'recycle_bin') {
+      this.handleRecycleBinInteraction();
     } else if (target.type === 'lost_box') {
       this.handleLostBoxInteraction();
     } else if (target.type === 'locked_door') {
@@ -9215,6 +9224,194 @@ class MainApp {
     } else {
       alert(noteStory);
     }
+  }
+
+  // ♻️ 6층 복도 철제 분리수거함 퀴즈 시스템 (분리수거왕 칭호 획득)
+  handleRecycleBinInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const modal = document.getElementById('modal-recycle-quiz');
+    if (!modal) return;
+
+    const qEl = document.getElementById('recycle-quiz-question');
+    const optsEl = document.getElementById('recycle-quiz-options');
+    const feedEl = document.getElementById('recycle-quiz-feedback');
+    const feedTitle = document.getElementById('recycle-quiz-feedback-title');
+    const feedDesc = document.getElementById('recycle-quiz-feedback-desc');
+    const btnRetry = document.getElementById('btn-recycle-quiz-retry');
+    const btnClose = document.getElementById('btn-recycle-quiz-close');
+    const btnCloseX = document.getElementById('btn-close-recycle-quiz-x');
+
+    const RECYCLE_QUESTIONS = [
+      {
+        question: "🍜 라면 국물이 배어 빨갛게 물든 스티로폼 컵라면 용기는 어떻게 분리배출해야 할까요?",
+        options: [
+          "깨끗이 씻기지 않고 이물질 얼룩이 남았다면 종량제 일반쓰레기로 배출한다.",
+          "빨간 얼룩이 있어도 무조건 스티로폼 수거함에 넣는다.",
+          "비닐류 수거함에 구겨서 버린다.",
+          "플라스틱 수거함에 다른 플라스틱과 겹쳐서 버린다."
+        ],
+        answer: 0,
+        explanation: "음식물로 오염되어 색이나 기름기가 지워지지 않는 스티로폼은 재활용 공정에서 불량을 일으키므로 종량제 일반쓰레기로 배출해야 합니다!"
+      },
+      {
+        question: "🥤 생수나 음료를 다 마신 '투명 페트병'의 올바른 분리배출 3단계 순서는?",
+        options: [
+          "내용물 비우기 → 라벨 제거 → 찌그러뜨려 뚜껑 닫고 투명 페트병 전용함에 배출",
+          "음료가 남아있어도 라벨만 떼서 바로 배출한다.",
+          "비닐 라벨을 붙인 채로 발로 밟아 플라스틱함에 배출한다.",
+          "가위로 조각조각 잘라서 종량제 봉투에 버린다."
+        ],
+        answer: 0,
+        explanation: "투명 페트병은 고품질 재생 섬유의 원료가 됩니다! 라벨을 뜯고 속을 비운 뒤 찌그러뜨려 뚜껑을 닫아 배출하는 것이 올바른 방법입니다."
+      },
+      {
+        question: "📦 택배 종이 상자를 분리수거할 때 반드시 떼어내서 제거해야 하는 것은?",
+        options: [
+          "상자에 붙은 비닐 테이프와 택배 송장 스티커",
+          "상자의 네 모서리 부분",
+          "상자에 적힌 브랜드 로고 인쇄면",
+          "상자 겉면의 얇은 펄프 표면"
+        ],
+        answer: 0,
+        explanation: "종이박스에 붙은 비닐 테이프와 택배 송장은 재활용을 방해하는 대표적인 이물질이므로 반드시 떼어내고 상자를 납작하게 접어서 배출해야 합니다!"
+      },
+      {
+        question: "🔨 실수로 바닥에 떨어뜨려 와장창 깨진 유리병은 어떻게 처리해야 할까요?",
+        options: [
+          "신문지에 싸서 수거원이 다치지 않게 종량제 봉투나 특수규격 마대에 배출한다.",
+          "깨진 조각을 유리병 분리수거함에 그대로 쏟아 붓는다.",
+          "플라스틱 수거함 안쪽에 몰래 숨겨서 버린다.",
+          "물에 깨끗이 씻어서 투명 비닐봉투에 담아 버린다."
+        ],
+        answer: 0,
+        explanation: "깨진 유리는 재활용이 불가능하며 수거 작업자의 안전을 위협할 수 있습니다. 신문지 등으로 여러 겹 감싸 안전하게 종량제 봉투나 불연성 마대에 배출해야 합니다."
+      },
+      {
+        question: "📓 다 쓴 철제 스프링 공책(노트)을 올바르게 분리배출하는 방법은?",
+        options: [
+          "철제 스프링을 종이와 분리하여 스프링은 고철류, 종이는 종이류에 배출한다.",
+          "스프링이 달린 채로 통째로 종이류 수거함에 버린다.",
+          "통째로 고철류 수거함에 버린다.",
+          "분리하기 귀찮으니 무조건 일반쓰레기 종량제 봉투에 버린다."
+        ],
+        answer: 0,
+        explanation: "서로 다른 재질(철과 종이)이 결합된 물품은 반드시 재질별로 분리해서 각각 고철류와 종이류에 배출해야 재활용할 수 있습니다!"
+      }
+    ];
+
+    const loadQuestion = () => {
+      feedEl.classList.add('hidden');
+      btnRetry.classList.add('hidden');
+
+      const q = RECYCLE_QUESTIONS[Math.floor(Math.random() * RECYCLE_QUESTIONS.length)];
+      qEl.innerText = q.question;
+      optsEl.innerHTML = '';
+
+      // Shuffle options while keeping correct answer flag
+      const list = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+      }
+
+      const numEmojis = ['①', '②', '③', '④'];
+      list.forEach((item, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.style.cssText = 'width: 100%; text-align: left; padding: 12px 14px; background: rgba(30, 41, 59, 0.85); border: 1.5px solid #334155; border-radius: 9px; color: #f8fafc; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.18s; line-height: 1.45; display: flex; align-items: flex-start; gap: 8px;';
+        btn.innerHTML = '<span style="color:#38bdf8; font-weight:800; font-size:15px; line-height:1;">' + (numEmojis[index] || (index + 1)) + '</span> <span>' + item.text + '</span>';
+
+        btn.onmouseover = () => { btn.style.background = '#1e3a8a'; btn.style.borderColor = '#60a5fa'; };
+        btn.onmouseout = () => {
+          if (!btn.disabled) {
+            btn.style.background = 'rgba(30, 41, 59, 0.85)';
+            btn.style.borderColor = '#334155';
+          }
+        };
+
+        btn.onclick = () => {
+          // Disable all choice buttons
+          Array.from(optsEl.children).forEach(b => {
+            b.disabled = true;
+            b.style.cursor = 'default';
+          });
+
+          if (item.isCorrect) {
+            btn.style.background = '#065f46';
+            btn.style.borderColor = '#34d399';
+
+            if (window.AudioManager && window.AudioManager.playFanfare) {
+              window.AudioManager.playFanfare();
+            }
+
+            if (!this.playerData.titles) this.playerData.titles = [];
+            const tId = 'title_recycle_king';
+            const tName = '♻️ 분리수거왕';
+            const isFirst = !this.playerData.titles.includes(tId) && !this.playerData.titles.includes(tName);
+
+            if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
+            if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
+
+            let bonusText = '';
+            if (isFirst) {
+              this.addGold(30);
+              this.addExp(30);
+              bonusText = '<br><br>━━━━━━━━━━━━━━━━━━━━<br>🎁 <b>[분리수거왕 보너스 달성!]</b><br>• 칭호: <b>[♻️ 분리수거왕]</b> 획득!<br>• 🪙 골드 +30G 획득!<br>• 🌟 경험치 +30 EXP 획득!';
+              this.showToast('🎉 [♻️ 분리수거왕] 칭호를 획득했습니다! (+30G, +30 EXP)', 'success');
+            } else {
+              bonusText = '<br><br><i>(이미 [♻️ 분리수거왕] 칭호를 획득하셨습니다! 에코 환경 지킴이 최고! 👍)</i>';
+            }
+
+            this.saveProgress();
+            if (typeof this.renderTitles === 'function') this.renderTitles();
+
+            feedEl.classList.remove('hidden');
+            feedEl.style.borderColor = '#22c55e';
+            feedEl.style.background = 'rgba(6, 78, 59, 0.4)';
+            feedTitle.innerHTML = '🎉 딩동댕! 정답입니다!';
+            feedTitle.style.color = '#4ade80';
+            feedDesc.innerHTML = '💡 <b>[올바른 분리배출 상식]</b><br>' + q.explanation + bonusText;
+            btnRetry.classList.add('hidden');
+          } else {
+            btn.style.background = '#7f1d1d';
+            btn.style.borderColor = '#f87171';
+
+            if (window.AudioManager && window.AudioManager.playSelect) {
+              window.AudioManager.playSelect();
+            }
+
+            feedEl.classList.remove('hidden');
+            feedEl.style.borderColor = '#ef4444';
+            feedEl.style.background = 'rgba(127, 29, 29, 0.4)';
+            feedTitle.innerHTML = '❌ 앗, 아쉽게 틀렸습니다!';
+            feedTitle.style.color = '#f87171';
+            feedDesc.innerHTML = '💡 <b>[다시 생각해보기]</b><br>' + q.explanation + '<br><br>다시 도전하여 <b>[♻️ 분리수거왕]</b> 칭호를 획득해보세요!';
+            btnRetry.classList.remove('hidden');
+          }
+        };
+
+        optsEl.appendChild(btn);
+      });
+    };
+
+    if (btnCloseX && !btnCloseX._bound) {
+      btnCloseX._bound = true;
+      btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (btnClose && !btnClose._bound) {
+      btnClose._bound = true;
+      btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (btnRetry && !btnRetry._bound) {
+      btnRetry._bound = true;
+      btnRetry.addEventListener('click', () => loadQuestion());
+    }
+
+    loadQuestion();
+    modal.classList.remove('hidden');
   }
 
   // 📜 정문 앞 도로 떨어진 개발자노트 이스터에그 (제4편)

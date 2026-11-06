@@ -78,9 +78,9 @@ const officeSketchbook = office.interactive.find(i => i.id === 'quest_kimmijin_s
 assert(!officeSketchbook, 'Sketchbook must no longer be in staff office');
 const pgSketchbook = w.playground.sketchbook;
 assert(pgSketchbook, 'Kim Jin-mui sketchbook must exist in playground');
-assert.strictEqual(pgSketchbook.x, 20, 'Sketchbook must be on the blue bleacher bench at x=20');
+assert.strictEqual(pgSketchbook.x, 16, 'Sketchbook must be on the bleachers at x=16');
 assert.strictEqual(pgSketchbook.y, 7, 'Sketchbook must be at y=7');
-console.log('✔ 7. Kim Jin-mui sketchbook on playground blue bleachers (x: 20, y: 7) verified');
+console.log('✔ 7. Kim Jin-mui sketchbook on playground bleachers (x: 16, y: 7) verified');
 
 const officeUsb = office.interactive.find(i => i.id === 'quest_yosunyu_usb');
 assert(!officeUsb, 'Yo Sun-yu algorithm USB must no longer be in staff office');
@@ -92,14 +92,16 @@ assert.strictEqual(usb702.x, 2, 'USB must be at corner x=2');
 assert.strictEqual(usb702.y, 4, 'USB must be at corner y=4');
 console.log('✔ 8. Yo Sun-yu algorithm USB in 1-2 classroom corner (x: 2, y: 4) verified');
 
-// Test Career Guidebook on 5th floor career room mentoring desk
+// Test Career Guidebook on 5th floor career room consultation desk
 const crCareer = w.classroom_career;
 assert(crCareer, 'classroom_career must exist');
 const guidebook = crCareer.interactive && crCareer.interactive.find(i => i.id === 'quest_career_guidebook');
 assert(guidebook, 'Career guidebook must exist in classroom_career');
-assert.strictEqual(guidebook.x, 45, 'Guidebook must be at mentoring desk x=45');
-assert.strictEqual(guidebook.y, 8, 'Guidebook must be at mentoring desk y=8');
-console.log('✔ 9. Career guidebook on mentoring desk in 5F career room (x: 45, y: 8) verified');
+assert.strictEqual(guidebook.x, 48, 'Guidebook must be at consultation desk x=48');
+assert.strictEqual(guidebook.y, 12, 'Guidebook must be at consultation desk y=12');
+const mentorDesk = crCareer.interactive.find(i => i.id === 'career_clue_5');
+assert(Math.hypot(guidebook.x - mentorDesk.x, guidebook.y - mentorDesk.y) >= 5, 'Guidebook must be well separated from mentoring desk');
+console.log('✔ 9. Career guidebook on consultation desk in 5F career room (x: 48, y: 12) verified');
 
 // Test Worried Student on 6th floor hallway east window
 const f6 = w.floors[6];

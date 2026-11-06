@@ -92,7 +92,8 @@ const WORLD_DATA = {
       elevator: { x: 56, y: 3 },
       interactive: [
         { id: "board_leaderboard_6", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
-        { id: "dibut_repair_box_6", type: "dibut_repair_box", x: 8, y: 16, name: "📱 디벗 수리함 (5단)", noInteract: true },
+        { id: "dibut_repair_box_6", type: "dibut_repair_box", x: 8, y: 16, name: "📱 디벗 수리함", noInteract: true },
+        { id: "recycle_bin_6", type: "recycle_bin", x: 14, y: 16, name: "♻️ 분리수거 철제 쓰레기통", prompt: "분리수거 퀴즈 풀기 (SPACE)" },
         { id: "mirror_hallway_6", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
         { id: "water_purifier_hallway_6", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
@@ -175,7 +176,7 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
-      { id: "quest_career_guidebook", type: "quest_career_book", x: 45, y: 8, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
+      { id: "quest_career_guidebook", type: "quest_career_book", x: 48, y: 12, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
       { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 10, y: 7, name: "🏥 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 20, y: 7, name: "🔬 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 15, y: 12, name: "💻 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },

@@ -283,6 +283,39 @@ assert(mainSrc.includes('매일 아침 숭실 정문 급경사 언덕길을 올�
 assert(mainSrc.includes('8시 20분, 종소리가 울리고 온 힘을 다해 몸을 날리던 그 순간의 심장 박동!'), 'Developer note 4 contains revised bell chime line');
 assert(!mainSrc.includes('2,500m 언덕길을 올려다보며'), 'Developer note 4 does not contain 2,500m in the opening');
 
+console.log('\n5. Checking 6F Hallway Recycle Bin, Dibut Label, Student Label & Career Guidebook Separation:');
+const f6 = WORLD_DATA.floors[6];
+const dibut = f6.interactive.find(i => i.id === 'dibut_repair_box_6');
+assert(dibut && dibut.name === '📱 디벗 수리함', 'dibut_repair_box_6 name updated to 📱 디벗 수리함 without (5단)');
+
+const recycleBin = f6.interactive.find(i => i.id === 'recycle_bin_6');
+assert(recycleBin && recycleBin.x === 14 && recycleBin.y === 16, 'recycle_bin_6 placed at x: 14, y: 16 where 갓준철 was standing');
+assert(recycleBin.type === 'recycle_bin', 'recycle_bin_6 has type recycle_bin');
+assert(recycleBin.prompt && recycleBin.prompt.includes('SPACE'), 'recycle_bin_6 has SPACE interaction prompt');
+
+engine.player.room = 'hallway';
+engine.player.floor = 6;
+assert(engine.checkCollision(14 * 32 + 16, 16 * 32 + 16) === true, 'Tile (14, 16) occupied by recycle bin is solid/blocked');
+assert(engine.checkCollision(8 * 32 + 16, 16 * 32 + 16) === true, 'Tile (8, 16) occupied by dibut cabinet is solid/blocked');
+assert(engine.checkCollision(14 * 32 + 16, 15 * 32 + 16) === false, 'Tile above recycle bin (14, 15) is passable');
+
+assert(typeof engine.drawHighResRecycleBin === 'function', 'drawHighResRecycleBin method exists on GameEngine');
+assert(typeof app.handleRecycleBinInteraction === 'function', 'handleRecycleBinInteraction method exists on MainApp');
+
+const recycleTitle = (app.TITLE_DEFINITIONS || []).find(t => t.id === 'title_recycle_king');
+assert(recycleTitle && recycleTitle.name === '♻️ 분리수거왕', 'title_recycle_king registered as ♻️ 분리수거왕 in TITLE_DEFINITIONS');
+
+const crCareer = WORLD_DATA.classroom_career;
+const guidebook = crCareer.interactive.find(i => i.id === 'quest_career_guidebook');
+const mentorDesk = crCareer.interactive.find(i => i.id === 'career_clue_5');
+assert(guidebook.x === 48 && guidebook.y === 12, 'Career guidebook moved to (48, 12)');
+assert(Math.hypot(guidebook.x - mentorDesk.x, guidebook.y - mentorDesk.y) >= 5, 'Career guidebook separated from mentoring desk (>= 5 tiles)');
+
+const engineSrc = fs.readFileSync('public/js/engine.js', 'utf8');
+assert(engineSrc.includes("npc.id === 'npc_student_worried' || (npc.name && npc.name.includes('학생'))"), 'Student NPC name label is skipped in renderNPCs');
+const indexHtmlContent = fs.readFileSync('public/index.html', 'utf8');
+assert(indexHtmlContent.includes('id="modal-recycle-quiz"'), 'index.html contains modal-recycle-quiz');
+
 console.log('\n========================================================');
 console.log(`📊 FINAL RESULT: ${passed} PASSED / FAILED: ${failed}`);
 console.log('========================================================');

@@ -503,8 +503,8 @@ class GameEngine {
           if (!isDoor) return true;
         }
       }
-      // 6층 디벗 수리함 (5단) 장애물 충돌 판정
-      if (this.player.floor === 6 && tileX === 8 && tileY === 16) {
+      // 6층 디벗 수리함 & 분리수거 철제 쓰레기통 장애물 충돌 판정
+      if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || tileX === 14)) {
         return true;
       }
     } else {
@@ -2991,9 +2991,9 @@ class GameEngine {
     this.drawCareerStationMentor(45 * 32, 7 * 32);
     this.drawCareerClueLabel(45 * 32 + 16, 7 * 32 - 18, 5, '멘토링 데스크', 'M', clues[4]);
 
-    // 6-B. Draw Career Quest Guidebook on Mentoring Desk if not collected
+    // 6-B. Draw Career Quest Guidebook on dedicated consultation desk (x: 48, y: 12)
     if (!window.MainApp || typeof window.MainApp.isQuestCareerBookCollected !== 'function' || !window.MainApp.isQuestCareerBookCollected()) {
-      this.drawCareerQuestGuideBook(45 * 32 + 16, 8 * 32);
+      this.drawCareerQuestGuideBook(48 * 32, 12 * 32);
     }
 
     // 7. Draw Station 6: 🔭 Astronomy Lab (x: 52, y: 7)
@@ -5415,6 +5415,8 @@ class GameEngine {
           this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || (obj.type === 'dev_note_2' ? '📜 떨어진 개발자노트 (제2편)' : '📜 떨어진 개발자노트 (제1편)'));
         } else if (obj.type === 'dibut_repair_box' || obj.type === 'diba_repair_box') {
           this.drawHighResDibutCabinet(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'recycle_bin') {
+          this.drawHighResRecycleBin(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -6532,6 +6534,11 @@ class GameEngine {
         } else if (q && q.status === 'in_progress' && !q.guidebookCollected) {
           this.drawFloatingQuestMarker(px + 16, py - 18, 'in_progress');
         }
+      }
+
+      // 학생 NPC 밑의 이름 안내 라벨 제거 (깔끔한 시각 디자인 유지)
+      if (npc.id === 'npc_student_worried' || (npc.name && npc.name.includes('학생'))) {
+        continue;
       }
 
       const labelIcon = isTeacherNpc ? '👨‍🏫' : (npc.avatar === 'graduate' || npc.name.includes('졸업') ? '🎓' : '💬');
@@ -8100,10 +8107,125 @@ class GameEngine {
     }
 
     // 7. Prominent Floating Sharp Label
-    this.drawSharpLabel(px + 16, by - 12, '📱 디벗 수리함 (5단)', {
+    this.drawSharpLabel(px + 16, by - 12, '📱 디벗 수리함', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#38bdf8',
       textColor: '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res Recycle Bin Station (6층 복도 철제 분리수거함)
+  drawHighResRecycleBin(px, py) {
+    this.ctx.save();
+
+    const w = 42;
+    const h = 46;
+    const bx = px - 5;
+    const by = py - 14;
+
+    // 1. Soft Floor Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, by + h + 2, 22, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. Heavy-duty Rubber & Steel Base Feet
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(bx + 4, by + h - 2, 6, 4);
+    this.ctx.fillRect(bx + w - 10, by + h - 2, 6, 4);
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(bx + 4, by + h, 6, 2);
+    this.ctx.fillRect(bx + w - 10, by + h, 6, 2);
+
+    // 3. Brushed Stainless Steel Body
+    const metalGrad = this.ctx.createLinearGradient(bx, by, bx + w, by);
+    metalGrad.addColorStop(0, '#64748b');
+    metalGrad.addColorStop(0.15, '#94a3b8');
+    metalGrad.addColorStop(0.5, '#e2e8f0');
+    metalGrad.addColorStop(0.85, '#94a3b8');
+    metalGrad.addColorStop(1, '#475569');
+
+    this.ctx.fillStyle = metalGrad;
+    this.ctx.beginPath();
+    if (typeof this.ctx.roundRect === 'function') {
+      this.ctx.roundRect(bx, by, w, h - 2, [4, 4, 2, 2]);
+    } else {
+      this.ctx.rect(bx, by, w, h - 2);
+    }
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = '#334155';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.stroke();
+
+    // 4. Hooded Intake Bevel
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(bx + 2, by + 2, w - 4, 14);
+    this.ctx.strokeStyle = '#475569';
+    this.ctx.lineWidth = 0.8;
+    this.ctx.strokeRect(bx + 2, by + 2, w - 4, 14);
+
+    // 5. 4 Distinct Sorting Slots (CAN, PET, PAPER, TRASH)
+    const slotW = 7;
+    const slotH = 8;
+    const startX = bx + 4;
+    const slotGap = 2;
+    const slots = [
+      { ring: '#38bdf8', label: '캔' },
+      { ring: '#4ade80', label: '페트' },
+      { ring: '#fbbf24', label: '종이' },
+      { ring: '#94a3b8', label: '일반' }
+    ];
+
+    for (let i = 0; i < slots.length; i++) {
+      const sx = startX + i * (slotW + slotGap);
+      const sy = by + 5;
+      const s = slots[i];
+
+      this.ctx.fillStyle = '#090d16';
+      this.ctx.fillRect(sx, sy, slotW, slotH);
+
+      this.ctx.strokeStyle = s.ring;
+      this.ctx.lineWidth = 1;
+      this.ctx.strokeRect(sx, sy, slotW, slotH);
+
+      this.ctx.fillStyle = s.ring;
+      this.ctx.font = 'bold 5px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(s.label, sx + slotW / 2, sy + slotH / 2);
+    }
+
+    // 6. Cabinet Door Divider
+    this.ctx.strokeStyle = '#64748b';
+    this.ctx.lineWidth = 0.8;
+    this.ctx.beginPath();
+    this.ctx.moveTo(bx + w / 2, by + 18);
+    this.ctx.lineTo(bx + w / 2, by + h - 4);
+    this.ctx.stroke();
+
+    // Handles
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.fillRect(bx + w / 2 - 4, by + 28, 2, 8);
+    this.ctx.fillRect(bx + w / 2 + 2, by + 28, 2, 8);
+
+    // 7. Green Recycling Emblem (♻️)
+    this.ctx.fillStyle = '#15803d';
+    this.ctx.font = 'bold 12px sans-serif';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillText('♻️', bx + w / 2, by + 23);
+
+    // 8. Floating Sharp Label
+    this.drawSharpLabel(px + 16, by - 12, '♻️ 분리수거 철제 쓰레기통', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#22c55e',
+      textColor: '#86efac',
       fontSize: 11.5,
       paddingX: 8,
       height: 20
@@ -11722,7 +11844,7 @@ class GameEngine {
     ctx.restore();
   }
 
-  // 5층 진로상담실 멘토링 데스크에 놓인 귐즨숑 선생님의 진로 적성 검사 안내서 렌더링
+  // 5층 진로상담실 상담 데스크에 놓인 귐즨숑 선생님의 진로 적성 검사 안내서 렌더링
   drawCareerQuestGuideBook(x, y) {
     if (window.MainApp && typeof window.MainApp.isQuestCareerBookCollected === 'function' && window.MainApp.isQuestCareerBookCollected()) {
       return;
@@ -11730,14 +11852,30 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
 
-    const bob = Math.sin(Date.now() / 200) * 2;
-    const by = y + bob;
-
-    // 바닥 부드러운 그림자
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    // 1. 단정한 원목 상담 데스크 바닥 그림자 & 테이블
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.beginPath();
-    ctx.ellipse(x + 16, y + 24, 12, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 16, y + 28, 20, 6, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    // 원목 테이블 상판 & 다리
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(x - 4, y + 8, 40, 18);
+    ctx.fillStyle = '#92400e';
+    ctx.fillRect(x - 2, y + 10, 36, 14);
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(x, y + 24, 4, 6);
+    ctx.fillRect(x + 28, y + 24, 4, 6);
+
+    // 테이블 매트
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+    ctx.fillRect(x + 4, y + 11, 24, 12);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 4, y + 11, 24, 12);
+
+    const bob = Math.sin(Date.now() / 200) * 2;
+    const by = y + bob - 4;
 
     // 희망찬 황금빛 & 스카이블루 아우라
     const glowPulse = 0.25 + Math.sin(Date.now() / 180) * 0.15;
