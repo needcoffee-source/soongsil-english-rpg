@@ -278,6 +278,10 @@ assert(!!gym.devNote4, 'devNote4 exists in playground_gym');
 assert(gym.devNote4.x === 31 && gym.devNote4.y === 33, 'devNote4 placed at x: 31, y: 33 where 갓준철 stands');
 assert(gym.devNote4.type === 'dev_note_4', 'devNote4 has type dev_note_4');
 assert(typeof app.handleDevNote4Interaction === 'function', 'handleDevNote4Interaction exists on MainApp');
+const mainSrc = fs.readFileSync('public/js/main.js', 'utf8');
+assert(mainSrc.includes('매일 아침 숭실 정문 급경사 언덕길을 올려다보며'), 'Developer note 4 contains revised opening line');
+assert(mainSrc.includes('8시 20분, 종소리가 울리고 온 힘을 다해 몸을 날리던 그 순간의 심장 박동!'), 'Developer note 4 contains revised bell chime line');
+assert(!mainSrc.includes('2,500m 언덕길을 올려다보며'), 'Developer note 4 does not contain 2,500m in the opening');
 
 console.log('\n========================================================');
 console.log(`📊 FINAL RESULT: ${passed} PASSED / FAILED: ${failed}`);
