@@ -10196,7 +10196,7 @@ class GameEngine {
       if (c.type === 'five' || c.type === 'six') {
         if (tx >= x && tx <= x + 4 && ty >= 15 && ty <= 21) return true;
       } else if (c.type === 'diamond') {
-        if (tx >= x && tx <= x + 4 && ty >= 15 && ty <= 20) return true;
+        if (tx >= x && tx <= x + 4 && ty >= 15 && ty <= 21) return true;
       }
     }
 
@@ -11006,20 +11006,23 @@ class GameEngine {
     ctx.strokeRect(px + 0.5, py + 0.5, w - 1, h - 1);
 
     // 3. 작업용 소품
+    const propH = Math.min(h - 10, 26);
+    const startY = py + Math.max(4, Math.floor((h - propH) / 2));
+
     // 3-A. 좌측 초록색 고무 커팅 매트 (Cutting Mat with grid)
     ctx.fillStyle = '#065f46';
-    ctx.fillRect(px + 8, py + 8, 38, 30);
+    ctx.fillRect(px + 8, startY, 38, propH);
     ctx.strokeStyle = '#10b981';
     ctx.lineWidth = 1;
-    ctx.strokeRect(px + 8.5, py + 8.5, 37, 29);
+    ctx.strokeRect(px + 8.5, startY + 0.5, 37, propH - 1);
     // 그리드 눈금선
     ctx.strokeStyle = 'rgba(110, 231, 183, 0.4)';
     ctx.beginPath();
     for (let gx = px + 16; gx < px + 44; gx += 8) {
-      ctx.moveTo(gx, py + 9);
-      ctx.lineTo(gx, py + 37);
+      ctx.moveTo(gx, startY + 2);
+      ctx.lineTo(gx, startY + propH - 2);
     }
-    for (let gy = py + 16; gy < py + 36; gy += 8) {
+    for (let gy = startY + 6; gy < startY + propH - 2; gy += 6) {
       ctx.moveTo(px + 9, gy);
       ctx.lineTo(px + 45, gy);
     }
@@ -11027,37 +11030,38 @@ class GameEngine {
 
     // 자 (Ruler) & 커터칼
     ctx.fillStyle = '#fde047';
-    ctx.fillRect(px + 12, py + 12, 28, 3);
+    ctx.fillRect(px + 12, startY + 3, 28, 3);
     ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(px + 18, py + 22, 16, 4);
+    ctx.fillRect(px + 18, startY + 11, 16, 4);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(px + 18, py + 22, 8, 4);
+    ctx.fillRect(px + 18, startY + 11, 8, 4);
 
     // 3-B. 우측 시험지 / 학습지 제본 묶음 & 스테이플러
     ctx.fillStyle = '#e2e8f0';
-    ctx.fillRect(px + w - 46, py + 7, 36, 32);
+    ctx.fillRect(px + w - 46, startY, 36, propH);
     ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(px + w - 48, py + 9, 36, 30);
+    ctx.fillRect(px + w - 48, startY + 2, 36, propH - 2);
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 0.8;
-    ctx.strokeRect(px + w - 48, py + 9, 36, 30);
+    ctx.strokeRect(px + w - 48, startY + 2, 36, propH - 2);
     // 시험지 텍스트 라인
     ctx.fillStyle = '#64748b';
-    ctx.fillRect(px + w - 44, py + 14, 28, 2);
-    ctx.fillRect(px + w - 44, py + 19, 22, 2);
-    ctx.fillRect(px + w - 44, py + 24, 25, 2);
-    ctx.fillRect(px + w - 44, py + 29, 18, 2);
+    ctx.fillRect(px + w - 44, startY + 6, 28, 2);
+    ctx.fillRect(px + w - 44, startY + 11, 22, 2);
+    if (propH > 18) {
+      ctx.fillRect(px + w - 44, startY + 16, 25, 2);
+    }
     // 파란색 집게 클립
     ctx.fillStyle = '#2563eb';
-    ctx.fillRect(px + w - 38, py + 7, 8, 4);
+    ctx.fillRect(px + w - 38, startY, 8, 4);
 
     // 4. 중앙 명패 배지: 중앙테이블
     const cx = px + w / 2;
     const cy = py + h / 2;
-    ctx.font = 'bold 11px "Pretendard", "Noto Sans KR", sans-serif';
+    ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
     const text = '중앙테이블';
     const tw = Math.max(54, ctx.measureText(text).width + 12);
-    const th = 20;
+    const th = 18;
 
     ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
     ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
@@ -11080,6 +11084,7 @@ class GameEngine {
     const isCreatorDesk = (label === '26');
     const isSangdaeDesk = (label === '30');
     const isKyungsukDesk = (label === '23');
+    const isHunihuniDesk = (label === '27');
     const now = Date.now();
 
     // 0. 제작자 갓준철 연구석: 황금빛 펄스 후광 글로우 (바닥 조명 및 배경 아우라)
@@ -11089,7 +11094,11 @@ class GameEngine {
 
     // 1. 의자 (책상 바깥쪽)
     if (facing === 'right') {
-      this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
+      if (isHunihuniDesk) {
+        this.drawStaffOfficeChair(px - 10, py + h / 2, 'right', '#450a0a', '#ef4444');
+      } else {
+        this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
+      }
     } else if (facing === 'left') {
       if (isCreatorDesk) {
         this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left', '#1e1b4b', '#fbbf24');
@@ -11235,11 +11244,80 @@ class GameEngine {
     } else {
       ctx.fillStyle = '#1e293b';
       if (facing === 'right') {
-        ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(px + 8, py + 8, 14, 12);
+        if (isHunihuniDesk) {
+          // [27번 후니후니 도덕 & 드럼/락스피릿 선생님 전용 데스크 소품]
+          // 모니터 (우측) - 오디오 사운드 파형 & 이퀄라이저 바
+          ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
+          // 이퀄라이저 비트 바 (초록/노랑/빨강)
+          ctx.fillStyle = '#22c55e'; ctx.fillRect(px + w - 16, py + h / 2 + 4, 2, 4);
+          ctx.fillStyle = '#eab308'; ctx.fillRect(px + w - 16, py + h / 2 - 2, 2, 4);
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(px + w - 16, py + h / 2 - 8, 2, 4);
+
+          // 🥁 한 쌍의 원목 드럼스틱 (좌측 하단 대각선 교차)
+          ctx.strokeStyle = '#fef3c7';
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(px + 8, py + h - 10);
+          ctx.lineTo(px + 24, py + h - 26);
+          ctx.moveTo(px + 10, py + h - 26);
+          ctx.lineTo(px + 24, py + h - 10);
+          ctx.stroke();
+          // 드럼스틱 흰색 팁
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(px + 24, py + h - 26, 1.8, 0, Math.PI * 2);
+          ctx.arc(px + 24, py + h - 10, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+          // 손잡이 그립
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(px + 7, py + h - 12, 4, 3);
+          ctx.fillRect(px + 9, py + h - 27, 4, 3);
+
+          // 📖 붉은색 도덕 교재 및 바른생활 명언집 (좌측 상단)
+          ctx.fillStyle = '#7f1d1d';
+          ctx.fillRect(px + 6, py + 8, 14, 16);
+          ctx.fillStyle = '#b91c1c';
+          ctx.fillRect(px + 8, py + 10, 12, 14);
+          ctx.fillStyle = '#fef08a';
+          ctx.fillRect(px + 9, py + 12, 10, 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(px + 9, py + 16, 7, 1.5);
+
+          // ⏱️ 클래식 아날로그 피라미드 메트로놈 (중앙 상단)
+          ctx.fillStyle = '#78350f';
+          ctx.beginPath();
+          ctx.moveTo(px + 28, py + 8);
+          ctx.lineTo(px + 35, py + 24);
+          ctx.lineTo(px + 21, py + 24);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#b45309';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          // 황동 진자 바늘
+          ctx.strokeStyle = '#fef08a';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(px + 28, py + 23);
+          ctx.lineTo(px + 30, py + 10);
+          ctx.stroke();
+
+          // ☕ 락스피릿 블랙 & 레드 머그컵 (중앙 하단)
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(px + 34, py + h - 20, 9, 11);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(px + 37, py + h - 17, 3, 5);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.fillRect(px + 43, py + h - 18, 2, 7);
+        } else {
+          ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillRect(px + 8, py + 8, 14, 12);
+        }
       } else if (facing === 'left') {
         if (isSangdaeDesk) {
           // [30번 이상대 수학선생님 전용 데스크 소품]
@@ -11412,6 +11490,21 @@ class GameEngine {
         ctx.lineWidth = 1.5;
         ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
         ctx.fillStyle = '#6ee7b7';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isHunihuniDesk) {
+        // 🥁 후니후니 전용 명패 (번호 및 과목 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🥁 후니후니';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#fca5a5';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);
@@ -11595,14 +11688,14 @@ class GameEngine {
         this.drawPartitionLine(x * 32 - 4, 17 * 32 + 2, (x + 5) * 32 + 4, 17 * 32 + 2);
         this.drawPartitionLine(x * 32 - 6, 19.7 * 32, (x + 5) * 32 + 6, 19.7 * 32);
       } else if (c.type === 'diamond') {
-        // 1 - 2 - 1 자리 (11번: 의자 없는 대형 직사각형 작업용 테이블)
-        this.drawStaffOfficeWorkTable((x + 0.2) * 32, 14.85 * 32, 4.6 * 32, 46, '중앙테이블');
-        this.drawStaffOfficeTeacherDesk(x * 32, 16 * 32 + 10, 64, 64, lb.l, 'right');
-        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 16 * 32 + 10, 64, 64, lb.r, 'left');
-        this.drawStaffOfficeTeacherDesk((x + 0.5) * 32, 19 * 32, 4 * 32, 34, lb.bottom, 'up');
-        this.drawPartitionLine(x * 32 - 2, 16 * 32 + 6, (x + 5) * 32 + 2, 16 * 32 + 6);
-        this.drawPartitionLine((x + 2.5) * 32, 16 * 32 + 6, (x + 2.5) * 32, 18 * 32 + 26);
-        this.drawPartitionLine(x * 32 - 2, 18 * 32 + 26, (x + 5) * 32 + 2, 18 * 32 + 26);
+        // 1 - 2 - 1 자리 (11번 중앙테이블 및 14번 테이블을 10번 테이블과 동일한 5타일 폭 사이즈로 확장, 12·13번 좌우 대칭 정렬)
+        this.drawStaffOfficeWorkTable(x * 32, 15 * 32, 5 * 32, 36, '중앙테이블');
+        this.drawStaffOfficeTeacherDesk(x * 32, 17 * 32 + 4, 64, 64, lb.l, 'right');
+        this.drawStaffOfficeTeacherDesk((x + 3) * 32, 17 * 32 + 4, 64, 64, lb.r, 'left');
+        this.drawStaffOfficeTeacherDesk(x * 32, 20 * 32, 5 * 32, 36, lb.bottom, 'up');
+        this.drawPartitionLine(x * 32 - 4, 17 * 32 + 2, (x + 5) * 32 + 4, 17 * 32 + 2);
+        this.drawPartitionLine((x + 2.5) * 32, 17 * 32 + 2, (x + 2.5) * 32, 19.8 * 32);
+        this.drawPartitionLine(x * 32 - 4, 19.8 * 32, (x + 5) * 32 + 4, 19.8 * 32);
       } else if (c.type === 'six') {
         // 좌/우 2열 x 3행 마주보기 (6인 모둠)
         this.drawStaffOfficeTeacherDesk(x * 32, 15 * 32, 64, 64, lb.tl, 'right');

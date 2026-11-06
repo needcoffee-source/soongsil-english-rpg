@@ -1675,6 +1675,8 @@ class MainApp {
       this.handleSangdaeDeskInteraction();
     } else if (target.type === 'desk_kyungsuk') {
       this.handleKyungsukDeskInteraction();
+    } else if (target.type === 'desk_hunihuni') {
+      this.handleHunihuniDeskInteraction();
     } else if (target.type === 'door_secret_history') {
       this.handleSecretHistoryDoor();
     } else if (target.type === 'chest_secret_history') {
@@ -8700,6 +8702,42 @@ class MainApp {
       );
     } else {
       alert('📐 [이상대 선생님 연구석]\n\n1학년 1반 담임 이상대 수학선생님의 자리입니다.\n책상 위에 삼각자와 계산기, 수학 교재가 반듯하게 놓여 있습니다.');
+    }
+  }
+
+  // 🧪 6층 교무실 23번 좌석 졍경슉 과학/연금술선생님 연구석 인터랙션
+  handleKyungsukDeskInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '🧪 졍경슉 선생님 연구석',
+        '1학년 5반 담임이자 과학과 신비한 연금을 가르치시는 졍경슉 선생님의 자리입니다.\n\n' +
+        '책상 위에 에메랄드빛 삼각 플라스크와 3구 시험관 꽂이, 미니 정밀 현미경, 초록색 과학 관찰 일지가 가지런히 놓여 있습니다.\n\n' +
+        '📝 [모니터 메모]\n"자연의 원리를 탐구하고 새로운 물질을 창조하는 호기심이 세상을 바꾼다! 🧪✨"',
+        '👩‍🔬'
+      );
+    } else {
+      alert('🧪 [졍경슉 선생님 연구석]\n\n1학년 5반 담임 졍경슉 과학선생님의 자리입니다.\n책상 위에 플라스크와 시험관, 현미경이 놓여 있습니다.');
+    }
+  }
+
+  // 🥁 6층 교무실 27번 좌석 후니후니 도덕선생님 연구석 인터랙션
+  handleHunihuniDeskInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '🥁 후니후니 선생님 연구석',
+        '1학년 4반 담임이자 도덕과 바른 인성을 가르치시는 후니후니 선생님의 자리입니다.\n\n' +
+        '책상 위에 붉은색 윤리/도덕 교재와 한 쌍의 원목 드럼스틱, 클래식 템포 메트로놈, 락앤롤 머그컵이 놓여 있습니다.\n\n' +
+        '📝 [모니터 메모]\n"인생은 멋진 리듬이고, 도덕은 세상과 맞추는 최고의 하모니다! 🥁🤘"',
+        '👨‍🏫'
+      );
+    } else {
+      alert('🥁 [후니후니 선생님 연구석]\n\n1학년 4반 담임 후니후니 도덕선생님의 자리입니다.\n책상 위에 드럼스틱과 도덕 교재, 메트로놈이 놓여 있습니다.');
     }
   }
 
