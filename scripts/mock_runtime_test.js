@@ -34,12 +34,15 @@ global.document = {
     focus: () => {}
   }),
   createElement: (tag) => ({
+    width: 100,
+    height: 100,
     classList: { add: () => {}, remove: () => {} },
     addEventListener: () => {},
     style: {},
     innerText: '',
     innerHTML: '',
-    appendChild: () => {}
+    appendChild: () => {},
+    getContext: () => mockCtx
   }),
   addEventListener: () => {},
   body: { style: {} }
