@@ -922,7 +922,7 @@ class UphillRushGame {
     this.overlayEl.innerHTML = `
       <div style="background: rgba(15, 23, 42, 0.96); border: 2.5px solid #22c55e; border-radius: 14px; padding: 22px 18px; max-width: 440px; box-shadow: 0 10px 40px rgba(0,0,0,0.85);">
         <div style="font-size: 38px; margin-bottom: 2px;">🏆🎉</div>
-        <h2 style="margin: 0 0 2px; color: #4ade80; font-size: 21px; font-weight: 900;">2,500m 정상 골인 성공!! (세이프!)</h2>
+        <h2 style="margin: 0 0 2px; color: #4ade80; font-size: 21px; font-weight: 900;">교문 통과! 오늘도 살아남았다!! 🏁</h2>
         <div style="font-size: 14px; color: ${rankColor}; font-weight: 900; margin-bottom: 10px;">${rankBadge}</div>
 
         <div style="background: rgba(30, 41, 59, 0.85); border: 1.5px solid #475569; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; text-align: left; line-height: 1.6;">
@@ -1124,7 +1124,7 @@ class UphillRushGame {
       ctx.fillStyle = '#fef08a';
       ctx.font = `bold ${Math.max(11, 13 * gPersp.scale)}px sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('🏁 숭실 정문 골인 (SAFE!!) 🏁', 240, goalY - 92 * gPersp.scale);
+      ctx.fillText('🏁 교문 통과! 오늘도 살아남았다!! 🏁', 240, goalY - 92 * gPersp.scale);
     }
 
     // 5. Render Obstacles
