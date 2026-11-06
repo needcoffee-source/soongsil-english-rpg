@@ -255,7 +255,7 @@ class UphillRushGame {
         <h2 style="margin: 0 0 4px; color: #fef08a; font-size: 20px; font-weight: 900;">언덕길 등교 챌린지</h2>
         <p style="font-size: 12.5px; color: #cbd5e1; margin: 0 0 10px; line-height: 1.5;">
           지각 위기! 쏟아지는 장애물을 피하고 <b>부스터(⚡)</b>와 <b>하트(💖)</b>를 챙기며<br>
-          언덕길 꼭대기(<b>2,500m 정상 골인 지점</b>)까지 가장 빠른 시간 안에 주파하세요!
+          언덕길 꼭대기까지 가장 빠른 시간 안에 주파하세요!
         </p>
 
         ${dashboardHtml}
@@ -656,7 +656,7 @@ class UphillRushGame {
         <div style="font-size: 38px; margin-bottom: 4px;">💥😵</div>
         <h2 style="margin: 0 0 6px; color: #f87171; font-size: 20px; font-weight: 900;">언덕길에서 넘어졌습니다!</h2>
         <p style="font-size: 13px; color: #cbd5e1; margin: 0 0 10px; line-height: 1.5;">
-          지킴이 선생님: <i>"어이쿠, 학생 괜찮나? 숭실 언덕길 2,500m는 방심하면 순식간에 구르는 법이지! 다시 숨을 고르고 도전해보게나!"</i>
+          지킴이 선생님: <i>"어이쿠, 학생 괜찮나? 등굣길에 방심하면 순식간에 구르는 법이지! 다시 숨을 고르고 도전해보게나!"</i>
         </p>
 
         <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #475569; border-radius: 10px; padding: 10px; margin-bottom: 12px; font-size: 13px; color: #fcd34d;">
