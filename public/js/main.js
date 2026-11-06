@@ -1736,12 +1736,24 @@ class MainApp {
       this.handleHunihuniDeskInteraction();
     } else if (target.type === 'wisdom_book') {
       this.handleWisdomBookInteraction();
+    } else if (target.type === 'library_reading_desk') {
+      this.handleLibraryReadingDeskInteraction();
+    } else if (target.type === 'library_pc') {
+      this.handleLibraryPcInteraction();
     } else if (target.type === 'bookshelf_lit') {
       this.handleBookshelfLitInteraction();
     } else if (target.type === 'bookshelf_sci') {
       this.handleBookshelfSciInteraction();
     } else if (target.type === 'bookshelf_eng') {
       this.handleBookshelfEngInteraction();
+    } else if (target.type === 'bookshelf_his') {
+      this.handleBookshelfHisInteraction();
+    } else if (target.type === 'bookshelf_art') {
+      this.handleBookshelfArtInteraction();
+    } else if (target.type === 'bookshelf_mag') {
+      this.handleBookshelfMagInteraction();
+    } else if (target.type === 'bookshelf_comic') {
+      this.handleBookshelfComicInteraction();
     } else if (target.type === 'library_dibut') {
       this.handleLibraryDibutInteraction();
     } else if (target.type === 'quest_library_book_pg') {
@@ -7625,19 +7637,54 @@ class MainApp {
     const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % quotes.length;
     const q = quotes[dayIndex] || quotes[0];
 
-    // 30분 경험치 버프 발동 (+15%)
-    this.applyBuff('reading_exp', 30 * 60 * 1000, '오늘의 지혜 (경험치 +15%)', '📖');
-    this.playerData.readingExpBuffUntil = Date.now() + 30 * 60 * 1000;
+    // 5분 경험치 버프 발동 (+15%)
+    this.applyBuff('reading_exp', 5 * 60 * 1000, '오늘의 지혜 (경험치 +15%)', '📖');
+    this.playerData.readingExpBuffUntil = Date.now() + 5 * 60 * 1000;
     this.saveProgress();
 
     if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
       window.AudioManager.playFanfare();
     }
 
-    const story = `📜 《오늘의 지혜 명언 독서대》\n\n"${q.quote}"\n\n— ${q.author} —\n\n💡 [사색의 길잡이]:\n${q.context}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n✨ [오늘의 독서 축복 버프 활성화!]\n• 📖 [오늘의 지혜 버프]: 앞으로 30분 동안 모든 경험치(EXP) 획득량 +15% 증가!\n• 🌟 가슴속에 깊은 영감과 지혜의 빛이 환하게 피어오릅니다!`;
+    const story = `📜 《오늘의 지혜 명언 독서대》\n\n"${q.quote}"\n\n— ${q.author} —\n\n💡 [사색의 길잡이]:\n${q.context}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n✨ [오늘의 독서 축복 버프 활성화!]\n• 📖 [오늘의 지혜 버프]: 앞으로 5분 동안 모든 경험치(EXP) 획득량 +15% 증가!\n• 🌟 가슴속에 깊은 영감과 지혜의 빛이 환하게 피어오릅니다!`;
 
     if (window.RPGDialog) {
       window.RPGDialog.show('📖 오늘의 지혜 명언 독서대', story, '📖');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 중앙 독서 열람석 (책상 & 의자 - 착석 및 독서 사색)
+  handleLibraryReadingDeskInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    // 의자 방향에 맞춰 플레이어 시선 테이블을 향하도록 정렬
+    if (this.engine && this.engine.player) {
+      this.engine.player.direction = (this.engine.player.y > 11 * 32) ? 'up' : 'down';
+    }
+
+    const story = `🪑 《도서관 중앙 독서 열람석》\n\n"고풍스러운 오크 원목 책상과 편안한 앤틱 의자에 몸을 기댑니다.\n\n책상 위 은은한 초록빛 뱅커스 램프 아래에서 책장을 조용히 넘깁니다. 도서관 특유의 고요한 침묵과 차분한 종이 내음이 마음을 편안하게 감싸 안습니다.\n\n바쁜 학교 일상에서 잠시 벗어나 활자 속 깊은 지혜와 마주하자, 머리가 맑아지고 마음속에 깊은 안정과 집중력이 깃듭니다."\n\n✨ [독서의 평온함]: 마음에 평화로운 사색의 여유가 가득합니다.`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🪑 중앙 독서 열람석', story, '📖');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 도서 검색기 컴퓨터 (종합 도서 자료 검색대)
+  handleLibraryPcInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 인트라넷 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (숭실 브라스밴드 악보, 축구부 화보)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 23번 과학 연구석 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🖥️ 도서 검색용 컴퓨터', story, '🖥️');
     } else {
       alert(story);
     }
@@ -7688,23 +7735,76 @@ class MainApp {
     }
   }
 
-  // 4번 구현: 스마트 디벗 거치대 존 (독립 전자도서관 & 태블릿 충전)
+  // 추가 서가-D: 역사·사회 서가 (1897 숭실 독립사 & 인문고전)
+  handleBookshelfHisInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `📜 [역사·사회 대형 서가]\n\n"1897년 평양에서 시작된 숭실학당의 웅장한 역사와 일제강점기 신사참배 거부 및 자진 폐교의 결의를 담은 독립운동 사료들이 보존되어 있습니다.\n\n민족의 수난기 속에서도 신앙과 민족혼을 지켜낸 숭실 선배들의 의로운 발자취와 근현대 인문사회학 명저들이 깊은 울림을 전해줍니다."\n\n🏛️ [숭실의 역사 정신]:\n'진리와 봉사(Truth and Service) — 어둠을 밝히는 등불이 되리라.'`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📜 [역사·사회 서가] 1897 숭실 역사 & 인문고전', story, '📜');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 추가 서가-E: 예술·체육 서가 (숭실 음악 악보 & 축구부 화보)
+  handleBookshelfArtInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `🎨 [예술·체육 대형 서가]\n\n"한국 최초의 관악합주단 숭실 브라스밴드의 찬란한 악보집과 세계적인 클래식 명곡 악보들이 꽂혀 있습니다!\n\n그 곁으로는 백마의 기상으로 전국을 호령한 '숭실 축구부 100년 영광의 순간들' 기념 화보집과 선수들의 역동적인 경기 기록이 빛나고 있습니다!"\n\n⚽ [숭실 축구부의 긍지]:\n"푸른 잔디 위를 달리는 백마처럼, 우리는 끝까지 포기하지 않고 승리한다!"`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🎨 [예술·체육 서가] 숭실 음악 악보 & 축구부 화보', story, '🎨');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 추가 서가-F: 정기간행물 서가 (최신 과학 잡지 & 시사 교지)
+  handleBookshelfMagInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `📰 [정기간행물·잡지 서가]\n\n"최신호 <과학동아>, <내셔널 지오그래픽>, 시사 월간지, 그리고 학생들이 직접 엮은 숭실 교지들이 깔끔하게 진열되어 있습니다.\n\n인공지능과 우주 탐사의 최신 트렌드부터 이번 달 학교 소식까지 다채롭고 생생한 지식이 가득합니다."\n\n💡 [세상을 보는 창]:\n"매달 새롭게 쏟아지는 지식의 파도를 타고 넓은 세상으로 시야를 넓힙니다."`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📰 [정기간행물 서가] 과학동아 & 최신 잡지', story, '📰');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 추가 서가-G: 교양만화 서가 (세계 역사 & 과학 그래픽노블)
+  handleBookshelfComicInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `💬 [청소년 교양만화 서가]\n\n"손때 묻은 <먼나라 이웃나라>, <그리스 로마 신화>, <Why? 인공지능과 미래과학>, <만화 조선왕조실록> 전권이 서가에 빼곡합니다!\n\n어려운 역사와 과학 개념도 재미있는 그림과 연출로 머리에 쏙쏙 들어와, 쉬는 시간마다 학생들의 손길이 끊이지 않는 인기 만점 구역입니다!"\n\n😄 [즐거운 상상력]:\n"만화책을 넘기며 상상력의 날개를 활짝 폅니다!"`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('💬 [교양만화 서가] 세계 역사 & 과학 그래픽노블', story, '💬');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 4번 구현: 스마트 디벗 거치대 존 (디지털 학습 단말기 - 체력회복 기능 제거됨)
   handleLibraryDibutInteraction() {
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
 
-    // 학생 체력 100% 완전 충전
-    const healAmount = this.playerData.maxHp - this.playerData.hp;
-    if (healAmount > 0) {
-      this.playerData.hp = this.playerData.maxHp;
-      this.updateHpBar();
-    }
-
-    const story = `📱 [도서관 스마트 디벗 단말기 (전자도서관)]\n\n"책상 위에 충전 도킹된 5대의 최신 디벗(Dibut) 태블릿이 푸른빛을 발하고 있습니다.\n숭실 전자도서관 통합 시스템이 온라인으로 연결되어 있습니다."\n\n🔍 [도서관 실시간 서비스]:\n• 📚 소장 도서 25,000권 DB 검색: 정상 작동 중\n• 📊 이번 주 숭실 대출 베스트셀러:\n  1위: <하늘과 바람과 별과 시> (윤동주)\n  2위: <코스모스> (칼 세이건)\n  3위: <데미안> (헤르만 헤세)\n• 🎧 e-Book 디지털 오디오북 스트리밍 지원\n\n🔋 [스마트 충전 완료]:\n디벗 충전 패드의 쾌적한 에너지로 학생의 체력(HP)이 100% 완전 회복되었습니다!`;
+    const story = `📱 [도서관 스마트 디벗 단말기 존]\n\n"책상 위에 은은한 충전 불빛과 함께 5대의 최신 디벗(Dibut) 태블릿이 가지런히 정렬되어 있습니다.\n숭실 e-Library 및 전자도서관 디지털 시스템에 상시 연결되어 있습니다."\n\n💡 [디지털 학습 리소스]:\n• 🔍 숭실 소장 도서 25,000권 e-Book 전자책 열람 지원\n• 📖 이번 주 추천 전자책:\n  1위: <하늘과 바람과 별과 시> (윤동주)\n  2위: <코스모스> (칼 세이건)\n  3위: <데미안> (헤르만 헤세)\n• 🌐 디지털 교과서 및 교과 연계 멀티미디어 탐구 자료 상시 이용 가능!`;
 
     if (window.RPGDialog) {
-      window.RPGDialog.show('📱 도서관 스마트 디벗 단말기', story, '📱');
+      window.RPGDialog.show('📱 스마트 디벗 학습 단말기', story, '📱');
     } else {
       alert(story);
     }

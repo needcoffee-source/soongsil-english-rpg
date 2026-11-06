@@ -111,10 +111,17 @@ assert(WORLD_DATA.floors[2].elevator && WORLD_DATA.floors[2].elevator.x === 16 &
 
 const floor2Interactives = WORLD_DATA.floors[2].interactive || [];
 assert(floor2Interactives.some(i => i.id === 'wisdom_book'), 'Interactive wisdom_book exists in floor 2');
+assert(floor2Interactives.some(i => i.id === 'library_reading_desk'), 'Interactive library_reading_desk exists in floor 2');
+assert(floor2Interactives.some(i => i.id === 'library_pc'), 'Interactive library_pc exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'bookshelf_lit'), 'Interactive bookshelf_lit exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'bookshelf_sci'), 'Interactive bookshelf_sci exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'bookshelf_eng'), 'Interactive bookshelf_eng exists in floor 2');
+assert(floor2Interactives.some(i => i.id === 'bookshelf_his'), 'Interactive bookshelf_his exists in floor 2');
+assert(floor2Interactives.some(i => i.id === 'bookshelf_art'), 'Interactive bookshelf_art exists in floor 2');
+assert(floor2Interactives.some(i => i.id === 'bookshelf_mag'), 'Interactive bookshelf_mag exists in floor 2');
+assert(floor2Interactives.some(i => i.id === 'bookshelf_comic'), 'Interactive bookshelf_comic exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'library_dibut'), 'Interactive library_dibut exists in floor 2');
+assert(!floor2Interactives.some(i => i.id === 'water_purifier_library'), 'water_purifier_library is removed from floor 2');
 
 const floor2Npcs = WORLD_DATA.floors[2].npcs || [];
 const librarianNpc = floor2Npcs.find(n => n.id === 'npc_librarian');
@@ -146,10 +153,15 @@ assert(engine.checkLibraryFloor2Collision(19, 10) === true, 'East wall (tx: 19) 
 assert(engine.checkLibraryFloor2Collision(10, 2) === true, 'North wall (ty: 2) is blocked');
 assert(engine.checkLibraryFloor2Collision(16, 3) === false, 'Elevator entry at (16, 3) is passable');
 assert(engine.checkLibraryFloor2Collision(16, 5) === false, 'Walkway south of elevator at (16, 5) is passable');
-assert(engine.checkLibraryFloor2Collision(10, 10) === true, 'Central lectern at (10, 10) is blocked');
+assert(engine.checkLibraryFloor2Collision(10, 8) === true, 'Central wisdom lectern at (10, 8) is blocked');
+assert(engine.checkLibraryFloor2Collision(10, 11) === true, 'Central reading table at (10, 11) is blocked');
+assert(engine.checkLibraryFloor2Collision(10, 10) === false, 'Top chair row at (10, 10) is passable (sitting enabled)');
+assert(engine.checkLibraryFloor2Collision(10, 12) === false, 'Bottom chair row at (10, 12) is passable (sitting enabled)');
+assert(engine.checkLibraryFloor2Collision(15, 6) === true, 'Book search PC at (15, 6) is blocked');
 assert(engine.checkLibraryFloor2Collision(13, 5) === true, 'Librarian reception desk at (13, 5) is blocked');
 assert(engine.checkLibraryFloor2Collision(3, 4) === true, 'Lit bookshelf at (3, 4) is blocked');
-assert(engine.checkLibraryFloor2Collision(4, 15) === true, 'Smart dibut station at (4, 15) is blocked');
+assert(engine.checkLibraryFloor2Collision(4, 17) === true, 'Smart dibut station at (4, 17) is blocked');
+assert(engine.checkLibraryFloor2Collision(18, 8) === false, 'Removed water purifier spot (18, 8) is now passable');
 
 // Dash Easter Egg Test (5번 구현)
 engine.setDashing(true);
@@ -192,6 +204,8 @@ assert(app.playerData.exp === 50, 'Base addExp(50) adds 50 EXP');
 
 app.handleWisdomBookInteraction();
 assert(app.playerData.readingExpBuffUntil && app.playerData.readingExpBuffUntil > Date.now(), 'handleWisdomBookInteraction activates readingExpBuffUntil');
+const remainingBuffMs = app.playerData.readingExpBuffUntil - Date.now();
+assert(remainingBuffMs <= 5 * 60 * 1000 + 50 && remainingBuffMs >= 4.9 * 60 * 1000, 'Wisdom buff duration is strictly 5 minutes (300 seconds)');
 
 const expWithBuffBefore = app.playerData.exp;
 app.addExp(50);
@@ -230,22 +244,47 @@ assert(!app.playerData.inventory.some(i => i.item === 'item_lib_book_pg'), 'item
 assert(!app.playerData.inventory.some(i => i.item === 'item_lib_book_of'), 'item_lib_book_of removed on turn-in');
 assert(!app.playerData.inventory.some(i => i.item === 'item_lib_book_hi'), 'item_lib_book_hi removed on turn-in');
 
-// Test Bookshelf Dialogs (2번 구현)
+// Test 7 Diverse Bookshelf Dialogs
 let shelfThrew = false;
 try {
   app.handleBookshelfLitInteraction();
   app.handleBookshelfSciInteraction();
   app.handleBookshelfEngInteraction();
+  app.handleBookshelfHisInteraction();
+  app.handleBookshelfArtInteraction();
+  app.handleBookshelfMagInteraction();
+  app.handleBookshelfComicInteraction();
 } catch (e) {
   shelfThrew = true;
   console.error(e);
 }
-assert(!shelfThrew, 'All 3 bookshelf handlers execute cleanly');
+assert(!shelfThrew, 'All 7 diverse bookshelf handlers execute cleanly');
 
-// Test Smart Dibut Station (4번 구현)
+// Test Central Reading Desk & Sitting Interaction
+let deskThrew = false;
+try {
+  app.handleLibraryReadingDeskInteraction();
+} catch (e) {
+  deskThrew = true;
+  console.error(e);
+}
+assert(!deskThrew, 'Central reading desk interaction executes cleanly');
+
+// Test Book Search PC Station Interaction
+let pcThrew = false;
+try {
+  app.handleLibraryPcInteraction();
+} catch (e) {
+  pcThrew = true;
+  console.error(e);
+}
+assert(!pcThrew, 'Library book search PC interaction executes cleanly');
+
+// Test Smart Dibut Station (체력 회복 기능 제거 검증)
+app.playerData.maxHp = 100;
 app.playerData.hp = 30;
 app.handleLibraryDibutInteraction();
-assert(app.playerData.hp === app.playerData.maxHp, 'handleLibraryDibutInteraction restores HP to 100%');
+assert(app.playerData.hp === 30, 'handleLibraryDibutInteraction does NOT restore HP (HP recovery successfully removed)');
 
 // Test Elevator HTML & Routing
 const indexHtml = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');

@@ -30,12 +30,17 @@ const WORLD_DATA = {
       rooms: [],
       elevator: { x: 16, y: 3 },
       interactive: [
-        { id: "wisdom_book", type: "wisdom_book", x: 10, y: 10, name: "📖 오늘의 지혜 명언 독서대", prompt: "지혜의 명언 읽기 (SPACE)" },
-        { id: "bookshelf_lit", type: "bookshelf_lit", x: 3, y: 5, name: "📚 [문학·철학 서가] 윤동주 시집 & 고전문학", prompt: "서가 둘러보기 (SPACE)" },
-        { id: "bookshelf_sci", type: "bookshelf_sci", x: 8, y: 5, name: "🔬 [자연과학·연금 서가] 졍경슉 비전서 & 실험일지", prompt: "서가 둘러보기 (SPACE)" },
-        { id: "bookshelf_eng", type: "bookshelf_eng", x: 2, y: 10, name: "🇬🇧 [외국어·어학 서가] Joshua 영단어 비법전서", prompt: "서가 둘러보기 (SPACE)" },
-        { id: "library_dibut", type: "library_dibut", x: 4, y: 15, name: "📱 도서관 스마트 디벗 단말기 (전자도서관)", prompt: "디벗 전자도서관 접속 (SPACE)" },
-        { id: "water_purifier_library", type: "water_purifier", x: 18, y: 8, name: "🚰 도서관 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+        { id: "wisdom_book", type: "wisdom_book", x: 10, y: 8, name: "📖 오늘의 지혜 명언 독서대", prompt: "지혜의 명언 읽기 (SPACE)" },
+        { id: "library_reading_desk", type: "library_reading_desk", x: 10, y: 11, name: "🪑 중앙 독서 열람석 (책상 & 의자)", prompt: "자리에 앉아 독서하기 (SPACE)" },
+        { id: "library_pc", type: "library_pc", x: 15, y: 6, name: "🖥️ 도서 검색용 PC", prompt: "도서 및 자료 검색하기 (SPACE)" },
+        { id: "bookshelf_lit", type: "bookshelf_lit", x: 3, y: 4, name: "📚 [문학·철학 서가] 윤동주 시집 & 고전문학", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_sci", type: "bookshelf_sci", x: 8, y: 4, name: "🔬 [자연과학·연금 서가] 졍경슉 비전서 & 실험일지", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_eng", type: "bookshelf_eng", x: 2, y: 9, name: "🇬🇧 [외국어·어학 서가] Joshua 영단어 비법전서", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_his", type: "bookshelf_his", x: 5, y: 9, name: "📜 [역사·사회 서가] 1897 숭실 독립사 & 인문고전", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_art", type: "bookshelf_art", x: 3, y: 14, name: "🎨 [예술·체육 서가] 숭실 음악 악보 & 축구부 화보", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_mag", type: "bookshelf_mag", x: 17, y: 10, name: "📰 [정기간행물 서가] 최신 과학 잡지 & 시사 교지", prompt: "잡지 읽기 (SPACE)" },
+        { id: "bookshelf_comic", type: "bookshelf_comic", x: 17, y: 14, name: "💬 [교양만화 서가] 세계 역사 & 과학 그래픽노블", prompt: "만화책 넘겨보기 (SPACE)" },
+        { id: "library_dibut", type: "library_dibut", x: 4, y: 17, name: "📱 도서관 스마트 디벗 단말기 (디지털 학습존)", prompt: "디벗 단말기 확인 (SPACE)" }
       ],
       npcs: [
         {

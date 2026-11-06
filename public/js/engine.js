@@ -964,8 +964,8 @@ class GameEngine {
             minDist = eDist;
           }
         }
-        // School Mascot Puppy (숭실이 - 조작법 가이드)
-        if (this.mascots) {
+        // School Mascot Puppy (숭실이 - 1층 복도 전용 조작법 가이드)
+        if (this.mascots && (this.player.floor === 1 || !this.player.floor)) {
           for (const m of this.mascots) {
             const dist = Math.hypot(m.x * 32 - this.player.x, m.y * 32 - this.player.y);
             if (dist < minDist) {
@@ -6422,7 +6422,7 @@ class GameEngine {
   }
 
   renderMascots() {
-    if (this.player.room !== 'hallway') return;
+    if (this.player.room !== 'hallway' || (this.player.floor && this.player.floor !== 1)) return;
 
     for (const m of this.mascots) {
       const px = m.x * 32;
@@ -8089,29 +8089,42 @@ class GameEngine {
     // Counter: x: 12..14, y: 5. Librarian stands at x: 13, y: 4
     if (tileX >= 12 && tileX <= 14 && (tileY === 4 || tileY === 5)) return true;
 
+    // Book Search PC Station: x: 15, y: 6
+    if (tileX === 15 && tileY === 6) return true;
+
     // North-West Grand Bookshelves:
     // Lit bookshelf: x: 2..4, y: 4..5
     if (tileX >= 2 && tileX <= 4 && (tileY === 4 || tileY === 5)) return true;
     // Sci bookshelf: x: 7..9, y: 4..5
     if (tileX >= 7 && tileX <= 9 && (tileY === 4 || tileY === 5)) return true;
 
-    // West English Bookshelf: x: 2, y: 9..11
-    if (tileX === 2 && tileY >= 9 && tileY <= 11) return true;
+    // West Aisle Bookshelves (English & History):
+    // English bookshelf: x: 2, y: 8..10
+    if (tileX === 2 && tileY >= 8 && tileY <= 10) return true;
+    // History bookshelf: x: 5, y: 8..10
+    if (tileX === 5 && tileY >= 8 && tileY <= 10) return true;
 
-    // Central Wisdom Lectern: x: 10, y: 10
-    if (tileX === 10 && tileY === 10) return true;
+    // South-West Arts Bookshelf: x: 2..4, y: 13..14
+    if (tileX >= 2 && tileX <= 4 && (tileY === 13 || tileY === 14)) return true;
 
-    // Smart Dibut Station: x: 3..5, y: 15
-    if (tileX >= 3 && tileX <= 5 && tileY === 15) return true;
+    // East Wall Bookshelves (Magazines & Comics):
+    // Magazine bookshelf: x: 17..18, y: 9..10
+    if ((tileX === 17 || tileX === 18) && (tileY === 9 || tileY === 10)) return true;
+    // Comic bookshelf: x: 17..18, y: 13..14
+    if ((tileX === 17 || tileX === 18) && (tileY === 13 || tileY === 14)) return true;
 
-    // Oak Study Reading Tables: x: 8..12, y: 14
-    if (tileX >= 8 && tileX <= 12 && tileY === 14) return true;
+    // Central Wisdom Lectern: x: 10, y: 8
+    if (tileX === 10 && tileY === 8) return true;
 
-    // Reading Armchairs: (16, 11) & (16, 15)
-    if ((tileX === 16 && tileY === 11) || (tileX === 16 && tileY === 15)) return true;
+    // Central Reading Table (Oak study table with banker lamps): x: 8..12, y: 11
+    // (Note: Chair tiles at y: 10 and y: 12 are PASSABLE so player can sit on them!)
+    if (tileX >= 8 && tileX <= 12 && tileY === 11) return true;
 
-    // Water Purifier: (18, 8)
-    if (tileX === 18 && tileY === 8) return true;
+    // Smart Dibut Station: x: 3..5, y: 17
+    if (tileX >= 3 && tileX <= 5 && tileY === 17) return true;
+
+    // Reading Armchairs: (16, 12) & (16, 16)
+    if ((tileX === 16 && tileY === 12) || (tileX === 16 && tileY === 16)) return true;
 
     return false;
   }
@@ -8158,49 +8171,59 @@ class GameEngine {
       height: 23
     });
 
-    // 4. Central Royal Teal Reading Plaza Carpet Runner (tx: 7..13, ty: 8..12)
+    // 4. Central Royal Teal Reading Plaza Carpet Runner (tx: 7..13, ty: 7..13)
     ctx.fillStyle = '#064e3b'; // royal emerald teal
-    ctx.fillRect(7 * 32 + 8, 8 * 32 + 8, 6 * 32 - 16, 4 * 32 - 16);
+    ctx.fillRect(7 * 32 + 8, 7 * 32 + 8, 6 * 32 - 16, 6 * 32 - 16);
     ctx.strokeStyle = '#f59e0b'; // golden filigree border
     ctx.lineWidth = 2;
-    ctx.strokeRect(7 * 32 + 8, 8 * 32 + 8, 6 * 32 - 16, 4 * 32 - 16);
+    ctx.strokeRect(7 * 32 + 8, 7 * 32 + 8, 6 * 32 - 16, 6 * 32 - 16);
     ctx.strokeStyle = 'rgba(254, 240, 138, 0.3)';
     ctx.lineWidth = 1;
-    ctx.strokeRect(7 * 32 + 12, 8 * 32 + 12, 6 * 32 - 24, 4 * 32 - 24);
+    ctx.strokeRect(7 * 32 + 12, 7 * 32 + 12, 6 * 32 - 24, 6 * 32 - 24);
 
     // 5. Elevator at (16, 3)
     this.drawLibraryElevator(16 * 32, 3 * 32);
 
-    // 6. 3 Grand Bookshelves (장르별 대형 서가 3종)
+    // 6. Grand Bookshelves (장르별 7종 서가)
     // 6-A. [문학·철학 서가] 윤동주 시집 & 고전문학 (tx: 2..4, ty: 4)
     this.drawLibraryBookshelf(2 * 32, 4 * 32, 3, 'lit', '📚 [문학·철학]');
     // 6-B. [자연과학·연금 서가] 졍경슉 비전서 & 실험일지 (tx: 7..9, ty: 4)
     this.drawLibraryBookshelf(7 * 32, 4 * 32, 3, 'sci', '🔬 [자연과학·연금]');
-    // 6-C. [외국어·어학 서가] Joshua 영단어 비법전서 (tx: 2, ty: 9..11)
-    this.drawLibraryVerticalBookshelf(2 * 32, 9 * 32, 'eng', '🇬🇧 [외국어·어학]');
+    // 6-C. [외국어·어학 서가] Joshua 영단어 비법전서 (tx: 2, ty: 8..10)
+    this.drawLibraryVerticalBookshelf(2 * 32, 8 * 32, 'eng', '🇬🇧 [외국어·어학]');
+    // 6-D. [역사·사회 서가] 1897 숭실 독립사 & 인문 (tx: 5, ty: 8..10)
+    this.drawLibraryVerticalBookshelf(5 * 32, 8 * 32, 'his', '📜 [역사·사회]');
+    // 6-E. [예술·체육 서가] 숭실 음악 악보 & 축구부 화보 (tx: 2..4, ty: 13)
+    this.drawLibraryBookshelf(2 * 32, 13 * 32, 3, 'art', '🎨 [예술·체육]');
+    // 6-F. [정기간행물 서가] 최신 과학 잡지 & 교지 (tx: 17..18, ty: 9)
+    this.drawLibraryBookshelf(17 * 32, 9 * 32, 2, 'mag', '📰 [정기간행물]');
+    // 6-G. [교양만화 서가] 세계 역사 & 과학 그래픽노블 (tx: 17..18, ty: 13)
+    this.drawLibraryBookshelf(17 * 32, 13 * 32, 2, 'comic', '💬 [교양만화]');
 
-    // 7. Central Wisdom Lectern (오늘의 지혜 명언 독서대 at tx: 10, ty: 10)
-    this.drawLibraryWisdomLectern(10 * 32, 10 * 32);
+    // 7. Central Wisdom Lectern (오늘의 지혜 명언 독서대 at tx: 10, ty: 8)
+    this.drawLibraryWisdomLectern(10 * 32, 8 * 32);
 
-    // 8. Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존 at tx: 3..5, ty: 15)
-    this.drawLibraryDibutStation(3 * 32, 15 * 32);
+    // 8. Central Reading Table with Chairs (가운데 앉을 수 있는 책상과 의자 at tx: 8..12, ty: 11)
+    this.drawLibraryStudyTable(8 * 32, 11 * 32, 5);
 
-    // 9. Oak Study Reading Tables with Green Banker Lamps (tx: 8..12, ty: 14)
-    this.drawLibraryStudyTable(8 * 32, 14 * 32, 5);
+    // 9. Book Search PC Station (도서 검색기 컴퓨터 at tx: 15, ty: 6)
+    this.drawLibrarySearchPC(15 * 32, 6 * 32);
 
-    // 10. Cozy Reading Armchairs & Side Tables (tx: 16, ty: 11 & ty: 15)
-    this.drawLibraryArmchair(16 * 32, 11 * 32);
-    this.drawLibraryArmchair(16 * 32, 15 * 32);
+    // 10. Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존 at tx: 3..5, ty: 17)
+    this.drawLibraryDibutStation(3 * 32, 17 * 32);
 
-    // 11. Water Purifier at (18, 8) & Greenhouse Planters
-    this.drawHighResWaterPurifier(18 * 32, 8 * 32);
+    // 11. Cozy Reading Armchairs & Side Tables (tx: 16, ty: 12 & ty: 16)
+    this.drawLibraryArmchair(16 * 32, 12 * 32);
+    this.drawLibraryArmchair(16 * 32, 16 * 32);
+
+    // 12. Greenhouse Planters (만개목 at tx: 18, ty: 18)
     this.drawHighResHallwayPlant(1 * 32, 4 * 32, 'monstera', 3, 5);
     this.drawHighResHallwayPlant(18 * 32, 18 * 32 - 16, 'areca', 3, 5);
 
-    // 12. Reception Counter at tx: 12..14, ty: 5 (in front of librarian)
+    // 13. Reception Counter at tx: 12..14, ty: 5 (in front of librarian)
     this.drawLibraryReceptionCounter(12 * 32, 5 * 32);
 
-    // 13. Librarian Quest Marker & '쉿! 정숙!' Comic Popup
+    // 14. Librarian Quest Marker & '쉿! 정숙!' Comic Popup
     this.renderLibrarianOverhead();
   }
 
@@ -8334,21 +8357,36 @@ class GameEngine {
     shelfY.forEach(sy => ctx.fillRect(bx + 3, sy, w - 6, 4));
 
     // Books on shelves (rows of colorful book spines)
-    const bookColors = (type === 'lit')
-      ? ['#991b1b', '#1e3a8a', '#14532d', '#78350f', '#581c87', '#b45309']
-      : ['#047857', '#0369a1', '#d97706', '#0f766e', '#1d4ed8', '#0284c7'];
+    let bookColors = ['#991b1b', '#1e3a8a', '#14532d', '#78350f', '#581c87', '#b45309'];
+    let borderColor = '#f59e0b';
+    if (type === 'lit') {
+      bookColors = ['#991b1b', '#1e3a8a', '#14532d', '#78350f', '#581c87', '#b45309'];
+      borderColor = '#f59e0b';
+    } else if (type === 'sci') {
+      bookColors = ['#047857', '#0369a1', '#d97706', '#0f766e', '#1d4ed8', '#0284c7'];
+      borderColor = '#10b981';
+    } else if (type === 'art') {
+      bookColors = ['#7c3aed', '#c026d3', '#db2777', '#4f46e5', '#9333ea', '#ec4899'];
+      borderColor = '#a855f7';
+    } else if (type === 'mag') {
+      bookColors = ['#0284c7', '#0d9488', '#ea580c', '#e11d48', '#2563eb', '#16a34a'];
+      borderColor = '#06b6d4';
+    } else if (type === 'comic') {
+      bookColors = ['#f59e0b', '#ef4444', '#8b5cf6', '#10b981', '#f97316', '#3b82f6'];
+      borderColor = '#f97316';
+    }
 
     shelfY.forEach((sy, rowIdx) => {
       let curX = bx + 6;
       while (curX < bx + w - 10) {
-        const bw = 4 + (curX % 3);
-        const bh = 11 + ((curX + rowIdx) % 3);
+        const bw = (type === 'mag') ? 6 : (4 + (curX % 3));
+        const bh = (type === 'mag') ? 14 : (11 + ((curX + rowIdx) % 3));
         const color = bookColors[(curX + rowIdx * 2) % bookColors.length];
         ctx.fillStyle = color;
         ctx.fillRect(curX, sy - bh, bw, bh);
 
         // Gold title foil on spine
-        ctx.fillStyle = 'rgba(254, 240, 138, 0.6)';
+        ctx.fillStyle = (type === 'mag') ? '#ffffff' : 'rgba(254, 240, 138, 0.6)';
         ctx.fillRect(curX + 1, sy - bh + 2, bw - 2, 1.5);
 
         curX += bw + 1.5;
@@ -8391,12 +8429,29 @@ class GameEngine {
       ctx.beginPath();
       ctx.arc(bx + w - 32, by + 11, 5, 0, Math.PI * 2);
       ctx.stroke();
+    } else if (type === 'art') {
+      // Golden Music Clef / Palette Icon on top
+      ctx.fillStyle = '#fef08a';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('🎵', bx + w - 20, by + 14);
+      ctx.fillText('🎨', bx + 6, by + 14);
+    } else if (type === 'mag') {
+      // Magazine slanted rack indicator
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('NEWS', bx + w / 2 - 14, by + 13);
+    } else if (type === 'comic') {
+      // Comic Pop star icon
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('✦', bx + w - 16, by + 13);
+      ctx.fillText('COMIC', bx + 6, by + 13);
     }
 
     // Brass Label Badge
     this.drawSharpLabel(bx + w / 2, by - 12, label, {
       bgColor: 'rgba(15, 23, 42, 0.94)',
-      borderColor: (type === 'lit') ? '#f59e0b' : '#10b981',
+      borderColor: borderColor,
       textColor: '#fef08a',
       fontSize: 11.5,
       paddingX: 8,
@@ -8406,7 +8461,7 @@ class GameEngine {
     ctx.restore();
   }
 
-  // Vertical Bookshelf against West Wall (English & Foreign Languages)
+  // Vertical Bookshelf against West Wall (English & History)
   drawLibraryVerticalBookshelf(px, py, type, label) {
     const ctx = this.ctx;
     ctx.save();
@@ -8434,8 +8489,11 @@ class GameEngine {
     ctx.fillStyle = '#542306';
     shelfY.forEach(sy => ctx.fillRect(bx + 2, sy, w - 4, 3));
 
-    // Books & Globe
-    const colors = ['#dc2626', '#2563eb', '#16a34a', '#d97706'];
+    // Books & Decor
+    const colors = (type === 'his')
+      ? ['#7f1d1d', '#991b1b', '#78350f', '#b45309', '#451a03']
+      : ['#dc2626', '#2563eb', '#16a34a', '#d97706'];
+
     shelfY.forEach((sy, idx) => {
       let curX = bx + 4;
       while (curX < bx + w - 6) {
@@ -8447,22 +8505,34 @@ class GameEngine {
       }
     });
 
-    // Desktop Mini World Globe on top
-    ctx.fillStyle = '#0284c7';
-    ctx.beginPath();
-    ctx.arc(bx + w / 2, by + 8, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(bx + w / 2, by + 8, 5, 0, Math.PI);
-    ctx.stroke();
+    if (type === 'his') {
+      // Antique 1897 Parchment Scroll on top
+      ctx.fillStyle = '#fef3c7';
+      ctx.fillRect(bx + 6, by + 4, 16, 7);
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx + 6, by + 4, 16, 7);
+      ctx.fillStyle = '#b45309';
+      ctx.font = '8px sans-serif';
+      ctx.fillText('1897', bx + 7, by + 10);
+    } else {
+      // Desktop Mini World Globe on top
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.arc(bx + w / 2, by + 8, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(bx + w / 2, by + 8, 5, 0, Math.PI);
+      ctx.stroke();
+    }
 
     // Label
     this.drawSharpLabel(bx + w / 2 + 10, by - 12, label, {
       bgColor: 'rgba(15, 23, 42, 0.94)',
-      borderColor: '#38bdf8',
-      textColor: '#bae6fd',
+      borderColor: (type === 'his') ? '#f43f5e' : '#38bdf8',
+      textColor: (type === 'his') ? '#fecdd3' : '#bae6fd',
       fontSize: 11.5,
       paddingX: 8,
       height: 20
@@ -8657,7 +8727,7 @@ class GameEngine {
     ctx.restore();
   }
 
-  // Oak Study Table with Classic Green Banker Lamps
+  // Oak Study Table with Chairs (가운데 앉을 수 있는 독서용 책상 & 의자)
   drawLibraryStudyTable(px, py, widthTiles) {
     const ctx = this.ctx;
     ctx.save();
@@ -8670,10 +8740,28 @@ class GameEngine {
     // Floor shadow
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 6, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(bx + w / 2, by + h + 4, w / 2 + 8, 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Polished Solid Oak Table Surface
+    const chairSpacing = w / 4;
+
+    // 1. Top Chairs (North Row - facing table)
+    for (let c = 0; c < 4; c++) {
+      const cx = bx + 8 + c * chairSpacing;
+      // Chair Backrest
+      ctx.fillStyle = '#451a03';
+      ctx.beginPath();
+      ctx.roundRect(cx, by - 12, 14, 5, [2, 2, 0, 0]);
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // Velvet Cushion
+      ctx.fillStyle = '#991b1b';
+      ctx.fillRect(cx + 1, by - 7, 12, 6);
+    }
+
+    // 2. Polished Solid Oak Table Surface
     ctx.fillStyle = '#451a03';
     ctx.fillRect(bx, by, w, h);
     ctx.strokeStyle = '#78350f';
@@ -8684,22 +8772,12 @@ class GameEngine {
     ctx.fillStyle = '#92400e';
     ctx.fillRect(bx + 2, by + 2, w - 4, 4);
 
-    // 4 Wooden Study Chairs tucked under table
-    const chairSpacing = w / 4;
-    for (let c = 0; c < 4; c++) {
-      const cx = bx + 10 + c * chairSpacing;
-      ctx.fillStyle = '#542306';
-      ctx.fillRect(cx, by + h - 2, 12, 6);
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(cx + 1, by + h, 10, 2);
-    }
-
-    // 2 Classic Green Glass Banker Lamps with Warm Amber Glow
-    [bx + w * 0.3, bx + w * 0.7].forEach(lx => {
+    // 3. 2 Classic Green Glass Banker Lamps with Warm Amber Glow
+    [bx + w * 0.28, bx + w * 0.72].forEach(lx => {
       // Warm Light Cone on table
-      ctx.fillStyle = 'rgba(254, 240, 138, 0.18)';
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.22)';
       ctx.beginPath();
-      ctx.ellipse(lx, by + 12, 16, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(lx, by + 12, 18, 8, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Brass Pedestal & Arm
@@ -8719,9 +8797,113 @@ class GameEngine {
 
     // Open books and notebook on table
     ctx.fillStyle = '#fef3c7';
-    ctx.fillRect(bx + w * 0.48, by + 6, 12, 8);
+    ctx.fillRect(bx + w * 0.46, by + 6, 14, 9);
     ctx.fillStyle = '#d97706';
-    ctx.fillRect(bx + w * 0.48 + 5, by + 6, 2, 8);
+    ctx.fillRect(bx + w * 0.46 + 6, by + 6, 2, 9);
+
+    // 4. Bottom Chairs (South Row - facing table)
+    for (let c = 0; c < 4; c++) {
+      const cx = bx + 8 + c * chairSpacing;
+      // Velvet Cushion
+      ctx.fillStyle = '#991b1b';
+      ctx.fillRect(cx + 1, by + h - 1, 12, 6);
+      // Chair Backrest & Legs
+      ctx.fillStyle = '#451a03';
+      ctx.beginPath();
+      ctx.roundRect(cx, by + h + 5, 14, 5, [0, 0, 2, 2]);
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // Legs
+      ctx.fillStyle = '#3b1803';
+      ctx.fillRect(cx + 1, by + h + 10, 2, 4);
+      ctx.fillRect(cx + 11, by + h + 10, 2, 4);
+    }
+
+    // Floating Label
+    this.drawSharpLabel(bx + w / 2, by - 22, '🪑 중앙 독서 열람석 (자리에 앉아 독서)', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // Library Catalog Search PC Station (도서 검색기 컴퓨터)
+  drawLibrarySearchPC(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Floor shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(px + 16, py + 26, 15, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Metal Computer Stand Desk
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(px + 4, py + 14, 24, 14);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(px + 4, py + 14, 24, 14);
+
+    // Keyboard & Mouse
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(px + 8, py + 18, 12, 4);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(px + 22, py + 19, 3, 3);
+
+    // Monitor Stand
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(px + 14, py + 10, 4, 5);
+    ctx.fillRect(px + 12, py + 14, 8, 2);
+
+    // LCD Monitor Bezel
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.roundRect(px + 4, py - 4, 24, 16, [2, 2, 0, 0]);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Glowing Blue Search Screen
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(px + 6, py - 2, 20, 12);
+
+    // Search Screen Content: Header Bar & Search Box
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(px + 8, py, 16, 2);
+    ctx.fillStyle = '#7dd3fc';
+    ctx.fillRect(px + 8, py + 3, 10, 1.5);
+    ctx.fillRect(px + 8, py + 6, 14, 1);
+    ctx.fillRect(px + 8, py + 8, 12, 1);
+
+    // Tiny Glowing Search Magnifier Glass Icon
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(px + 21, py + 2, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pulsing Status LED
+    const ledOn = Math.floor(Date.now() / 600) % 2 === 0;
+    ctx.fillStyle = ledOn ? '#22c55e' : '#15803d';
+    ctx.fillRect(px + 24, py + 10, 2, 2);
+
+    // Sharp Label
+    this.drawSharpLabel(px + 16, py - 14, '🖥️ 도서 검색기', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#7dd3fc',
+      fontSize: 11,
+      paddingX: 7,
+      height: 19
+    });
 
     ctx.restore();
   }
@@ -8812,16 +8994,6 @@ class GameEngine {
     ctx.strokeRect(bx + 68, by - 6, 20, 8);
     ctx.fillStyle = '#0284c7';
     ctx.fillRect(bx + 71, by - 3, 14, 2);
-
-    // Nameplate Badge on Counter
-    this.drawSharpLabel(bx + w / 2, by + h + 12, '📚 사서 선생님 (대출 & 안내)', {
-      bgColor: 'rgba(30, 58, 138, 0.95)',
-      borderColor: '#60a5fa',
-      textColor: '#fef08a',
-      fontSize: 12,
-      paddingX: 10,
-      height: 21
-    });
 
     ctx.restore();
   }
@@ -9680,7 +9852,7 @@ class GameEngine {
       this.ctx.fillRect(cx + 14 + Math.cos(now / 300) * 8, cy - 28 - ((sp1 + 5) % 10), 2, 2);
 
       // Grand Badge
-      const bText3 = isTeacher ? `🌸 숭실 생명의 만개목 (3,000회 만개! ✨)` : '🌸 숭실 생명의 만개목';
+      const bText3 = '🌸 만개목';
       this.drawSharpLabel(cx, py - 32, bText3, {
         bgColor: 'rgba(88, 28, 135, 0.95)',
         borderColor: '#f43f5e',
