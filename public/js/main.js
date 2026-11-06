@@ -4283,6 +4283,9 @@ class MainApp {
       btnTeacher.addEventListener('click', () => {
         this.modalTeacher.classList.remove('hidden');
         this.requestStudentList();
+        if (this.loadSavedStudentsForEditor) {
+          this.loadSavedStudentsForEditor();
+        }
       });
     }
 
@@ -6814,40 +6817,122 @@ class MainApp {
       if (cerberusEl) cerberusEl.checked = !!s.hasClearedCerberusRaid;
     };
 
+    this.renderSavedStudentsTable = (filterText = '') => {
+      const tableBody = document.getElementById('admin-saved-students-table-body');
+      const badgeCount = document.getElementById('admin-saved-student-count-badge');
+      if (!tableBody) return;
+
+      const all = this._allSavedStudentsData || {};
+      const ids = Object.keys(all).sort();
+
+      if (badgeCount) {
+        badgeCount.innerText = `저장 ${ids.length}명`;
+      }
+
+      if (ids.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:18px; color:#64748b;">서버에 저장된 학생 데이터가 없습니다.</td></tr>';
+        return;
+      }
+
+      const lowerFilter = filterText.trim().toLowerCase();
+      const filteredIds = ids.filter(id => {
+        if (!lowerFilter) return true;
+        const s = all[id];
+        const name = (s.name || '').toLowerCase();
+        return id.toLowerCase().includes(lowerFilter) || name.includes(lowerFilter);
+      });
+
+      if (filteredIds.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:18px; color:#64748b;">검색 조건과 일치하는 학생이 없습니다.</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = '';
+      filteredIds.forEach(id => {
+        const s = all[id];
+        const name = s.name || '무명';
+        const lv = s.level || 1;
+        const exp = s.exp !== undefined ? s.exp : 0;
+        const gold = s.gold !== undefined ? s.gold : 0;
+        let dateStr = '-';
+        if (s.updatedAt) {
+          try {
+            const d = new Date(s.updatedAt);
+            dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          } catch(e) {}
+        }
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #1e293b';
+        tr.style.transition = 'background 0.15s';
+        tr.onmouseenter = () => { tr.style.background = '#1e293b'; };
+        tr.onmouseleave = () => { tr.style.background = 'transparent'; };
+
+        tr.innerHTML = `
+          <td style="padding:7px 10px; font-weight:800; color:#38bdf8;">${id}</td>
+          <td style="padding:7px 10px; font-weight:700; color:#ffffff;">${name}</td>
+          <td style="padding:7px 10px; color:#fde047; font-weight:700;">Lv.${lv} <span style="font-size:10.5px; color:#94a3b8; font-weight:normal;">(${exp} EXP)</span></td>
+          <td style="padding:7px 10px; color:#fbbf24; font-weight:800;">🪙 ${gold}G</td>
+          <td style="padding:7px 10px; color:#94a3b8; font-size:11px;">${dateStr}</td>
+          <td style="padding:7px 10px; text-align:center;">
+            <button type="button" style="background:#0284c7; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; margin-right:4px;" onclick="window.MainApp.selectStudentForEdit('${id}')">✏️ 상세조회</button>
+            <button type="button" style="background:#dc2626; color:#fff; border:none; padding:3px 6px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;" onclick="window.MainApp.quickDeleteStudent('${id}', '${name}')">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    };
+
+    const searchInput = document.getElementById('admin-saved-search-input');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.renderSavedStudentsTable(e.target.value);
+      });
+    }
+
     this.loadSavedStudentsForEditor = async (selectedIdToKeep = null) => {
-      if (!selectEditStudent) return;
-      selectEditStudent.innerHTML = '<option value="">-- 불러오는 중... --</option>';
+      if (selectEditStudent) {
+        selectEditStudent.innerHTML = '<option value="">-- 불러오는 중... --</option>';
+      }
       try {
         const res = await fetch('/api/admin/all-students-progress');
         const data = await res.json();
         const all = (data && data.students) || {};
         this._allSavedStudentsData = all;
 
+        // Render saved students table
+        const searchVal = searchInput ? searchInput.value : '';
+        this.renderSavedStudentsTable(searchVal);
+
         const ids = Object.keys(all).sort();
-        if (ids.length === 0) {
-          selectEditStudent.innerHTML = '<option value="">(서버에 등록된 학생 기록이 없습니다)</option>';
-          if (formEditStudent) formEditStudent.classList.add('hidden');
-          return;
-        }
+        if (selectEditStudent) {
+          if (ids.length === 0) {
+            selectEditStudent.innerHTML = '<option value="">(서버에 등록된 학생 기록이 없습니다)</option>';
+            if (formEditStudent) formEditStudent.classList.add('hidden');
+            return;
+          }
 
-        let html = '<option value="">-- 학생을 선택하세요 (' + ids.length + '명 등록됨) --</option>';
-        ids.forEach(id => {
-          const s = all[id];
-          const name = s.name || '무명';
-          const lv = s.level || 1;
-          const g = s.gold !== undefined ? s.gold : 0;
-          html += `<option value="${id}">${id} - ${name} (Lv.${lv} · ${g}G)</option>`;
-        });
-        selectEditStudent.innerHTML = html;
+          let html = '<option value="">-- 학생을 선택하세요 (' + ids.length + '명 등록됨) --</option>';
+          ids.forEach(id => {
+            const s = all[id];
+            const name = s.name || '무명';
+            const lv = s.level || 1;
+            const g = s.gold !== undefined ? s.gold : 0;
+            html += `<option value="${id}">${id} - ${name} (Lv.${lv} · ${g}G)</option>`;
+          });
+          selectEditStudent.innerHTML = html;
 
-        if (selectedIdToKeep && all[selectedIdToKeep]) {
-          selectEditStudent.value = selectedIdToKeep;
-          this.populateEditStudentForm(selectedIdToKeep);
-        } else if (!selectEditStudent.value && formEditStudent) {
-          formEditStudent.classList.add('hidden');
+          if (selectedIdToKeep && all[selectedIdToKeep]) {
+            selectEditStudent.value = selectedIdToKeep;
+            this.populateEditStudentForm(selectedIdToKeep);
+          } else if (!selectEditStudent.value && formEditStudent) {
+            formEditStudent.classList.add('hidden');
+          }
         }
       } catch (err) {
-        selectEditStudent.innerHTML = '<option value="">(목록 로딩 실패)</option>';
+        if (selectEditStudent) {
+          selectEditStudent.innerHTML = '<option value="">(목록 로딩 실패)</option>';
+        }
       }
     };
 
@@ -7143,6 +7228,41 @@ class MainApp {
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('teacher_kick_player', { targetSocketId: socketId, studentName });
       }
+    }
+  }
+
+  selectStudentForEdit(studentId) {
+    const select = document.getElementById('admin-edit-student-select');
+    if (select) {
+      select.value = studentId;
+      this.populateEditStudentForm(studentId);
+      const form = document.getElementById('admin-edit-student-form');
+      if (form) {
+        form.classList.remove('hidden');
+        form.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
+  quickDeleteStudent(studentId, name) {
+    if (confirm(`⚠️ 정말로 학번 [${studentId}] '${name}' 학생의 저장 데이터를 영구 삭제(초기화)하시겠습니까?`)) {
+      fetch('/api/admin/delete-student-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.showToast(`🗑️ [${studentId}] ${name} 학생 데이터가 삭제되었습니다.`, 'success');
+          if (this.loadSavedStudentsForEditor) {
+            this.loadSavedStudentsForEditor();
+          }
+        } else {
+          alert('삭제 실패: ' + (data.error || '알 수 없는 오류'));
+        }
+      })
+      .catch(err => alert('삭제 요청 중 오류가 발생했습니다.'));
     }
   }
 
@@ -8523,13 +8643,13 @@ class MainApp {
     }
 
     const noteStory =
-      "📜 [떨어진 개발자노트 — 제3편: 탕비실의 따뜻한 아침 온기]\n\n" +
-      "\"이른 아침 고요한 교무실 탕비실. 은은하게 퍼지는 커피 향기 속에\n" +
+      "📜 [떨어진 개발자노트 — 제3편: 소회의실의 따뜻한 아침 온기]\n\n" +
+      "\"이른 아침 고요한 교무실 소회의실. 은은하게 퍼지는 커피 향기 속에\n" +
       "선생님들이 아이들을 맞이하기 위해 분주히 수업을 준비하던 모습이 떠오릅니다.\n\n" +
       "단어 암기와 문법 공부가 지루했던 아이들이 게임 속에서 활짝 웃으며 뛰놀 수 있도록,\n" +
-      "복도와 교실, 탕비실 구석구석에 비밀스런 이스터에그와 따뜻한 애정을 숨겨두었습니다.\n\n" +
+      "복도와 교실, 소회의실 구석구석에 비밀스런 이스터에그와 따뜻한 애정을 숨겨두었습니다.\n\n" +
       "숭실의 모든 꿈들이 교무실의 불빛처럼 언제나 밝고 따스하게 빛나기를 바랍니다.\n\n" +
-      "— 탕비실 커피 한 잔의 온기를 전하며, 개발자 갓준철 올림 ☕✨—\"";
+      "— 소회의실 커피 한 잔의 온기를 전하며, 개발자 갓준철 올림 ☕✨—\"";
 
     if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
       try {
