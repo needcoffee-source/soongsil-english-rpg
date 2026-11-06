@@ -1,11 +1,12 @@
 /**
- * 🏃 언덕길 등교 챌린지 (Soongsil Uphill Sprint Mini-Game)
- * - 숭실중학교 정문 오른쪽 급경사 2,500m 언덕길 등교 챌린지 미니게임
- * - 위에서 쏟아지는 장애물(축구공, 농구공, 드럼통, 타이어, 바나나)을 피하고 
- *   부스터 패드(⚡)와 회복 하트(💖)를 챙기며 2,500m 정상 꼭대기까지 최속 주파!
- * - 개인 기록 최고 3위까지 랭킹 대시보드(🥇 1위, 🥈 2위, 🥉 3위) 지원
- * - 28.00초 미만 주파 시 특별 신규 칭호 [🏃 폭풍의 지각생] 영구 해금!
- * - 타블렛(Galaxy Tab S7 FE) 터치 버튼 및 키보드(방향키/WASD/Space) 완벽 지원
+ * 🏃 언덕길 등교 챌린지 (Dynamic Pseudo-3D Uphill Sprint Mini-Game)
+ * - 숭실중학교 정문 급경사 2,500m 언덕길 등교 챌린지 미니게임
+ * - 🦘 [조작감 혁신] Space / W / ↑ / 점프 버튼으로 공중 점프 (장애물 뛰어넘기!)
+ * - 🏎️ [시각 연출] 유사 3D 원근법 도로(Pseudo-3D Perspective) & 광속 스피드선
+ * - 🏃‍♂️ [추격 연출] 옆 차선에서 가방 메고 헉헉대며 함께 달리는 라이벌 학생 NPC '철수'
+ * - 🔔 [피날레 연출] 결승 300m 전 "8시 19분... 지각 10초 전!" 종소리와 학교 교문 셔터 하강
+ * - 개인 기록 최고 3위 대시보드(🥇 1위, 🥈 2위, 🥉 3위) 및 체력 3칸 시스템
+ * - S랭크(< 28초) 달성 시 특별 신규 칭호 [🏃 폭풍의 지각생] 영구 해금!
  */
 
 class UphillRushGame {
@@ -23,7 +24,7 @@ class UphillRushGame {
     this.animFrameId = null;
 
     // Game stats (2,500m Course)
-    this.totalDistance = 2500; // 2,500 meters
+    this.totalDistance = 2500;
     this.traveled = 0;
     this.startTime = 0;
     this.elapsedMs = 0;
@@ -33,6 +34,10 @@ class UphillRushGame {
     // Player state
     this.playerX = 240;
     this.playerY = 430;
+    this.playerZ = 0;
+    this.playerVz = 0;
+    this.isJumping = false;
+    this.jumpGravity = 720;
     this.playerW = 24;
     this.playerH = 30;
     this.baseSpeed = 3.8;
@@ -42,21 +47,39 @@ class UphillRushGame {
     this.invincibleUntil = 0;
     this.shakeTimer = 0;
 
-    // Road definition
-    this.roadLeft = 60;
-    this.roadRight = 420;
-    this.roadWidth = 360;
+    // Road definition (Pseudo-3D)
+    this.horizonY = 35;
     this.roadScroll = 0;
+
+    // Rival Student NPC ('철수')
+    this.rival = {
+      x: 180,
+      y: 420,
+      z: 0,
+      vz: 0,
+      isJumping: false,
+      laneRatio: -0.4,
+      targetLane: -0.4,
+      speed: 3.8,
+      stumbleTimer: 0,
+      bubbleText: '늦었다! 서둘러!',
+      bubbleTimer: 90
+    };
+
+    // Finale Gate & Bell
+    this.finaleTriggered = false;
+    this.finaleBannerTimer = 0;
 
     // Objects & Effects
     this.obstacles = [];
     this.particles = [];
     this.confetti = [];
+    this.floatingTexts = [];
     this.speedLines = [];
     this.lastSpawnTime = 0;
 
     // Controls
-    this.keys = { left: false, right: false, up: false, down: false, boost: false };
+    this.keys = { left: false, right: false, up: false, down: false, jump: false, boost: false };
 
     if (typeof document !== 'undefined') {
       if (document.readyState === 'loading') {
@@ -86,12 +109,25 @@ class UphillRushGame {
     // Touch controls
     const btnLeft = document.getElementById('btn-uphill-left');
     const btnRight = document.getElementById('btn-uphill-right');
+    const btnJump = document.getElementById('btn-uphill-jump');
     const btnBoost = document.getElementById('btn-uphill-boost');
 
     const bindTouch = (btn, key) => {
       if (!btn) return;
-      const start = (e) => { e.preventDefault(); this.keys[key] = true; };
-      const end = (e) => { e.preventDefault(); this.keys[key] = false; };
+      const start = (e) => {
+        e.preventDefault();
+        if (key === 'jump') {
+          this.triggerJump();
+        } else {
+          this.keys[key] = true;
+        }
+      };
+      const end = (e) => {
+        e.preventDefault();
+        if (key !== 'jump') {
+          this.keys[key] = false;
+        }
+      };
       btn.addEventListener('mousedown', start);
       btn.addEventListener('mouseup', end);
       btn.addEventListener('mouseleave', end);
@@ -101,6 +137,7 @@ class UphillRushGame {
 
     bindTouch(btnLeft, 'left');
     bindTouch(btnRight, 'right');
+    bindTouch(btnJump, 'jump');
     bindTouch(btnBoost, 'boost');
 
     // Global keyboard listener
@@ -113,10 +150,10 @@ class UphillRushGame {
       } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         this.keys.right = true;
         e.preventDefault();
-      } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        this.keys.boost = true;
+      } else if (e.key === ' ' || e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
+        this.triggerJump();
         e.preventDefault();
-      } else if (e.key === ' ' || e.key === 'Shift') {
+      } else if (e.key === 'Shift' || e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
         this.keys.boost = true;
         e.preventDefault();
       } else if (e.key === 'Escape') {
@@ -132,9 +169,42 @@ class UphillRushGame {
         this.keys.left = false;
       } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         this.keys.right = false;
-      } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ' || e.key === 'Shift') {
+      } else if (e.key === 'Shift' || e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
         this.keys.boost = false;
       }
+    });
+  }
+
+  triggerJump() {
+    if (!this.isJumping) {
+      this.isJumping = true;
+      this.playerVz = 320;
+      if (window.AudioManager && typeof window.AudioManager.playJump === 'function') {
+        window.AudioManager.playJump();
+      }
+      // Jump burst dust
+      for (let i = 0; i < 5; i++) {
+        this.particles.push({
+          x: this.playerX + (Math.random() * 14 - 7),
+          y: this.playerY + 16,
+          vx: (Math.random() - 0.5) * 2.5,
+          vy: Math.random() * 1.5,
+          radius: Math.random() * 2 + 1,
+          alpha: 0.6,
+          color: '#e2e8f0'
+        });
+      }
+    }
+  }
+
+  addFloatingText(text, x, y, color = '#facc15') {
+    this.floatingTexts.push({
+      text,
+      x,
+      y,
+      alpha: 1.0,
+      color,
+      vy: -1.2
     });
   }
 
@@ -164,13 +234,35 @@ class UphillRushGame {
     this.hearts = this.maxHearts;
     this.playerX = 240;
     this.playerY = 430;
+    this.playerZ = 0;
+    this.playerVz = 0;
+    this.isJumping = false;
     this.currentSpeed = this.baseSpeed;
     this.megaBoostUntil = 0;
     this.invincibleUntil = 0;
     this.shakeTimer = 0;
+
+    // Reset Rival
+    this.rival.x = 180;
+    this.rival.y = 420;
+    this.rival.z = 0;
+    this.rival.vz = 0;
+    this.rival.isJumping = false;
+    this.rival.laneRatio = -0.4;
+    this.rival.targetLane = -0.4;
+    this.rival.speed = this.baseSpeed;
+    this.rival.stumbleTimer = 0;
+    this.rival.bubbleText = '늦었다! 서둘러!';
+    this.rival.bubbleTimer = 90;
+
+    // Reset Finale
+    this.finaleTriggered = false;
+    this.finaleBannerTimer = 0;
+
     this.obstacles = [];
     this.particles = [];
     this.confetti = [];
+    this.floatingTexts = [];
     this.speedLines = [];
     this.lastSpawnTime = 0;
     this.keys.left = false;
@@ -196,6 +288,22 @@ class UphillRushGame {
       }
       this.heartsEl.innerText = heartStr;
     }
+  }
+
+  getPerspective(y) {
+    const horizonY = this.horizonY;
+    const t = Math.max(0, Math.min(1, (y - horizonY) / (500 - horizonY)));
+    const p = Math.pow(t, 1.35); // quadratic perspective for steep incline
+    const roadWidth = 135 + p * 265; // 135px at horizon, 400px at bottom
+    const midX = 240;
+    return {
+      t,
+      p,
+      roadWidth,
+      left: midX - roadWidth / 2,
+      right: midX + roadWidth / 2,
+      scale: 0.50 + p * 0.70
+    };
   }
 
   getTopRecords() {
@@ -263,7 +371,8 @@ class UphillRushGame {
         <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #475569; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12.5px; text-align: left;">
           <div style="color: #38bdf8; font-weight: 800; margin-bottom: 4px;">🎮 조작 안내:</div>
           <div style="color: #e2e8f0; line-height: 1.6;">• <b>[← →] / [A D]</b>: 좌우 차선 이동</div>
-          <div style="color: #e2e8f0; line-height: 1.6;">• <b>[↑] / [W] / [Space]</b>: 부스트 전력 질주 (속도 UP!)</div>
+          <div style="color: #e2e8f0; line-height: 1.6;">• <b>[Space] / [W] / [↑] / [🦘 점프]</b>: 공중 점프 (장애물 뛰어넘기!)</div>
+          <div style="color: #e2e8f0; line-height: 1.6;">• <b>[Shift] / [S] / [↓] / [⚡ 질주]</b>: 전력 질주 (속도 UP!)</div>
         </div>
 
         <button id="btn-start-uphill" style="width: 100%; padding: 12px; font-size: 16px; font-weight: 900; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #fbbf24; border-radius: 10px; color: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);">
@@ -342,19 +451,41 @@ class UphillRushGame {
     let targetSpeed = this.baseSpeed;
 
     if (isMega) {
-      targetSpeed = 9.2; // Mega Booster Pad Speed
+      targetSpeed = 9.2;
     } else if (this.keys.boost) {
-      targetSpeed = 6.2; // Normal Sprint Boost
+      targetSpeed = 6.2;
     }
 
     this.currentSpeed += (targetSpeed - this.currentSpeed) * 0.18;
-    // 2,500m pacing: at speed 6.2, travel ~102 m/s -> ~24.5s full course
     this.traveled += this.currentSpeed * dt * 16.5;
+    this.roadScroll += this.currentSpeed * 4.5;
 
-    this.roadScroll += this.currentSpeed * 4.2;
+    // 1. Player Jump Physics
+    if (this.isJumping) {
+      this.playerZ += this.playerVz * dt;
+      this.playerVz -= this.jumpGravity * dt;
+      if (this.playerZ <= 0) {
+        this.playerZ = 0;
+        this.playerVz = 0;
+        this.isJumping = false;
+        // Landing dust
+        for (let i = 0; i < 4; i++) {
+          this.particles.push({
+            x: this.playerX + (Math.random() * 14 - 7),
+            y: this.playerY + 16,
+            vx: (Math.random() - 0.5) * 2,
+            vy: Math.random() * 1.5,
+            radius: Math.random() * 2 + 1,
+            alpha: 0.5,
+            color: '#cbd5e1'
+          });
+        }
+      }
+    }
 
-    // Player horizontal steering (nimble responsiveness)
-    const steerSpeed = 310 * dt;
+    // 2. Player Steering with Perspective Boundaries
+    const pPersp = this.getPerspective(this.playerY);
+    const steerSpeed = 320 * dt;
     if (this.keys.left) {
       this.playerX -= steerSpeed;
     }
@@ -362,98 +493,94 @@ class UphillRushGame {
       this.playerX += steerSpeed;
     }
 
-    // Keep on road boundaries
-    const minX = this.roadLeft + 16;
-    const maxX = this.roadRight - 16;
+    const minX = pPersp.left + 16;
+    const maxX = pPersp.right - 16;
     this.playerX = Math.max(minX, Math.min(maxX, this.playerX));
 
-    // Spawn dust particles while running
-    if (Math.random() < 0.45) {
+    // Dust particles while running
+    if (Math.random() < 0.45 && !this.isJumping) {
       this.particles.push({
         x: this.playerX + (Math.random() * 10 - 5),
         y: this.playerY + 16,
         vx: (Math.random() - 0.5) * 1.5,
-        vy: (Math.random() * 2 + 1),
+        vy: Math.random() * 2 + 1,
         radius: Math.random() * 2.5 + 1.5,
         alpha: 0.6,
         color: isMega ? '#38bdf8' : (this.keys.boost ? '#f59e0b' : '#cbd5e1')
       });
     }
 
-    // Dense obstacle spawning (substantially more obstacles as requested)
+    // 3. Dense Obstacle Spawning
     const now = Date.now();
-    // Fast dynamic interval between 180ms ~ 360ms
     const spawnInterval = Math.max(180, 360 - Math.floor(this.traveled / 200) * 15);
     if (now - this.lastSpawnTime > spawnInterval) {
       this.lastSpawnTime = now;
       this.spawnObstacleWave();
     }
 
-    // Update obstacles
+    // 4. Update Obstacles with Perspective
     for (let i = this.obstacles.length - 1; i >= 0; i--) {
       const obs = this.obstacles[i];
-      // Obstacles roll down towards player
-      obs.y += (obs.speed + this.currentSpeed * 1.9) * (dt * 60);
+      // Move down perspective hill
+      obs.y += (obs.speed + this.currentSpeed * 1.8) * (dt * 60);
 
+      const oPersp = this.getPerspective(obs.y);
       // Sine wave zigzag for soccer balls
       if (obs.type === 'soccer') {
-        obs.x += Math.sin((obs.y + obs.seed) * 0.055) * 2.5;
+        obs.laneRatio += Math.sin((obs.y + obs.seed) * 0.05) * 0.016;
+      } else if (obs.type === 'tire') {
+        obs.laneRatio += Math.cos((obs.y + obs.seed) * 0.04) * 0.012;
       }
-      // Bouncing tire wobble
-      if (obs.type === 'tire') {
-        obs.x += Math.cos((obs.y + obs.seed) * 0.04) * 1.8;
-      }
+      obs.laneRatio = Math.max(-0.85, Math.min(0.85, obs.laneRatio));
 
-      // Check collision with player
+      // Calculate screen X based on road width at depth
+      obs.x = 240 + obs.laneRatio * (oPersp.roadWidth / 2);
+      obs.scale = oPersp.scale;
+
+      // Collision Check
       const dx = Math.abs(obs.x - this.playerX);
       const dy = Math.abs(obs.y - this.playerY);
-      const hitRadius = (obs.radius || 14) + 10;
+      const hitRadius = ((obs.radius || 14) * obs.scale) + 12;
 
       if (dx < hitRadius && dy < hitRadius) {
         if (obs.type === 'booster') {
-          // ⚡ Booster pad (beneficial)
+          // ⚡ Booster pad
           this.megaBoostUntil = Date.now() + 2600;
           if (window.AudioManager && typeof window.AudioManager.playPowerup === 'function') {
             window.AudioManager.playPowerup();
           }
-          // Particle burst
-          for (let p = 0; p < 8; p++) {
-            this.particles.push({
-              x: obs.x, y: obs.y,
-              vx: (Math.random() - 0.5) * 4,
-              vy: (Math.random() - 0.5) * 4,
-              radius: Math.random() * 3 + 2,
-              alpha: 0.9,
-              color: '#38bdf8'
-            });
-          }
+          this.addFloatingText('BOOST!! ⚡', this.playerX, this.playerY - 25, '#38bdf8');
           this.obstacles.splice(i, 1);
           continue;
         } else if (obs.type === 'heart') {
-          // 💖 Recovery Heart (beneficial: heals +1 HP up to 5)
+          // 💖 Recovery Heart
           if (this.hearts < this.maxHearts) {
             this.hearts++;
           }
           if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
             window.AudioManager.playSelect();
           }
-          // Heart glitter particles
-          for (let p = 0; p < 10; p++) {
-            this.particles.push({
-              x: obs.x, y: obs.y,
-              vx: (Math.random() - 0.5) * 4,
-              vy: (Math.random() - 0.5) * 4,
-              radius: Math.random() * 3 + 2,
-              alpha: 1.0,
-              color: '#f43f5e'
-            });
-          }
+          this.addFloatingText('+1 HEART 💖', this.playerX, this.playerY - 25, '#f43f5e');
           this.updateHUD();
           this.obstacles.splice(i, 1);
           continue;
         } else {
-          // Harmful obstacle
-          if (Date.now() > this.invincibleUntil) {
+          // Harmful Obstacle
+          // 🦘 JUMP OVER CHECK!
+          if (this.playerZ > 14) {
+            // Successfully jumped over!
+            this.addFloatingText('JUMP! 🦘', this.playerX, this.playerY - this.playerZ - 10, '#4ade80');
+            // Little sparkle
+            for (let s = 0; s < 4; s++) {
+              this.particles.push({
+                x: obs.x, y: obs.y,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 3,
+                radius: 2, alpha: 0.8, color: '#fef08a'
+              });
+            }
+          } else if (Date.now() > this.invincibleUntil) {
+            // Player hit on ground
             this.handlePlayerHit(obs);
             this.obstacles.splice(i, 1);
             continue;
@@ -462,140 +589,165 @@ class UphillRushGame {
       }
 
       // Remove off-screen obstacles
-      if (obs.y > 560) {
+      if (obs.y > 540) {
         this.obstacles.splice(i, 1);
       }
     }
 
-    // Update particles
+    // 5. Update Rival Student NPC ('철수')
+    this.updateRival(dt);
+
+    // 6. Finale 300m Check & School Bell
+    const distLeft = Math.max(0, this.totalDistance - Math.floor(this.traveled));
+    if (distLeft <= 300 && !this.finaleTriggered) {
+      this.finaleTriggered = true;
+      this.finaleBannerTimer = 180;
+      this.rival.bubbleText = '교문 닫힌다아악!! 😱';
+      this.rival.bubbleTimer = 120;
+      if (window.AudioManager && typeof window.AudioManager.playSchoolBell === 'function') {
+        window.AudioManager.playSchoolBell();
+      }
+    }
+    if (this.finaleBannerTimer > 0) {
+      this.finaleBannerTimer--;
+    }
+
+    // 7. Update Particles, Speed Lines, Floating Texts
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.x += p.vx;
       p.y += p.vy;
       p.alpha -= dt * 1.5;
-      if (p.alpha <= 0) {
-        this.particles.splice(i, 1);
-      }
+      if (p.alpha <= 0) this.particles.splice(i, 1);
     }
 
-    // Update confetti
+    for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+      const ft = this.floatingTexts[i];
+      ft.y += ft.vy;
+      ft.alpha -= dt * 1.8;
+      if (ft.alpha <= 0) this.floatingTexts.splice(i, 1);
+    }
+
     for (let i = this.confetti.length - 1; i >= 0; i--) {
       const c = this.confetti[i];
       c.x += c.vx;
       c.y += c.vy;
       c.vy += dt * 8;
       c.rot += c.vRot;
-      if (c.y > 540) {
-        this.confetti.splice(i, 1);
-      }
+      if (c.y > 540) this.confetti.splice(i, 1);
     }
 
     this.updateHUD();
 
-    // Check Goal (2,500m)
+    // 8. Goal In (2,500m)
     if (this.traveled >= this.totalDistance) {
       this.finishGame();
     }
   }
 
-  spawnObstacleWave() {
-    const lanes = [
-      this.roadLeft + 35,
-      this.roadLeft + 105,
-      this.roadLeft + 180,
-      this.roadLeft + 255,
-      this.roadLeft + 325
-    ];
+  updateRival(dt) {
+    const r = this.rival;
 
-    // Pick 1st lane
-    const idx1 = Math.floor(Math.random() * lanes.length);
-    const lane1 = lanes[idx1] + (Math.random() * 16 - 8);
-    this.createObstacleAt(lane1);
+    // Rival Jump Physics
+    if (r.isJumping) {
+      r.z += r.vz * dt;
+      r.vz -= this.jumpGravity * dt;
+      if (r.z <= 0) {
+        r.z = 0;
+        r.vz = 0;
+        r.isJumping = false;
+      }
+    }
 
-    // Multi-obstacle wave: ~40% chance to spawn an obstacle in another lane simultaneously
-    if (Math.random() < 0.40) {
-      let idx2 = Math.floor(Math.random() * lanes.length);
-      if (idx2 === idx1) idx2 = (idx1 + 2) % lanes.length;
-      const lane2 = lanes[idx2] + (Math.random() * 16 - 8);
-      this.createObstacleAt(lane2);
+    // Rival target Y dynamically matches race pacing
+    const isMega = Date.now() < this.megaBoostUntil;
+    let targetRivalY = 410;
+    if (isMega || this.keys.boost) {
+      targetRivalY = 460; // falls behind player
+    } else {
+      targetRivalY = 380; // pushes ahead of player
+    }
+
+    if (r.stumbleTimer > 0) {
+      r.stumbleTimer--;
+      targetRivalY = 475;
+    }
+
+    r.y += (targetRivalY - r.y) * 0.04;
+
+    // Rival AI: Check obstacles in path and dodge or jump
+    for (const obs of this.obstacles) {
+      const dy = obs.y - r.y;
+      const dx = Math.abs(obs.x - r.x);
+      if (dy > -60 && dy < 20 && dx < 36) {
+        // Danger ahead
+        if (Math.random() < 0.6 && !r.isJumping) {
+          // Rival jumps!
+          r.isJumping = true;
+          r.vz = 300;
+        } else {
+          // Rival steers away
+          r.targetLane = obs.laneRatio > 0 ? -0.55 : 0.55;
+        }
+      }
+    }
+
+    r.laneRatio += (r.targetLane - r.laneRatio) * 0.08;
+    const rPersp = this.getPerspective(r.y);
+    r.x = 240 + r.laneRatio * (rPersp.roadWidth / 2);
+
+    // Bubble timer
+    if (r.bubbleTimer > 0) {
+      r.bubbleTimer--;
+    } else if (Math.random() < 0.005) {
+      const shouts = ['지각이야아-!', '헉헉.. 같이 가!', '놓치지 않는다!', '살려줘-!'];
+      r.bubbleText = shouts[Math.floor(Math.random() * shouts.length)];
+      r.bubbleTimer = 80;
     }
   }
 
-  createObstacleAt(spawnX) {
+  spawnObstacleWave() {
+    const laneRatios = [-0.68, -0.34, 0.0, 0.34, 0.68];
+    const idx1 = Math.floor(Math.random() * laneRatios.length);
+    this.createObstacleAtRatio(laneRatios[idx1]);
+
+    if (Math.random() < 0.40) {
+      let idx2 = Math.floor(Math.random() * laneRatios.length);
+      if (idx2 === idx1) idx2 = (idx1 + 2) % laneRatios.length;
+      this.createObstacleAtRatio(laneRatios[idx2]);
+    }
+  }
+
+  createObstacleAtRatio(laneRatio) {
     const rand = Math.random();
     let obs = null;
 
     if (rand < 0.11) {
-      // ⚡ Booster pad (beneficial)
-      obs = {
-        type: 'booster',
-        x: spawnX,
-        y: -30,
-        radius: 16,
-        speed: 1.0
-      };
+      // ⚡ Booster pad
+      obs = { type: 'booster', laneRatio, y: 35, x: 240, scale: 0.5, radius: 16, speed: 1.0 };
     } else if (rand < 0.17) {
-      // 💖 Heart Recovery Pickup (beneficial: heals 1 HP)
-      obs = {
-        type: 'heart',
-        x: spawnX,
-        y: -30,
-        radius: 14,
-        speed: 1.2
-      };
+      // 💖 Heart Recovery
+      obs = { type: 'heart', laneRatio, y: 35, x: 240, scale: 0.5, radius: 14, speed: 1.2 };
     } else if (rand < 0.41) {
-      // ⚽ Bouncing Soccer Ball (zigzag)
-      obs = {
-        type: 'soccer',
-        x: spawnX,
-        y: -30,
-        radius: 13,
-        speed: 2.2,
-        seed: Math.random() * 100
-      };
+      // ⚽ Soccer Ball
+      obs = { type: 'soccer', laneRatio, y: 35, x: 240, scale: 0.5, radius: 13, speed: 2.2, seed: Math.random() * 100 };
     } else if (rand < 0.63) {
-      // 🏀 Fast Basketball
-      obs = {
-        type: 'basketball',
-        x: spawnX,
-        y: -30,
-        radius: 13,
-        speed: 2.9
-      };
+      // 🏀 Basketball
+      obs = { type: 'basketball', laneRatio, y: 35, x: 240, scale: 0.5, radius: 13, speed: 2.9 };
     } else if (rand < 0.81) {
-      // 🛢️ Rolling Heavy Barrel
-      obs = {
-        type: 'barrel',
-        x: spawnX,
-        y: -30,
-        radius: 17,
-        speed: 1.9
-      };
+      // 🛢️ Heavy Barrel
+      obs = { type: 'barrel', laneRatio, y: 35, x: 240, scale: 0.5, radius: 17, speed: 1.9 };
     } else if (rand < 0.93) {
-      // 🛞 Heavy Rolling Rubber Tire
-      obs = {
-        type: 'tire',
-        x: spawnX,
-        y: -30,
-        radius: 15,
-        speed: 2.4,
-        seed: Math.random() * 100
-      };
+      // 🛞 Heavy Rubber Tire
+      obs = { type: 'tire', laneRatio, y: 35, x: 240, scale: 0.5, radius: 15, speed: 2.4, seed: Math.random() * 100 };
     } else {
-      // 🍌 Slippery Banana Peel
-      obs = {
-        type: 'banana',
-        x: spawnX,
-        y: -30,
-        radius: 12,
-        speed: 1.2
-      };
+      // 🍌 Banana Peel
+      obs = { type: 'banana', laneRatio, y: 35, x: 240, scale: 0.5, radius: 12, speed: 1.2 };
     }
 
     this.obstacles.push(obs);
   }
 
-  // Alias for backward compatibility with existing tests
   spawnObstacle() {
     this.spawnObstacleWave();
   }
@@ -612,7 +764,8 @@ class UphillRushGame {
       window.AudioManager.playWrong();
     }
 
-    // Impact burst particles
+    this.addFloatingText('CRASH! 💥', this.playerX, this.playerY - 20, '#ef4444');
+
     for (let i = 0; i < 12; i++) {
       const angle = (Math.PI * 2 / 12) * i;
       this.particles.push({
@@ -690,7 +843,6 @@ class UphillRushGame {
     const clearTimeSec = (this.elapsedMs / 1000);
     const clearTimeStr = clearTimeSec.toFixed(2);
 
-    // Determine Rank for 2,500m Course
     let rank = 'C';
     let rankColor = '#94a3b8';
     let rankBadge = '🥉 C-RANK';
@@ -711,17 +863,14 @@ class UphillRushGame {
       rankBadge = '🥉 B-RANK (완주 성공!)';
     }
 
-    // Award rewards & Update Top 3 Personal Records through MainApp
     const app = (typeof window !== 'undefined') ? window.MainApp : null;
     let isNewRecord = false;
     let highlightRankIdx = -1;
 
     if (app && app.playerData) {
-      // 1. EXP & Gold
       if (typeof app.addExp === 'function') app.addExp(250);
       if (typeof app.addGold === 'function') app.addGold(150);
 
-      // 2. Personal Top 3 Records Dashboard management
       if (!Array.isArray(app.playerData.uphillTopRecords)) {
         app.playerData.uphillTopRecords = app.playerData.uphillBestTime ? [app.playerData.uphillBestTime] : [];
       }
@@ -734,30 +883,21 @@ class UphillRushGame {
       isNewRecord = (highlightRankIdx === 0);
       app.playerData.uphillBestTime = app.playerData.uphillTopRecords[0];
 
-      // 3. S-Rank Title: [🏃 폭풍의 지각생]
       if (titleUnlocked) {
         if (!app.playerData.titles) app.playerData.titles = [];
         const tId = 'title_uphill_master';
         const tName = '🏃 폭풍의 지각생';
-        if (!app.playerData.titles.includes(tId)) {
-          app.playerData.titles.push(tId);
-        }
-        if (!app.playerData.titles.includes(tName)) {
-          app.playerData.titles.push(tName);
-        }
+        if (!app.playerData.titles.includes(tId)) app.playerData.titles.push(tId);
+        if (!app.playerData.titles.includes(tName)) app.playerData.titles.push(tName);
       }
 
-      if (typeof app.saveProgress === 'function') {
-        app.saveProgress();
-      }
+      if (typeof app.saveProgress === 'function') app.saveProgress();
     }
 
-    // Audio Fanfare & Confetti
     if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
       window.AudioManager.playFanfare();
     }
 
-    // Spawn confetti pieces
     this.confetti = [];
     const colors = ['#f59e0b', '#ef4444', '#38bdf8', '#4ade80', '#e879f9', '#fde047'];
     for (let i = 0; i < 75; i++) {
@@ -782,7 +922,7 @@ class UphillRushGame {
     this.overlayEl.innerHTML = `
       <div style="background: rgba(15, 23, 42, 0.96); border: 2.5px solid #22c55e; border-radius: 14px; padding: 22px 18px; max-width: 440px; box-shadow: 0 10px 40px rgba(0,0,0,0.85);">
         <div style="font-size: 38px; margin-bottom: 2px;">🏆🎉</div>
-        <h2 style="margin: 0 0 2px; color: #4ade80; font-size: 21px; font-weight: 900;">2,500m 정상 골인 성공!!</h2>
+        <h2 style="margin: 0 0 2px; color: #4ade80; font-size: 21px; font-weight: 900;">2,500m 정상 골인 성공!! (세이프!)</h2>
         <div style="font-size: 14px; color: ${rankColor}; font-weight: 900; margin-bottom: 10px;">${rankBadge}</div>
 
         <div style="background: rgba(30, 41, 59, 0.85); border: 1.5px solid #475569; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; text-align: left; line-height: 1.6;">
@@ -824,72 +964,106 @@ class UphillRushGame {
       ctx.translate(shakeX, shakeY);
     }
 
-    // 1. Grass / Retaining Wall Sides
-    ctx.fillStyle = '#064e3b'; // deep green grass
+    // 1. Sky & Horizon Mountain Slope
+    ctx.fillStyle = '#064e3b'; // deep green grass mountain background
     ctx.fillRect(0, 0, w, h);
 
-    // Left Concrete Retaining Wall (x: 0..roadLeft)
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(0, 0, this.roadLeft, h);
+    // Distant school building silhouettes on top
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(160, 10, 160, 25);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(190, 4, 100, 14);
+
+    // 2. Draw Pseudo-3D Perspective Road Surface
+    const topPersp = this.getPerspective(this.horizonY);
+    const btmPersp = this.getPerspective(h);
+
+    // Concrete side walls
     ctx.fillStyle = '#334155';
-    ctx.fillRect(this.roadLeft - 4, 0, 4, h);
-    // Expansion joints
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(topPersp.left, this.horizonY);
+    ctx.lineTo(btmPersp.left, h);
+    ctx.lineTo(0, h);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(w, 0);
+    ctx.lineTo(topPersp.right, this.horizonY);
+    ctx.lineTo(btmPersp.right, h);
+    ctx.lineTo(w, h);
+    ctx.fill();
+
+    // Asphalt Road Trapezoid
     ctx.fillStyle = '#1e293b';
-    for (let y = (this.roadScroll % 40) - 40; y < h; y += 40) {
-      ctx.fillRect(0, y, this.roadLeft, 2);
-    }
+    ctx.beginPath();
+    ctx.moveTo(topPersp.left, this.horizonY);
+    ctx.lineTo(topPersp.right, this.horizonY);
+    ctx.lineTo(btmPersp.right, h);
+    ctx.lineTo(btmPersp.left, h);
+    ctx.closePath();
+    ctx.fill();
 
-    // 2. Asphalt Road Surface
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(this.roadLeft, 0, this.roadWidth, h);
-
-    // 3. Right Hazard Striped Guardrail Curb (x: roadRight..roadRight+14)
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(this.roadRight, 0, 14, h);
-    for (let y = (this.roadScroll % 32) - 32; y < h; y += 32) {
-      ctx.fillStyle = '#eab308';
-      ctx.fillRect(this.roadRight, y, 14, 16);
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(this.roadRight, y + 16, 14, 16);
-    }
-
-    // 4. Double Solid Yellow Road Dividing Lines in Center
-    const midX = this.roadLeft + this.roadWidth / 2;
-    ctx.fillStyle = '#eab308';
-    ctx.fillRect(midX - 3, 0, 2, h);
-    ctx.fillRect(midX + 1, 0, 2, h);
-
-    // White shoulder lines
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(this.roadLeft + 6, 0, 2, h);
-    ctx.fillRect(this.roadRight - 8, 0, 2, h);
-
-    // 5. Road Chevrons (▲ ▲ ▲ pointing up)
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-    for (let y = (this.roadScroll % 120) - 120; y < h; y += 120) {
-      // Left lane chevron
+    // Curbs & Hazard Striping on Right
+    for (let y = this.horizonY; y < h; y += 16) {
+      const p1 = this.getPerspective(y);
+      const p2 = this.getPerspective(y + 16);
+      const isYellow = (Math.floor((y + this.roadScroll) / 20) % 2 === 0);
+      ctx.fillStyle = isYellow ? '#eab308' : '#0f172a';
       ctx.beginPath();
-      ctx.moveTo(midX - 90, y + 15);
-      ctx.lineTo(midX - 90, y);
-      ctx.lineTo(midX - 90 - 8, y + 8);
-      ctx.moveTo(midX - 90, y);
-      ctx.lineTo(midX - 90 + 8, y + 8);
-      ctx.stroke();
+      ctx.moveTo(p1.right, y);
+      ctx.lineTo(p1.right + 10 * p1.scale, y);
+      ctx.lineTo(p2.right + 10 * p2.scale, y + 16);
+      ctx.lineTo(p2.right, y + 16);
+      ctx.fill();
+    }
+
+    // Double Center Yellow Lines in Perspective
+    for (let y = this.horizonY; y < h; y += 8) {
+      const p = this.getPerspective(y);
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(240 - 3 * p.scale, y, 2 * p.scale, 8);
+      ctx.fillRect(240 + 1 * p.scale, y, 2 * p.scale, 8);
+    }
+
+    // White Shoulder Lines
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(topPersp.left + 8 * topPersp.scale, this.horizonY);
+    ctx.lineTo(btmPersp.left + 8 * btmPersp.scale, h);
+    ctx.moveTo(topPersp.right - 8 * topPersp.scale, this.horizonY);
+    ctx.lineTo(btmPersp.right - 8 * btmPersp.scale, h);
+    ctx.stroke();
+
+    // Road Chevrons (▲ ▲ ▲ pointing uphill)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+    for (let y = (this.roadScroll % 100) + this.horizonY - 100; y < h; y += 100) {
+      if (y < this.horizonY) continue;
+      const p = this.getPerspective(y);
+      const chevW = 10 * p.scale;
+      const chevH = 14 * p.scale;
+      // Left lane chevron
+      const lx = 240 - p.roadWidth * 0.25;
+      ctx.beginPath();
+      ctx.moveTo(lx, y - chevH);
+      ctx.lineTo(lx - chevW, y);
+      ctx.lineTo(lx + chevW, y);
+      ctx.closePath();
+      ctx.fill();
 
       // Right lane chevron
+      const rx = 240 + p.roadWidth * 0.25;
       ctx.beginPath();
-      ctx.moveTo(midX + 90, y + 15);
-      ctx.lineTo(midX + 90, y);
-      ctx.lineTo(midX + 90 - 8, y + 8);
-      ctx.moveTo(midX + 90, y);
-      ctx.lineTo(midX + 90 + 8, y + 8);
-      ctx.stroke();
+      ctx.moveTo(rx, y - chevH);
+      ctx.lineTo(rx - chevW, y);
+      ctx.lineTo(rx + chevW, y);
+      ctx.closePath();
+      ctx.fill();
     }
 
-    // 6. Milestone Signboards & Finish Checkered Line
+    // 3. Milestone Signs Along 2,500m
     const distLeft = Math.max(0, this.totalDistance - Math.floor(this.traveled));
-
-    // Distance Milestone signs on road (every 500m markers)
     const milestones = [
       { at: 2000, label: '⚠️ 급경사 진입 (2,000m 남음)' },
       { at: 1500, label: '🌲 중간 능선 (1,500m 남음)' },
@@ -900,61 +1074,77 @@ class UphillRushGame {
 
     for (const ms of milestones) {
       const diff = distLeft - ms.at;
-      if (diff >= -5 && diff <= 25) {
-        const signY = 150 + diff * 12;
-        ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
-        ctx.fillRect(midX - 110, signY - 14, 220, 26);
+      if (diff >= -5 && diff <= 30) {
+        const signY = 120 + diff * 10;
+        const p = this.getPerspective(signY);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(240 - 110 * p.scale, signY - 12 * p.scale, 220 * p.scale, 24 * p.scale);
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(midX - 110, signY - 14, 220, 26);
-
+        ctx.strokeRect(240 - 110 * p.scale, signY - 12 * p.scale, 220 * p.scale, 24 * p.scale);
         ctx.fillStyle = '#fef08a';
-        ctx.font = 'bold 12px sans-serif';
+        ctx.font = `bold ${Math.max(10, 12 * p.scale)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(ms.label, midX, signY);
+        ctx.fillText(ms.label, 240, signY);
       }
     }
 
-    // Finish Checkered Line at 0m
-    if (distLeft < 30) {
-      const finishY = Math.max(40, 420 - (30 - distLeft) * 14);
-      const cellW = 16;
-      for (let rx = this.roadLeft; rx < this.roadRight; rx += cellW) {
+    // 4. 🔔 피날레 연출: 결승선 교문 셔터 & 골인선
+    if (distLeft < 90) {
+      const goalY = Math.max(40, 420 - (90 - distLeft) * 4.5);
+      const gPersp = this.getPerspective(goalY);
+
+      // Checkered Line
+      const cellW = 16 * gPersp.scale;
+      for (let rx = gPersp.left; rx < gPersp.right; rx += cellW) {
         const isBlack = (Math.floor(rx / cellW) % 2 === 0);
         ctx.fillStyle = isBlack ? '#000000' : '#ffffff';
-        ctx.fillRect(rx, finishY, cellW, 14);
+        ctx.fillRect(rx, goalY, cellW, 12 * gPersp.scale);
       }
+
+      // School Gate Pillars (숭실 정문 기둥)
+      ctx.fillStyle = '#78350f'; // brick pillar
+      ctx.fillRect(gPersp.left - 18 * gPersp.scale, goalY - 90 * gPersp.scale, 20 * gPersp.scale, 95 * gPersp.scale);
+      ctx.fillRect(gPersp.right - 2 * gPersp.scale, goalY - 90 * gPersp.scale, 20 * gPersp.scale, 95 * gPersp.scale);
+
+      // School Gate Descending Shutter Bars
+      const shutterH = Math.min(65 * gPersp.scale, (90 - distLeft) * 1.5 * gPersp.scale);
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(gPersp.left, goalY - 85 * gPersp.scale, gPersp.roadWidth, shutterH);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 2 * gPersp.scale;
+      for (let barX = gPersp.left + 10; barX < gPersp.right; barX += 14 * gPersp.scale) {
+        ctx.beginPath();
+        ctx.moveTo(barX, goalY - 85 * gPersp.scale);
+        ctx.lineTo(barX, goalY - 85 * gPersp.scale + shutterH);
+        ctx.stroke();
+      }
+
       ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 13px sans-serif';
+      ctx.font = `bold ${Math.max(11, 13 * gPersp.scale)}px sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('🏁 GOAL (2,500m 정상 꼭대기) 🏁', midX, finishY - 8);
+      ctx.fillText('🏁 숭실 정문 골인 (SAFE!!) 🏁', 240, goalY - 92 * gPersp.scale);
     }
 
-    // 7. Render Obstacles & Powerups
+    // 5. Render Obstacles
     for (const obs of this.obstacles) {
+      const s = obs.scale;
       if (obs.type === 'booster') {
         // Glowing Neon Speed Booster Pad
         ctx.fillStyle = 'rgba(34, 197, 94, 0.45)';
-        ctx.fillRect(obs.x - 22, obs.y - 13, 44, 26);
+        ctx.fillRect(obs.x - 22 * s, obs.y - 12 * s, 44 * s, 24 * s);
         ctx.strokeStyle = '#4ade80';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(obs.x - 22, obs.y - 13, 44, 26);
-
-        // Green chevrons pointing up
+        ctx.lineWidth = 2 * s;
+        ctx.strokeRect(obs.x - 22 * s, obs.y - 12 * s, 44 * s, 24 * s);
         ctx.fillStyle = '#86efac';
-        ctx.font = 'bold 13px sans-serif';
+        ctx.font = `bold ${Math.max(9, 12 * s)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('▲▲ BOOST ▲▲', obs.x, obs.y);
       } else if (obs.type === 'heart') {
         // 💖 Floating Recovery Heart
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
-        ctx.beginPath();
-        ctx.ellipse(obs.x, obs.y + 12, 10, 4, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.font = '20px sans-serif';
+        ctx.font = `${Math.max(12, 20 * s)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('💖', obs.x, obs.y);
@@ -962,118 +1152,173 @@ class UphillRushGame {
         // ⚽ Soccer Ball
         ctx.fillStyle = 'rgba(0,0,0,0.3)';
         ctx.beginPath();
-        ctx.ellipse(obs.x, obs.y + 10, 12, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(obs.x, obs.y + 10 * s, 12 * s, 5 * s, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(obs.x, obs.y, 11, 0, Math.PI * 2);
+        ctx.arc(obs.x, obs.y, 11 * s, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.5 * s;
         ctx.stroke();
 
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
-        ctx.arc(obs.x, obs.y, 4, 0, Math.PI * 2);
+        ctx.arc(obs.x, obs.y, 4 * s, 0, Math.PI * 2);
         ctx.fill();
       } else if (obs.type === 'basketball') {
         // 🏀 Basketball
         ctx.fillStyle = 'rgba(0,0,0,0.3)';
         ctx.beginPath();
-        ctx.ellipse(obs.x, obs.y + 10, 12, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(obs.x, obs.y + 10 * s, 12 * s, 5 * s, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#ea580c';
         ctx.beginPath();
-        ctx.arc(obs.x, obs.y, 11, 0, Math.PI * 2);
+        ctx.arc(obs.x, obs.y, 11 * s, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#7c2d12';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.5 * s;
         ctx.stroke();
 
         ctx.strokeStyle = '#431407';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = s;
         ctx.beginPath();
-        ctx.moveTo(obs.x - 11, obs.y);
-        ctx.lineTo(obs.x + 11, obs.y);
-        ctx.moveTo(obs.x, obs.y - 11);
-        ctx.lineTo(obs.x, obs.y + 11);
+        ctx.moveTo(obs.x - 11 * s, obs.y);
+        ctx.lineTo(obs.x + 11 * s, obs.y);
+        ctx.moveTo(obs.x, obs.y - 11 * s);
+        ctx.lineTo(obs.x, obs.y + 11 * s);
         ctx.stroke();
       } else if (obs.type === 'barrel') {
-        // 🛢️ Rolling Heavy Metal Drum / Barrel
+        // 🛢️ Rolling Heavy Barrel
         ctx.fillStyle = 'rgba(0,0,0,0.35)';
         ctx.beginPath();
-        ctx.ellipse(obs.x, obs.y + 12, 16, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse(obs.x, obs.y + 12 * s, 16 * s, 6 * s, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#b91c1c';
         ctx.beginPath();
-        ctx.roundRect(obs.x - 16, obs.y - 10, 32, 20, [3, 3, 3, 3]);
+        ctx.roundRect(obs.x - 16 * s, obs.y - 10 * s, 32 * s, 20 * s, [3, 3, 3, 3]);
         ctx.fill();
         ctx.strokeStyle = '#fca5a5';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.5 * s;
         ctx.stroke();
 
         ctx.fillStyle = '#fef08a';
-        ctx.fillRect(obs.x - 14, obs.y - 2, 28, 4);
+        ctx.fillRect(obs.x - 14 * s, obs.y - 2 * s, 28 * s, 4 * s);
       } else if (obs.type === 'tire') {
         // 🛞 Heavy Rubber Tire
         ctx.fillStyle = 'rgba(0,0,0,0.35)';
         ctx.beginPath();
-        ctx.ellipse(obs.x, obs.y + 12, 15, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(obs.x, obs.y + 12 * s, 15 * s, 5 * s, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
-        ctx.arc(obs.x, obs.y, 13, 0, Math.PI * 2);
+        ctx.arc(obs.x, obs.y, 13 * s, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 * s;
         ctx.stroke();
 
         ctx.fillStyle = '#94a3b8';
         ctx.beginPath();
-        ctx.arc(obs.x, obs.y, 6, 0, Math.PI * 2);
+        ctx.arc(obs.x, obs.y, 6 * s, 0, Math.PI * 2);
         ctx.fill();
       } else if (obs.type === 'banana') {
         // 🍌 Banana Peel
         ctx.fillStyle = '#facc15';
         ctx.beginPath();
-        ctx.arc(obs.x, obs.y, 8, 0, Math.PI);
+        ctx.arc(obs.x, obs.y, 8 * s, 0, Math.PI);
         ctx.fill();
         ctx.fillStyle = '#713f12';
-        ctx.fillRect(obs.x - 2, obs.y, 4, 3);
+        ctx.fillRect(obs.x - 2 * s, obs.y, 4 * s, 3 * s);
       }
     }
 
-    // 8. Render Particles
-    for (const p of this.particles) {
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = Math.max(0, p.alpha);
+    // 6. 🏃‍♂️ Render Rival Student NPC ('철수')
+    const r = this.rival;
+    const rPersp = this.getPerspective(r.y);
+    const rs = rPersp.scale;
+
+    // Rival Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(r.x, r.y + 16 * rs, 11 * rs * Math.max(0.4, 1 - r.z / 70), 5 * rs, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const rRenderY = r.y - r.z;
+
+    // Red Backpack on back
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(r.x - 10 * rs, rRenderY + 2 * rs, 7 * rs, 13 * rs);
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(r.x - 9 * rs, rRenderY + 6 * rs, 5 * rs, 4 * rs);
+
+    // Rival Body (Brown blazer & grey pants)
+    ctx.fillStyle = '#78350f'; // brown uniform jacket
+    ctx.beginPath();
+    ctx.arc(r.x, rRenderY - 2 * rs, 8 * rs, 0, Math.PI * 2); // head
+    ctx.fill();
+    ctx.fillRect(r.x - 6 * rs, rRenderY + 4 * rs, 13 * rs, 12 * rs); // torso
+
+    // Brown hair
+    ctx.fillStyle = '#451a03';
+    ctx.beginPath();
+    ctx.arc(r.x, rRenderY - 4 * rs, 8.5 * rs, Math.PI, Math.PI * 2);
+    ctx.fill();
+
+    // Rival Legs
+    const rLegOffset = Math.sin(Date.now() / 50) * 5 * rs;
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(r.x - 5 * rs, rRenderY + 15 * rs, 4 * rs, 8 * rs + rLegOffset);
+    ctx.fillRect(r.x + 2 * rs, rRenderY + 15 * rs, 4 * rs, 8 * rs - rLegOffset);
+
+    // Sweat drops
+    if (Math.sin(Date.now() / 80) > 0.3) {
+      ctx.fillStyle = '#38bdf8';
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.arc(r.x + 9 * rs, rRenderY - 6 * rs, 2 * rs, 0, Math.PI * 2);
       ctx.fill();
-      ctx.globalAlpha = 1.0;
     }
 
-    // 9. Render Player Character
+    // Rival Speech Bubble
+    if (r.bubbleTimer > 0 && r.bubbleText) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      ctx.fillRect(r.x - 45, rRenderY - 32 * rs, 90, 18);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(r.x - 45, rRenderY - 32 * rs, 90, 18);
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(r.bubbleText, r.x, rRenderY - 23 * rs);
+    }
+
+    // 7. 🦘 Render Player Character (with Jump & Shadows)
     const isInvincible = Date.now() < this.invincibleUntil;
     const isBlinking = isInvincible && (Math.floor(Date.now() / 100) % 2 === 0);
 
     if (!isBlinking) {
-      // Ground Shadow
+      const pScale = pPersp.scale;
+
+      // Ground Shadow (shrinks when high in air)
+      const shadowScale = Math.max(0.35, 1 - (this.playerZ / 75));
       ctx.fillStyle = 'rgba(0,0,0,0.35)';
       ctx.beginPath();
-      ctx.ellipse(this.playerX, this.playerY + 16, 12, 5, 0, 0, Math.PI * 2);
+      ctx.ellipse(this.playerX, this.playerY + 16 * pScale, 12 * pScale * shadowScale, 5 * pScale * shadowScale, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      const pRenderY = this.playerY - this.playerZ;
 
       // Mega Boost Aura
       const isMega = Date.now() < this.megaBoostUntil;
       if (isMega) {
         ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
         ctx.beginPath();
-        ctx.arc(this.playerX, this.playerY + 2, 22, 0, Math.PI * 2);
+        ctx.arc(this.playerX, pRenderY + 2 * pScale, 22 * pScale, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2;
@@ -1083,22 +1328,82 @@ class UphillRushGame {
       // Classic Student Body
       ctx.fillStyle = '#1e3a8a'; // Blue school uniform
       ctx.beginPath();
-      ctx.arc(this.playerX, this.playerY - 2, 9, 0, Math.PI * 2); // Head
+      ctx.arc(this.playerX, pRenderY - 2 * pScale, 9 * pScale, 0, Math.PI * 2); // Head
       ctx.fill();
-      ctx.fillRect(this.playerX - 7, this.playerY + 4, 14, 12); // Torso
+      ctx.fillRect(this.playerX - 7 * pScale, pRenderY + 4 * pScale, 14 * pScale, 12 * pScale); // Torso
 
-      // Running Legs Animation
-      const legOffset = Math.sin(Date.now() / 60) * 5;
+      // Running Legs Animation (or tucked jump legs in air)
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(this.playerX - 6, this.playerY + 15, 4, 8 + legOffset);
-      ctx.fillRect(this.playerX + 2, this.playerY + 15, 4, 8 - legOffset);
+      if (this.isJumping) {
+        // Tucked Jump Legs
+        ctx.fillRect(this.playerX - 6 * pScale, pRenderY + 14 * pScale, 4 * pScale, 5 * pScale);
+        ctx.fillRect(this.playerX + 2 * pScale, pRenderY + 14 * pScale, 4 * pScale, 5 * pScale);
+      } else {
+        const legOffset = Math.sin(Date.now() / 60) * 5 * pScale;
+        ctx.fillRect(this.playerX - 6 * pScale, pRenderY + 15 * pScale, 4 * pScale, 8 * pScale + legOffset);
+        ctx.fillRect(this.playerX + 2 * pScale, pRenderY + 15 * pScale, 4 * pScale, 8 * pScale - legOffset);
+      }
 
       // Red Headband
       ctx.fillStyle = '#dc2626';
-      ctx.fillRect(this.playerX - 8, this.playerY - 4, 16, 3);
+      ctx.fillRect(this.playerX - 8 * pScale, pRenderY - 4 * pScale, 16 * pScale, 3 * pScale);
     }
 
-    // 10. Render Confetti on Victory
+    // 8. 🏎️ Optical Speed Lines (Anime Streaks during Boost)
+    const isMega = Date.now() < this.megaBoostUntil;
+    if (this.keys.boost || isMega) {
+      ctx.strokeStyle = isMega ? 'rgba(56, 189, 248, 0.45)' : 'rgba(254, 240, 138, 0.35)';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 12; i++) {
+        const lx = Math.random() * w;
+        const ly = Math.random() * h;
+        const len = Math.random() * 45 + 25;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly);
+        ctx.lineTo(lx, ly + len);
+        ctx.stroke();
+      }
+    }
+
+    // 9. Floating Pop-up Texts ("JUMP! 🦘", "BOOST! ⚡", "CRASH!")
+    for (const ft of this.floatingTexts) {
+      ctx.fillStyle = ft.color;
+      ctx.globalAlpha = Math.max(0, ft.alpha);
+      ctx.font = 'bold 15px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1.0;
+    }
+
+    // 10. 🔔 피날레 배너: 300m 지각 10초 전 경보!
+    if (this.finaleBannerTimer > 0) {
+      const pulse = Math.sin(Date.now() / 80) > 0;
+      ctx.fillStyle = pulse ? 'rgba(220, 38, 38, 0.92)' : 'rgba(180, 83, 9, 0.92)';
+      ctx.fillRect(20, 18, w - 40, 36);
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(20, 18, w - 40, 36);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🔔 8시 19분... 지각 10초 전! 교문 셔터가 닫힙니다! 🏃💨', w / 2, 36);
+    }
+
+    // 11. Render Particles & Confetti
+    for (const p of this.particles) {
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+    }
+
     for (const c of this.confetti) {
       ctx.save();
       ctx.translate(c.x, c.y);

@@ -416,6 +416,59 @@ class AudioManager {
   }
 
   /**
+   * 🦘 Jump sound (rising pitch 160Hz -> 380Hz)
+   */
+  playJump() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(380, now + 0.15);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch (e) {}
+  }
+
+  /**
+   * 🔔 Westminster School Bell Chime (Ding-Dong-Dang-Dong)
+   */
+  playSchoolBell() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [
+        { f: 659.25, t: 0.0, d: 0.35 },  // Mi
+        { f: 523.25, t: 0.32, d: 0.35 }, // Do
+        { f: 587.33, t: 0.64, d: 0.35 }, // Re
+        { f: 392.00, t: 0.96, d: 0.65 }  // Sol
+      ];
+      notes.forEach(n => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(n.f, now + n.t);
+        gain.gain.setValueAtTime(0.18, now + n.t);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.d);
+      });
+    } catch (e) {}
+  }
+
+  /**
    * Soccer Ball Kick / Shoot Sound (Deep Punchy Thump)
    */
   playBallKick() {

@@ -87,6 +87,7 @@ eval(worldCode);
 const engineCode = fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8');
 eval(engineCode);
 
+require('../public/js/audio.js');
 require('../public/js/quiz.js');
 require('../public/js/crafting.js');
 require('../public/js/network.js');
@@ -187,7 +188,27 @@ assert(game.obstacles.length >= 25, 'Dense obstacles spawned (including multi-wa
 const obsTypes = new Set(game.obstacles.map(o => o.type));
 assert(obsTypes.has('soccer') || obsTypes.has('basketball') || obsTypes.has('barrel') || obsTypes.has('tire'), 'Obstacles contain varied hazards (soccer, basketball, barrel, tire)');
 
-// Test Hit Collision
+// Check Audio Jump & School Bell
+assert(typeof window.AudioManager.playJump === 'function', 'AudioManager.playJump method exists');
+assert(typeof window.AudioManager.playSchoolBell === 'function', 'AudioManager.playSchoolBell method exists');
+
+// Check Jump Action
+assert(!game.isJumping, 'Player starts grounded');
+game.triggerJump();
+assert(game.isJumping === true, 'triggerJump sets isJumping to true');
+assert(game.playerVz > 0, 'triggerJump imparts upward velocity');
+
+// Check Pseudo-3D Perspective
+const persp = game.getPerspective(250);
+assert(persp.roadWidth > 135 && persp.roadWidth < 400, 'getPerspective calculates road width in 3D perspective');
+assert(persp.scale > 0.5 && persp.scale < 1.2, 'getPerspective calculates scale at depth');
+
+// Check Rival Student NPC
+assert(!!game.rival, 'Rival student NPC exists');
+assert(typeof game.rival.laneRatio === 'number', 'Rival student has laneRatio');
+assert(typeof game.rival.speed === 'number', 'Rival student has speed');
+
+// Check Hit Collision
 const initialHearts = game.hearts;
 game.handlePlayerHit({ type: 'soccer' });
 assert(game.hearts === initialHearts - 1, 'Player loses 1 heart on obstacle hit');
