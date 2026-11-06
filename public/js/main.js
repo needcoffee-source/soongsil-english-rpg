@@ -1671,6 +1671,8 @@ class MainApp {
       this.handleQuestCareerBookPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
+    } else if (target.type === 'desk_sangdae') {
+      this.handleSangdaeDeskInteraction();
     } else if (target.type === 'door_secret_history') {
       this.handleSecretHistoryDoor();
     } else if (target.type === 'chest_secret_history') {
@@ -8681,6 +8683,24 @@ class MainApp {
   // =========================================================================
   // 👑 6층 교무실 갓준철 선생님 연구 책상 (26번 좌석) 인터랙션 시스템
   // =========================================================================
+  // 📐 6층 교무실 30번 좌석 이상대 수학선생님 연구석 인터랙션
+  handleSangdaeDeskInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '📐 30번 이상대 선생님 연구석',
+        '1학년 1반 담임이자 수학을 가르치시는 이상대 선생님의 자리입니다.\n\n' +
+        '책상 위에 커다란 노란색 아크릴 삼각자와 각도기, 공학용 계산기, 두꺼운 수학 교재 더미가 자로 잰 듯 반듯하게 정돈되어 있습니다.\n\n' +
+        '📝 [모니터 포스트잇]\n"수학은 단순 공식 암기가 아니라 생각의 길을 찾는 아름다운 학문이다! (1-1 학생들 파이팅!)"',
+        '👨‍🏫'
+      );
+    } else {
+      alert('📐 [30번 이상대 선생님 연구석]\n\n1학년 1반 담임 이상대 수학선생님의 자리입니다.\n책상 위에 삼각자와 계산기, 수학 교재가 반듯하게 놓여 있습니다.');
+    }
+  }
+
   handleJuncheolDeskInteraction() {
     const modal = document.getElementById('modal-juncheol-desk');
     if (!modal) return;

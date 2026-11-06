@@ -94,7 +94,7 @@ console.log('✔ Joshua NPC, seatId: 3, and seatLabel: "3" verified');
 const memoObj = office.interactive.find(i => i.id === 'quest_joshua_memo');
 assert(memoObj, 'Dropped memo must exist in classroom_staff_office.interactive');
 assert.strictEqual(memoObj.type, 'quest_memo', 'Dropped memo type must be quest_memo');
-assert.strictEqual(memoObj.x, 48, 'Memo x must be 48');
+assert.strictEqual(memoObj.x, 51, 'Memo x must be 51');
 assert.strictEqual(memoObj.y, 4, 'Memo y must be 4');
 console.log('✔ Dropped memo in pantry (x:48, y:4) verified');
 

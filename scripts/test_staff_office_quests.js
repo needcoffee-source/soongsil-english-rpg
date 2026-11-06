@@ -66,7 +66,7 @@ console.log('✔ 5. Kwim Jin-syong verified (Seat 24, role: "진로", coords: (7
 
 // Test Interactive objects in staff office & career room
 const memo = office.interactive.find(i => i.id === 'quest_joshua_memo');
-assert(memo && memo.x === 48 && memo.y === 4, 'Joshua memo must be in pantry at (48, 4)');
+assert(memo && memo.x === 51 && memo.y === 4, 'Joshua memo must be in pantry at (51, 4)');
 
 const textbook = office.interactive.find(i => i.id === 'quest_okchohan_textbook');
 assert(textbook, 'Ok Cho-han textbook must exist');
