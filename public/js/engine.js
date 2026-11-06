@@ -1712,6 +1712,8 @@ class GameEngine {
   }
 
   interact() {
+    const peModal = document.getElementById('modal-pe-jump-challenge');
+    if (peModal && !peModal.classList.contains('hidden')) return;
     if (this.player.isFallen) {
       if (window.MainApp && window.MainApp.showToast) {
         window.MainApp.showToast('💀 기절한 상태에서는 행동할 수 없습니다. 부활을 선택하세요!', 'error');

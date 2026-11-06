@@ -1336,6 +1336,8 @@ class MainApp {
     btnA.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       if (window.AudioManager) window.AudioManager.playSelect();
+      const peModal = document.getElementById('modal-pe-jump-challenge');
+      if (peModal && !peModal.classList.contains('hidden')) return;
       if (window.RPGDialog && window.RPGDialog.isOpen) {
         window.RPGDialog.advance();
         return;
@@ -1367,6 +1369,8 @@ class MainApp {
       mobileBtnA.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         if (window.AudioManager) window.AudioManager.playSelect();
+        const peModal = document.getElementById('modal-pe-jump-challenge');
+        if (peModal && !peModal.classList.contains('hidden')) return;
         if (window.RPGDialog && window.RPGDialog.isOpen) {
           window.RPGDialog.advance();
           return;
@@ -1397,6 +1401,8 @@ class MainApp {
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
       const arModal = document.getElementById('modal-acid-rain');
       if (arModal && !arModal.classList.contains('hidden')) return;
+      const peModal = document.getElementById('modal-pe-jump-challenge');
+      if (peModal && !peModal.classList.contains('hidden')) return;
 
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.engine.setDirectionInput('up', true);
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', true);
@@ -1455,6 +1461,8 @@ class MainApp {
   }
 
   handleInteraction(target) {
+    const peModal = document.getElementById('modal-pe-jump-challenge');
+    if (peModal && !peModal.classList.contains('hidden')) return;
     if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
       this.showToast('💀 기절한 상태에서는 상호작용이나 채집을 할 수 없습니다!', 'error');
       return;
@@ -2434,7 +2442,7 @@ class MainApp {
   // 🏃 숭실고 체육선생님 "주차장 1분 체력장" (제자리 점프 5회)
   // ========================================================
   handlePETeacherInteraction() {
-    const dialogText = `"어이 학생! 실내 코트가 수리 중이라고 기초 체력 단련을 쉴 순 없지! 나와 함께 제자리 점프 5회 도전해볼 텐가?"\n\n[🎁 완주 보상: 🧪 빨간회복물약 10개]`;
+    const dialogText = `"어이 학생! 실내 코트가 수리 중이라고 기초 체력 단련을 쉴 순 없지! 나와 함께 제자리 점프 5회 도전해볼 텐가?"`;
 
     if (window.RPGDialog) {
       window.RPGDialog.confirm(
@@ -2633,28 +2641,32 @@ class MainApp {
       doJump();
     };
 
-    // Keyboard listener for Space/Enter and ESC
+    // Keyboard listener for Space/Enter and ESC (capture phase + stopImmediatePropagation)
     const keyHandler = (e) => {
       if (modal.classList.contains('hidden')) return;
       if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
         if (isGameOver) {
           if (btnComplete) btnComplete.click();
         } else {
           doJump();
         }
       } else if (e.code === 'Escape' || e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
         closeModal();
       }
     };
 
-    window.addEventListener('keydown', keyHandler);
+    window.addEventListener('keydown', keyHandler, true);
 
     const closeModal = () => {
       isGameOver = true;
       if (animFrameId) cancelAnimationFrame(animFrameId);
-      window.removeEventListener('keydown', keyHandler);
+      window.removeEventListener('keydown', keyHandler, true);
       modal.classList.add('hidden');
     };
 
