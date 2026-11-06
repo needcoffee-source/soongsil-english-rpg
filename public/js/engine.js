@@ -1101,7 +1101,7 @@ class GameEngine {
             closest = {
               type: 'gym_guard_teacher',
               name: gymData.guardTeacher.name || '👮 배움터 지킴이 선생님',
-              prompt: gymData.guardTeacher.prompt || '언덕길 오르기 미니게임 (SPACE)'
+              prompt: gymData.guardTeacher.prompt || '언덕길 오르기 (SPACE)'
             };
             minDist = gDist;
           }

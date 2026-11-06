@@ -135,6 +135,8 @@ assert(gymData.guardTeacher.y === 33, 'guardTeacher is placed at y: 33 (beside m
 assert(gymData.guardTeacher.avatar === 'teacher', 'guardTeacher uses teacher avatar ("형태는 교사와 동일")');
 assert(gymData.guardTeacher.name.includes('배움터 지킴이'), 'guardTeacher name includes 배움터 지킴이');
 
+assert(gymData.guardTeacher.prompt === "언덕길 오르기 (SPACE)", 'guardTeacher prompt is "언덕길 오르기 (SPACE)"');
+
 // Check Collision
 engine.player.room = 'playground_gym';
 engine.player.noclip = false;
@@ -168,21 +170,22 @@ try {
 }
 assert(!renderThrew, 'drawHighResGuardTeacher executes cleanly without errors');
 
-// 3. 언덕길 질주 미니게임 (Uphill Rush Game) Test
-console.log('\n3. Checking 숭실 언덕길 질주 미니게임 (Uphill Rush Game):');
+// 3. 언덕길 등교 챌린지 (Uphill Rush Game) Test
+console.log('\n3. Checking 언덕길 등교 챌린지 (Uphill Rush Game):');
 assert(typeof window.UphillRushGame === 'function', 'UphillRushGame class exists');
 const game = new window.UphillRushGame();
-assert(game.totalDistance === 500, 'Game total distance is 500m');
-assert(game.hearts === 3, 'Game starts with 3 hearts');
+assert(game.totalDistance === 2500, 'Game total distance is 2500m');
+assert(game.hearts === 5, 'Game starts with 5 hearts');
+assert(game.maxHearts === 5, 'Game maxHearts is 5');
 
-// Test Obstacle Spawning
+// Test Obstacle Spawning & Variety
 assert(game.obstacles.length === 0, 'Obstacles empty on start');
-for (let i = 0; i < 20; i++) {
-  game.spawnObstacle();
+for (let i = 0; i < 25; i++) {
+  game.spawnObstacleWave();
 }
-assert(game.obstacles.length === 20, '20 obstacles successfully spawned');
+assert(game.obstacles.length >= 25, 'Dense obstacles spawned (including multi-waves)');
 const obsTypes = new Set(game.obstacles.map(o => o.type));
-assert(obsTypes.has('soccer') || obsTypes.has('basketball') || obsTypes.has('barrel'), 'Obstacles contain soccer, basketball or barrel');
+assert(obsTypes.has('soccer') || obsTypes.has('basketball') || obsTypes.has('barrel') || obsTypes.has('tire'), 'Obstacles contain varied hazards (soccer, basketball, barrel, tire)');
 
 // Test Hit Collision
 const initialHearts = game.hearts;
@@ -196,22 +199,48 @@ app.playerData = {
   exp: 0,
   gold: 0,
   titles: [],
-  uphillBestTime: null
+  uphillBestTime: null,
+  uphillTopRecords: []
 };
 window.MainApp = app;
 
-// Test S-Rank Finish
-game.elapsedMs = 21500; // 21.5 seconds -> S-Rank (< 23s)
-game.traveled = 500;
+// Test S-Rank Finish (< 28.0s) & Top 3 Dashboard
+game.elapsedMs = 26500; // 26.5 seconds -> S-Rank (< 28s)
+game.traveled = 2500;
 game.finishGame();
 
-assert(app.playerData.exp === 150, 'Clearing uphill rush awards 150 EXP');
-assert(app.playerData.gold === 100, 'Clearing uphill rush awards 100 Gold');
-assert(app.playerData.uphillBestTime === 21500, 'Best time is saved as 21500ms');
-assert(app.playerData.titles.includes('title_uphill_master') || app.playerData.titles.includes('🏃 폭풍의 언덕 질주왕'), 'S-Rank awards title [🏃 폭풍의 언덕 질주왕]');
+assert(app.playerData.exp === 250, 'Clearing 2500m uphill rush awards 250 EXP');
+assert(app.playerData.gold === 150, 'Clearing 2500m uphill rush awards 150 Gold');
+assert(app.playerData.uphillBestTime === 26500, 'Best time is saved as 26500ms');
+assert(app.playerData.uphillTopRecords.length === 1 && app.playerData.uphillTopRecords[0] === 26500, 'Top 1 record recorded in uphillTopRecords');
+assert(app.playerData.titles.includes('title_uphill_master') || app.playerData.titles.includes('🏃 폭풍의 지각생'), 'S-Rank awards title [🏃 폭풍의 지각생]');
 
-// Check TITLES list
-assert(app.TITLE_DEFINITIONS.some(t => t.id === 'title_uphill_master'), 'title_uphill_master is registered in TITLE_DEFINITIONS');
+// Add more runs to test top 3 dashboard ranking
+game.elapsedMs = 24000;
+game.finishGame();
+game.elapsedMs = 30000;
+game.finishGame();
+game.elapsedMs = 28000; // 4th run -> should displace 30000
+game.finishGame();
+
+assert(app.playerData.uphillTopRecords.length === 3, 'Top records holds exactly top 3');
+assert(app.playerData.uphillTopRecords[0] === 24000, '1st place is 24000ms');
+assert(app.playerData.uphillTopRecords[1] === 26500, '2nd place is 26500ms');
+assert(app.playerData.uphillTopRecords[2] === 28000, '3rd place is 28000ms (displaced 30000ms)');
+assert(app.playerData.uphillBestTime === 24000, 'uphillBestTime matches top 1');
+
+// Check Dashboard HTML generation
+const dashboardHtml = game.formatDashboardHTML(app.playerData.uphillTopRecords);
+assert(dashboardHtml.includes('🥇 1위'), 'Dashboard HTML includes 1st place');
+assert(dashboardHtml.includes('🥈 2위'), 'Dashboard HTML includes 2nd place');
+assert(dashboardHtml.includes('🥉 3위'), 'Dashboard HTML includes 3rd place');
+assert(dashboardHtml.includes('24.00초'), 'Dashboard HTML displays formatted 24.00초 time');
+
+// Check TITLES list for [🏃 폭풍의 지각생]
+const titleDef = app.TITLE_DEFINITIONS.find(t => t.id === 'title_uphill_master');
+assert(!!titleDef, 'title_uphill_master is registered in TITLE_DEFINITIONS');
+assert(titleDef.name === '🏃 폭풍의 지각생', 'title name is 🏃 폭풍의 지각생');
+assert(titleDef.desc.includes('2,500m'), 'title description mentions 2,500m');
 
 // Check Guard Teacher interaction in MainApp
 assert(typeof app.handleGuardTeacherInteraction === 'function', 'handleGuardTeacherInteraction exists on MainApp');

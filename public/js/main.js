@@ -813,8 +813,8 @@ const TITLE_DEFINITIONS = [
   },
   {
     id: 'title_uphill_master',
-    name: '🏃 폭풍의 언덕 질주왕',
-    desc: '숭실중학교 정문 급경사 언덕길에서 쏟아지는 장애물을 뚫고 꼭대기까지 S랭크로 질주한 전설의 러너!',
+    name: '🏃 폭풍의 지각생',
+    desc: '숭실중학교 정문 급경사 2,500m 언덕길을 지각 위기에서 폭풍처럼 질주하여 S랭크로 주파한 전설의 러너!',
     costType: 'quest',
     costAmount: 0
   }
@@ -2548,21 +2548,25 @@ class MainApp {
     );
   }
 
-  // 👮 숭실 정문 배움터 지킴이 선생님 (언덕길 질주 미니게임 챌린지)
+  // 👮 숭실 정문 배움터 지킴이 선생님 (언덕길 등교 챌린지)
   handleGuardTeacherInteraction() {
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
 
-    const bestTimeStr = (this.playerData && this.playerData.uphillBestTime)
-      ? `${(this.playerData.uphillBestTime / 1000).toFixed(2)}초`
-      : '기록 없음';
+    let topRecs = (this.playerData && Array.isArray(this.playerData.uphillTopRecords)) ? this.playerData.uphillTopRecords : [];
+    if (topRecs.length === 0 && this.playerData && this.playerData.uphillBestTime) {
+      topRecs = [this.playerData.uphillBestTime];
+    }
+    const rec1 = topRecs[0] ? `${(topRecs[0] / 1000).toFixed(2)}초` : '기록 없음';
+    const rec2 = topRecs[1] ? `${(topRecs[1] / 1000).toFixed(2)}초` : '-';
+    const rec3 = topRecs[2] ? `${(topRecs[2] / 1000).toFixed(2)}초` : '-';
 
-    const dialogText = `"허허, 안녕 학생! 여기가 바로 숭실중학교의 명물, '전설의 등교 언덕길'이란다!\n\n지각 위기일 때 전력으로 뛰어 올라가던 선배들의 기상을 이어받아, 위에서 쏟아지는 장애물을 요리조리 피해서 언덕길 꼭대기까지 가장 빠르게 올라가 보겠니?\n\n🏆 내 최고 기록: ${bestTimeStr}\n💡 조작법: [A / D] 좌우 이동, [W / Space] 전력 질주, [S] 감속\n⚡ 팁: 도로 위 초록빛 부스터 패드를 밟으면 초음속으로 질주한단다!"`;
+    const dialogText = `"허허, 안녕 학생! 여기가 바로 숭실중학교의 명물, '전설의 등교 언덕길'이란다!\n\n지각 위기일 때 전력으로 뛰어 올라가던 선배들의 기상을 이어받아, 위에서 쏟아지는 장애물을 요리조리 피해서 언덕길 꼭대기(2,500m 정상 골인 지점)까지 가장 빠른 시간 안에 주파해 보겠니?\n\n📊 [개인 최고 기록 TOP 3]:\n• 🥇 1위: ${rec1}\n• 🥈 2위: ${rec2}\n• 🥉 3위: ${rec3}\n\n💡 조작법: [A / D] 좌우 이동, [W / Space] 전력 질주\n⚡ 팁: 도로 위 초록빛 부스터 패드를 밟으면 초음속으로 질주하고, 하트(💖)를 먹으면 체력이 회복된단다!"`;
 
     if (window.RPGDialog) {
       window.RPGDialog.confirm(
-        '👮 배움터 지킴이 선생님',
+        '👮 배움터 지킴이 선생님 (언덕길 등교 챌린지)',
         dialogText,
         '👮',
         () => {
@@ -2572,7 +2576,7 @@ class MainApp {
           }
         },
         () => {},
-        '🏃 언덕길 질주 도전! (Enter)',
+        '🏃 언덕길 등교 챌린지 도전! (Enter)',
         '다음에 하기 (ESC)'
       );
     } else {

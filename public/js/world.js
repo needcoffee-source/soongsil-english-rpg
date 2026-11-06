@@ -755,7 +755,7 @@ const WORLD_DATA = {
       name: "👮 배움터 지킴이 선생님",
       role: "숭실 정문 지킴이",
       avatar: "teacher",
-      prompt: "언덕길 오르기 미니게임 (SPACE)"
+      prompt: "언덕길 오르기 (SPACE)"
     }
   },
   playground: {
