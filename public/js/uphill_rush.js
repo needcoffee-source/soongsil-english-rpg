@@ -27,8 +27,8 @@ class UphillRushGame {
     this.traveled = 0;
     this.startTime = 0;
     this.elapsedMs = 0;
-    this.hearts = 5;
-    this.maxHearts = 5;
+    this.hearts = 3;
+    this.maxHearts = 3;
 
     // Player state
     this.playerX = 240;
@@ -260,12 +260,10 @@ class UphillRushGame {
 
         ${dashboardHtml}
 
-        <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #475569; border-radius: 10px; padding: 9px 12px; margin-bottom: 14px; font-size: 12px; text-align: left;">
-          <div style="color: #38bdf8; font-weight: 800; margin-bottom: 3px;">🎮 조작 안내:</div>
-          <div style="color: #e2e8f0;">• <b>[← →] / [A D]</b>: 좌우 차선 이동</div>
-          <div style="color: #e2e8f0;">• <b>[↑] / [W] / [Space]</b>: 부스트 전력 질주 (속도 UP!)</div>
-          <div style="color: #a7f3d0; margin-top: 5px; font-weight: 800;">🏅 S랭크 기준: <b>28.00초 미만 주파 시 칭호 해금!</b></div>
-          <div style="color: #fde047;">✨ 달성 보상: 신규 특별 칭호 <b>[🏃 폭풍의 지각생]</b> 영구 해금</div>
+        <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #475569; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12.5px; text-align: left;">
+          <div style="color: #38bdf8; font-weight: 800; margin-bottom: 4px;">🎮 조작 안내:</div>
+          <div style="color: #e2e8f0; line-height: 1.6;">• <b>[← →] / [A D]</b>: 좌우 차선 이동</div>
+          <div style="color: #e2e8f0; line-height: 1.6;">• <b>[↑] / [W] / [Space]</b>: 부스트 전력 질주 (속도 UP!)</div>
         </div>
 
         <button id="btn-start-uphill" style="width: 100%; padding: 12px; font-size: 16px; font-weight: 900; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #fbbf24; border-radius: 10px; color: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);">
@@ -790,7 +788,7 @@ class UphillRushGame {
         <div style="background: rgba(30, 41, 59, 0.85); border: 1.5px solid #475569; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; font-size: 13px; text-align: left; line-height: 1.6;">
           <div>⏱️ 이번 완주 기록: <b style="color: #fef08a; font-size: 16px;">${clearTimeStr}초</b> ${isNewRecord ? '<span style="color:#ef4444; font-weight:900;">[🎉 1위 신기록 달성!]</span>' : (highlightRankIdx >= 0 ? '<span style="color:#38bdf8; font-weight:900;">[✨ TOP 3 랭크인!]</span>' : '')}</div>
           <div>🎁 기본 보상: <span style="color: #60a5fa;">EXP +250</span> · <span style="color: #fcd34d;">골드 +150G</span></div>
-          ${titleUnlocked ? '<div style="margin-top:5px; color:#fde047; font-weight:900;">🏅 [신규 칭호 해금!]: <b>[🏃 폭풍의 지각생]</b> 영구 획득!</div>' : '<div style="margin-top:4px; color:#94a3b8; font-size:11.5px;">💡 28.00초 미만 주파 시 S랭크 칭호 [🏃 폭풍의 지각생] 해금!</div>'}
+          ${titleUnlocked ? '<div style="margin-top:5px; color:#fde047; font-weight:900;">🏅 [신규 칭호 해금!]: <b>[🏃 폭풍의 지각생]</b> 영구 획득!</div>' : ''}
         </div>
 
         ${dashboardHtml}

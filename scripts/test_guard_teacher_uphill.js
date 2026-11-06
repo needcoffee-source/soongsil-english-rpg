@@ -175,8 +175,8 @@ console.log('\n3. Checking 언덕길 등교 챌린지 (Uphill Rush Game):');
 assert(typeof window.UphillRushGame === 'function', 'UphillRushGame class exists');
 const game = new window.UphillRushGame();
 assert(game.totalDistance === 2500, 'Game total distance is 2500m');
-assert(game.hearts === 5, 'Game starts with 5 hearts');
-assert(game.maxHearts === 5, 'Game maxHearts is 5');
+assert(game.hearts === 3, 'Game starts with 3 hearts');
+assert(game.maxHearts === 3, 'Game maxHearts is 3');
 
 // Test Obstacle Spawning & Variety
 assert(game.obstacles.length === 0, 'Obstacles empty on start');
