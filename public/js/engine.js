@@ -8089,8 +8089,8 @@ class GameEngine {
     // Counter: x: 12..14, y: 5. Librarian stands at x: 13, y: 4
     if (tileX >= 12 && tileX <= 14 && (tileY === 4 || tileY === 5)) return true;
 
-    // Book Search PC Station: x: 15, y: 6
-    if (tileX === 15 && tileY === 6) return true;
+    // Book Search PC Station (beside Dibut station): x: 6, y: 17
+    if (tileX === 6 && tileY === 17) return true;
 
     // North-West Grand Bookshelves:
     // Lit bookshelf: x: 2..4, y: 4..5
@@ -8193,7 +8193,7 @@ class GameEngine {
     this.drawLibraryVerticalBookshelf(2 * 32, 8 * 32, 'eng', '🇬🇧 [외국어·어학]');
     // 6-D. [역사·사회 서가] 1897 숭실 독립사 & 인문 (tx: 5, ty: 8..10)
     this.drawLibraryVerticalBookshelf(5 * 32, 8 * 32, 'his', '📜 [역사·사회]');
-    // 6-E. [예술·체육 서가] 숭실 음악 악보 & 축구부 화보 (tx: 2..4, ty: 13)
+    // 6-E. [예술·체육 서가] 명화 도록 & 스포츠 교본 (tx: 2..4, ty: 13)
     this.drawLibraryBookshelf(2 * 32, 13 * 32, 3, 'art', '🎨 [예술·체육]');
     // 6-F. [정기간행물 서가] 최신 과학 잡지 & 교지 (tx: 17..18, ty: 9)
     this.drawLibraryBookshelf(17 * 32, 9 * 32, 2, 'mag', '📰 [정기간행물]');
@@ -8206,11 +8206,11 @@ class GameEngine {
     // 8. Central Reading Table with Chairs (가운데 앉을 수 있는 책상과 의자 at tx: 8..12, ty: 11)
     this.drawLibraryStudyTable(8 * 32, 11 * 32, 5);
 
-    // 9. Book Search PC Station (도서 검색기 컴퓨터 at tx: 15, ty: 6)
-    this.drawLibrarySearchPC(15 * 32, 6 * 32);
-
-    // 10. Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존 at tx: 3..5, ty: 17)
+    // 9. Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존 at tx: 3..5, ty: 17)
     this.drawLibraryDibutStation(3 * 32, 17 * 32);
+
+    // 10. Book Search PC Station (도서 검색기 컴퓨터 at tx: 6, ty: 17 디벗 단말기 옆)
+    this.drawLibrarySearchPC(6 * 32, 17 * 32);
 
     // 11. Cozy Reading Armchairs & Side Tables (tx: 16, ty: 12 & ty: 16)
     this.drawLibraryArmchair(16 * 32, 12 * 32);
@@ -8822,7 +8822,7 @@ class GameEngine {
     }
 
     // Floating Label
-    this.drawSharpLabel(bx + w / 2, by - 22, '🪑 중앙 독서 열람석 (자리에 앉아 독서)', {
+    this.drawSharpLabel(bx + w / 2, by - 22, '🪑 중앙 독서 열람석', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#f59e0b',
       textColor: '#fef08a',
