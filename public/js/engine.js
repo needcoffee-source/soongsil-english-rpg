@@ -10830,7 +10830,7 @@ class GameEngine {
   }
 
   // 6층 교무실 11번 작업용 테이블 (의자 없는 대형 직사각형 작업대)
-  drawStaffOfficeWorkTable(px, py, w, h, label = '11 (작업대)') {
+  drawStaffOfficeWorkTable(px, py, w, h, label = '중앙테이블') {
     const ctx = this.ctx;
     ctx.save();
 
@@ -10895,11 +10895,11 @@ class GameEngine {
     ctx.fillStyle = '#2563eb';
     ctx.fillRect(px + w - 38, py + 7, 8, 4);
 
-    // 4. 중앙 명패 배지: 11 (작업대)
+    // 4. 중앙 명패 배지: 중앙테이블
     const cx = px + w / 2;
     const cy = py + h / 2;
     ctx.font = 'bold 11px "Pretendard", "Noto Sans KR", sans-serif';
-    const text = '11 (작업대)';
+    const text = '중앙테이블';
     const tw = Math.max(54, ctx.measureText(text).width + 12);
     const th = 20;
 
@@ -10923,6 +10923,7 @@ class GameEngine {
 
     const isCreatorDesk = (label === '26');
     const isSangdaeDesk = (label === '30');
+    const isKyungsukDesk = (label === '23');
     const now = Date.now();
 
     // 0. 제작자 갓준철 연구석: 황금빛 펄스 후광 글로우 (바닥 조명 및 배경 아우라)
@@ -10936,6 +10937,8 @@ class GameEngine {
     } else if (facing === 'left') {
       if (isCreatorDesk) {
         this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left', '#1e1b4b', '#fbbf24');
+      } else if (isKyungsukDesk) {
+        this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left', '#064e3b', '#34d399');
       } else {
         this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left');
       }
@@ -11131,6 +11134,61 @@ class GameEngine {
           ctx.fillRect(px + w - 24, py + 28, 3, 16);
           ctx.fillStyle = '#fca5a5';
           ctx.fillRect(px + w - 24, py + 26, 3, 2);
+        } else if (isKyungsukDesk) {
+          // [23번 졍경슉 과학/연금술 선생님 전용 데스크 소품]
+          // 모니터 (좌측) - 화학 분자 구조 / 에메랄드 화면
+          ctx.fillRect(px + 4, py + h / 2 - 12, 8, 24);
+          ctx.fillStyle = '#10b981';
+          ctx.fillRect(px + 12, py + h / 2 - 10, 2, 20);
+          ctx.fillStyle = '#a7f3d0';
+          ctx.fillRect(px + 12, py + h / 2 - 6, 2, 4);
+          ctx.fillRect(px + 12, py + h / 2 + 2, 2, 3);
+
+          // 🧪 에메랄드빛 삼각 플라스크 (중앙 상단)
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.85)';
+          ctx.beginPath();
+          ctx.moveTo(px + 24, py + 9);
+          ctx.lineTo(px + 28, py + 9);
+          ctx.lineTo(px + 32, py + 22);
+          ctx.lineTo(px + 20, py + 22);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#6ee7b7';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          // 플라스크 마개 & 기포
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(px + 24.5, py + 7, 3, 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(px + 25, py + 15, 1.5, 1.5);
+
+          // 🧬 3구 시험관 꽂이 (중앙 하단: 빨강, 파랑, 보라 시약)
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(px + 18, py + 38, 18, 6);
+          // 3개 시험관
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(px + 19, py + 28, 3, 12);
+          ctx.fillStyle = '#3b82f6'; ctx.fillRect(px + 25, py + 28, 3, 12);
+          ctx.fillStyle = '#a855f7'; ctx.fillRect(px + 31, py + 28, 3, 12);
+          ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 0.5;
+          ctx.strokeRect(px + 19, py + 28, 3, 12);
+          ctx.strokeRect(px + 25, py + 28, 3, 12);
+          ctx.strokeRect(px + 31, py + 28, 3, 12);
+
+          // 📚 두꺼운 초록색 과학 교재 / 실험 관찰 일지 (우측 상단)
+          ctx.fillStyle = '#064e3b';
+          ctx.fillRect(px + w - 22, py + 8, 14, 16);
+          ctx.fillStyle = '#059669';
+          ctx.fillRect(px + w - 20, py + 10, 12, 14);
+          ctx.fillStyle = '#fef08a';
+          ctx.fillRect(px + w - 19, py + 12, 10, 2);
+
+          // 🔬 미니 정밀 현미경 (우측 하단)
+          ctx.fillStyle = '#334155';
+          ctx.fillRect(px + w - 20, py + 44, 10, 4);
+          ctx.fillStyle = '#64748b';
+          ctx.fillRect(px + w - 17, py + 32, 4, 12);
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillRect(px + w - 19, py + 30, 8, 4);
         } else {
           ctx.fillRect(px + 6, py + h / 2 - 12, 8, 24);
           ctx.fillStyle = '#38bdf8';
@@ -11157,9 +11215,9 @@ class GameEngine {
     const cx = px + w / 2;
     const cy = py + h / 2;
     if (isCreatorDesk) {
-      // 👑 26 갓준철 골드 명패
+      // 👑 갓준철 골드 명패
       ctx.font = 'bold 10px "Pretendard", "Noto Sans KR", sans-serif';
-      const tw = Math.max(54, ctx.measureText('👑 26 갓준철').width + 10);
+      const tw = Math.max(54, ctx.measureText('👑 갓준철').width + 10);
       const th = 18;
       ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
       ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
@@ -11169,13 +11227,13 @@ class GameEngine {
       ctx.fillStyle = '#fef08a';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('👑 26 갓준철', cx, cy + 0.5);
+      ctx.fillText('👑 갓준철', cx, cy + 0.5);
     } else {
       if (isSangdaeDesk) {
-        // 📐 30 이상대 (수학) 전용 명패
-        ctx.font = 'bold 10px "Pretendard", "Noto Sans KR", sans-serif';
-        const displayLabel = '📐 30 이상대 (수학)';
-        const tw = Math.max(54, ctx.measureText(displayLabel).width + 10);
+        // 📐 이상대 전용 명패 (번호 및 과목 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '📐 이상대';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
         const th = 18;
         ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
         ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
@@ -11183,6 +11241,21 @@ class GameEngine {
         ctx.lineWidth = 1.5;
         ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
         ctx.fillStyle = '#7dd3fc';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isKyungsukDesk) {
+        // 🧪 졍경슉 전용 명패 (번호 및 과목 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🧪 졍경슉';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#6ee7b7';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);
@@ -11308,8 +11381,8 @@ class GameEngine {
       ctx.fillRect(gx + 0.5, gy + 0.5, 1, 1);
     }
 
-    // 3. 👑 26 갓준철 골드 명패의 빛나는 황금 하이라이트 림
-    const badgeTw = Math.max(54, ctx.measureText('👑 26 갓준철').width + 10);
+    // 3. 👑 갓준철 골드 명패의 빛나는 황금 하이라이트 림
+    const badgeTw = Math.max(54, ctx.measureText('👑 갓준철').width + 10);
     const badgeTh = 18;
     const rimAlpha = 0.5 + 0.5 * Math.sin(now / 200);
     ctx.strokeStyle = `rgba(254, 240, 138, ${rimAlpha})`;
@@ -11367,7 +11440,7 @@ class GameEngine {
         this.drawPartitionLine(x * 32 - 6, 19.7 * 32, (x + 5) * 32 + 6, 19.7 * 32);
       } else if (c.type === 'diamond') {
         // 1 - 2 - 1 자리 (11번: 의자 없는 대형 직사각형 작업용 테이블)
-        this.drawStaffOfficeWorkTable((x + 0.2) * 32, 14.85 * 32, 4.6 * 32, 46, '11 (작업대)');
+        this.drawStaffOfficeWorkTable((x + 0.2) * 32, 14.85 * 32, 4.6 * 32, 46, '중앙테이블');
         this.drawStaffOfficeTeacherDesk(x * 32, 16 * 32 + 10, 64, 64, lb.l, 'right');
         this.drawStaffOfficeTeacherDesk((x + 3) * 32, 16 * 32 + 10, 64, 64, lb.r, 'left');
         this.drawStaffOfficeTeacherDesk((x + 0.5) * 32, 19 * 32, 4 * 32, 34, lb.bottom, 'up');

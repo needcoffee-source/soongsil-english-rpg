@@ -369,8 +369,9 @@ const WORLD_DATA = {
       { id: "note_developer_staff_office", type: "dev_note_3", x: 8, y: 3, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" },
       { id: "quest_joshua_memo", type: "quest_memo", x: 51, y: 4, name: "📝 Joshua의 영단어 메모", prompt: "단어 메모 회수하기 (SPACE)" },
       { id: "quest_okchohan_textbook", type: "quest_okchohan_book", x: 42, y: 8, name: "📘 옥촣한의 사회 탐구 교재", prompt: "사회 교재 회수하기 (SPACE)" },
-      { id: "desk_developer_juncheol", type: "desk_juncheol", x: 91, y: 15, name: "👑 갓준철의 연구 책상 (26번)", prompt: "갓준철 선생님 책상 (SPACE)" },
-      { id: "desk_teacher_sangdae", type: "desk_sangdae", x: 90, y: 19.5, name: "📐 이상대 선생님 연구석 (30번)", prompt: "수학 연구석 살펴보기 (SPACE)" }
+      { id: "desk_developer_juncheol", type: "desk_juncheol", x: 91, y: 15, name: "👑 갓준철의 연구 책상", prompt: "갓준철 선생님 책상 (SPACE)" },
+      { id: "desk_teacher_sangdae", type: "desk_sangdae", x: 90, y: 19.5, name: "📐 이상대 선생님 연구석", prompt: "수학 연구석 살펴보기 (SPACE)" },
+      { id: "desk_teacher_kyungsuk", type: "desk_kyungsuk", x: 75, y: 17.5, name: "🧪 졍경슉 선생님 연구석", prompt: "과학 연구석 살펴보기 (SPACE)" }
     ],
     // 1 ~ 33번 좌석 정의 (교사 NPC 배치용 - 좌측 1번부터 우측 33번까지 순차 정리)
     seats: [
