@@ -1474,6 +1474,8 @@ class MainApp {
       if (arModal && !arModal.classList.contains('hidden')) return;
       const peModal = document.getElementById('modal-pe-jump-challenge');
       if (peModal && !peModal.classList.contains('hidden')) return;
+      const uphillModal = document.getElementById('modal-uphill-rush');
+      if (uphillModal && !uphillModal.classList.contains('hidden')) return;
 
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.engine.setDirectionInput('up', true);
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', true);
@@ -1501,6 +1503,8 @@ class MainApp {
     });
 
     window.addEventListener('keyup', (e) => {
+      const uphillModal = document.getElementById('modal-uphill-rush');
+      if (uphillModal && !uphillModal.classList.contains('hidden')) return;
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.engine.setDirectionInput('up', false);
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', false);
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.engine.setDirectionInput('left', false);
@@ -1534,6 +1538,8 @@ class MainApp {
   handleInteraction(target) {
     const peModal = document.getElementById('modal-pe-jump-challenge');
     if (peModal && !peModal.classList.contains('hidden')) return;
+    const uphillModal = document.getElementById('modal-uphill-rush');
+    if (uphillModal && !uphillModal.classList.contains('hidden')) return;
     if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
       this.showToast('💀 기절한 상태에서는 상호작용이나 채집을 할 수 없습니다!', 'error');
       return;
@@ -1732,6 +1738,8 @@ class MainApp {
       this.handleDevNote2Interaction();
     } else if (target.type === 'dev_note_3') {
       this.handleDevNote3Interaction();
+    } else if (target.type === 'dev_note_4') {
+      this.handleDevNote4Interaction();
     } else if (target.type === 'quest_memo') {
       this.handleQuestMemoPickup(target.data || target);
     } else if (target.type === 'quest_okchohan_book') {
@@ -9201,6 +9209,56 @@ class MainApp {
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
         "🎁 [개발자노트 제3편 감상 보너스]\n" +
         "• 갓준철 선생님의 따스한 커피 한 잔 같은 온기가 전해집니다!\n" +
+        "• 🪙 골드 +50G 획득!\n" +
+        "• 🌟 경험치 +50 EXP 획득!"
+      );
+    } else {
+      alert(noteStory);
+    }
+  }
+
+  // 📜 정문 앞 도로 떨어진 개발자노트 이스터에그 (제4편)
+  handleDevNote4Interaction() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const noteKey = 'soongsil_dev_note_4_' + studentId;
+    let alreadyRead = false;
+    try {
+      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+    } catch (e) {}
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const noteStory =
+      "📜 [떨어진 개발자노트 — 제4편: 헐떡이는 숨소리와 전설의 등교 언덕길]\n\n" +
+      "\"매일 아침 숭실 정문 급경사 2,500m 언덕길을 올려다보며,\n" +
+      "가방을 질끈 메고 전력으로 질주하던 우리 학생들의 거친 숨소리가 떠오릅니다.\n\n" +
+      "지각 10초 전, 닫히는 교문을 향해 온 힘을 다해 몸을 날리던 그 순간의 심장 박동!\n" +
+      "힘들고 가파른 오르막길 같았던 수많은 시험과 고민들도,\n" +
+      "친구와 어깨를 나란히 하고 뛰다 보면 어느새 정상의 교문에 도달해 있던 것처럼 말입니다.\n\n" +
+      "넘어져도 다시 털고 일어나는 이 언덕길의 뜀박질이,\n" +
+      "먼 훗날 여러분이 마주할 더 큰 세상의 오르막에서도 지치지 않는 튼튼한 날개가 되어주길 바랍니다.\n\n" +
+      "— 등굣길 언덕 바람을 함께 맞으며, 개발자 갓준철 올림 🏃‍♂️✨—\"";
+
+    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+      try {
+        localStorage.setItem(noteKey, 'true');
+      } catch (e) {}
+
+      this.addGold(50);
+      this.addExp(50);
+      this.saveProgress();
+
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+
+      alert(
+        noteStory + "\n\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "🎁 [개발자노트 제4편 감상 보너스]\n" +
+        "• 갓준철 선생님의 따뜻한 응원의 메시지가 마음에 와닿습니다!\n" +
         "• 🪙 골드 +50G 획득!\n" +
         "• 🌟 경험치 +50 EXP 획득!"
       );

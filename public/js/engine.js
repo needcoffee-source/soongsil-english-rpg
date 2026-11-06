@@ -1106,6 +1106,18 @@ class GameEngine {
             minDist = gDist;
           }
         }
+        // 8. 📜 떨어진 개발자노트 (제4편) (tx: 31, ty: 33)
+        if (gymData.devNote4) {
+          const dnDist = Math.hypot((gymData.devNote4.x + 0.5) * 32 - this.player.x, (gymData.devNote4.y + 0.5) * 32 - this.player.y);
+          if (dnDist < 56 && dnDist < minDist) {
+            closest = {
+              type: 'dev_note_4',
+              name: gymData.devNote4.name || '📜 떨어진 개발자노트 (제4편)',
+              prompt: gymData.devNote4.prompt || '개발자노트 4편 읽기 (SPACE)'
+            };
+            minDist = dnDist;
+          }
+        }
       }
     } else if (this.player.room === 'playground') {
       const pg = WORLD_DATA.playground;
@@ -1676,6 +1688,9 @@ class GameEngine {
         if (gymData.guardTeacher && Math.hypot(gymData.guardTeacher.x * 32 - x, (gymData.guardTeacher.y + 0.5) * 32 - y) < 56) {
           return { type: 'gym_guard_teacher', name: gymData.guardTeacher.name, prompt: gymData.guardTeacher.prompt };
         }
+        if (gymData.devNote4 && Math.hypot((gymData.devNote4.x + 0.5) * 32 - x, (gymData.devNote4.y + 0.5) * 32 - y) < 48) {
+          return { type: 'dev_note_4', name: gymData.devNote4.name, prompt: gymData.devNote4.prompt };
+        }
       }
     } else {
       const cr = this.getCurrentClassroomData();
@@ -1811,6 +1826,8 @@ class GameEngine {
   interact() {
     const peModal = document.getElementById('modal-pe-jump-challenge');
     if (peModal && !peModal.classList.contains('hidden')) return;
+    const uphillModal = document.getElementById('modal-uphill-rush');
+    if (uphillModal && !uphillModal.classList.contains('hidden')) return;
     if (this.player.isFallen) {
       if (window.MainApp && window.MainApp.showToast) {
         window.MainApp.showToast('💀 기절한 상태에서는 행동할 수 없습니다. 부활을 선택하세요!', 'error');
@@ -13119,6 +13136,10 @@ class GameEngine {
     // 8. Main Gate Barrier is rendered at the start of Uphill Road (tx: 0..8, ty: 31..33)
     // 8-B. 👮 배움터 지킴이 선생님 (숭실중학교 정문 오른쪽: tx: 10, ty: 33)
     this.drawHighResGuardTeacher(10 * 32, 33 * 32);
+
+    // 8-C. 📜 떨어진 개발자노트 제4편 (tx: 31, ty: 33 - 갓준철 선생님 자리)
+    const gymDevNote4 = (WORLD_DATA.playground_gym && WORLD_DATA.playground_gym.devNote4) || { x: 31, y: 33 };
+    this.drawHighResDevNote(gymDevNote4.x * 32, gymDevNote4.y * 32, '📜 떨어진 개발자노트 (제4편)');
 
     // 9. East Exit Gate to Soccer Field (tx: 50..55, ty: 28..32)
     const exitX = 51 * 32;

@@ -140,9 +140,14 @@ class UphillRushGame {
     bindTouch(btnJump, 'jump');
     bindTouch(btnBoost, 'boost');
 
-    // Global keyboard listener
+    // Global keyboard listener (capture phase to intercept before game engine)
     window.addEventListener('keydown', (e) => {
       if (!this.modal || this.modal.classList.contains('hidden')) return;
+
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') {
+        e.stopImmediatePropagation();
+      }
 
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         this.keys.left = true;
@@ -160,10 +165,15 @@ class UphillRushGame {
         this.close();
         e.preventDefault();
       }
-    });
+    }, true);
 
     window.addEventListener('keyup', (e) => {
       if (!this.modal || this.modal.classList.contains('hidden')) return;
+
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') {
+        e.stopImmediatePropagation();
+      }
 
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         this.keys.left = false;
@@ -172,7 +182,7 @@ class UphillRushGame {
       } else if (e.key === 'Shift' || e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
         this.keys.boost = false;
       }
-    });
+    }, true);
   }
 
   triggerJump() {
@@ -1124,7 +1134,7 @@ class UphillRushGame {
       ctx.fillStyle = '#fef08a';
       ctx.font = `bold ${Math.max(11, 13 * gPersp.scale)}px sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('🏁 교문 통과! 오늘도 살아남았다!! 🏁', 240, goalY - 92 * gPersp.scale);
+      ctx.fillText('🔔 8시 19분... 지각 10초 전! 교문 셔터가 닫힙니다! 🏃💨', 240, goalY - 92 * gPersp.scale);
     }
 
     // 5. Render Obstacles

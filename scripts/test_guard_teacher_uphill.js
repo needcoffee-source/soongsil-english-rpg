@@ -266,6 +266,19 @@ assert(titleDef.desc.includes('2,500m'), 'title description mentions 2,500m');
 // Check Guard Teacher interaction in MainApp
 assert(typeof app.handleGuardTeacherInteraction === 'function', 'handleGuardTeacherInteraction exists on MainApp');
 
+// 4. Checking Bleachers Items Spacing & Developer Note Part 4
+console.log('\n4. Checking Bleachers Items Spacing & Developer Note Part 4:');
+const pg = WORLD_DATA.playground;
+assert(pg.sketchbook.x === 16, 'Sketchbook moved to x: 16 on bleachers');
+assert(pg.libraryBook.x === 38, 'Library book moved to x: 38 on bleachers');
+assert(Math.abs(pg.libraryBook.x - pg.sketchbook.x) >= 20, 'Items on bleachers are spaced far apart (>= 20 tiles)');
+
+const gym = WORLD_DATA.playground_gym;
+assert(!!gym.devNote4, 'devNote4 exists in playground_gym');
+assert(gym.devNote4.x === 31 && gym.devNote4.y === 33, 'devNote4 placed at x: 31, y: 33 where 갓준철 stands');
+assert(gym.devNote4.type === 'dev_note_4', 'devNote4 has type dev_note_4');
+assert(typeof app.handleDevNote4Interaction === 'function', 'handleDevNote4Interaction exists on MainApp');
+
 console.log('\n========================================================');
 console.log(`📊 FINAL RESULT: ${passed} PASSED / FAILED: ${failed}`);
 console.log('========================================================');

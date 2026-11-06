@@ -756,6 +756,14 @@ const WORLD_DATA = {
       role: "숭실 정문 지킴이",
       avatar: "teacher",
       prompt: "언덕길 오르기 (SPACE)"
+    },
+    devNote4: {
+      id: "note_developer_uphill",
+      type: "dev_note_4",
+      x: 31,
+      y: 33,
+      name: "📜 떨어진 개발자노트 (제4편)",
+      prompt: "개발자노트 4편 읽기 (SPACE)"
     }
   },
   playground: {
@@ -814,15 +822,15 @@ const WORLD_DATA = {
     sketchbook: {
       id: "quest_kimmijin_sketchbook",
       type: "quest_kimmijin_book",
-      x: 20,
+      x: 16,
       y: 7,
-      name: "🎨 김진믜의 풍경화 스케치북",
+      name: "🎨 김진미의 풍경화 스케치북",
       prompt: "스케치북 회수하기 (SPACE)"
     },
     libraryBook: {
       id: "quest_library_book_playground",
       type: "quest_library_book_pg",
-      x: 23,
+      x: 38,
       y: 7,
       name: "📘 [대출도서] 운동장 스탠드에 떨어진 소설책",
       prompt: "소설책 회수하기 (SPACE)"
