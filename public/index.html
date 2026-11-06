@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=184">
+  <link rel="manifest" href="/manifest.json?v=185">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=184">
+  <link rel="stylesheet" href="css/style.css?v=185">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -1644,13 +1644,13 @@
         <div style="width: 100%; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box;">
           <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 800;">
             <span style="color: #94a3b8;">타이밍 게이지</span>
-            <span style="color: #fde047;">🎯 황금 영역(PERFECT)에 도달할 때 점프!</span>
+            <span style="color: #fde047;">🎯 황금 영역(PERFECT)에 도달할 때 점프! (실패 시 0회로 리셋)</span>
           </div>
           
           <div id="pe-rhythm-track" style="position: relative; width: 100%; height: 36px; background: #0f172a; border: 2px solid #475569; border-radius: 18px; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8); box-sizing: border-box;">
             <!-- Target Perfect Zone (Center) -->
-            <div style="position: absolute; left: 35%; width: 30%; height: 100%; background: linear-gradient(90deg, rgba(34,197,94,0.2), rgba(234,179,8,0.45) 50%, rgba(34,197,94,0.2)); border-left: 2px dashed #22c55e; border-right: 2px dashed #22c55e; display: flex; justify-content: center; align-items: center;">
-              <span style="font-size: 11px; font-weight: 900; color: #fef08a; letter-spacing: 1px; text-shadow: 0 0 6px rgba(0,0,0,0.9);">🎯 PERFECT</span>
+            <div style="position: absolute; left: 45%; width: 10%; height: 100%; background: linear-gradient(90deg, rgba(34,197,94,0.3), rgba(234,179,8,0.65) 50%, rgba(34,197,94,0.3)); border-left: 2px solid #22c55e; border-right: 2px solid #22c55e; box-shadow: 0 0 10px rgba(234, 179, 8, 0.4); display: flex; justify-content: center; align-items: center;">
+              <span style="font-size: 11px; font-weight: 900; color: #fef08a; text-shadow: 0 0 6px rgba(0,0,0,0.9);">🎯</span>
             </div>
             <!-- Moving Indicator Ball -->
             <div id="pe-rhythm-indicator" style="position: absolute; top: 3px; left: 0px; width: 28px; height: 26px; background: linear-gradient(135deg, #2563eb, #38bdf8); border: 2px solid #ffffff; border-radius: 50%; box-shadow: 0 0 12px #38bdf8, 0 2px 6px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; font-size: 13px;">
@@ -2209,18 +2209,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=184"></script>
-  <script src="js/dialog.js?v=184"></script>
+  <script src="js/audio.js?v=185"></script>
+  <script src="js/dialog.js?v=185"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=184"></script>
-  <script src="js/engine.js?v=184"></script>
-  <script src="js/quiz.js?v=184"></script>
-  <script src="js/crafting.js?v=184"></script>
-  <script src="js/network.js?v=184"></script>
-  <script src="js/acid_rain.js?v=184"></script>
-  <script src="js/brawl_ball.js?v=184"></script>
-  <script src="js/main.js?v=184"></script>
+  <script src="js/world.js?v=185"></script>
+  <script src="js/engine.js?v=185"></script>
+  <script src="js/quiz.js?v=185"></script>
+  <script src="js/crafting.js?v=185"></script>
+  <script src="js/network.js?v=185"></script>
+  <script src="js/acid_rain.js?v=185"></script>
+  <script src="js/brawl_ball.js?v=185"></script>
+  <script src="js/main.js?v=185"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

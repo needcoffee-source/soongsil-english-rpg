@@ -1565,7 +1565,11 @@ class MainApp {
         this.engine.warpToRoom('playground', '숭실 운동장', 4 * 32, 48 * 32);
       });
     } else if (target.type === 'gym_entrance') {
-      alert('🏛️ [숭실 종합 체육관]\n\n"(현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!)"');
+      if (window.RPGDialog) {
+        window.RPGDialog.show('숭실 체육관', '현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!', '🏛️');
+      } else {
+        alert('🏛️ [숭실 체육관]\n\n현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!');
+      }
     } else if (target.type === 'gym_pe_teacher') {
       this.handlePETeacherInteraction();
     } else if (target.type === 'gym_teacher_car') {
@@ -2565,8 +2569,8 @@ class MainApp {
       isJumpingCooldown = true;
       setTimeout(() => { isJumpingCooldown = false; }, 260);
 
-      // Perfect zone is centered between 32% and 68%
-      const isHit = (currentLeftPercent >= 32 && currentLeftPercent <= 68);
+      // Perfect zone reduced to 1/3 size (centered between 44.5% and 55.5%)
+      const isHit = (currentLeftPercent >= 44.5 && currentLeftPercent <= 55.5);
 
       if (isHit) {
         if (window.AudioManager && typeof window.AudioManager.playWhistle === 'function') {
@@ -2613,24 +2617,37 @@ class MainApp {
           if (speechEl) speechEl.innerText = roundSpeeches[jumpCount];
         }
       } else {
-        // Missed timing
+        // Missed timing: reset progress to 0!
         if (window.AudioManager && typeof window.AudioManager.playTextBlip === 'function') {
           window.AudioManager.playTextBlip();
         }
 
+        jumpCount = 0;
+        updateDots();
+
         if (judgmentEl) {
-          judgmentEl.innerText = '💦 타이밍을 놓쳤다! 다시!';
+          judgmentEl.innerText = '💦 타이밍 실패! 0회로 리셋!';
           judgmentEl.style.color = '#f87171';
           judgmentEl.style.opacity = '1';
-          judgmentEl.style.transform = 'scale(0.9)';
+          judgmentEl.style.transform = 'scale(0.95)';
           setTimeout(() => {
             judgmentEl.style.opacity = '0';
             judgmentEl.style.transform = 'scale(0.7)';
-          }, 320);
+          }, 350);
+        }
+
+        if (stagePlayer) {
+          stagePlayer.style.transform = 'translateX(-8px) scale(0.95)';
+          setTimeout(() => {
+            if (stagePlayer) stagePlayer.style.transform = 'translateX(8px) scale(0.95)';
+            setTimeout(() => {
+              if (stagePlayer) stagePlayer.style.transform = 'translateX(0) scale(1)';
+            }, 80);
+          }, 80);
         }
 
         if (speechEl) {
-          speechEl.innerText = "아깝다! 호흡 가다듬고 타이밍에 맞춰 다시 뛰어보자!";
+          speechEl.innerText = "아깝다! 박자가 빗나가서 처음(0회)부터 다시 도전이다! 집중해라, 학생!";
         }
       }
     };

@@ -388,13 +388,13 @@ class RPGDialogManager {
     let avatar = '🏫';
     let body = msg;
 
-    const matchWithSpeaker = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])?\s*\[([^\]]{1,25})\]\s*\n*([\s\S]*)$/u);
+    const matchWithSpeaker = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\uFE0F?\s*\[([^\]]{1,25})\]\s*\n*([\s\S]*)$/u);
     if (matchWithSpeaker) {
       if (matchWithSpeaker[1]) avatar = matchWithSpeaker[1].trim();
       if (matchWithSpeaker[2]) speaker = matchWithSpeaker[2].trim();
       if (matchWithSpeaker[3] !== undefined) body = matchWithSpeaker[3].trim();
     } else {
-      const matchLeadingEmoji = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\s*([\s\S]+)$/u);
+      const matchLeadingEmoji = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\uFE0F?\s*([\s\S]+)$/u);
       if (matchLeadingEmoji) {
         avatar = matchLeadingEmoji[1];
         body = matchLeadingEmoji[2].trim();

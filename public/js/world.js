@@ -672,7 +672,7 @@ const WORLD_DATA = {
       type: "gym_entrance",
       x: 46.5,
       y: 10,
-      name: "🏛️ 숭실 종합 체육관 메인 로비",
+      name: "🏛️ 숭실 체육관 메인 로비",
       prompt: "체육관 입장 (개관 준비 중)"
     },
     teacherCar: {
