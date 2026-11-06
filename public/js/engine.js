@@ -465,6 +465,10 @@ class GameEngine {
           if (!isDoor) return true;
         }
       }
+      // 6층 디벗 수리함 (5단) 장애물 충돌 판정
+      if (this.player.floor === 6 && tileX === 8 && tileY === 16) {
+        return true;
+      }
     } else {
       // Inside Classroom (room_701 or room_702 or room_staff_office)
       const cr = this.getCurrentClassroomData();
@@ -892,6 +896,7 @@ class GameEngine {
         // Objects
         if (floorData.interactive) {
           for (const obj of floorData.interactive) {
+            if (obj.noInteract || !obj.prompt) continue;
             const dist = Math.hypot(obj.x * 32 - this.player.x, obj.y * 32 - this.player.y);
             if (dist < minDist) {
               if (obj.type === 'plant_zone') {
@@ -1450,6 +1455,7 @@ class GameEngine {
           if (Math.hypot(npc.x * 32 - x, npc.y * 32 - y) < 32) return { type: 'npc', data: npc };
         }
         for (const obj of (floorData.interactive || [])) {
+          if (obj.noInteract || !obj.prompt) continue;
           if (Math.hypot(obj.x * 32 - x, obj.y * 32 - y) < 32) return { type: obj.type, data: obj };
         }
         if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, (floorData.elevator.y + 1.5) * 32 - y) < 48) {
@@ -5295,6 +5301,8 @@ class GameEngine {
           this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera', this.getPlantStage(), this.plantWaterCount);
         } else if (obj.type === 'dev_note' || obj.type === 'dev_note_2') {
           this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || (obj.type === 'dev_note_2' ? '📜 떨어진 개발자노트 (제2편)' : '📜 떨어진 개발자노트 (제1편)'));
+        } else if (obj.type === 'dibut_repair_box' || obj.type === 'diba_repair_box') {
+          this.drawHighResDibutCabinet(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -7827,6 +7835,154 @@ class GameEngine {
     this.drawSharpLabel(px + 14, py - 34, '🪞 복도 전신 거울', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: 'rgba(56, 189, 248, 0.85)',
+      textColor: '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
+  // High-Res Dibut Repair Cabinet (6층 복도 디벗 5단 스마트 수리/보관함)
+  drawHighResDibutCabinet(px, py) {
+    this.ctx.save();
+
+    const w = 36;
+    const h = 58;
+    const bx = px - 2;
+    const by = py - 24;
+
+    // 1. Soft Floor Shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, by + h + 2, 20, 7, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. Heavy-duty Rubber & Steel Base Feet
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(bx + 4, by + h - 2, 6, 4);
+    this.ctx.fillRect(bx + w - 10, by + h - 2, 6, 4);
+    this.ctx.fillStyle = '#334155';
+    this.ctx.fillRect(bx + 4, by + h, 6, 2);
+    this.ctx.fillRect(bx + w - 10, by + h, 6, 2);
+
+    // 3. Main Cabinet Chassis (Industrial Tech Metal Locker)
+    this.ctx.fillStyle = '#090d16';
+    this.ctx.beginPath();
+    this.ctx.roundRect(bx, by, w, h - 2, [4, 4, 2, 2]);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = '#1e293b';
+    this.ctx.beginPath();
+    this.ctx.roundRect(bx + 1.5, by + 1.5, w - 3, h - 5, [3, 3, 1, 1]);
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = '#475569';
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+
+    // 4. Side Ventilation Louvers (좌우 공기 순환 루버 그릴)
+    this.ctx.fillStyle = '#0f172a';
+    for (let vi = 0; vi < 4; vi++) {
+      this.ctx.fillRect(bx + 2, by + 16 + vi * 8, 1.5, 4);
+      this.ctx.fillRect(bx + w - 3.5, by + 16 + vi * 8, 1.5, 4);
+    }
+
+    // 5. Header Display Panel (스마트 디벗 스테이션 LCD & 시스템 상태)
+    const headH = 10;
+    this.ctx.fillStyle = '#0c4a6e';
+    this.ctx.fillRect(bx + 3, by + 3, w - 6, headH);
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(bx + 3, by + 3, w - 6, headH);
+
+    // Mini LCD Screen shine
+    this.ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+    this.ctx.fillRect(bx + 4, by + 4, (w - 8) * 0.6, 2);
+
+    // Mini tablet icon on LCD
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(bx + 5, by + 5, 4, 6);
+    this.ctx.fillStyle = '#0c4a6e';
+    this.ctx.fillRect(bx + 6, by + 6, 2, 4);
+
+    // LCD text dot lines
+    this.ctx.fillStyle = '#bae6fd';
+    this.ctx.fillRect(bx + 11, by + 6, 11, 1.5);
+    this.ctx.fillRect(bx + 11, by + 9, 7, 1.5);
+
+    // Main Power / System Online LED (Emerald pulse)
+    this.ctx.fillStyle = '#22c55e';
+    this.ctx.beginPath();
+    this.ctx.arc(bx + w - 7, by + 7, 2, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillStyle = '#86efac';
+    this.ctx.fillRect(bx + w - 7.5, by + 6.5, 1, 1);
+
+    // 6. Distinct 5-Tier Repair & Storage Compartments (5단 수납/수리 도어)
+    const startY = by + 15;
+    const tierH = 7.5;
+    const tierGap = 0.5;
+    const tierColors = [
+      { led: '#22c55e', ledGlow: 'rgba(34, 197, 94, 0.5)', tag: '1', tablet: '#0284c7' }, // 1단: 충전 완료
+      { led: '#22c55e', ledGlow: 'rgba(34, 197, 94, 0.5)', tag: '2', tablet: '#0284c7' }, // 2단: 충전 완료
+      { led: '#f59e0b', ledGlow: 'rgba(245, 158, 11, 0.5)', tag: '3', tablet: '#d97706' }, // 3단: 수리 점검중
+      { led: '#38bdf8', ledGlow: 'rgba(56, 189, 248, 0.5)', tag: '4', tablet: '#2563eb' }, // 4단: 진단중
+      { led: '#22c55e', ledGlow: 'rgba(34, 197, 94, 0.5)', tag: '5', tablet: '#0284c7' }, // 5단: 대기 완료
+    ];
+
+    for (let i = 0; i < 5; i++) {
+      const ty = startY + i * (tierH + tierGap);
+      const conf = tierColors[i];
+
+      // Shelf Divider Line (단 분할 메탈 바)
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(bx + 2, ty - 1, w - 4, 1);
+
+      // Drawer Compartment Face (다크 아크릴 & 브러시드 메탈)
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(bx + 3, ty, w - 6, tierH);
+
+      // Inner Bay Slot (스마트 슬롯 베이)
+      this.ctx.fillStyle = '#1e293b';
+      this.ctx.fillRect(bx + 4, ty + 1, w - 8, tierH - 2);
+
+      // Docked Dibut Tablet profile (태블릿 슬롯 삽입 실루엣)
+      this.ctx.fillStyle = conf.tablet;
+      this.ctx.fillRect(bx + 5, ty + 2.5, 12, 3);
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(bx + 6, ty + 3, 10, 2);
+
+      // Chrome Drawer Handle (메탈 핸들)
+      this.ctx.fillStyle = '#e2e8f0';
+      this.ctx.fillRect(bx + 19, ty + 2.5, 6, 2.5);
+      this.ctx.fillStyle = '#94a3b8';
+      this.ctx.fillRect(bx + 19, ty + 4, 6, 1);
+
+      // Individual Tier Status LED (5단 개별 상태 인디케이터)
+      this.ctx.fillStyle = conf.ledGlow;
+      this.ctx.beginPath();
+      this.ctx.arc(bx + w - 7, ty + 3.5, 2.5, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.fillStyle = conf.led;
+      this.ctx.beginPath();
+      this.ctx.arc(bx + w - 7, ty + 3.5, 1.5, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Tier Number etched on door (1단~5단 번호)
+      this.ctx.fillStyle = '#94a3b8';
+      this.ctx.font = 'bold 5.5px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(conf.tag, bx + 27, ty + 3.8);
+    }
+
+    // 7. Prominent Floating Sharp Label
+    this.drawSharpLabel(px + 16, by - 12, '📱 디벗 수리함 (5단)', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
       textColor: '#e0f2fe',
       fontSize: 11.5,
       paddingX: 8,

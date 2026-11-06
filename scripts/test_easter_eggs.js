@@ -17,6 +17,16 @@ if (hallwayMirror.x !== 56 || hallwayMirror.y !== 16) {
 }
 console.log(' - Hallway mirror (at 56, 16):', hallwayMirror);
 
+const floor6Dibut = WORLD_DATA.floors[6].interactive.find(i => i.type === 'dibut_repair_box');
+if (!floor6Dibut) throw new Error('Dibut repair cabinet not found in floors[6].interactive');
+if (floor6Dibut.x !== 8 || floor6Dibut.y !== 16) {
+  throw new Error(`Dibut repair cabinet position unexpected: expected (8, 16), got (${floor6Dibut.x}, ${floor6Dibut.y})`);
+}
+if (floor6Dibut.noInteract !== true) {
+  throw new Error('Dibut repair cabinet should have noInteract: true');
+}
+console.log(' - 6th Floor 5-tier Dibut Repair Cabinet (at 8, 16, noInteract: true):', floor6Dibut);
+
 const pgLostBox = WORLD_DATA.playground.lostBox;
 if (!pgLostBox) throw new Error('Playground lost box not found in playground.lostBox');
 console.log(' - Playground lost box:', pgLostBox);
