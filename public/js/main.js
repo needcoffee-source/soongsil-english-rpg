@@ -803,6 +803,13 @@ const TITLE_DEFINITIONS = [
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
     costAmount: 0
+  },
+  {
+    id: 'title_wisdom_seeker',
+    name: '📚 지혜의 탐구자',
+    desc: '학교 곳곳에 분실되었던 대출도서 3권을 모두 회수하여 숭실 도서관의 지식을 지켜낸 탐구자! (경험치 획득량 +5% 상시 보너스)',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -1075,6 +1082,63 @@ const QUEST_DEFINITIONS = {
     rewards: [
       { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' },
       { type: 'item', itemKey: 'item_courage_potion', itemName: '용기 포션', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' }, label: '🧪 용기 포션 x2 (새로운 길을 나아갈 용기! 3분간 공격력 +5)' }
+    ]
+  },
+  'quest_library_missing_books': {
+    id: 'quest_library_missing_books',
+    teacherId: 'npc_librarian',
+    teacherName: '사서 선생님',
+    teacherRole: '2층 도서관',
+    teacherSeat: '도서관 안내석',
+    teacherAvatar: '👩‍🏫',
+    category: '📚 도서관 특별 의뢰 (Library Quest)',
+    title: '[도서관] 사서 선생님의 긴급 의뢰: 흩어진 3권의 도서 회수',
+    story: `안녕, 학생! 2층 도서관에 온 것을 환영한단다. 📚
+
+하지만 지금 정말 큰일이란다... 며칠 전 대출되었던 소중한 학교 도서 3권이 제때 반납되지 않고 학교 곳곳에 흩어져 버렸어!
+
+1. 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치에 누군가 두고 갔다는 제보가 있어.
+2. 📗 [최신 과학 잡지]: 6층 교무실 23번 과학 선생님(졍경슉 선생님) 연구석 주변에 꽂혀 있단다.
+3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
+
+학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
+모두 회수해 오면 특별한 칭호 [📚 지혜의 탐구자]와 경험치, 골드를 보상으로 줄게!`,
+    inProgressStory: `어서 오렴! 아직 분실된 도서 3권을 모두 찾지 못했더구나!
+
+1. 📘 운동장 관람석 스탠드 (소설책)
+2. 📗 6층 교무실 과학 연구석 (과학 잡지)
+3. 📕 숭실역사관 전시실 (역사 고문서 도록)
+
+모두 찾아오면 소중한 칭호와 보상을 지급하마!`,
+    completeStory: `어머나, 3권의 도서를 모두 안전하게 찾아왔구나! 정말 고마워! 👏✨
+
+덕분에 숭실 도서관의 소중한 지식들이 모두 제자리를 찾게 되었단다.
+약속했던 특별 칭호 [📚 지혜의 탐구자]와 보상을 수여하마! 앞으로도 도서관을 자주 찾아주렴!`,
+    doneStory: `안녕! 자네 덕분에 도서관 서가가 다시 풍성해졌단다.
+오늘의 지혜 명언 독서대에서 책도 읽고, 스마트 디벗도 편하게 이용하렴! 👍`,
+    objectives: [
+      {
+        id: 'book_pg',
+        text: '운동장 관람석 스탠드에서 [소설책] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.bookPgCollected ? 1 : 0)
+      },
+      {
+        id: 'book_of',
+        text: '6층 교무실 과학 연구석에서 [과학 잡지] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.bookOfCollected ? 1 : 0)
+      },
+      {
+        id: 'book_hi',
+        text: '숭실역사관 전시실에서 [고문서 도록] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.bookHiCollected ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' }
     ]
   }
 };
@@ -1677,6 +1741,22 @@ class MainApp {
       this.handleKyungsukDeskInteraction();
     } else if (target.type === 'desk_hunihuni') {
       this.handleHunihuniDeskInteraction();
+    } else if (target.type === 'wisdom_book') {
+      this.handleWisdomBookInteraction();
+    } else if (target.type === 'bookshelf_lit') {
+      this.handleBookshelfLitInteraction();
+    } else if (target.type === 'bookshelf_sci') {
+      this.handleBookshelfSciInteraction();
+    } else if (target.type === 'bookshelf_eng') {
+      this.handleBookshelfEngInteraction();
+    } else if (target.type === 'library_dibut') {
+      this.handleLibraryDibutInteraction();
+    } else if (target.type === 'quest_library_book_pg') {
+      this.handleLibraryBookPickup('pg');
+    } else if (target.type === 'quest_library_book_of') {
+      this.handleLibraryBookPickup('of');
+    } else if (target.type === 'quest_library_book_hi') {
+      this.handleLibraryBookPickup('hi');
     } else if (target.type === 'door_secret_history') {
       this.handleSecretHistoryDoor();
     } else if (target.type === 'chest_secret_history') {
@@ -2902,6 +2982,7 @@ class MainApp {
       let isCurrent = false;
       if (target === 'floor_6' && curRoom === 'hallway' && curFloor === 6) isCurrent = true;
       if (target === 'floor_5' && curRoom === 'hallway' && curFloor === 5) isCurrent = true;
+      if (target === 'floor_2' && curRoom === 'hallway' && curFloor === 2) isCurrent = true;
       if ((target === 'floor_7' || target === 'floor_1') && curRoom === 'hallway' && curFloor === 7) isCurrent = true;
       if (target === 'playground' && curRoom === 'playground') isCurrent = true;
 
@@ -2977,6 +3058,13 @@ class MainApp {
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+        this.saveProgress();
+      });
+    } else if (target === 'floor_2') {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 2;
+        this.engine.warpToRoom('hallway', '2층 도서관', 16 * 32, 5 * 32);
         this.saveProgress();
       });
     } else if (target === 'playground') {
@@ -6296,6 +6384,12 @@ class MainApp {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
       });
+    } else if (target === 'floor_2') {
+      targetName = '📚 2층 도서관';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 2;
+        this.engine.warpToRoom('hallway', '2층 도서관', 16 * 32, 5 * 32);
+      });
     } else if (target === 'court_basketball') {
       targetName = '🏀 농구장';
       this.engine.triggerFadeWarp(() => {
@@ -7303,7 +7397,17 @@ class MainApp {
       return;
     }
 
-    this.playerData.exp += amount;
+    let finalAmount = amount;
+    // 1번 구현: 도서관 '오늘의 지혜 명언' 독서 버프 (경험치 +15%)
+    if ((this.playerData.readingExpBuffUntil && Date.now() < this.playerData.readingExpBuffUntil) || (this.isBuffActive && this.isBuffActive('reading_exp'))) {
+      finalAmount = Math.max(1, Math.round(finalAmount * 1.15));
+    }
+    // 칭호 [지혜의 탐구자] 착용 시 경험치 +5% 추가 보너스
+    if (this.playerData.equippedTitle === '📚 지혜의 탐구자' || this.playerData.equippedTitle === 'title_wisdom_seeker') {
+      finalAmount = Math.max(1, Math.round(finalAmount * 1.05));
+    }
+
+    this.playerData.exp += finalAmount;
     let leveledUp = false;
 
     while (this.playerData.level < MAX_LEVEL && this.playerData.exp >= this.playerData.level * 100) {
@@ -7469,6 +7573,228 @@ class MainApp {
   // =========================================================================
   // PERSISTENCE (LocalStorage + 서버 영구 저장 이중화)
   // =========================================================================
+  // ========================================================
+  // 📚 2층 도서관 (독립 전용층) 상호작용 및 퀘스트 시스템
+  // ========================================================
+
+  isQuestLibBookPgCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_library_missing_books'];
+    return !!(q && q.bookPgCollected);
+  }
+
+  isQuestLibBookOfCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_library_missing_books'];
+    return !!(q && q.bookOfCollected);
+  }
+
+  isQuestLibBookHiCollected() {
+    if (!this.playerData || !this.playerData.quests) return false;
+    const q = this.playerData.quests['quest_library_missing_books'];
+    return !!(q && q.bookHiCollected);
+  }
+
+  // 1번 구현: '오늘의 지혜 명언' 독서대 (일일 명언 감상 및 30분간 경험치 +15% 버프 활성화)
+  handleWisdomBookInteraction() {
+    if (this._wisdomBookCooldown && Date.now() - this._wisdomBookCooldown < 1500) return;
+    this._wisdomBookCooldown = Date.now();
+
+    const quotes = [
+      {
+        quote: "별을 노래하는 마음으로 모든 죽어가는 것을 사랑해야지. 그리고 나한테 주어진 길을 걸어가야겠다.",
+        author: "윤동주 시인, <서시>",
+        context: "일제강점기 숭실의 맑고 순결한 민족시인 윤동주의 영혼이 깃든 불멸의 명문장"
+      },
+      {
+        quote: "내가 남들보다 조금 더 멀리 볼 수 있었다면, 그것은 거인들의 어깨 위에 올라서 있었기 때문이다.",
+        author: "아이작 뉴턴 (Isaac Newton)",
+        context: "앞선 탐구자들의 지식과 진리에 대한 겸손과 끊임없는 지적 호기심"
+      },
+      {
+        quote: "성찰하지 않는 삶은 살 가치가 없다. 너 자신을 알라.",
+        author: "소크라테스 (Socrates)",
+        context: "지혜의 시작은 내가 모른다는 것을 인정하고 성찰의 질문을 던지는 것"
+      },
+      {
+        quote: "진리는 반드시 따르는 자가 있고, 정의는 반드시 이루는 날이 있다. 낙심치 말고 굳세게 나아가라.",
+        author: "도산 안창호 선생",
+        context: "숭실의 민족 지도자 안창호 선생이 이 나라 청년들에게 전하는 불멸의 희망"
+      },
+      {
+        quote: "책 없는 방은 영혼이 없는 육체와 같다.",
+        author: "키케로 (Cicero)",
+        context: "독서는 영혼을 깨우고 생각의 지평을 넓히는 가장 위대한 여행"
+      },
+      {
+        quote: "배우고 때로 익히면 또한 기쁘지 아니한가. 벗이 먼 곳에서 찾아오면 또한 즐겁지 아니한가.",
+        author: "공자 (Confucius), <논어>",
+        context: "새로운 앎을 깨닫는 배움의 순수한 희열과 함께 성장하는 벗의 소중함"
+      }
+    ];
+
+    const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % quotes.length;
+    const q = quotes[dayIndex] || quotes[0];
+
+    // 30분 경험치 버프 발동 (+15%)
+    this.applyBuff('reading_exp', 30 * 60 * 1000, '오늘의 지혜 (경험치 +15%)', '📖');
+    this.playerData.readingExpBuffUntil = Date.now() + 30 * 60 * 1000;
+    this.saveProgress();
+
+    if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+      window.AudioManager.playFanfare();
+    }
+
+    const story = `📜 《오늘의 지혜 명언 독서대》\n\n"${q.quote}"\n\n— ${q.author} —\n\n💡 [사색의 길잡이]:\n${q.context}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n✨ [오늘의 독서 축복 버프 활성화!]\n• 📖 [오늘의 지혜 버프]: 앞으로 30분 동안 모든 경험치(EXP) 획득량 +15% 증가!\n• 🌟 가슴속에 깊은 영감과 지혜의 빛이 환하게 피어오릅니다!`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📖 오늘의 지혜 명언 독서대', story, '📖');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 2번 구현-A: 문학·철학 서가 (윤동주 시집 & 고전문학)
+  handleBookshelfLitInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `📚 [문학·철학 대형 서가]\n\n"서가 중앙에 숭실의 자랑이자 민족시인인 윤동주의 유고 시집 <하늘과 바람과 별과 시>가 단정히 놓여 있습니다.\n\n조심스레 책장을 넘기자, '별 헤는 밤', '자화상', '서시' 등 시대를 뛰어넘는 서정적인 문장들이 가슴을 뭉클하게 적십니다.\n그 곁으로 김소월의 <진달래꽃>, 헤르만 헤세의 <데미안> 등 시대를 밝힌 동서양 명작들이 가지런히 꽂혀 있습니다."\n\n✨ [숭실 문학의 향기]:\n"책장을 덮자 맑고 고결한 시인의 마음이 마음속에 온화하게 머뭅니다."`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📚 [문학·철학 서가] 윤동주 시집 & 고전문학', story, '📚');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 2번 구현-B: 자연과학·연금 서가 (졍경슉 비전서 & 실험일지)
+  handleBookshelfSciInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `🔬 [자연과학·연금 대형 서가]\n\n"1학년 5반 과학 졍경슉 선생님께서 정성껏 작성하신 <신비한 과학 실험 비전서>와 두툼한 백과사전들이 꽂혀 있습니다!\n\n손글씨로 적힌 연구 일지에는 주홍 물약과 용기 물약의 핵심 촉매 반응비, 화학 주기율표의 비밀, 그리고 중간고사 과학 시험에 꼭 출제될 주요 실험 법칙들이 흥미진진하게 정리되어 있습니다!"\n\n🧪 [과학 선생님의 비전 메모]:\n'관찰하고 의문을 품어라! 과학은 자연이 들려주는 가장 아름다운 규칙이란다. - 졍경슉 선생님'`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🔬 [자연과학·연금 서가] 졍경슉 비전서 & 실험일지', story, '🔬');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 2번 구현-C: 외국어·어학 서가 (Joshua 영단어 비법전서)
+  handleBookshelfEngInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const story = `🇬🇧 [외국어·어학 대형 서가]\n\n"3학년 영어 Joshua 선생님의 특급 비법이 담긴 <초강력 영단어 암기 비전서>와 원서 소설들이 서가를 채우고 있습니다!\n\n'접두사(Prefix)와 어근(Root)만 알면 모르는 단어도 한눈에 뜻이 보인다!'\n외국어 공부를 두려워하지 않고 세계와 소통하는 글로벌 숭실인이 되기 위한 꿀팁들이 빼곡합니다!"\n\n👨‍🏫 [Joshua 선생님의 응원 한마디]:\n"Don't be afraid to make mistakes! Practice makes perfect! Keep going, my student!"`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🇬🇧 [외국어·어학 서가] Joshua 영단어 비법전서', story, '🇬🇧');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 4번 구현: 스마트 디벗 거치대 존 (독립 전자도서관 & 태블릿 충전)
+  handleLibraryDibutInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    // 학생 체력 100% 완전 충전
+    const healAmount = this.playerData.maxHp - this.playerData.hp;
+    if (healAmount > 0) {
+      this.playerData.hp = this.playerData.maxHp;
+      this.updateHpBar();
+    }
+
+    const story = `📱 [도서관 스마트 디벗 단말기 (전자도서관)]\n\n"책상 위에 충전 도킹된 5대의 최신 디벗(Dibut) 태블릿이 푸른빛을 발하고 있습니다.\n숭실 전자도서관 통합 시스템이 온라인으로 연결되어 있습니다."\n\n🔍 [도서관 실시간 서비스]:\n• 📚 소장 도서 25,000권 DB 검색: 정상 작동 중\n• 📊 이번 주 숭실 대출 베스트셀러:\n  1위: <하늘과 바람과 별과 시> (윤동주)\n  2위: <코스모스> (칼 세이건)\n  3위: <데미안> (헤르만 헤세)\n• 🎧 e-Book 디지털 오디오북 스트리밍 지원\n\n🔋 [스마트 충전 완료]:\n디벗 충전 패드의 쾌적한 에너지로 학생의 체력(HP)이 100% 완전 회복되었습니다!`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📱 도서관 스마트 디벗 단말기', story, '📱');
+    } else {
+      alert(story);
+    }
+  }
+
+  // 3번 구현: 분실된 대출도서 3권 회수 핸들러
+  handleLibraryBookPickup(bookType) {
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const quest = this.playerData.quests['quest_library_missing_books'];
+
+    const bookConfig = {
+      pg: {
+        flag: 'bookPgCollected',
+        itemKey: 'item_lib_book_pg',
+        itemName: '소설책 (세계문학 전집)',
+        icon: '📘',
+        desc: '운동장 관람석 스탠드에 떨어져 있던 도서관 대출도서',
+        placeName: '운동장 관람석 스탠드'
+      },
+      of: {
+        flag: 'bookOfCollected',
+        itemKey: 'item_lib_book_of',
+        itemName: '과학 잡지 (최신 뉴턴 매거진)',
+        icon: '📗',
+        desc: '6층 교무실 과학 선생님 연구석 주변에 꽂혀 있던 도서관 대출도서',
+        placeName: '6층 교무실 과학 연구석'
+      },
+      hi: {
+        flag: 'bookHiCollected',
+        itemKey: 'item_lib_book_hi',
+        itemName: '역사 고문서 도록 (1897 숭실)',
+        icon: '📕',
+        desc: '숭실역사관 전시실에 놓여 있던 귀중한 역사 도록 대출도서',
+        placeName: '숭실역사관 전시실'
+      }
+    };
+
+    const cfg = bookConfig[bookType];
+    if (!cfg) return;
+
+    if (!quest || quest.status !== 'in_progress') {
+      const msg = `${cfg.icon} [바닥에 놓인 대출도서: ${cfg.itemName}]\n\n"2층 도서관 사서 선생님이 애타게 찾으시던 분실도서 같습니다.\n2층 도서관 사서 선생님을 먼저 찾아가 의뢰를 수락하세요!"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show(`${cfg.icon} ${cfg.itemName}`, msg, cfg.icon);
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    if (quest[cfg.flag]) {
+      this.showToast(`이미 ${cfg.itemName}을(를) 회수했습니다.`, 'info');
+      return;
+    }
+
+    quest[cfg.flag] = true;
+    this.addItem(cfg.itemKey, cfg.itemName, 1, cfg.icon, {
+      type: 'quest',
+      effect: cfg.desc
+    });
+    this.saveProgress();
+    this.updateQuestTracker();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showToast(`${cfg.icon} ${cfg.placeName}에서 [${cfg.itemName}]을(를) 회수했습니다!`, 'success');
+
+    if (quest.bookPgCollected && quest.bookOfCollected && quest.bookHiCollected) {
+      setTimeout(() => {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast('🎉 [도서관 의뢰] 3권의 도서를 모두 회수했습니다! 2층 도서관 사서 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+      }, 500);
+    }
+  }
+
   saveProgress(forceServerSync = false) {
     if (!this.playerData || this.playerData.isTeacher) return;
     if (!this.playerData.studentId || this.playerData.studentId === '교사') return;
@@ -8373,6 +8699,8 @@ class MainApp {
         costText = '특별 퀘스트 달성 필요';
         if (t.id === 'title_history_bearer') {
           progressText = '(숭실역사관 4대 전시관 답사)';
+        } else if (t.id === 'title_wisdom_seeker') {
+          progressText = '(도서관 분실도서 3권 회수)';
         } else if (t.id === 'title_drummer') {
           progressText = '(1학년 4반 도덕 비트 20문제 완파)';
         } else if (t.id && t.id.startsWith('title_job_')) {
@@ -9927,6 +10255,8 @@ class MainApp {
       this.showToast('💻 [요션유 선생님의 정보 과제] 수락 완료! 1-3 컴퓨터실(메인 서버 점검)과 1-2 교실 구석(알고리즘 USB)을 확인하세요.', 'success');
     } else if (questId === 'quest_kwimjinsyong_career') {
       this.showToast('🌟 [귐즨숑 선생님의 진로 의뢰] 수락 완료! 5층 진로상담실(안내서 회수) 후 6층 창가의 학생에게 전달하세요.', 'success');
+    } else if (questId === 'quest_library_missing_books') {
+      this.showToast('📚 [사서 선생님의 의뢰] 수락 완료! 운동장 스탠드, 교무실, 역사관의 분실도서 3권을 찾아오세요.', 'success');
     } else {
       this.showToast(`📜 [${(qDef && qDef.title) ? qDef.title : '의뢰'}] 수락 완료!`, 'success');
     }
@@ -9963,6 +10293,19 @@ class MainApp {
       this.removeItem(qDef.cleanupItem, 1);
     } else if (questId === 'quest_joshua_intro') {
       this.removeItem('item_joshua_memo', 1);
+    } else if (questId === 'quest_library_missing_books') {
+      this.removeItem('item_lib_book_pg', 1);
+      this.removeItem('item_lib_book_of', 1);
+      this.removeItem('item_lib_book_hi', 1);
+      if (!this.playerData.titles) this.playerData.titles = [];
+      const titleName = '📚 지혜의 탐구자';
+      if (!this.playerData.titles.includes(titleName)) {
+        this.playerData.titles.push(titleName);
+      }
+      if (!this.playerData.titles.includes('title_wisdom_seeker')) {
+        this.playerData.titles.push('title_wisdom_seeker');
+      }
+      this.showToast('🏅 새로운 칭호 [📚 지혜의 탐구자]를 획득했습니다!', 'success');
     }
 
     this.recalcCombatStats();
@@ -10292,3 +10635,10 @@ class MainApp {
 window.addEventListener('DOMContentLoaded', () => {
   window.MainApp = new MainApp();
 });
+
+if (typeof window !== 'undefined') {
+  window.MainAppClass = MainApp;
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.MainApp = MainApp;
+}

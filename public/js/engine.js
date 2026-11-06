@@ -146,7 +146,28 @@ class GameEngine {
     }
   }
 
+  triggerLibraryShh() {
+    this.libraryShhTimer = Date.now() + 2500;
+    if (window.AudioManager && typeof window.AudioManager.playWrong === 'function') {
+      window.AudioManager.playWrong();
+    }
+    if (!this.lastShhToast || Date.now() - this.lastShhToast > 3000) {
+      this.lastShhToast = Date.now();
+      if (window.MainApp && typeof window.MainApp.showToast === 'function') {
+        window.MainApp.showToast("🤫 사서 선생님: '쉿! 학생, 도서관에서는 뛰지 말고 조용히 걸어야지!'", 'warning');
+      }
+    }
+  }
+
   setDashing(isDashing) {
+    // 5번 구현: 2층 도서관 정숙 이스터에그 (대시 1번이라도 시도 시 즉시 해제 + 사서 선생님 정숙 팝업)
+    if (isDashing && this.player && this.player.room === 'hallway' && this.player.floor === 2) {
+      this.player.isDashing = false;
+      this.player.speed = this.player.isTeacher ? 4.0 : 3.8;
+      this.triggerLibraryShh();
+      return;
+    }
+
     // 초록 물약 버프: 1분간 기본 이동속도 10% 증가 (질주 속도가 아닌 기본 걷기 속도에 적용)
     const hasSpeedBuff = !!(window.MainApp && window.MainApp.isBuffActive && window.MainApp.isBuffActive('speed_boost'));
     const speedBuffMult = hasSpeedBuff ? 1.10 : 1.0;
@@ -247,6 +268,12 @@ class GameEngine {
       this.keys.right = false;
     }
 
+    if (this.player.isDashing && this.player.room === 'hallway' && this.player.floor === 2) {
+      this.player.isDashing = false;
+      this.player.speed = this.player.isTeacher ? 4.0 : 3.8;
+      this.triggerLibraryShh();
+    }
+
     let dx = 0;
     let dy = 0;
 
@@ -344,6 +371,9 @@ class GameEngine {
       return WORLD_DATA.GYM_PLAZA_WIDTH || 56;
     }
     if (this.player && this.player.room === 'hallway') {
+      if (this.player.floor === 2) {
+        return WORLD_DATA.LIBRARY_WIDTH || 20;
+      }
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
     if (this.player && this.player.room === 'room_staff_office') {
@@ -359,6 +389,9 @@ class GameEngine {
   }
 
   getMapHeight() {
+    if (this.player && this.player.room === 'hallway' && this.player.floor === 2) {
+      return WORLD_DATA.LIBRARY_HEIGHT || 20;
+    }
     if (this.player && this.player.room === 'playground') {
       return WORLD_DATA.PLAYGROUND_HEIGHT || 54;
     }
@@ -456,6 +489,9 @@ class GameEngine {
       return false;
     }
     if (this.player.room === 'hallway') {
+      if (this.player.floor === 2) {
+        return this.checkLibraryFloor2Collision(tileX, tileY);
+      }
       if (tileY >= curMapHeight - 1) return true;
       // Top wall boundary except doors
       if (tileY <= 4) {
@@ -1141,6 +1177,21 @@ class GameEngine {
             }
           }
         }
+        // 2-F. Library Missing Book on Playground Bleachers
+        if (pg.libraryBook) {
+          if (!window.MainApp || typeof window.MainApp.isQuestLibBookPgCollected !== 'function' || !window.MainApp.isQuestLibBookPgCollected()) {
+            const lbDist = Math.hypot((pg.libraryBook.x + 0.5) * 32 - this.player.x, (pg.libraryBook.y + 0.5) * 32 - this.player.y);
+            if (lbDist < 64 && lbDist < minDist) {
+              closest = {
+                type: 'quest_library_book_pg',
+                data: pg.libraryBook,
+                name: pg.libraryBook.name || '📘 [대출도서] 운동장 스탠드에 떨어진 소설책',
+                prompt: pg.libraryBook.prompt || '소설책 회수하기 (SPACE)'
+              };
+              minDist = lbDist;
+            }
+          }
+        }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
         const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
           (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
@@ -1525,6 +1576,23 @@ class GameEngine {
                   data: pg.sketchbook,
                   name: pg.sketchbook.name || '🎨 김진믜의 풍경화 스케치북',
                   prompt: pg.sketchbook.prompt || '스케치북 회수하기 (SPACE)'
+                };
+              }
+            }
+          }
+        }
+        if (pg.libraryBook) {
+          if (!window.MainApp || typeof window.MainApp.isQuestLibBookPgCollected !== 'function' || !window.MainApp.isQuestLibBookPgCollected()) {
+            const lbCenterX = (pg.libraryBook.x + 0.5) * 32;
+            const lbCenterY = (pg.libraryBook.y + 0.5) * 32;
+            if (Math.hypot(lbCenterX - x, lbCenterY - y) < 48) {
+              const distToPlayer = Math.hypot(lbCenterX - this.player.x, lbCenterY - this.player.y);
+              if (distToPlayer < 72) {
+                return {
+                  type: 'quest_library_book_pg',
+                  data: pg.libraryBook,
+                  name: pg.libraryBook.name || '📘 [대출도서] 운동장 스탠드에 떨어진 소설책',
+                  prompt: pg.libraryBook.prompt || '소설책 회수하기 (SPACE)'
                 };
               }
             }
@@ -5200,6 +5268,10 @@ class GameEngine {
   // SCENE RENDERING: HALLWAY (복도)
   // ========================================================
   renderHallway() {
+    if (this.player.floor === 2) {
+      this.renderLibraryFloor2();
+      return;
+    }
     const fData = WORLD_DATA.floors[this.player.floor];
     const mapW = this.getMapWidth();
     const mapH = this.getMapHeight();
@@ -5831,6 +5903,14 @@ class GameEngine {
     // 10-B. Kim Mi-jin Art Quest Sketchbook (운동장 벤치 왼쪽편: x: 24, y: 16)
     const pgSketchbook = (WORLD_DATA.playground && WORLD_DATA.playground.sketchbook) || { x: 20, y: 7 };
     this.drawStaffOfficeArtSketchbook(pgSketchbook.x * 32, pgSketchbook.y * 32);
+
+    // 10-C. Library Missing Book (운동장 관람석 스탠드: x: 23, y: 7)
+    if (WORLD_DATA.playground && WORLD_DATA.playground.libraryBook) {
+      if (!window.MainApp || typeof window.MainApp.isQuestLibBookPgCollected !== 'function' || !window.MainApp.isQuestLibBookPgCollected()) {
+        const pgBook = WORLD_DATA.playground.libraryBook;
+        this.drawQuestLibraryBook(pgBook.x * 32, pgBook.y * 32, 'blue');
+      }
+    }
 
     // Drinking Fountain between fields (x: 59, y: 5)
     this.drawHighResDrinkingFountain(59 * 32 + 16, 5 * 32 + 10);
@@ -7992,6 +8072,886 @@ class GameEngine {
     this.ctx.restore();
   }
 
+  // ========================================================
+  // 📚 SCENE RENDERING: 2층 도서관 (독립 전용 층, 20 x 20 타일)
+  // ========================================================
+  checkLibraryFloor2Collision(tileX, tileY) {
+    // 20 x 20 boundaries:
+    // ty <= 3: North wall (except elevator opening at tileX === 16, ty === 3)
+    if (tileY < 3) return true;
+    if (tileY === 3) {
+      if (tileX === 16) return false; // elevator entry passable
+      return true;
+    }
+    if (tileX <= 0 || tileX >= 19 || tileY >= 19) return true;
+
+    // Librarian Counter & Reception:
+    // Counter: x: 12..14, y: 5. Librarian stands at x: 13, y: 4
+    if (tileX >= 12 && tileX <= 14 && (tileY === 4 || tileY === 5)) return true;
+
+    // North-West Grand Bookshelves:
+    // Lit bookshelf: x: 2..4, y: 4..5
+    if (tileX >= 2 && tileX <= 4 && (tileY === 4 || tileY === 5)) return true;
+    // Sci bookshelf: x: 7..9, y: 4..5
+    if (tileX >= 7 && tileX <= 9 && (tileY === 4 || tileY === 5)) return true;
+
+    // West English Bookshelf: x: 2, y: 9..11
+    if (tileX === 2 && tileY >= 9 && tileY <= 11) return true;
+
+    // Central Wisdom Lectern: x: 10, y: 10
+    if (tileX === 10 && tileY === 10) return true;
+
+    // Smart Dibut Station: x: 3..5, y: 15
+    if (tileX >= 3 && tileX <= 5 && tileY === 15) return true;
+
+    // Oak Study Reading Tables: x: 8..12, y: 14
+    if (tileX >= 8 && tileX <= 12 && tileY === 14) return true;
+
+    // Reading Armchairs: (16, 11) & (16, 15)
+    if ((tileX === 16 && tileY === 11) || (tileX === 16 && tileY === 15)) return true;
+
+    // Water Purifier: (18, 8)
+    if (tileX === 18 && tileY === 8) return true;
+
+    return false;
+  }
+
+  renderLibraryFloor2() {
+    const mapW = this.getMapWidth(); // 20
+    const mapH = this.getMapHeight(); // 20
+    const ctx = this.ctx;
+
+    // 1. Classical Warm Walnut Parquet Flooring & Boundary Walls
+    for (let tx = 0; tx < mapW; tx++) {
+      for (let ty = 0; ty < mapH; ty++) {
+        if (ty <= 3 || tx === 0 || tx === mapW - 1 || ty === mapH - 1) {
+          this.drawHighResWall(tx, ty, false);
+        } else {
+          // Warm polished parquet tiles
+          const isAlt = (tx + ty) % 2 === 0;
+          ctx.fillStyle = isAlt ? '#78350f' : '#854d0e';
+          ctx.fillRect(tx * 32, ty * 32, 32, 32);
+
+          // Subtle wood plank grain
+          ctx.strokeStyle = 'rgba(69, 26, 3, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(tx * 32, ty * 32, 32, 32);
+
+          ctx.fillStyle = 'rgba(254, 243, 199, 0.04)';
+          ctx.fillRect(tx * 32 + 2, ty * 32 + 2, 28, 14);
+        }
+      }
+    }
+
+    // 2. High Arched Stained Glass Windows on North Wall (tx: 4, 7, 10 at ty: 1)
+    [4, 7, 10].forEach(col => {
+      this.drawLibraryStainedGlassWindow(col * 32, 1 * 32);
+    });
+
+    // 3. Central Library Crest & Official Motto Plaque (cx: 10 * 32, cy: 26)
+    this.drawSharpLabel(10 * 32, 26, '📖 숭실 도서관 (Soongsil Library) — 지혜와 진리의 샘', {
+      bgColor: '#0f172a',
+      borderColor: '#38bdf8',
+      textColor: '#bae6fd',
+      fontSize: 12.5,
+      paddingX: 14,
+      height: 23
+    });
+
+    // 4. Central Royal Teal Reading Plaza Carpet Runner (tx: 7..13, ty: 8..12)
+    ctx.fillStyle = '#064e3b'; // royal emerald teal
+    ctx.fillRect(7 * 32 + 8, 8 * 32 + 8, 6 * 32 - 16, 4 * 32 - 16);
+    ctx.strokeStyle = '#f59e0b'; // golden filigree border
+    ctx.lineWidth = 2;
+    ctx.strokeRect(7 * 32 + 8, 8 * 32 + 8, 6 * 32 - 16, 4 * 32 - 16);
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(7 * 32 + 12, 8 * 32 + 12, 6 * 32 - 24, 4 * 32 - 24);
+
+    // 5. Elevator at (16, 3)
+    this.drawLibraryElevator(16 * 32, 3 * 32);
+
+    // 6. 3 Grand Bookshelves (장르별 대형 서가 3종)
+    // 6-A. [문학·철학 서가] 윤동주 시집 & 고전문학 (tx: 2..4, ty: 4)
+    this.drawLibraryBookshelf(2 * 32, 4 * 32, 3, 'lit', '📚 [문학·철학]');
+    // 6-B. [자연과학·연금 서가] 졍경슉 비전서 & 실험일지 (tx: 7..9, ty: 4)
+    this.drawLibraryBookshelf(7 * 32, 4 * 32, 3, 'sci', '🔬 [자연과학·연금]');
+    // 6-C. [외국어·어학 서가] Joshua 영단어 비법전서 (tx: 2, ty: 9..11)
+    this.drawLibraryVerticalBookshelf(2 * 32, 9 * 32, 'eng', '🇬🇧 [외국어·어학]');
+
+    // 7. Central Wisdom Lectern (오늘의 지혜 명언 독서대 at tx: 10, ty: 10)
+    this.drawLibraryWisdomLectern(10 * 32, 10 * 32);
+
+    // 8. Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존 at tx: 3..5, ty: 15)
+    this.drawLibraryDibutStation(3 * 32, 15 * 32);
+
+    // 9. Oak Study Reading Tables with Green Banker Lamps (tx: 8..12, ty: 14)
+    this.drawLibraryStudyTable(8 * 32, 14 * 32, 5);
+
+    // 10. Cozy Reading Armchairs & Side Tables (tx: 16, ty: 11 & ty: 15)
+    this.drawLibraryArmchair(16 * 32, 11 * 32);
+    this.drawLibraryArmchair(16 * 32, 15 * 32);
+
+    // 11. Water Purifier at (18, 8) & Greenhouse Planters
+    this.drawHighResWaterPurifier(18 * 32, 8 * 32);
+    this.drawHighResHallwayPlant(1 * 32, 4 * 32, 'monstera', 3, 5);
+    this.drawHighResHallwayPlant(18 * 32, 18 * 32 - 16, 'areca', 3, 5);
+
+    // 12. Reception Counter at tx: 12..14, ty: 5 (in front of librarian)
+    this.drawLibraryReceptionCounter(12 * 32, 5 * 32);
+
+    // 13. Librarian Quest Marker & '쉿! 정숙!' Comic Popup
+    this.renderLibrarianOverhead();
+  }
+
+  // High Arched Stained Glass Window with warm amber sunbeams streaming down
+  drawLibraryStainedGlassWindow(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Arch Frame
+    ctx.fillStyle = '#1e1b4b';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 12, 14, Math.PI, 0);
+    ctx.rect(px + 2, py + 12, 28, 20);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Stained glass colored panes
+    const colors = ['#38bdf8', '#818cf8', '#f472b6', '#34d399', '#fbbf24'];
+    for (let i = 0; i < 4; i++) {
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillRect(px + 5 + i * 6, py + 8 + (i % 2) * 6, 5, 14);
+    }
+
+    // Leaded glass divider grid
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(px + 16, py);
+    ctx.lineTo(px + 16, py + 32);
+    ctx.moveTo(px + 2, py + 18);
+    ctx.lineTo(px + 30, py + 18);
+    ctx.stroke();
+
+    // Translucent golden sunbeam ray streaming downwards onto parquet floor
+    const grad = ctx.createLinearGradient(px + 16, py + 20, px + 36, py + 120);
+    grad.addColorStop(0, 'rgba(254, 240, 138, 0.22)');
+    grad.addColorStop(1, 'rgba(254, 240, 138, 0.0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(px + 8, py + 24);
+    ctx.lineTo(px + 24, py + 24);
+    ctx.lineTo(px + 56, py + 120);
+    ctx.lineTo(px - 10, py + 120);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // Elevator Frame for Floor 2 Library
+  drawLibraryElevator(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const w = 48;
+    const h = 54;
+    const ex = px - 8;
+    const ey = py - 18;
+
+    // Outer Polished Bronze / Stainless Steel Architrave
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(ex, ey, w, h);
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(ex, ey, w, h);
+
+    // Inner Doorway Cavity
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(ex + 4, ey + 14, w - 8, h - 14);
+
+    // Sliding Bronze Doors
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(ex + 6, ey + 16, (w - 14) / 2, h - 18);
+    ctx.fillRect(ex + 6 + (w - 14) / 2 + 2, ey + 16, (w - 14) / 2, h - 18);
+
+    // Door seam & brass handles
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(ex + 6 + (w - 14) / 2 - 2, ey + 30, 2, 10);
+    ctx.fillRect(ex + 6 + (w - 14) / 2 + 2, ey + 30, 2, 10);
+
+    // Top Digital Display Badge: [ 2F 도서관 ]
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(ex + 6, ey + 3, w - 12, 9);
+    ctx.fillStyle = '#f0f9ff';
+    ctx.font = 'bold 6.5px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('2F 도서관 ▲', ex + w / 2, ey + 7.5);
+
+    // Elevator Plaque Label
+    this.drawSharpLabel(px + 16, ey - 10, '🛗 도서관 엘리베이터', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#bae6fd',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // 3-Tile Wide Double-Height Bookshelf (Literature / Science)
+  drawLibraryBookshelf(px, py, widthTiles, type, label) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const w = widthTiles * 32;
+    const h = 56;
+    const bx = px;
+    const by = py - 24;
+
+    // Floor shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 4, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Solid Mahogany Wooden Case
+    ctx.fillStyle = '#3b1803';
+    ctx.fillRect(bx, by, w, h);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(bx, by, w, h);
+
+    // Shelves (3 shelves)
+    const shelfY = [by + 16, by + 32, by + 48];
+    ctx.fillStyle = '#542306';
+    shelfY.forEach(sy => ctx.fillRect(bx + 3, sy, w - 6, 4));
+
+    // Books on shelves (rows of colorful book spines)
+    const bookColors = (type === 'lit')
+      ? ['#991b1b', '#1e3a8a', '#14532d', '#78350f', '#581c87', '#b45309']
+      : ['#047857', '#0369a1', '#d97706', '#0f766e', '#1d4ed8', '#0284c7'];
+
+    shelfY.forEach((sy, rowIdx) => {
+      let curX = bx + 6;
+      while (curX < bx + w - 10) {
+        const bw = 4 + (curX % 3);
+        const bh = 11 + ((curX + rowIdx) % 3);
+        const color = bookColors[(curX + rowIdx * 2) % bookColors.length];
+        ctx.fillStyle = color;
+        ctx.fillRect(curX, sy - bh, bw, bh);
+
+        // Gold title foil on spine
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.6)';
+        ctx.fillRect(curX + 1, sy - bh + 2, bw - 2, 1.5);
+
+        curX += bw + 1.5;
+      }
+    });
+
+    if (type === 'lit') {
+      // Rolling Brass Library Ladder leaned on left
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(bx + 8, by + 4);
+      ctx.lineTo(bx + 4, by + h + 2);
+      ctx.moveTo(bx + 16, by + 4);
+      ctx.lineTo(bx + 12, by + h + 2);
+      ctx.stroke();
+      // Rungs
+      for (let r = by + 12; r < by + h; r += 9) {
+        ctx.beginPath();
+        const t = (r - by) / h;
+        const lx1 = (bx + 8) * (1 - t) + (bx + 4) * t;
+        const lx2 = (bx + 16) * (1 - t) + (bx + 12) * t;
+        ctx.moveTo(lx1, r);
+        ctx.lineTo(lx2, r);
+        ctx.stroke();
+      }
+    } else if (type === 'sci') {
+      // Glassware / Armillary Sphere on top shelf
+      // Glowing Alchemy Flask
+      ctx.fillStyle = '#06b6d4';
+      ctx.beginPath();
+      ctx.arc(bx + w - 16, by + 12, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#e0f2fe';
+      ctx.fillRect(bx + w - 17, by + 6, 2, 4);
+
+      // Brass Armillary Rings
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(bx + w - 32, by + 11, 5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Brass Label Badge
+    this.drawSharpLabel(bx + w / 2, by - 12, label, {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: (type === 'lit') ? '#f59e0b' : '#10b981',
+      textColor: '#fef08a',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // Vertical Bookshelf against West Wall (English & Foreign Languages)
+  drawLibraryVerticalBookshelf(px, py, type, label) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const w = 28;
+    const h = 76;
+    const bx = px + 2;
+    const by = py - 16;
+
+    // Floor shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 3, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Wooden Frame
+    ctx.fillStyle = '#3b1803';
+    ctx.fillRect(bx, by, w, h);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(bx, by, w, h);
+
+    // Shelves
+    const shelfY = [by + 20, by + 38, by + 56, by + 72];
+    ctx.fillStyle = '#542306';
+    shelfY.forEach(sy => ctx.fillRect(bx + 2, sy, w - 4, 3));
+
+    // Books & Globe
+    const colors = ['#dc2626', '#2563eb', '#16a34a', '#d97706'];
+    shelfY.forEach((sy, idx) => {
+      let curX = bx + 4;
+      while (curX < bx + w - 6) {
+        const bw = 3.5;
+        const bh = 12;
+        ctx.fillStyle = colors[(curX + idx) % colors.length];
+        ctx.fillRect(curX, sy - bh, bw, bh);
+        curX += bw + 1.5;
+      }
+    });
+
+    // Desktop Mini World Globe on top
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(bx + w / 2, by + 8, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(bx + w / 2, by + 8, 5, 0, Math.PI);
+    ctx.stroke();
+
+    // Label
+    this.drawSharpLabel(bx + w / 2 + 10, by - 12, label, {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#bae6fd',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // Central Wisdom Lectern (오늘의 지혜 명언 독서대)
+  drawLibraryWisdomLectern(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const now = Date.now();
+    const pulse = Math.sin(now / 300);
+    const lx = px + 16;
+    const ly = py + 16;
+
+    // 1. Soft Floor Shadow & Golden Radial Aura
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(lx, ly + 14, 16, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const auraGrad = ctx.createRadialGradient(lx, ly, 4, lx, ly, 32 + pulse * 4);
+    auraGrad.addColorStop(0, 'rgba(251, 191, 36, 0.35)');
+    auraGrad.addColorStop(0.7, 'rgba(245, 158, 11, 0.12)');
+    auraGrad.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(lx, ly, 36, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Baroque Ornate Brass Pedestal
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(lx - 5, ly + 2, 10, 12);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(lx - 8, ly + 12, 16, 3);
+    ctx.fillRect(lx - 10, ly + 14, 20, 2);
+
+    // Angled Book Rest Surface
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.moveTo(lx - 15, ly);
+    ctx.lineTo(lx + 15, ly);
+    ctx.lineTo(lx + 12, ly + 4);
+    ctx.lineTo(lx - 12, ly + 4);
+    ctx.closePath();
+    ctx.fill();
+
+    // 3. Open Ancient Illuminated Codex
+    // Cover edges
+    ctx.fillStyle = '#881337'; // royal burgundy binding
+    ctx.beginPath();
+    ctx.roundRect(lx - 14, ly - 10, 28, 12, [2, 2, 1, 1]);
+    ctx.fill();
+
+    // Glowing Gold & Ivory Pages
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.moveTo(lx - 13, ly - 9);
+    ctx.lineTo(lx, ly - 7);
+    ctx.lineTo(lx + 13, ly - 9);
+    ctx.lineTo(lx + 12, ly - 1);
+    ctx.lineTo(lx, ly + 1);
+    ctx.lineTo(lx - 12, ly - 1);
+    ctx.closePath();
+    ctx.fill();
+
+    // Red Ribbon Bookmark
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(lx - 1, ly - 7, 2, 10);
+
+    // Text Lines on Pages
+    ctx.fillStyle = 'rgba(120, 53, 15, 0.6)';
+    ctx.fillRect(lx - 10, ly - 7, 7, 1);
+    ctx.fillRect(lx - 10, ly - 5, 8, 1);
+    ctx.fillRect(lx - 10, ly - 3, 6, 1);
+    ctx.fillRect(lx + 3, ly - 7, 7, 1);
+    ctx.fillRect(lx + 2, ly - 5, 8, 1);
+    ctx.fillRect(lx + 4, ly - 3, 6, 1);
+
+    // 4. Brass Candleholder with Flickering Flame on Left
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(lx - 17, ly - 2, 4, 3);
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(lx - 16, ly - 7, 2, 5); // candle body
+    // Flame
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.ellipse(lx - 15, ly - 9 + Math.sin(now / 120) * 1, 1.5, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(lx - 15, ly - 8.5, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5. Rising Floating Sparkle Particle (✦)
+    const sparkleY = ly - 16 + Math.sin(now / 200) * 3;
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✦', lx + 12, sparkleY);
+
+    // 6. Prominent Floating Sharp Label
+    this.drawSharpLabel(lx, ly - 22, '📖 오늘의 지혜 명언 독서대', {
+      bgColor: 'rgba(15, 23, 42, 0.96)',
+      borderColor: '#f59e0b',
+      borderWidth: 2,
+      textColor: '#fef08a',
+      fontSize: 12,
+      paddingX: 10,
+      height: 22
+    });
+
+    ctx.restore();
+  }
+
+  // Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존)
+  drawLibraryDibutStation(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const w = 3 * 32;
+    const h = 26;
+    const bx = px;
+    const by = py - 4;
+
+    // Floor shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 4, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Sleek White Matte Desk Body with Cyan LED Underglow
+    ctx.fillStyle = 'rgba(6, 182, 212, 0.25)';
+    ctx.fillRect(bx + 4, by + h, w - 8, 3);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.roundRect(bx, by, w, h, [4, 4, 2, 2]);
+    ctx.fill();
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Aluminum Top Surface
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(bx + 2, by + 2, w - 4, 7);
+
+    // 5 Docked Tablets resting at 60-degree angle
+    const tabletSpacing = (w - 24) / 5;
+    for (let i = 0; i < 5; i++) {
+      const tx = bx + 12 + i * tabletSpacing;
+      const ty = by - 8;
+
+      // Tablet Frame
+      ctx.fillStyle = '#020617';
+      ctx.beginPath();
+      ctx.roundRect(tx, ty, 10, 14, [2, 2, 1, 1]);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Glowing Cyan Display Screen
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(tx + 1, ty + 1, 8, 11);
+
+      // Home bar & LED
+      ctx.fillStyle = '#a5f3fc';
+      ctx.fillRect(tx + 3, ty + 10, 4, 1);
+    }
+
+    // Charging & Status LED bar
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(bx + w - 8, by + 16, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Floating Label
+    this.drawSharpLabel(bx + w / 2, by - 16, '📱 스마트 디벗 검색 단말기', {
+      bgColor: 'rgba(15, 23, 42, 0.94)',
+      borderColor: '#38bdf8',
+      textColor: '#e0f2fe',
+      fontSize: 11.5,
+      paddingX: 8,
+      height: 20
+    });
+
+    ctx.restore();
+  }
+
+  // Oak Study Table with Classic Green Banker Lamps
+  drawLibraryStudyTable(px, py, widthTiles) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const w = widthTiles * 32;
+    const h = 26;
+    const bx = px;
+    const by = py;
+
+    // Floor shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 6, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Polished Solid Oak Table Surface
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(bx, by, w, h);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(bx, by, w, h);
+
+    // Beveled Edge Highlight
+    ctx.fillStyle = '#92400e';
+    ctx.fillRect(bx + 2, by + 2, w - 4, 4);
+
+    // 4 Wooden Study Chairs tucked under table
+    const chairSpacing = w / 4;
+    for (let c = 0; c < 4; c++) {
+      const cx = bx + 10 + c * chairSpacing;
+      ctx.fillStyle = '#542306';
+      ctx.fillRect(cx, by + h - 2, 12, 6);
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(cx + 1, by + h, 10, 2);
+    }
+
+    // 2 Classic Green Glass Banker Lamps with Warm Amber Glow
+    [bx + w * 0.3, bx + w * 0.7].forEach(lx => {
+      // Warm Light Cone on table
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.18)';
+      ctx.beginPath();
+      ctx.ellipse(lx, by + 12, 16, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Brass Pedestal & Arm
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(lx - 1, by - 6, 2, 10);
+      ctx.fillRect(lx - 3, by + 4, 6, 2);
+
+      // Emerald Green Glass Shade
+      ctx.fillStyle = '#047857';
+      ctx.beginPath();
+      ctx.roundRect(lx - 6, by - 8, 12, 5, [2, 2, 1, 1]);
+      ctx.fill();
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Open books and notebook on table
+    ctx.fillStyle = '#fef3c7';
+    ctx.fillRect(bx + w * 0.48, by + 6, 12, 8);
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(bx + w * 0.48 + 5, by + 6, 2, 8);
+
+    ctx.restore();
+  }
+
+  // Cozy Velvet Club Armchair
+  drawLibraryArmchair(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const bx = px + 4;
+    const by = py - 4;
+
+    // Floor shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(bx + 12, by + 22, 14, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Burgundy Velvet Armchair Backrest
+    ctx.fillStyle = '#881337';
+    ctx.beginPath();
+    ctx.roundRect(bx, by, 24, 18, [6, 6, 2, 2]);
+    ctx.fill();
+
+    // Cushion
+    ctx.fillStyle = '#9f1239';
+    ctx.beginPath();
+    ctx.roundRect(bx + 2, by + 8, 20, 12, [3, 3, 2, 2]);
+    ctx.fill();
+
+    // Armrests
+    ctx.fillStyle = '#4c0519';
+    ctx.fillRect(bx - 1, by + 5, 4, 14);
+    ctx.fillRect(bx + 21, by + 5, 4, 14);
+
+    // Brass Tacks on Armrests
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(bx, by + 8, 2, 2);
+    ctx.fillRect(bx + 22, by + 8, 2, 2);
+
+    ctx.restore();
+  }
+
+  // Reception & Loan Counter in front of Librarian
+  drawLibraryReceptionCounter(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const w = 3 * 32;
+    const h = 24;
+    const bx = px;
+    const by = py;
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.38)';
+    ctx.beginPath();
+    ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 4, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Polished Mahogany Counter Front with Paneling
+    ctx.fillStyle = '#3b1803';
+    ctx.fillRect(bx, by, w, h);
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(bx, by, w, h);
+
+    // Raised wood mouldings
+    ctx.fillStyle = '#542306';
+    ctx.fillRect(bx + 8, by + 4, 22, 14);
+    ctx.fillRect(bx + 37, by + 4, 22, 14);
+    ctx.fillRect(bx + 66, by + 4, 22, 14);
+
+    // Brass Top Counter Rail
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(bx - 2, by - 2, w + 4, 3);
+
+    // On Counter: Green Banker Lamp at left
+    ctx.fillStyle = '#047857';
+    ctx.fillRect(bx + 6, by - 7, 8, 4);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillRect(bx + 9, by - 3, 2, 3);
+
+    // Book Return Slot Box: [도서반납]
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(bx + 68, by - 6, 20, 8);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(bx + 68, by - 6, 20, 8);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(bx + 71, by - 3, 14, 2);
+
+    // Nameplate Badge on Counter
+    this.drawSharpLabel(bx + w / 2, by + h + 12, '📚 사서 선생님 (대출 & 안내)', {
+      bgColor: 'rgba(30, 58, 138, 0.95)',
+      borderColor: '#60a5fa',
+      textColor: '#fef08a',
+      fontSize: 12,
+      paddingX: 10,
+      height: 21
+    });
+
+    ctx.restore();
+  }
+
+  // Librarian Overhead Marker & '쉿! 정숙!' Comic Popup
+  renderLibrarianOverhead() {
+    const ctx = this.ctx;
+    const lx = 13 * 32 + 16;
+    const ly = 4 * 32 + 4;
+
+    // 1. '쉿! 정숙!' Easter Egg Popup
+    if (this.libraryShhTimer && Date.now() < this.libraryShhTimer) {
+      ctx.save();
+      const shake = Math.sin(Date.now() / 40) * 3;
+      const bx = lx + shake;
+      const by = ly - 36;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2.5;
+
+      // Comic talk bubble
+      ctx.beginPath();
+      ctx.roundRect(bx - 60, by - 12, 120, 26, [8, 8, 8, 8]);
+      ctx.fill();
+      ctx.stroke();
+
+      // Tail pointing down to librarian
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(bx - 6, by + 14);
+      ctx.lineTo(bx + 6, by + 14);
+      ctx.lineTo(bx, by + 22);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(bx - 6, by + 14);
+      ctx.lineTo(bx, by + 22);
+      ctx.lineTo(bx + 6, by + 14);
+      ctx.stroke();
+
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#b91c1c';
+      ctx.fillText('💢 쉿! 정숙! (뛰지마!)', bx, by + 1);
+
+      ctx.restore();
+      return;
+    }
+
+    // 2. Quest Marker (! or ?)
+    const app = window.MainApp;
+    if (app && app.playerData && app.playerData.quests) {
+      const q = app.playerData.quests['quest_library_missing_books'];
+      if (!q) {
+        this.drawFloatingQuestMarker(lx, ly - 14, 'available');
+      } else if (q.status === 'in_progress') {
+        const allDone = (q.bookPgCollected && q.bookOfCollected && q.bookHiCollected);
+        this.drawFloatingQuestMarker(lx, ly - 14, allDone ? 'completed' : 'in_progress');
+      }
+    }
+  }
+
+  // Floating Glowing Quest Library Book (Blue, Green, Red)
+  drawQuestLibraryBook(px, py, color = 'blue') {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Floating animation
+    const bob = Math.sin(Date.now() / 250) * 3;
+    const by = py + bob;
+
+    // Glowing aura
+    const auraColor = (color === 'blue') ? 'rgba(56, 189, 248, 0.4)' : (color === 'green' ? 'rgba(74, 222, 128, 0.4)' : 'rgba(248, 113, 113, 0.4)');
+    const mainColor = (color === 'blue') ? '#0284c7' : (color === 'green' ? '#16a34a' : '#dc2626');
+    const spineColor = (color === 'blue') ? '#0369a1' : (color === 'green' ? '#15803d' : '#b91c1c');
+
+    ctx.fillStyle = auraColor;
+    ctx.beginPath();
+    ctx.ellipse(px + 16, by + 16, 16, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Book Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(px + 16, py + 26, 12, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Book Cover (Angled Hardcover)
+    ctx.fillStyle = mainColor;
+    ctx.beginPath();
+    ctx.roundRect(px + 6, by + 6, 20, 16, [2, 4, 4, 2]);
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Book Pages (Gold / Ivory edges)
+    ctx.fillStyle = '#fef3c7';
+    ctx.fillRect(px + 10, by + 9, 14, 10);
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(px + 11, by + 12, 12, 1);
+    ctx.fillRect(px + 11, by + 15, 9, 1);
+
+    // Spine
+    ctx.fillStyle = spineColor;
+    ctx.fillRect(px + 6, by + 6, 4, 16);
+
+    // Ribbon Bookmark hanging out
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.moveTo(px + 17, by + 18);
+    ctx.lineTo(px + 20, by + 26);
+    ctx.lineTo(px + 17, by + 24);
+    ctx.lineTo(px + 14, by + 26);
+    ctx.closePath();
+    ctx.fill();
+
+    // Sparkle
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('✦', px + 21, by + 5);
+
+    ctx.restore();
+  }
+
+
   // High-Res Secret Lost & Found Box (운동장 스탠드 구석 비밀 분실물 상자)
   drawHighResLostBox(px, py) {
     this.ctx.save();
@@ -8976,6 +9936,11 @@ class GameEngine {
 
     // 7. Far Left Wall Secret Room Easter Egg Doorway (x: 1, y: 10)
     this.drawHistorySecretDoor(1 * 32, 10 * 32);
+
+    // 8. Library Missing Book (숭실역사관 전시실 고문서 도록: x: 10, y: 5)
+    if (!window.MainApp || typeof window.MainApp.isQuestLibBookHiCollected !== 'function' || !window.MainApp.isQuestLibBookHiCollected()) {
+      this.drawQuestLibraryBook(10 * 32, 5 * 32, 'red');
+    }
   }
 
   // Far Left Wall Secret Room Easter Egg Doorway in History Hall
@@ -10254,6 +11219,10 @@ class GameEngine {
           this.drawStaffOfficeUsb(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'quest_career_book') {
           this.drawCareerQuestGuideBook(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_library_book_of') {
+          if (!window.MainApp || typeof window.MainApp.isQuestLibBookOfCollected !== 'function' || !window.MainApp.isQuestLibBookOfCollected()) {
+            this.drawQuestLibraryBook(obj.x * 32, obj.y * 32, 'green');
+          }
         }
       }
     }
@@ -12985,3 +13954,6 @@ class GameEngine {
   }
 
 }
+
+if (typeof window !== 'undefined') window.GameEngine = GameEngine;
+if (typeof globalThis !== 'undefined') globalThis.GameEngine = GameEngine;

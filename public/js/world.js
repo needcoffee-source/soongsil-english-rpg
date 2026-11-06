@@ -13,6 +13,8 @@ const WORLD_DATA = {
   CAREER_HEIGHT: 20,
   SECRET_HISTORY_WIDTH: 16, // 역사관 절반 사이즈 비밀의 방 (16 x 20 타일)
   SECRET_HISTORY_HEIGHT: 20,
+  LIBRARY_WIDTH: 20, // 2층 도서관 (독립 전용층, 7층 복도의 1/3인 20 x 20 타일)
+  LIBRARY_HEIGHT: 20,
   STAFF_OFFICE_WIDTH: 106, // 교실 3.5개 사이즈 대형 본관 교무실 (106 x 26 타일)
   STAFF_OFFICE_HEIGHT: 26, // 상단 부속실(소회의실·탕비실·인쇄실·교1~3·상담실) + 중앙 통로 + 하단 교4~25 6분단 수용
   PLAYGROUND_WIDTH: 90, // 복도 면적의 2배가 넘는 대형 숭실 야외 운동장 (90 x 54 타일)
@@ -22,6 +24,33 @@ const WORLD_DATA = {
   MAP_HEIGHT: 20,
 
   floors: {
+    // 2층: 숭실 도서관 (독립 전용층: 20 x 20 타일)
+    2: {
+      name: "2층 도서관 (독립 전용층)",
+      rooms: [],
+      elevator: { x: 16, y: 3 },
+      interactive: [
+        { id: "wisdom_book", type: "wisdom_book", x: 10, y: 10, name: "📖 오늘의 지혜 명언 독서대", prompt: "지혜의 명언 읽기 (SPACE)" },
+        { id: "bookshelf_lit", type: "bookshelf_lit", x: 3, y: 5, name: "📚 [문학·철학 서가] 윤동주 시집 & 고전문학", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_sci", type: "bookshelf_sci", x: 8, y: 5, name: "🔬 [자연과학·연금 서가] 졍경슉 비전서 & 실험일지", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "bookshelf_eng", type: "bookshelf_eng", x: 2, y: 10, name: "🇬🇧 [외국어·어학 서가] Joshua 영단어 비법전서", prompt: "서가 둘러보기 (SPACE)" },
+        { id: "library_dibut", type: "library_dibut", x: 4, y: 15, name: "📱 도서관 스마트 디벗 단말기 (전자도서관)", prompt: "디벗 전자도서관 접속 (SPACE)" },
+        { id: "water_purifier_library", type: "water_purifier", x: 18, y: 8, name: "🚰 도서관 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+      ],
+      npcs: [
+        {
+          id: "npc_librarian",
+          name: "사서 선생님",
+          role: "2층 도서관",
+          x: 13,
+          y: 4,
+          avatar: "teacher",
+          questId: "quest_library_missing_books",
+          dialogue: "쉿! 도서관에선 정숙해야 한단다. 📚 분실된 도서 3권을 찾아주면 특별한 칭호 [📚 지혜의 탐구자]를 선물할게!"
+        }
+      ]
+    },
+
     // 5층: 테스트 구역 (교실 제외한 순수 복도 공간)
     5: {
       name: "5층 복도 (진로 & 선배 구역)",
@@ -174,7 +203,8 @@ const WORLD_DATA = {
       { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 민족신앙 수호관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_4", type: "history_vitrine", vitrineIndex: 4, x: 24, y: 13, name: "🌟 [제4전시관] 숭실의 위인관", prompt: "전시관 관람 (SPACE)" },
-      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "장비 제작 (SPACE)" }
+      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "장비 제작 (SPACE)" },
+      { id: "quest_library_book_history", type: "quest_library_book_hi", x: 10, y: 5, name: "📕 [대출도서] 숭실역사관에 놓인 고문서 도록", prompt: "고문서 도록 회수하기 (SPACE)" }
     ],
     historyMonsters: [
       {
@@ -373,7 +403,8 @@ const WORLD_DATA = {
       { id: "desk_developer_juncheol", type: "desk_juncheol", x: 91, y: 15, name: "👑 갓준철의 연구 책상", prompt: "갓준철 선생님 책상 (SPACE)" },
       { id: "desk_teacher_sangdae", type: "desk_sangdae", x: 90, y: 19.5, name: "📐 이상대 선생님 연구석", prompt: "수학 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_kyungsuk", type: "desk_kyungsuk", x: 75, y: 17.5, name: "🧪 졍경슉 선생님 연구석", prompt: "과학 연구석 살펴보기 (SPACE)" },
-      { id: "desk_teacher_hunihuni", type: "desk_hunihuni", x: 88, y: 17.5, name: "🥁 후니후니 선생님 연구석", prompt: "도덕 연구석 살펴보기 (SPACE)" }
+      { id: "desk_teacher_hunihuni", type: "desk_hunihuni", x: 88, y: 17.5, name: "🥁 후니후니 선생님 연구석", prompt: "도덕 연구석 살펴보기 (SPACE)" },
+      { id: "quest_library_book_office", type: "quest_library_book_of", x: 73, y: 17.5, name: "📗 [대출도서] 교무실에 꽂혀있던 과학 잡지", prompt: "과학 잡지 회수하기 (SPACE)" }
     ],
     // 1 ~ 33번 좌석 정의 (교사 NPC 배치용 - 좌측 1번부터 우측 33번까지 순차 정리)
     seats: [
@@ -772,6 +803,14 @@ const WORLD_DATA = {
       y: 7,
       name: "🎨 김진믜의 풍경화 스케치북",
       prompt: "스케치북 회수하기 (SPACE)"
+    },
+    libraryBook: {
+      id: "quest_library_book_playground",
+      type: "quest_library_book_pg",
+      x: 23,
+      y: 7,
+      name: "📘 [대출도서] 운동장 스탠드에 떨어진 소설책",
+      prompt: "소설책 회수하기 (SPACE)"
     },
     basketballMonsters: [
       {

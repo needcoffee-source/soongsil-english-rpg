@@ -22,7 +22,8 @@ const tests = [
   'test_secret_history_gatekeeper.js',
   'test_gym_plaza_gatekeeper.js',
   'test_teacher_noclip_brawl.js',
-  'test_teacher_server_gate.js'
+  'test_teacher_server_gate.js',
+  'test_library_floor2.js'
 ];
 
 console.log('==============================================');

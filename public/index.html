@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=191">
+  <link rel="manifest" href="/manifest.json?v=192">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=191">
+  <link rel="stylesheet" href="css/style.css?v=192">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -978,6 +978,14 @@
           <span class="elevator-tag" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #075985; color: #bae6fd; font-weight: 800;">10G 소모 ➔</span>
         </button>
 
+        <!-- 2층 -->
+        <button class="btn-elevator-floor" data-target="floor_2" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(30, 41, 59, 0.85); border: 2px solid #0284c7; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 15px; font-weight: 900; color: #38bdf8;">📚 2층 — 도서관 (Library)</div>
+          </div>
+          <span class="elevator-tag" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #0c4a6e; color: #bae6fd; font-weight: 800;">10G 소모 ➔</span>
+        </button>
+
         <!-- 운동장 -->
         <button class="btn-elevator-floor" data-target="playground" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(30, 41, 59, 0.85); border: 2px solid #f59e0b; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
           <div>
@@ -1020,6 +1028,12 @@
         <button class="btn-teleport-dest" data-target="floor_5" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #38bdf8; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
           <div style="font-size: 15px; font-weight: 900; color: #38bdf8;">🌟 5층 복도</div>
           <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #075985; color: #bae6fd; font-weight: 800;">이동 ➔</span>
+        </button>
+
+        <!-- 2층 도서관 -->
+        <button class="btn-teleport-dest" data-target="floor_2" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #0284c7; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div style="font-size: 15px; font-weight: 900; color: #38bdf8;">📚 2층 도서관</div>
+          <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #0c4a6e; color: #bae6fd; font-weight: 800;">이동 ➔</span>
         </button>
       </div>
 
@@ -2242,18 +2256,18 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=191"></script>
-  <script src="js/dialog.js?v=191"></script>
+  <script src="js/audio.js?v=192"></script>
+  <script src="js/dialog.js?v=192"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=191"></script>
-  <script src="js/engine.js?v=191"></script>
-  <script src="js/quiz.js?v=191"></script>
-  <script src="js/crafting.js?v=191"></script>
-  <script src="js/network.js?v=191"></script>
-  <script src="js/acid_rain.js?v=191"></script>
-  <script src="js/brawl_ball.js?v=191"></script>
-  <script src="js/main.js?v=191"></script>
+  <script src="js/world.js?v=192"></script>
+  <script src="js/engine.js?v=192"></script>
+  <script src="js/quiz.js?v=192"></script>
+  <script src="js/crafting.js?v=192"></script>
+  <script src="js/network.js?v=192"></script>
+  <script src="js/acid_rain.js?v=192"></script>
+  <script src="js/brawl_ball.js?v=192"></script>
+  <script src="js/main.js?v=192"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
