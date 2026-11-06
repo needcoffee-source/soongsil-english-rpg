@@ -113,6 +113,7 @@ const floor2Interactives = WORLD_DATA.floors[2].interactive || [];
 assert(floor2Interactives.some(i => i.id === 'wisdom_book'), 'Interactive wisdom_book exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'library_reading_desk'), 'Interactive library_reading_desk exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'library_pc'), 'Interactive library_pc exists in floor 2');
+assert(floor2Interactives.find(i => i.id === 'library_pc').x === 8, 'Interactive library_pc is spaced at x: 8');
 assert(floor2Interactives.some(i => i.id === 'bookshelf_lit'), 'Interactive bookshelf_lit exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'bookshelf_sci'), 'Interactive bookshelf_sci exists in floor 2');
 assert(floor2Interactives.some(i => i.id === 'bookshelf_eng'), 'Interactive bookshelf_eng exists in floor 2');
@@ -157,7 +158,8 @@ assert(engine.checkLibraryFloor2Collision(10, 8) === true, 'Central wisdom lecte
 assert(engine.checkLibraryFloor2Collision(10, 11) === true, 'Central reading table at (10, 11) is blocked');
 assert(engine.checkLibraryFloor2Collision(10, 10) === false, 'Top chair row at (10, 10) is passable (sitting enabled)');
 assert(engine.checkLibraryFloor2Collision(10, 12) === false, 'Bottom chair row at (10, 12) is passable (sitting enabled)');
-assert(engine.checkLibraryFloor2Collision(6, 17) === true, 'Book search PC beside dibut at (6, 17) is blocked');
+assert(engine.checkLibraryFloor2Collision(8, 17) === true, 'Book search PC spaced beside dibut at (8, 17) is blocked');
+assert(engine.checkLibraryFloor2Collision(6, 17) === false, 'Space between dibut and PC at (6, 17) is open and passable');
 assert(engine.checkLibraryFloor2Collision(15, 6) === false, 'Old PC spot beside librarian (15, 6) is now spacious and passable');
 assert(engine.checkLibraryFloor2Collision(13, 5) === true, 'Librarian reception desk at (13, 5) is blocked');
 assert(engine.checkLibraryFloor2Collision(3, 4) === true, 'Lit bookshelf at (3, 4) is blocked');

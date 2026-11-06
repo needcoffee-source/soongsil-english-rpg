@@ -8089,8 +8089,8 @@ class GameEngine {
     // Counter: x: 12..14, y: 5. Librarian stands at x: 13, y: 4
     if (tileX >= 12 && tileX <= 14 && (tileY === 4 || tileY === 5)) return true;
 
-    // Book Search PC Station (beside Dibut station): x: 6, y: 17
-    if (tileX === 6 && tileY === 17) return true;
+    // Book Search PC Station (spaced beside Dibut station): x: 8, y: 17
+    if (tileX === 8 && tileY === 17) return true;
 
     // North-West Grand Bookshelves:
     // Lit bookshelf: x: 2..4, y: 4..5
@@ -8209,8 +8209,8 @@ class GameEngine {
     // 9. Smart Dibut Tablet Docking Station (스마트 디벗 거치대 존 at tx: 3..5, ty: 17)
     this.drawLibraryDibutStation(3 * 32, 17 * 32);
 
-    // 10. Book Search PC Station (도서 검색기 컴퓨터 at tx: 6, ty: 17 디벗 단말기 옆)
-    this.drawLibrarySearchPC(6 * 32, 17 * 32);
+    // 10. Book Search PC Station (도서 검색기 컴퓨터 at tx: 8, ty: 17 디벗 단말기와 2칸 여유 간격)
+    this.drawLibrarySearchPC(8 * 32, 17 * 32);
 
     // 11. Cozy Reading Armchairs & Side Tables (tx: 16, ty: 12 & ty: 16)
     this.drawLibraryArmchair(16 * 32, 12 * 32);
@@ -8715,7 +8715,7 @@ class GameEngine {
     ctx.fill();
 
     // Floating Label
-    this.drawSharpLabel(bx + w / 2, by - 16, '📱 스마트 디벗 검색 단말기', {
+    this.drawSharpLabel(bx + w / 2, by - 16, '📱 스마트 디벗 단말기', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#38bdf8',
       textColor: '#e0f2fe',

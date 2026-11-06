@@ -32,7 +32,7 @@ const WORLD_DATA = {
       interactive: [
         { id: "wisdom_book", type: "wisdom_book", x: 10, y: 8, name: "📖 오늘의 지혜 명언 독서대", prompt: "지혜의 명언 읽기 (SPACE)" },
         { id: "library_reading_desk", type: "library_reading_desk", x: 10, y: 11, name: "🪑 중앙 독서 열람석", prompt: "자리에 앉아 독서하기 (SPACE)" },
-        { id: "library_pc", type: "library_pc", x: 6, y: 17, name: "🖥️ 도서 검색기", prompt: "도서 및 자료 검색하기 (SPACE)" },
+        { id: "library_pc", type: "library_pc", x: 8, y: 17, name: "🖥️ 도서 검색기", prompt: "도서 및 자료 검색하기 (SPACE)" },
         { id: "bookshelf_lit", type: "bookshelf_lit", x: 3, y: 4, name: "📚 [문학·철학 서가] 윤동주 시집 & 고전문학", prompt: "서가 둘러보기 (SPACE)" },
         { id: "bookshelf_sci", type: "bookshelf_sci", x: 8, y: 4, name: "🔬 [자연과학·연금 서가] 졍경슉 비전서 & 실험일지", prompt: "서가 둘러보기 (SPACE)" },
         { id: "bookshelf_eng", type: "bookshelf_eng", x: 2, y: 9, name: "🇬🇧 [외국어·어학 서가] Joshua 영단어 비법전서", prompt: "서가 둘러보기 (SPACE)" },
