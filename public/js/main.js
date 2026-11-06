@@ -803,13 +803,6 @@ const TITLE_DEFINITIONS = [
     desc: '1학년 4반 후니후니 선생님의 20문제 도덕 비트를 모두 완벽하게 정복한 드러머!',
     costType: 'quest',
     costAmount: 0
-  },
-  {
-    id: 'title_wisdom_seeker',
-    name: '📚 지혜의 탐구자',
-    desc: '학교 곳곳에 분실되었던 대출도서 3권을 모두 회수하여 숭실 도서관의 지식을 지켜낸 탐구자! (경험치 획득량 +5% 상시 보너스)',
-    costType: 'quest',
-    costAmount: 0
   }
 ];
 
@@ -1102,18 +1095,18 @@ const QUEST_DEFINITIONS = {
 3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
 
 학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
-모두 회수해 오면 특별한 칭호 [📚 지혜의 탐구자]와 경험치, 골드를 보상으로 줄게!`,
+모두 회수해 오면 풍성한 경험치와 골드를 보상으로 줄게!`,
     inProgressStory: `어서 오렴! 아직 분실된 도서 3권을 모두 찾지 못했더구나!
 
 1. 📘 운동장 관람석 스탠드 (소설책)
 2. 📗 6층 교무실 과학 연구석 (과학 잡지)
 3. 📕 숭실역사관 전시실 (역사 고문서 도록)
 
-모두 찾아오면 소중한 칭호와 보상을 지급하마!`,
+모두 찾아오면 풍성한 보상을 지급하마!`,
     completeStory: `어머나, 3권의 도서를 모두 안전하게 찾아왔구나! 정말 고마워! 👏✨
 
 덕분에 숭실 도서관의 소중한 지식들이 모두 제자리를 찾게 되었단다.
-약속했던 특별 칭호 [📚 지혜의 탐구자]와 보상을 수여하마! 앞으로도 도서관을 자주 찾아주렴!`,
+약속했던 골드와 경험치 보상을 수여하마! 앞으로도 도서관을 자주 찾아주렴!`,
     doneStory: `안녕! 자네 덕분에 도서관 서가가 다시 풍성해졌단다.
 오늘의 지혜 명언 독서대에서 책도 읽고, 스마트 디벗도 편하게 이용하렴! 👍`,
     objectives: [
@@ -7402,10 +7395,6 @@ class MainApp {
     if ((this.playerData.readingExpBuffUntil && Date.now() < this.playerData.readingExpBuffUntil) || (this.isBuffActive && this.isBuffActive('reading_exp'))) {
       finalAmount = Math.max(1, Math.round(finalAmount * 1.15));
     }
-    // 칭호 [지혜의 탐구자] 착용 시 경험치 +5% 추가 보너스
-    if (this.playerData.equippedTitle === '📚 지혜의 탐구자' || this.playerData.equippedTitle === 'title_wisdom_seeker') {
-      finalAmount = Math.max(1, Math.round(finalAmount * 1.05));
-    }
 
     this.playerData.exp += finalAmount;
     let leveledUp = false;
@@ -8311,7 +8300,7 @@ class MainApp {
   // 🏷️ PLAYER NAME & TITLE DISPLAY HELPER
   // =========================================================================
   updatePlayerNameDisplay() {
-    const removedEggTitles = ['🚌 숭실 축구부 버스 우수 승객', '🚌 숭실 통학버스 우수 승객', '⚡ 찌릿찌릿 썬더볼트'];
+    const removedEggTitles = ['🚌 숭실 축구부 버스 우수 승객', '🚌 숭실 통학버스 우수 승객', '⚡ 찌릿찌릿 썬더볼트', '📚 지혜의 탐구자', 'title_wisdom_seeker'];
     if (removedEggTitles.includes(this.playerData.equippedTitle)) {
       this.playerData.equippedTitle = null;
     }
@@ -8699,8 +8688,6 @@ class MainApp {
         costText = '특별 퀘스트 달성 필요';
         if (t.id === 'title_history_bearer') {
           progressText = '(숭실역사관 4대 전시관 답사)';
-        } else if (t.id === 'title_wisdom_seeker') {
-          progressText = '(도서관 분실도서 3권 회수)';
         } else if (t.id === 'title_drummer') {
           progressText = '(1학년 4반 도덕 비트 20문제 완파)';
         } else if (t.id && t.id.startsWith('title_job_')) {
@@ -10297,15 +10284,7 @@ class MainApp {
       this.removeItem('item_lib_book_pg', 1);
       this.removeItem('item_lib_book_of', 1);
       this.removeItem('item_lib_book_hi', 1);
-      if (!this.playerData.titles) this.playerData.titles = [];
-      const titleName = '📚 지혜의 탐구자';
-      if (!this.playerData.titles.includes(titleName)) {
-        this.playerData.titles.push(titleName);
-      }
-      if (!this.playerData.titles.includes('title_wisdom_seeker')) {
-        this.playerData.titles.push('title_wisdom_seeker');
-      }
-      this.showToast('🏅 새로운 칭호 [📚 지혜의 탐구자]를 획득했습니다!', 'success');
+      this.showToast('📚 [도서관 의뢰 완료] 분실도서 3권을 모두 반납하고 보상을 획득했습니다!', 'success');
     }
 
     this.recalcCombatStats();

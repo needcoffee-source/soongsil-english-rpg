@@ -198,11 +198,10 @@ app.addExp(50);
 const expectedExp = Math.round(50 * 1.15);
 assert(app.playerData.exp === expWithBuffBefore + expectedExp, `addExp(50) with reading buff grants ${expectedExp} EXP (+15%)`);
 
-// Test Title Buff
+// Test Title Removal & Purge Verification (칭호 및 +5% 보너스 완전 삭제)
 app.playerData.equippedTitle = '📚 지혜의 탐구자';
-const expWithTitleBefore = app.playerData.exp;
-app.addExp(50);
-assert(app.playerData.exp > expWithTitleBefore + 58, 'title_wisdom_seeker grants additional EXP bonus');
+app.updatePlayerNameDisplay();
+assert(app.playerData.equippedTitle === null, 'updatePlayerNameDisplay purges 📚 지혜의 탐구자 from equipped title');
 
 // Test Missing Books Quest (3번 구현)
 app.acceptQuest('quest_library_missing_books');
@@ -226,7 +225,7 @@ const goldBefore = app.playerData.gold;
 app.completeQuest('quest_library_missing_books');
 assert(q.status === 'done', 'Quest completed');
 assert(app.playerData.gold === goldBefore + 100, '100 Gold reward granted');
-assert(app.playerData.titles.includes('title_wisdom_seeker'), 'title_wisdom_seeker unlocked upon quest turn-in');
+assert(!app.playerData.titles || (!app.playerData.titles.includes('title_wisdom_seeker') && !app.playerData.titles.includes('📚 지혜의 탐구자')), 'title_wisdom_seeker is NOT granted on quest completion (permanently removed)');
 assert(!app.playerData.inventory.some(i => i.item === 'item_lib_book_pg'), 'item_lib_book_pg removed on turn-in');
 assert(!app.playerData.inventory.some(i => i.item === 'item_lib_book_of'), 'item_lib_book_of removed on turn-in');
 assert(!app.playerData.inventory.some(i => i.item === 'item_lib_book_hi'), 'item_lib_book_hi removed on turn-in');

@@ -46,7 +46,7 @@ const WORLD_DATA = {
           y: 4,
           avatar: "teacher",
           questId: "quest_library_missing_books",
-          dialogue: "쉿! 도서관에선 정숙해야 한단다. 📚 분실된 도서 3권을 찾아주면 특별한 칭호 [📚 지혜의 탐구자]를 선물할게!"
+          dialogue: "쉿! 도서관에선 정숙해야 한단다. 📚 학교 곳곳에 흩어진 분실도서 3권을 찾아주면 도서관 보상을 선물할게!"
         }
       ]
     },
