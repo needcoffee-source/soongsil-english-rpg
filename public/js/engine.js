@@ -486,6 +486,8 @@ class GameEngine {
       if (tileX >= 11 && tileX <= 40 && tileY >= 13 && tileY <= 18) return true;
       // Main gate barrier post at start of uphill road (tx: 7..8, ty: 31..33)
       if ((tileX === 7 || tileX === 8) && tileY >= 31 && tileY <= 33) return true;
+      // Guard teacher beside main gate (tx: 10, ty: 33)
+      if (tileX === 10 && tileY === 33) return true;
       return false;
     }
     if (this.player.room === 'hallway') {
@@ -854,9 +856,15 @@ class GameEngine {
         this.player.y = 5 * 32;
       } else if (room === 'hallway') {
         this.player.room = 'hallway';
-        this.player.x = 15 * 32;
-        this.player.y = 10 * 32;
-        this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
+        if (this.player.floor === 2) {
+          this.player.x = 16 * 32;
+          this.player.y = 5 * 32;
+          this.player.roomName = WORLD_DATA.floors[2] ? WORLD_DATA.floors[2].name : '2층 도서관 (독립 전용층)';
+        } else {
+          this.player.x = 15 * 32;
+          this.player.y = 10 * 32;
+          this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
+        }
       } else if (room === 'room_career') {
         this.player.floor = 5;
         this.player.room = 'room_career';
@@ -1084,6 +1092,18 @@ class GameEngine {
               prompt: gymData.peTeacher.prompt || '체력 단련 도전하기 (SPACE)'
             };
             minDist = peDist;
+          }
+        }
+        // 7. 배움터 지킴이 선생님 (정문 오른쪽 언덕길 미니게임)
+        if (gymData.guardTeacher) {
+          const gDist = Math.hypot(gymData.guardTeacher.x * 32 - this.player.x, (gymData.guardTeacher.y + 0.5) * 32 - this.player.y);
+          if (gDist < 60 && gDist < minDist) {
+            closest = {
+              type: 'gym_guard_teacher',
+              name: gymData.guardTeacher.name || '👮 배움터 지킴이 선생님',
+              prompt: gymData.guardTeacher.prompt || '언덕길 오르기 미니게임 (SPACE)'
+            };
+            minDist = gDist;
           }
         }
       }
@@ -1652,6 +1672,9 @@ class GameEngine {
         }
         if (gymData.peTeacher && Math.hypot(gymData.peTeacher.x * 32 - x, (gymData.peTeacher.y + 0.5) * 32 - y) < 56) {
           return { type: 'gym_pe_teacher', name: gymData.peTeacher.name, prompt: gymData.peTeacher.prompt };
+        }
+        if (gymData.guardTeacher && Math.hypot(gymData.guardTeacher.x * 32 - x, (gymData.guardTeacher.y + 0.5) * 32 - y) < 56) {
+          return { type: 'gym_guard_teacher', name: gymData.guardTeacher.name, prompt: gymData.guardTeacher.prompt };
         }
       }
     } else {
@@ -9253,6 +9276,38 @@ class GameEngine {
     this.ctx.restore();
   }
 
+  // 👮 숭실 정문 배움터 지킴이 선생님 (형태는 교사와 동일: Classic Blue Sprite)
+  drawHighResGuardTeacher(cx, cy) {
+    const px = cx;
+    const py = cy;
+    this.ctx.save();
+
+    // 1. Ground shadow (교사와 100% 동일)
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    this.ctx.beginPath();
+    this.ctx.ellipse(px + 16, py + 26, 12, 6, 0, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    // 2. Teacher Classic Blue Sprite (형태는 교사와 동일)
+    this.ctx.fillStyle = '#1e3a8a';
+    this.ctx.beginPath();
+    this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.fillRect(px + 8, py + 18, 16, 14);
+
+    // 3. Overhead Nameplate
+    this.drawSharpLabel(px + 16, py + 38, '👮 배움터 지킴이 선생님', {
+      bgColor: 'rgba(30, 58, 138, 0.95)',
+      borderColor: '#60a5fa',
+      textColor: '#fef08a',
+      fontSize: 12,
+      paddingX: 8,
+      height: 20
+    });
+
+    this.ctx.restore();
+  }
+
   drawHighResStoreNPC(cx, cy) {
     this.ctx.save();
     const w = 72;
@@ -13062,6 +13117,8 @@ class GameEngine {
     this.drawDrivingAisles(mapW, mapH);
 
     // 8. Main Gate Barrier is rendered at the start of Uphill Road (tx: 0..8, ty: 31..33)
+    // 8-B. 👮 배움터 지킴이 선생님 (숭실중학교 정문 오른쪽: tx: 10, ty: 33)
+    this.drawHighResGuardTeacher(10 * 32, 33 * 32);
 
     // 9. East Exit Gate to Soccer Field (tx: 50..55, ty: 28..32)
     const exitX = 51 * 32;

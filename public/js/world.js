@@ -746,6 +746,16 @@ const WORLD_DATA = {
       y: 15,
       name: "👨‍🏫 숭실고 체육선생님",
       prompt: "체력 단련 도전하기 (SPACE)"
+    },
+    guardTeacher: {
+      id: "gym_guard_teacher",
+      type: "gym_guard_teacher",
+      x: 10,
+      y: 33,
+      name: "👮 배움터 지킴이 선생님",
+      role: "숭실 정문 지킴이",
+      avatar: "teacher",
+      prompt: "언덕길 오르기 미니게임 (SPACE)"
     }
   },
   playground: {

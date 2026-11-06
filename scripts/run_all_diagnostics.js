@@ -23,7 +23,8 @@ const tests = [
   'test_gym_plaza_gatekeeper.js',
   'test_teacher_noclip_brawl.js',
   'test_teacher_server_gate.js',
-  'test_library_floor2.js'
+  'test_library_floor2.js',
+  'test_guard_teacher_uphill.js'
 ];
 
 console.log('==============================================');

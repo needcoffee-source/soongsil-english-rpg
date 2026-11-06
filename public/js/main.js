@@ -810,6 +810,13 @@ const TITLE_DEFINITIONS = [
     desc: '2층 숭실 도서관의 7대 테마 서가(문학, 자연과학, 어학, 역사, 예술·체육, 정기간행물, 교양만화)를 모두 탐독한 열정적인 독서가!',
     costType: 'quest',
     costAmount: 0
+  },
+  {
+    id: 'title_uphill_master',
+    name: '🏃 폭풍의 언덕 질주왕',
+    desc: '숭실중학교 정문 급경사 언덕길에서 쏟아지는 장애물을 뚫고 꼭대기까지 S랭크로 질주한 전설의 러너!',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -1636,6 +1643,8 @@ class MainApp {
       }
     } else if (target.type === 'gym_pe_teacher') {
       this.handlePETeacherInteraction();
+    } else if (target.type === 'gym_guard_teacher') {
+      this.handleGuardTeacherInteraction();
     } else if (target.type === 'gym_teacher_car') {
       this.handleTeacherCarEasterEgg();
     } else if (target.type === 'gym_school_bus') {
@@ -2537,6 +2546,41 @@ class MainApp {
       `• 🧪 빨간 물약 x2개 획득! (HP +10 회복)\n\n` +
       `(우측 상단 가방(🎒)을 열어 획득한 물약을 확인할 수 있습니다.)`
     );
+  }
+
+  // 👮 숭실 정문 배움터 지킴이 선생님 (언덕길 질주 미니게임 챌린지)
+  handleGuardTeacherInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const bestTimeStr = (this.playerData && this.playerData.uphillBestTime)
+      ? `${(this.playerData.uphillBestTime / 1000).toFixed(2)}초`
+      : '기록 없음';
+
+    const dialogText = `"허허, 안녕 학생! 여기가 바로 숭실중학교의 명물, '전설의 등교 언덕길'이란다!\n\n지각 위기일 때 전력으로 뛰어 올라가던 선배들의 기상을 이어받아, 위에서 쏟아지는 장애물을 요리조리 피해서 언덕길 꼭대기까지 가장 빠르게 올라가 보겠니?\n\n🏆 내 최고 기록: ${bestTimeStr}\n💡 조작법: [A / D] 좌우 이동, [W / Space] 전력 질주, [S] 감속\n⚡ 팁: 도로 위 초록빛 부스터 패드를 밟으면 초음속으로 질주한단다!"`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '👮 배움터 지킴이 선생님',
+        dialogText,
+        '👮',
+        () => {
+          const game = window.UphillRush || window.UphillRushGame;
+          if (game && typeof game.open === 'function') {
+            game.open();
+          }
+        },
+        () => {},
+        '🏃 언덕길 질주 도전! (Enter)',
+        '다음에 하기 (ESC)'
+      );
+    } else {
+      if (confirm(dialogText)) {
+        const game = window.UphillRush || window.UphillRushGame;
+        if (game && typeof game.open === 'function') game.open();
+      }
+    }
   }
 
   // 🚗 교직원 럭셔리 세단 이스터에그 (감히 선생님 차에 손을 대다니! 1초 마비 + HP -20)
