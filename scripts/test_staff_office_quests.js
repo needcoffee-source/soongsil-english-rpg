@@ -139,16 +139,17 @@ const kimQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_kimmijin_art
 assert(kimQuestSnippet.includes("itemKey: 'item_forsythia'"), 'quest_kimmijin_art must reward forsythia petals');
 assert(kimQuestSnippet.includes("label: '🌼 노란 개나리 꽃잎 x3개'"), 'quest_kimmijin_art must reward 3 forsythia petals');
 assert(!kimQuestSnippet.includes('equip_forsythia_ring'), 'quest_kimmijin_art must no longer reward forsythia ring');
-console.log('✔ 13. quest_kimmijin_art (김진믜) definition and rewards (Forsythia Petals x3, 100 G, 100 EXP) verified');
+console.log('✔ 13. quest_kimmijin_art (김진믜) definition and rewards (Forsythia Petals x3, 100 EXP) verified');
 
 // 5. Check Yo Sun-yu quest definition and rewards in main.js
 assert(mainCode.includes('quest_yosunyu_info'), 'main.js must define quest_yosunyu_info');
 const yoQuestSnippet = mainCode.slice(mainCode.indexOf("id: 'quest_yosunyu_info'"), mainCode.indexOf("id: 'quest_kwimjinsyong_career'"));
 assert(yoQuestSnippet.includes("teacherRole: '정보'"), 'Yo Sun-yu role must be 정보');
 assert(!yoQuestSnippet.includes("itemKey: 'item_ginkgo'"), 'quest_yosunyu_info must no longer reward ginkgo leaves');
-assert(yoQuestSnippet.includes("amount: 100, label: '🪙 100 G (골드)'"), 'quest_yosunyu_info must reward 100 G');
+assert(yoQuestSnippet.includes("itemKey: 'item_boss_leather'"), 'quest_yosunyu_info must reward boss leather x1');
+assert(yoQuestSnippet.includes("label: '🥋 보스의 가죽 x1장'"), 'quest_yosunyu_info must reward boss leather x1');
 assert(yoQuestSnippet.includes("amount: 200, label: '🌟 200 EXP (경험치)'"), 'quest_yosunyu_info must reward 200 EXP');
-console.log('✔ 14. quest_yosunyu_info (정보) definition and rewards (No Ginkgo, 100 G, 200 EXP) verified');
+console.log('✔ 14. quest_yosunyu_info (정보) definition and rewards (No Ginkgo, Boss Leather x1, 200 EXP) verified');
 
 // 6. Check Kwim Jin-syong quest definition and rewards in main.js
 assert(mainCode.includes('quest_kwimjinsyong_career'), 'main.js must define quest_kwimjinsyong_career');
