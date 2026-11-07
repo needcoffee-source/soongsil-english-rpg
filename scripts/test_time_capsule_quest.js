@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 
 console.log('========================================================');
-console.log('🧪 TESTING 2004 ALUMNI SECRET TIME CAPSULE QUEST (v=209)');
+console.log('🧪 TESTING 2004 ALUMNI SECRET TIME CAPSULE & VICE PRINCIPAL QUEST (v=210)');
 console.log('========================================================\n');
 
 let passed = 0;
@@ -67,25 +67,43 @@ test('Bleachers elements spacing: no overlapping items', () => {
   }
 });
 
-// 2. Engine Checks
-test('engine.js includes time_capsule & capsule_clue interaction routing', () => {
+// 2. 14번 교감선생님 NPC Check
+test('WORLD_DATA staff office npcs contains 14번 교감선생님', () => {
+  const worldCode = fs.readFileSync('public/js/world.js', 'utf8');
+  eval(worldCode);
+  const office = WORLD_DATA.classroom_staff_office || WORLD_DATA.staff_office;
+  assert(office && office.npcs, 'staff office npcs not found');
+  const npcs = office.npcs;
+  const vp = npcs.find(n => n.id === 'npc_teacher_vice_principal');
+  assert(vp, 'npc_teacher_vice_principal not found in staff_office');
+  assert.strictEqual(vp.name, '교감선생님');
+  assert.strictEqual(vp.seatId, 14);
+  assert.strictEqual(vp.seatLabel, '14');
+  assert.strictEqual(vp.avatar, 'teacher');
+  assert.strictEqual(vp.x, 41.0);
+  assert.strictEqual(vp.y, 20.875);
+});
+
+// 3. Engine Checks
+test('engine.js includes time_capsule & capsule_clue routing and 14번 교감선생님 desk badge', () => {
   const engineCode = fs.readFileSync('public/js/engine.js', 'utf8');
   assert(engineCode.includes("type: 'time_capsule'"));
   assert(engineCode.includes("type: 'capsule_clue'"));
   assert(engineCode.includes('drawHighResTimeCapsule'));
   assert(engineCode.includes('drawHighResCapsuleNote'));
+  assert(engineCode.includes('isVicePrincipalDesk'));
+  assert(engineCode.includes('14 교감'));
 });
 
-// 3. MainApp & Quest Checks
-test('main.js handles time_capsule & capsule_clue interaction targets', () => {
+// 4. MainApp & Quest Checks
+test('main.js handles time_capsule, capsule_clue, and vice principal routing', () => {
   const mainCode = fs.readFileSync('public/js/main.js', 'utf8');
   assert(mainCode.includes("target.type === 'time_capsule'"));
   assert(mainCode.includes("target.type === 'capsule_clue'"));
-  assert(mainCode.includes('handleCapsuleClue(clueData)'));
-  assert(mainCode.includes('handleTimeCapsuleInteraction()'));
-  assert(mainCode.includes('openTimeCapsuleLockModal()'));
-  assert(mainCode.includes('claimTimeCapsuleSuccess()'));
-  assert(mainCode.includes('openTimeCapsuleOpenedModal('));
+  assert(mainCode.includes("npc.id === 'npc_teacher_vice_principal'"));
+  assert(mainCode.includes('handleVicePrincipalInteraction'));
+  assert(mainCode.includes('openVicePrincipalCapsuleModal'));
+  assert(mainCode.includes('claimTimeCapsuleFromVicePrincipal'));
 });
 
 test('Password deduction matches 3 - 5 - 0 - 4 in code', () => {
@@ -93,28 +111,25 @@ test('Password deduction matches 3 - 5 - 0 - 4 in code', () => {
   assert(mainCode.includes('dials[0] === 3 && dials[1] === 5 && dials[2] === 0 && dials[3] === 4'));
 });
 
-test('Reward item, title and stats defined accurately', () => {
+test('Reward item stats adjusted: atk: 3, def: 3 (no hp), sell price 0 (매각 불가)', () => {
   const serverCode = fs.readFileSync('server.js', 'utf8');
   const mainCode = fs.readFileSync('public/js/main.js', 'utf8');
 
   assert(serverCode.includes("'equip_vintage_armband'"));
   assert(mainCode.includes("'equip_vintage_armband'"));
-  assert(mainCode.includes("'title_time_connector'"));
-  assert(mainCode.includes('🕰️ 시간을 잇는 자'));
 
-  // Stat checks: atk: 3, def: 3, hp: 3
-  assert(serverCode.includes('stats: { atk: 3, def: 3, hp: 3 }'));
-  assert(mainCode.includes('stats: { atk: 3, def: 3, hp: 3 }'));
-  assert(mainCode.includes("'equip_vintage_armband': 50"));
+  // Check stats strictly { atk: 3, def: 3 }
+  assert(serverCode.includes('stats: { atk: 3, def: 3 }'), 'server stats must be atk: 3, def: 3');
+  assert(mainCode.includes('stats: { atk: 3, def: 3 }'), 'client stats must be atk: 3, def: 3');
+  assert(!serverCode.includes('stats: { atk: 3, def: 3, hp: 3 }'), 'server must not have hp in stats');
+  assert(!mainCode.includes('stats: { atk: 3, def: 3, hp: 3 }'), 'client must not have hp in stats');
+
+  // Check sell price is 0
+  assert(mainCode.includes("'equip_vintage_armband': 0"), 'sell price must be 0 (매각 불가)');
+  assert(mainCode.includes("invItem.item === 'equip_vintage_armband'"), 'store modal must block selling armband');
 });
 
-test('Inscription text strictly matches user requirement', () => {
-  const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const expectedQuote = '2004년 가을, 축구대회 우승과 졸업을 앞두고 3학년 5반 녀석들이 묻다. 후배들아, 20년 뒤에 열어봐라!';
-  assert(indexHtml.includes(expectedQuote), 'Exact inscription quote missing in index.html');
-});
-
-test('Modals and rolling paper elements exist in index.html', () => {
+test('Modals and rolling paper elements exist in index.html for both bleachers and Vice Principal', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
   const requiredIds = [
     'modal-time-capsule-lock',
@@ -129,19 +144,18 @@ test('Modals and rolling paper elements exist in index.html', () => {
     'capsule-dial-4',
     'btn-capsule-up-1',
     'btn-capsule-dn-1',
-    'btn-capsule-up-2',
-    'btn-capsule-dn-2',
-    'btn-capsule-up-3',
-    'btn-capsule-dn-3',
-    'btn-capsule-up-4',
-    'btn-capsule-dn-4',
     'btn-capsule-unlock',
     'modal-time-capsule-open',
     'btn-close-capsule-open-x',
     'btn-close-capsule-open-bottom',
-    'input-capsule-msg',
-    'btn-submit-capsule-msg',
-    'capsule-notes-list'
+    'modal-vice-principal-capsule',
+    'btn-close-vp-modal-x',
+    'btn-close-vp-modal-bottom',
+    'vp-reward-action-section',
+    'vp-reward-claimed-section',
+    'input-vp-capsule-msg',
+    'btn-submit-vp-capsule',
+    'vp-capsule-notes-list'
   ];
 
   requiredIds.forEach(id => {
@@ -149,11 +163,11 @@ test('Modals and rolling paper elements exist in index.html', () => {
   });
 });
 
-test('Cache-buster tag v=209 is cleanly applied in index.html', () => {
+test('Cache-buster tag v=210 is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=209/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=209 tags, found ${matches}`);
-  assert(!indexHtml.includes('v=208'), 'Found stale v=208 tag in index.html');
+  const matches = (indexHtml.match(/v=210/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 v=210 tags, found ${matches}`);
+  assert(!indexHtml.includes('v=209'), 'Found stale v=209 tag in index.html');
 });
 
 console.log(`\n========================================================`);

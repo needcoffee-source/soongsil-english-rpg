@@ -400,6 +400,17 @@ const WORLD_DATA = {
         avatar: "teacher",
         questId: "quest_kwimjinsyong_career",
         dialogue: "반갑다! 숭실 학생들의 꿈과 진로를 밝혀주는 진로 귐즨숑 선생님이란다. 🌟"
+      },
+      {
+        id: "npc_teacher_vice_principal",
+        name: "교감선생님",
+        role: "교감",
+        seatId: 14,
+        seatLabel: "14",
+        x: 41.0,
+        y: 20.875,
+        avatar: "teacher",
+        dialogue: "허허, 어서 오렴! 숭실의 14번 교감선생님이란다. 🏫"
       }
     ],
     interactive: [

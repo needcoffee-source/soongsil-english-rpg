@@ -12551,6 +12551,7 @@ class GameEngine {
     const isSangdaeDesk = (label === '30');
     const isKyungsukDesk = (label === '23');
     const isHunihuniDesk = (label === '27');
+    const isVicePrincipalDesk = (label === '14');
     const now = Date.now();
 
     // 0. 제작자 갓준철 연구석: 황금빛 펄스 후광 글로우 (바닥 조명 및 배경 아우라)
@@ -12971,6 +12972,21 @@ class GameEngine {
         ctx.lineWidth = 1.5;
         ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
         ctx.fillStyle = '#fca5a5';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isVicePrincipalDesk) {
+        // 🏫 14번 교감선생님 전용 명패
+        ctx.font = 'bold 11px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🏫 14 교감';
+        const tw = Math.max(52, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#fef08a';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);

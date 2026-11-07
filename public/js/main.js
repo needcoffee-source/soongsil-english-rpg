@@ -552,7 +552,7 @@ const ALL_GAME_ITEMS = {
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
-  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3, hp: 3 }, effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3, 체력 +3' } }
+  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3 (매각 불가)' } }
 
 };
 
@@ -604,7 +604,7 @@ const ITEM_SELL_PRICES = {
 
   // 7. 최상위 엔드 레이드 전리품
   'equip_omr_wand': 20,
-  'equip_vintage_armband': 50, // 2004년 유물 장신구
+  'equip_vintage_armband': 0, // 2004년 유물 장신구 (매각 불가)
     'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
 };
 
@@ -1563,6 +1563,12 @@ class MainApp {
     if (target.type === 'npc') {
       const npc = target.data;
       if (!npc) return;
+
+      // 6층 교무실 14번 좌석 교감선생님 (타임캡슐 2004년 스토리 & 롤링페이퍼 최종 보상)
+      if (npc.id === 'npc_teacher_vice_principal' || (npc.name && npc.name.includes('교감'))) {
+        this.handleVicePrincipalInteraction(npc);
+        return;
+      }
 
       // 6층 복도 동쪽 창가: 진로를 고민하는 학생 (귐즨숑 선생님 연계 NPC)
       if (npc.id === 'npc_student_worried' || (npc.name && npc.name.includes('진로를 고민하는 학생'))) {
@@ -8631,7 +8637,7 @@ class MainApp {
       const type = (def.meta && def.meta.type) || (invItem.item.startsWith('equip_') ? 'equipment' : 'material');
 
       // 소비품(물약, 주문서 등) 및 작동권/퀘스트 아이템은 매점 매각 금지
-      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item === 'equip_elevator_pass' || def.meta?.isQuestItem) {
+      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item === 'equip_elevator_pass' || invItem.item === 'equip_vintage_armband' || def.meta?.isQuestItem || this.getItemSellPrice(invItem.item) <= 0) {
         return false;
       }
 
@@ -8731,6 +8737,10 @@ class MainApp {
   sellItem(itemId, count, itemName, totalGold) {
     const def = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[itemId]) || {};
     const type = (def.meta && def.meta.type) || '';
+    if (itemId === 'equip_vintage_armband' || itemId === 'equip_elevator_pass' || this.getItemSellPrice(itemId) <= 0) {
+      this.showToast('이 유물/특수 아이템은 매점에서 매각할 수 없습니다!', 'warning');
+      return;
+    }
     if (type === 'consumable' || itemId.includes('potion') || itemId.includes('scroll')) {
       this.showToast('소비품(물약 및 주문서)은 매점에서 매각할 수 없습니다!', 'warning');
       return;
@@ -11238,7 +11248,16 @@ class MainApp {
         // 정답 비밀번호: 3 - 5 - 0 - 4
         if (dials[0] === 3 && dials[1] === 5 && dials[2] === 0 && dials[3] === 4) {
           modal.classList.add('hidden');
-          this.claimTimeCapsuleSuccess();
+          if (!this.playerData.timeCapsuleUnlocked) {
+            this.playerData.timeCapsuleUnlocked = true;
+            this.playerData.hasOpenedTimeCapsule = true;
+            this.saveProgress();
+          }
+          if (window.AudioManager && window.AudioManager.playFanfare) {
+            window.AudioManager.playFanfare();
+          }
+          this.showToast('🎉 [2004년 타임캡슐] 해금 성공! 6층 교무실 14번 교감선생님께 발굴 소식을 전하세요!', 'success');
+          this.openTimeCapsuleOpenedModal(true);
         } else {
           if (window.AudioManager && window.AudioManager.playWrong) window.AudioManager.playWrong();
           const lockCard = modal.querySelector('.modal-card');
@@ -11263,12 +11282,12 @@ class MainApp {
     if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
     if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
 
-    // 유물 장비: 선배의 낡은 승리 완장 (장신구 / 올스탯 +3)
+    // 유물 장비: 선배의 낡은 승리 완장 (장신구 / 공+3, 방+3)
     this.addItem('equip_vintage_armband', '선배의 낡은 승리 완장', 1, '🎗️', {
       type: 'equipment',
       slot: 'accessory',
-      stats: { atk: 3, def: 3, hp: 3 },
-      effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3, 체력 +3'
+      stats: { atk: 3, def: 3 },
+      effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3 (매각 불가)'
     });
 
     // 골드 & 경험치 보상
@@ -11361,6 +11380,162 @@ class MainApp {
     allNotes.forEach(n => {
       const card = document.createElement('div');
       card.style.cssText = 'background: rgba(30, 41, 59, 0.7); border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; text-align: left;';
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <span style="font-weight: 800; font-size: 13px; color: #93c5fd;">✉️ ${n.author}</span>
+          <span style="font-size: 11px; color: #94a3b8;">${n.date}</span>
+        </div>
+        <div style="font-size: 13px; color: #f8fafc; line-height: 1.45;">${n.text}</div>
+      `;
+      listEl.appendChild(card);
+    });
+  }
+
+  handleVicePrincipalInteraction(npc) {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    if (!this.playerData.timeCapsuleUnlocked && !this.playerData.hasOpenedTimeCapsule) {
+      const introMsg = '허허, 어서 오렴! 숭실의 14번 교감선생님이란다. 🏫\n\n운동장 야외 스탠드 관람석 틈새에 아주 오래전 선배들이 묻어둔 [비밀 타임캡슐]이 있다는 전설을 알고 있니?\n\n스탠드 주변에 흩어진 4개의 단서 쪽지를 찾아 자물쇠 비밀번호를 풀면 20년 전 우리 학교의 뜨거운 감동과 마주할 수 있을 거란다.\n\n캡슐의 자물쇠를 열게 되거든 꼭 내게 찾아와 그 소식을 전해주렴!';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🏫 교감선생님 (14번 좌석)', introMsg, '👨‍🏫');
+      } else {
+        alert('💬 [교감선생님]\n\n' + introMsg);
+      }
+      return;
+    }
+
+    this.openVicePrincipalCapsuleModal();
+  }
+
+  openVicePrincipalCapsuleModal() {
+    const modal = document.getElementById('modal-vice-principal-capsule');
+    if (!modal) return;
+
+    const isRewardClaimed = !!(this.playerData && this.playerData.timeCapsuleRewardClaimed);
+
+    const btnCloseX = document.getElementById('btn-close-vp-modal-x');
+    const btnCloseBottom = document.getElementById('btn-close-vp-modal-bottom');
+
+    if (btnCloseX && !btnCloseX._bound) {
+      btnCloseX._bound = true;
+      btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (btnCloseBottom && !btnCloseBottom._bound) {
+      btnCloseBottom._bound = true;
+      btnCloseBottom.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    const rewardSection = document.getElementById('vp-reward-action-section');
+    const claimedSection = document.getElementById('vp-reward-claimed-section');
+
+    if (rewardSection && claimedSection) {
+      if (isRewardClaimed) {
+        rewardSection.style.display = 'none';
+        claimedSection.style.display = 'block';
+      } else {
+        rewardSection.style.display = 'block';
+        claimedSection.style.display = 'none';
+      }
+    }
+
+    this.renderVicePrincipalGuestbook();
+
+    const btnSubmit = document.getElementById('btn-submit-vp-capsule');
+    const inputMsg = document.getElementById('input-vp-capsule-msg');
+    if (btnSubmit && !btnSubmit._bound) {
+      btnSubmit._bound = true;
+      btnSubmit.addEventListener('click', () => {
+        const text = (inputMsg && inputMsg.value.trim()) || '';
+        if (!text) {
+          this.showToast('미래의 후배들에게 남길 따뜻한 한마디를 입력해주세요!', 'warning');
+          return;
+        }
+
+        const authorName = (this.playerData && this.playerData.name) || '숭실 후배';
+        let notes = [];
+        try {
+          notes = JSON.parse(localStorage.getItem('soongsil_capsule_notes') || '[]');
+        } catch(e) {}
+
+        notes.unshift({
+          author: authorName,
+          date: new Date().toLocaleDateString('ko-KR'),
+          text: text
+        });
+
+        try {
+          localStorage.setItem('soongsil_capsule_notes', JSON.stringify(notes.slice(0, 30)));
+        } catch(e) {}
+
+        if (inputMsg) inputMsg.value = '';
+
+        // 최종 보상 지급
+        this.claimTimeCapsuleFromVicePrincipal();
+        this.renderVicePrincipalGuestbook();
+
+        if (rewardSection && claimedSection) {
+          rewardSection.style.display = 'none';
+          claimedSection.style.display = 'block';
+        }
+      });
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  claimTimeCapsuleFromVicePrincipal() {
+    this.playerData.timeCapsuleRewardClaimed = true;
+
+    if (!this.playerData.titles) this.playerData.titles = [];
+    const tId = 'title_time_connector';
+    const tName = '🕰️ 시간을 잇는 자';
+    if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
+    if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
+
+    // 유물 장비: 선배의 낡은 승리 완장 (장신구 / 공격력 +3, 방어력 +3, 매각 불가)
+    this.addItem('equip_vintage_armband', '선배의 낡은 승리 완장', 1, '🎗️', {
+      type: 'equipment',
+      slot: 'accessory',
+      stats: { atk: 3, def: 3 },
+      effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3 (매각 불가)'
+    });
+
+    // 골드 & 경험치 보상
+    this.addGold(100);
+    this.addExp(100);
+    this.saveProgress();
+
+    if (typeof this.renderTitles === 'function') this.renderTitles();
+    if (window.AudioManager && window.AudioManager.playFanfare) {
+      window.AudioManager.playFanfare();
+    }
+
+    this.showToast('🎉 [타임캡슐 최종 완료] 교감선생님께 칭호 [🕰️ 시간을 잇는 자]와 선배의 낡은 승리 완장을 수령했습니다!', 'success');
+  }
+
+  renderVicePrincipalGuestbook() {
+    const listEl = document.getElementById('vp-capsule-notes-list');
+    if (!listEl) return;
+
+    let notes = [];
+    try {
+      notes = JSON.parse(localStorage.getItem('soongsil_capsule_notes') || '[]');
+    } catch(e) {}
+
+    const defaultNotes = [
+      { author: '2004년 3-5 반장 민호', date: '2004.10.15', text: '우리가 묻은 이 편지를 20년 뒤 누군가 읽는다면... 숭실의 교정은 여전히 푸르고 활기차겠지?' },
+      { author: '2004년 3-5 등번호 10번 성진', date: '2004.10.15', text: '결승골 넣고 스탠드로 뛰어올라가 다 같이 얼싸안았던 순간을 평생 잊지 못할 거야. 후배들아 사랑한다!' },
+      { author: '2004년 3-5 정훈', date: '2004.10.15', text: '선생님들 말씀 잘 듣고, 친구들이랑 좋은 추억 많이 만들어라 후배들아! 숭실 파이팅!' }
+    ];
+
+    const allNotes = [...notes, ...defaultNotes];
+    listEl.innerHTML = '';
+
+    allNotes.forEach(n => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background: rgba(15, 23, 42, 0.7); border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; text-align: left;';
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <span style="font-weight: 800; font-size: 13px; color: #93c5fd;">✉️ ${n.author}</span>

@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=209">
+  <link rel="manifest" href="/manifest.json?v=210">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=209">
+  <link rel="stylesheet" href="css/style.css?v=210">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -2294,19 +2294,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=209"></script>
-  <script src="js/dialog.js?v=209"></script>
+  <script src="js/audio.js?v=210"></script>
+  <script src="js/dialog.js?v=210"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=209"></script>
-  <script src="js/engine.js?v=209"></script>
-  <script src="js/quiz.js?v=209"></script>
-  <script src="js/crafting.js?v=209"></script>
-  <script src="js/network.js?v=209"></script>
-  <script src="js/acid_rain.js?v=209"></script>
-  <script src="js/brawl_ball.js?v=209"></script>
-  <script src="js/uphill_rush.js?v=209"></script>
-  <script src="js/main.js?v=209"></script>
+  <script src="js/world.js?v=210"></script>
+  <script src="js/engine.js?v=210"></script>
+  <script src="js/quiz.js?v=210"></script>
+  <script src="js/crafting.js?v=210"></script>
+  <script src="js/network.js?v=210"></script>
+  <script src="js/acid_rain.js?v=210"></script>
+  <script src="js/brawl_ball.js?v=210"></script>
+  <script src="js/uphill_rush.js?v=210"></script>
+  <script src="js/main.js?v=210"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
@@ -2638,10 +2638,13 @@
         </div>
       </div>
 
-      <!-- Rewards Earned Box -->
-      <div style="background: rgba(30, 41, 59, 0.7); border: 1.5px solid #10b981; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-        <div style="font-size: 13px; font-weight: 800; color: #34d399; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-          <span>🎁</span> <span>타임캡슐 발굴 기념 보상</span>
+      <!-- Rewards Guide Notice Box -->
+      <div style="background: rgba(30, 41, 59, 0.85); border: 1.5px solid #f59e0b; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 13.5px; font-weight: 800; color: #fbbf24; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span>📢</span> <span>최종 보상 수령 안내 (6층 교무실 14번 좌석)</span>
+        </div>
+        <div style="font-size: 13px; color: #cbd5e1; line-height: 1.6; word-break: keep-all; margin-bottom: 10px;">
+          자물쇠가 성공적으로 풀렸습니다! <b>6층 교무실 14번 교감선생님</b>을 찾아가 이 2004년 타임캡슐 발굴 소식을 전하세요. 당시 축구 우승의 생생한 역사 설명을 듣고 <b>롤링페이퍼를 작성</b>하면 최종 보상을 수령할 수 있습니다!
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
@@ -2654,7 +2657,7 @@
           <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 20px;">🎗️</span>
             <div>
-              <div style="font-size: 11px; color: #94a3b8;">유물 장신구 (올스탯 +3)</div>
+              <div style="font-size: 11px; color: #94a3b8;">유물 완장 (공+3, 방+3 · 매각불가)</div>
               <div style="font-size: 13px; font-weight: 800; color: #60a5fa;">선배의 낡은 승리 완장</div>
             </div>
           </div>
@@ -2683,6 +2686,111 @@
 
       <!-- Bottom Close Button -->
       <button id="btn-close-capsule-open-bottom" class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 800; background: #334155; border: 1px solid #64748b; border-radius: 10px; cursor: pointer; color: #fff;">
+        닫기
+      </button>
+    </div>
+  </div>
+
+  <!-- 🏫 6층 교무실 14번 교감선생님 - 2004년 타임캡슐 회고 및 롤링페이퍼 최종 보상 모달 -->
+  <div id="modal-vice-principal-capsule" class="modal-overlay hidden" style="z-index: 12000;">
+    <div class="modal-card" style="max-width: 580px; width: 92%; max-height: 90vh; overflow-y: auto; background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 22px; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 25px rgba(245, 158, 11, 0.25); color: #f8fafc; font-family: 'Pretendard', sans-serif;">
+      
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid rgba(245, 158, 11, 0.3); padding-bottom: 12px; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 28px;">🏫</span>
+          <div>
+            <h3 style="margin: 0; font-size: 19px; font-weight: 800; color: #fbbf24;">14번 교감선생님 연구석</h3>
+            <span style="font-size: 12px; color: #94a3b8;">2004년 축구 우승의 기억과 비밀 타임캡슐</span>
+          </div>
+        </div>
+        <button id="btn-close-vp-modal-x" style="background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; padding: 4px 8px; border-radius: 6px;">✕</button>
+      </div>
+
+      <!-- Vice Principal's Heartwarming Dialogue & Explanation Box -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #3b82f6; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+          <span style="font-size: 22px;">👨‍🏫</span>
+          <span style="font-weight: 800; font-size: 14.5px; color: #93c5fd;">교감선생님의 이야기</span>
+        </div>
+        <div style="font-size: 13.5px; line-height: 1.7; color: #e2e8f0; word-break: keep-all;">
+          <p style="margin: 0 0 10px 0; color: #fef08a; font-weight: 700;">
+            "오오, 자네가 운동장 스탠드 틈새의 그 타임캡슐을 풀고 편지를 찾아냈단 말인가! 정말 감격스럽구나...!"
+          </p>
+          <p style="margin: 0 0 10px 0;">
+            2004년 그해 가을은 우리 숭실의 역사에 영원히 남을 눈부신 계절이었단다.
+            교내 축구대회 결승전 날, 스탠드가 떠나가라 울려 퍼지던 전교생의 함성과 교가 소리... 3:1로 역전승을 거두고 마지막 휘슬이 울렸을 때, 아이들과 선생님들이 서로 얼싸안고 눈물을 흘렸지!
+          </p>
+          <p style="margin: 0;">
+            졸업을 앞둔 3학년 5반 학생들이 자신들의 청춘과 승리의 기쁨, 그리고 주장의 승리 완장을 캡슐에 넣으며 <i>'20년 뒤 후배들아, 지치지 말고 힘차게 날아올라라!'</i>라고 다짐했던 그 순간이 지금도 눈앞에 선하구나.
+            자네가 20년 만에 그 약속을 이어받았어. 정말 고맙고 자랑스럽구나!
+          </p>
+        </div>
+      </div>
+
+      <!-- Action / Reward Status Section -->
+      <div id="vp-reward-action-section" style="background: rgba(30, 41, 59, 0.7); border: 1.5px solid #10b981; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 13.5px; font-weight: 800; color: #34d399; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span>🎁</span> <span>롤링페이퍼 작성 시 수령할 최종 보상</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">🏷️</span>
+            <div>
+              <div style="font-size: 11px; color: #94a3b8;">한정 전용 칭호</div>
+              <div style="font-size: 13px; font-weight: 800; color: #fbbf24;">[🕰️ 시간을 잇는 자]</div>
+            </div>
+          </div>
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">🎗️</span>
+            <div>
+              <div style="font-size: 11px; color: #94a3b8;">유물 완장 (공+3, 방+3 · 매각불가)</div>
+              <div style="font-size: 13px; font-weight: 800; color: #60a5fa;">선배의 낡은 승리 완장</div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-around; margin-bottom: 12px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 13px; font-weight: 700;">
+          <span style="color: #fbbf24;">🪙 +100 Gold</span>
+          <span style="color: #a78bfa;">🌟 +100 EXP</span>
+        </div>
+
+        <!-- Rolling Paper Input for Claiming -->
+        <div style="border-top: 1px solid rgba(16, 185, 129, 0.3); padding-top: 12px;">
+          <div style="font-size: 12.5px; font-weight: 700; color: #93c5fd; margin-bottom: 6px;">
+            💌 미래의 후배들에게 남길 롤링페이퍼 한마디를 적어주세요:
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input id="input-vp-capsule-msg" type="text" maxlength="60" placeholder="20년 뒤 미래의 후배들에게 따뜻한 응원을 남겨보세요!" style="flex: 1; padding: 10px 12px; background: #1e293b; border: 1px solid #64748b; border-radius: 8px; color: #fff; font-size: 13px;">
+            <button id="btn-submit-vp-capsule" class="btn-primary" style="padding: 10px 14px; font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; border-radius: 8px; cursor: pointer; color: #fff; white-space: nowrap;">
+              작성 & 보상 수령
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Claimed Box (shown after claiming) -->
+      <div id="vp-reward-claimed-section" style="display: none; background: rgba(22, 101, 52, 0.3); border: 1.5px solid #22c55e; border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: center;">
+        <div style="font-size: 14px; font-weight: 800; color: #86efac; margin-bottom: 4px;">
+          🎉 최종 보상 수령 완료!
+        </div>
+        <div style="font-size: 12.5px; color: #cbd5e1; line-height: 1.5;">
+          [🕰️ 시간을 잇는 자] 칭호와 유물 [선배의 낡은 승리 완장]을 수령하였습니다.<br>
+          자네가 남겨준 롤링페이퍼 덕분에 숭실의 20년 역사가 아름답게 이어지고 있단다! 👍
+        </div>
+      </div>
+
+      <!-- Rolling Paper List -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid #475569; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 13px; font-weight: 800; color: #93c5fd; margin-bottom: 10px;">
+          📜 선배들과 후배들이 함께 쓴 롤링페이퍼 모음
+        </div>
+        <div id="vp-capsule-notes-list" style="max-height: 170px; overflow-y: auto; padding-right: 4px;">
+          <!-- dynamically rendered -->
+        </div>
+      </div>
+
+      <!-- Close Button -->
+      <button id="btn-close-vp-modal-bottom" class="btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 800; background: #334155; border: 1px solid #64748b; border-radius: 10px; cursor: pointer; color: #fff;">
         닫기
       </button>
     </div>
