@@ -836,6 +836,50 @@ const WORLD_DATA = {
       name: "📘 [대출도서] 운동장 스탠드에 떨어진 소설책",
       prompt: "소설책 회수하기 (SPACE)"
     },
+    timeCapsule: {
+      id: "time_capsule_bleachers",
+      type: "time_capsule",
+      x: 27,
+      y: 7,
+      name: "🕰️ [2004년] 선배들의 비밀 타임캡슐",
+      prompt: "타임캡슐 조사 (SPACE)"
+    },
+    capsuleClue1: {
+      id: "capsule_clue_1",
+      type: "capsule_clue",
+      clueIndex: 1,
+      x: 10,
+      y: 9,
+      name: "📜 [단서 1] 찢어진 스탠드 쪽지",
+      prompt: "단서 쪽지 읽기 (SPACE)"
+    },
+    capsuleClue2: {
+      id: "capsule_clue_2",
+      type: "capsule_clue",
+      clueIndex: 2,
+      x: 21,
+      y: 9,
+      name: "📜 [단서 2] 빛바랜 응원 일기",
+      prompt: "단서 쪽지 읽기 (SPACE)"
+    },
+    capsuleClue3: {
+      id: "capsule_clue_3",
+      type: "capsule_clue",
+      clueIndex: 3,
+      x: 33,
+      y: 9,
+      name: "📜 [단서 3] 낡은 졸업 사진 쪽지",
+      prompt: "단서 쪽지 읽기 (SPACE)"
+    },
+    capsuleClue4: {
+      id: "capsule_clue_4",
+      type: "capsule_clue",
+      clueIndex: 4,
+      x: 44,
+      y: 9,
+      name: "📜 [단서 4] 약속의 맹세 쪽지",
+      prompt: "단서 쪽지 읽기 (SPACE)"
+    },
     basketballMonsters: [
       {
         id: "bb_mob_1",

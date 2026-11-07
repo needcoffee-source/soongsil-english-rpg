@@ -551,7 +551,8 @@ const ALL_GAME_ITEMS = {
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
-  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } }
+  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
+  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3, hp: 3 }, effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3, 체력 +3' } }
 
 };
 
@@ -603,6 +604,7 @@ const ITEM_SELL_PRICES = {
 
   // 7. 최상위 엔드 레이드 전리품
   'equip_omr_wand': 20,
+  'equip_vintage_armband': 50, // 2004년 유물 장신구
     'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
 };
 
@@ -822,6 +824,13 @@ const TITLE_DEFINITIONS = [
     id: 'title_recycle_king',
     name: '♻️ 분리수거왕',
     desc: '6층 복도 분리수거함에서 환경과 지구를 지키는 올바른 분리배출 퀴즈를 완벽하게 통과한 환경 지킴이!',
+    costType: 'quest',
+    costAmount: 0
+  },
+  {
+    id: 'title_time_connector',
+    name: '🕰️ 시간을 잇는 자',
+    desc: '야외 스탠드 관람석 틈새에 숨겨진 2004년 선배들의 타임캡슐 4단계 추리 퍼즐을 모두 풀고 감동의 편지를 발굴한 모험가!',
     costType: 'quest',
     costAmount: 0
   }
@@ -1733,6 +1742,10 @@ class MainApp {
       this.handleMirrorInteraction();
     } else if (target.type === 'recycle_bin') {
       this.handleRecycleBinInteraction();
+    } else if (target.type === 'time_capsule') {
+      this.handleTimeCapsuleInteraction();
+    } else if (target.type === 'capsule_clue') {
+      this.handleCapsuleClue(target.data || target);
     } else if (target.type === 'lost_box') {
       this.handleLostBoxInteraction();
     } else if (target.type === 'locked_door') {
@@ -11075,11 +11088,297 @@ class MainApp {
       }
     }
   }
+
+// =========================================================================
+  // 🕰️ 야외 스탠드 [2004년 선배들의 비밀 타임캡슐] 4단계 추리 퀘스트 시스템
+  // =========================================================================
+
+  handleCapsuleClue(clueData) {
+    if (!clueData) return;
+    const clueIndex = clueData.clueIndex || 1;
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    if (!this.playerData.timeCapsuleClues) {
+      this.playerData.timeCapsuleClues = [false, false, false, false];
+    }
+    const isFirstFind = !this.playerData.timeCapsuleClues[clueIndex - 1];
+    this.playerData.timeCapsuleClues[clueIndex - 1] = true;
+    this.saveProgress();
+
+    const CLUE_STORIES = [
+      {
+        title: '📜 [단서 1] 찢어진 스탠드 쪽지 (서쪽 축구 골대 뷰)',
+        icon: '⚽',
+        text: '우리가 구령대 앞 결승전에서 마지막 휘슬이 울릴 때까지 온 힘을 다해 몰아쳤던 그날!\n전광판에 새겨진 우리 숭실의 최종 득점 수... 바로 그 승리의 골 수가 [첫 번째 비밀번호]다!\n\n(💡 힌트: 축구대회 결승전 3:1 역전승의 숭실 득점 수 ➔ 첫 번째 자리: 3)'
+      },
+      {
+        title: '📜 [단서 2] 빛바랜 응원 일기 (중앙 시계탑 뷰)',
+        icon: '📣',
+        text: '체육대회 응원전 때 스탠드가 떠나가라 목청껏 교가를 부르며 단합했던 우리 반!\n담임선생님이 매점 아이스크림 30개를 쏘셨던 전설의 우리 학급 번호가 [두 번째 비밀번호]다!\n\n(💡 힌트: 타임캡슐 표시에 적힌 학급 ➔ 3학년 5반의 5 ➔ 두 번째 자리: 5)'
+      },
+      {
+        title: '📜 [단서 3] 낡은 졸업 사진 쪽지 (나무 그늘 아래)',
+        icon: '🎓',
+        text: '우리가 스탠드에서 교복 단추를 던지며 눈물과 웃음으로 졸업했던 해, 2004년!\n4자리 연도에서 \'십의 자리\' 숫자가 [세 번째 비밀번호]다!\n\n(💡 힌트: 2004년의 십의 자리 ➔ 세 번째 자리: 0)'
+      },
+      {
+        title: '📜 [단서 4] 약속의 맹세 쪽지 (언덕길 바람 통로)',
+        icon: '🤝',
+        text: '20년 뒤 어른이 되어 다시 이 언덕길 스탠드에서 만나자고 손가락 걸었던 그 약속!\n2004년 연도의 마지막 \'일의 자리\' 숫자가 [네 번째 비밀번호]다!\n\n(💡 힌트: 2004년의 일의 자리 ➔ 네 번째 자리: 4)'
+      }
+    ];
+
+    const c = CLUE_STORIES[clueIndex - 1] || CLUE_STORIES[0];
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show(c.title, c.text, c.icon);
+    } else {
+      alert(`[${c.title}]\n\n${c.text}`);
+    }
+
+    if (isFirstFind) {
+      const foundCount = this.playerData.timeCapsuleClues.filter(Boolean).length;
+      this.showToast(`💡 [타임캡슐 단서 ${foundCount}/4] 발견! (단서 수첩에 기록되었습니다)`, 'success');
+    }
+  }
+
+  handleTimeCapsuleInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    if (!this.playerData.timeCapsuleClues) {
+      this.playerData.timeCapsuleClues = [false, false, false, false];
+    }
+
+    // 이미 타임캡슐을 열었다면 바로 개봉 편지 & 롤링페이퍼 모달 오픈
+    if (this.playerData.hasOpenedTimeCapsule) {
+      this.openTimeCapsuleOpenedModal();
+      return;
+    }
+
+    // 아직 자물쇠를 풀지 않았다면 다이얼 자물쇠 모달 오픈
+    this.openTimeCapsuleLockModal();
+  }
+
+  openTimeCapsuleLockModal() {
+    const modal = document.getElementById('modal-time-capsule-lock');
+    if (!modal) return;
+
+    const clueBadges = [
+      document.getElementById('capsule-clue-badge-1'),
+      document.getElementById('capsule-clue-badge-2'),
+      document.getElementById('capsule-clue-badge-3'),
+      document.getElementById('capsule-clue-badge-4')
+    ];
+
+    const clueTexts = ['1번: 골 수 (3)', '2번: 학급 (5)', '3번: 십의자리 (0)', '4번: 일의자리 (4)'];
+    clueBadges.forEach((b, idx) => {
+      if (!b) return;
+      const isFound = !!(this.playerData.timeCapsuleClues && this.playerData.timeCapsuleClues[idx]);
+      if (isFound) {
+        b.style.borderColor = '#10b981';
+        b.style.background = 'rgba(16, 185, 129, 0.2)';
+        b.style.color = '#34d399';
+        b.innerHTML = '✅ ' + clueTexts[idx];
+      } else {
+        b.style.borderColor = '#475569';
+        b.style.background = 'rgba(30, 41, 59, 0.5)';
+        b.style.color = '#94a3b8';
+        b.innerHTML = '🔒 단서 ' + (idx + 1) + '번 미발견';
+      }
+    });
+
+    const dials = [0, 0, 0, 0];
+    const dialEls = [
+      document.getElementById('capsule-dial-1'),
+      document.getElementById('capsule-dial-2'),
+      document.getElementById('capsule-dial-3'),
+      document.getElementById('capsule-dial-4')
+    ];
+
+    dialEls.forEach((el, idx) => {
+      if (el) el.innerText = dials[idx];
+    });
+
+    const bindDialBtn = (btnId, dialIdx, delta) => {
+      const btn = document.getElementById(btnId);
+      if (btn && !btn._bound) {
+        btn._bound = true;
+        btn.addEventListener('click', () => {
+          if (window.AudioManager && window.AudioManager.playSelect) window.AudioManager.playSelect();
+          dials[dialIdx] = (dials[dialIdx] + delta + 10) % 10;
+          if (dialEls[dialIdx]) dialEls[dialIdx].innerText = dials[dialIdx];
+        });
+      }
+    };
+
+    bindDialBtn('btn-capsule-up-1', 0, 1);
+    bindDialBtn('btn-capsule-dn-1', 0, -1);
+    bindDialBtn('btn-capsule-up-2', 1, 1);
+    bindDialBtn('btn-capsule-dn-2', 1, -1);
+    bindDialBtn('btn-capsule-up-3', 2, 1);
+    bindDialBtn('btn-capsule-dn-3', 2, -1);
+    bindDialBtn('btn-capsule-up-4', 3, 1);
+    bindDialBtn('btn-capsule-dn-4', 3, -1);
+
+    const btnCloseX = document.getElementById('btn-close-capsule-lock-x');
+    if (btnCloseX && !btnCloseX._bound) {
+      btnCloseX._bound = true;
+      btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    const btnUnlock = document.getElementById('btn-capsule-unlock');
+    if (btnUnlock && !btnUnlock._bound) {
+      btnUnlock._bound = true;
+      btnUnlock.addEventListener('click', () => {
+        // 정답 비밀번호: 3 - 5 - 0 - 4
+        if (dials[0] === 3 && dials[1] === 5 && dials[2] === 0 && dials[3] === 4) {
+          modal.classList.add('hidden');
+          this.claimTimeCapsuleSuccess();
+        } else {
+          if (window.AudioManager && window.AudioManager.playWrong) window.AudioManager.playWrong();
+          const lockCard = modal.querySelector('.modal-card');
+          if (lockCard) {
+            lockCard.classList.add('shake-anim');
+            setTimeout(() => lockCard.classList.remove('shake-anim'), 400);
+          }
+          this.showToast('⚠️ 자물쇠가 열리지 않습니다! 번호를 다시 확인해보세요. (힌트: 3-5-0-4)', 'error');
+        }
+      });
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  claimTimeCapsuleSuccess() {
+    this.playerData.hasOpenedTimeCapsule = true;
+
+    if (!this.playerData.titles) this.playerData.titles = [];
+    const tId = 'title_time_connector';
+    const tName = '🕰️ 시간을 잇는 자';
+    if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
+    if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
+
+    // 유물 장비: 선배의 낡은 승리 완장 (장신구 / 올스탯 +3)
+    this.addItem('equip_vintage_armband', '선배의 낡은 승리 완장', 1, '🎗️', {
+      type: 'equipment',
+      slot: 'accessory',
+      stats: { atk: 3, def: 3, hp: 3 },
+      effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3, 체력 +3'
+    });
+
+    // 골드 & 경험치 보상
+    this.addGold(100);
+    this.addExp(100);
+    this.saveProgress();
+
+    if (typeof this.renderTitles === 'function') this.renderTitles();
+    if (window.AudioManager && window.AudioManager.playFanfare) {
+      window.AudioManager.playFanfare();
+    }
+
+    this.showToast('🎉 [2004년 타임캡슐] 해금 성공! [🕰️ 시간을 잇는 자] 칭호와 유물 완장을 획득했습니다!', 'success');
+    this.openTimeCapsuleOpenedModal(true);
+  }
+
+  openTimeCapsuleOpenedModal(isJustUnlocked = false) {
+    const modal = document.getElementById('modal-time-capsule-open');
+    if (!modal) return;
+
+    const btnCloseX = document.getElementById('btn-close-capsule-open-x');
+    const btnCloseBottom = document.getElementById('btn-close-capsule-open-bottom');
+
+    if (btnCloseX && !btnCloseX._bound) {
+      btnCloseX._bound = true;
+      btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (btnCloseBottom && !btnCloseBottom._bound) {
+      btnCloseBottom._bound = true;
+      btnCloseBottom.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    this.renderCapsuleGuestbook();
+
+    const btnSubmit = document.getElementById('btn-submit-capsule-msg');
+    const inputMsg = document.getElementById('input-capsule-msg');
+    if (btnSubmit && !btnSubmit._bound) {
+      btnSubmit._bound = true;
+      btnSubmit.addEventListener('click', () => {
+        const text = (inputMsg && inputMsg.value.trim()) || '';
+        if (!text) {
+          this.showToast('후배들에게 남길 메시지를 입력해주세요!', 'warning');
+          return;
+        }
+
+        const authorName = (this.playerData && this.playerData.name) || '숭실 후배';
+        let notes = [];
+        try {
+          notes = JSON.parse(localStorage.getItem('soongsil_capsule_notes') || '[]');
+        } catch(e) {}
+
+        notes.unshift({
+          author: authorName,
+          date: new Date().toLocaleDateString('ko-KR'),
+          text: text
+        });
+
+        try {
+          localStorage.setItem('soongsil_capsule_notes', JSON.stringify(notes.slice(0, 30)));
+        } catch(e) {}
+
+        if (inputMsg) inputMsg.value = '';
+        if (window.AudioManager && window.AudioManager.playSelect) window.AudioManager.playSelect();
+        this.showToast('💌 타임캡슐에 당신의 따뜻한 편지가 보관되었습니다!', 'success');
+        this.renderCapsuleGuestbook();
+      });
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  renderCapsuleGuestbook() {
+    const listEl = document.getElementById('capsule-notes-list');
+    if (!listEl) return;
+
+    let notes = [];
+    try {
+      notes = JSON.parse(localStorage.getItem('soongsil_capsule_notes') || '[]');
+    } catch(e) {}
+
+    const defaultNotes = [
+      { author: '2004년 3-5 반장 민호', date: '2004.10.15', text: '우리가 묻은 이 편지를 20년 뒤 누군가 읽는다면... 숭실의 교정은 여전히 푸르고 활기차겠지?' },
+      { author: '2004년 3-5 등번호 10번 성진', date: '2004.10.15', text: '결승골 넣고 스탠드로 뛰어올라가 다 같이 얼싸안았던 순간을 평생 잊지 못할 거야. 후배들아 사랑한다!' },
+      { author: '2004년 3-5 정훈', date: '2004.10.15', text: '선생님들 말씀 잘 듣고, 친구들이랑 좋은 추억 많이 만들어라 후배들아! 숭실 파이팅!' }
+    ];
+
+    const allNotes = [...notes, ...defaultNotes];
+    listEl.innerHTML = '';
+
+    allNotes.forEach(n => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background: rgba(30, 41, 59, 0.7); border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; text-align: left;';
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <span style="font-weight: 800; font-size: 13px; color: #93c5fd;">✉️ ${n.author}</span>
+          <span style="font-size: 11px; color: #94a3b8;">${n.date}</span>
+        </div>
+        <div style="font-size: 13px; color: #f8fafc; line-height: 1.45;">${n.text}</div>
+      `;
+      listEl.appendChild(card);
+    });
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  
+
   window.MainApp = new MainApp();
 });
+
 
 if (typeof window !== 'undefined') {
   window.MainAppClass = MainApp;

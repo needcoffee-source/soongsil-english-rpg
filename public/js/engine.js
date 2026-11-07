@@ -1215,6 +1215,34 @@ class GameEngine {
             }
           }
         }
+        // 2-G. 2004 Time Capsule & 4 Bleacher Clues
+        if (pg.timeCapsule) {
+          const tcDist = Math.hypot((pg.timeCapsule.x + 0.5) * 32 - this.player.x, (pg.timeCapsule.y + 0.5) * 32 - this.player.y);
+          if (tcDist < 64 && tcDist < minDist) {
+            closest = {
+              type: 'time_capsule',
+              data: pg.timeCapsule,
+              name: pg.timeCapsule.name || '🕰️ [2004년] 선배들의 비밀 타임캡슐',
+              prompt: pg.timeCapsule.prompt || '타임캡슐 조사 (SPACE)'
+            };
+            minDist = tcDist;
+          }
+        }
+        for (let i = 1; i <= 4; i++) {
+          const clue = pg['capsuleClue' + i];
+          if (clue) {
+            const clDist = Math.hypot((clue.x + 0.5) * 32 - this.player.x, (clue.y + 0.5) * 32 - this.player.y);
+            if (clDist < 64 && clDist < minDist) {
+              closest = {
+                type: 'capsule_clue',
+                data: clue,
+                name: clue.name || ('📜 [단서 ' + i + '] 스탠드 쪽지'),
+                prompt: clue.prompt || '단서 쪽지 읽기 (SPACE)'
+              };
+              minDist = clDist;
+            }
+          }
+        }
         // 2-F. Library Missing Book on Playground Bleachers
         if (pg.libraryBook) {
           if (!window.MainApp || typeof window.MainApp.isQuestLibBookPgCollected !== 'function' || !window.MainApp.isQuestLibBookPgCollected()) {
@@ -1620,6 +1648,39 @@ class GameEngine {
                   data: pg.sketchbook,
                   name: pg.sketchbook.name || '🎨 김진믜의 풍경화 스케치북',
                   prompt: pg.sketchbook.prompt || '스케치북 회수하기 (SPACE)'
+                };
+              }
+            }
+          }
+        }
+        if (pg.timeCapsule) {
+          const tcX = (pg.timeCapsule.x + 0.5) * 32;
+          const tcY = (pg.timeCapsule.y + 0.5) * 32;
+          if (Math.hypot(tcX - x, tcY - y) < 48) {
+            const dist = Math.hypot(tcX - this.player.x, tcY - this.player.y);
+            if (dist < 72) {
+              return {
+                type: 'time_capsule',
+                data: pg.timeCapsule,
+                name: pg.timeCapsule.name || '🕰️ [2004년] 선배들의 비밀 타임캡슐',
+                prompt: pg.timeCapsule.prompt || '타임캡슐 조사 (SPACE)'
+              };
+            }
+          }
+        }
+        for (let i = 1; i <= 4; i++) {
+          const clue = pg['capsuleClue' + i];
+          if (clue) {
+            const clX = (clue.x + 0.5) * 32;
+            const clY = (clue.y + 0.5) * 32;
+            if (Math.hypot(clX - x, clY - y) < 48) {
+              const dist = Math.hypot(clX - this.player.x, clY - this.player.y);
+              if (dist < 72) {
+                return {
+                  type: 'capsule_clue',
+                  data: clue,
+                  name: clue.name || ('📜 [단서 ' + i + '] 스탠드 쪽지'),
+                  prompt: clue.prompt || '단서 쪽지 읽기 (SPACE)'
                 };
               }
             }
@@ -5963,6 +6024,20 @@ class GameEngine {
       if (!window.MainApp || typeof window.MainApp.isQuestLibBookPgCollected !== 'function' || !window.MainApp.isQuestLibBookPgCollected()) {
         const pgBook = WORLD_DATA.playground.libraryBook;
         this.drawQuestLibraryBook(pgBook.x * 32, pgBook.y * 32, 'blue');
+      }
+    }
+
+    // 10-D. 2004 Secret Time Capsule (스탠드 틈새: x: 27, y: 7)
+    if (WORLD_DATA.playground && WORLD_DATA.playground.timeCapsule) {
+      const tc = WORLD_DATA.playground.timeCapsule;
+      this.drawHighResTimeCapsule(tc.x * 32 + 16, tc.y * 32 + 16);
+    }
+
+    // 10-E. 4 Bleacher Clue Notes (x: 10, 21, 33, 44, y: 9)
+    for (let i = 1; i <= 4; i++) {
+      const clue = WORLD_DATA.playground && WORLD_DATA.playground['capsuleClue' + i];
+      if (clue) {
+        this.drawHighResCapsuleNote(clue.x * 32 + 16, clue.y * 32 + 16, i, clue.name);
       }
     }
 
@@ -14381,6 +14456,172 @@ class GameEngine {
     ctx.restore();
   }
 
+
+  drawHighResTimeCapsule(cx, cy) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const t = Date.now() / 1000;
+    const pulse = Math.sin(t * 3) * 0.15 + 0.85;
+
+    // Outer soft glow
+    const glowGrad = ctx.createRadialGradient(cx, cy, 6, cx, cy, 28);
+    glowGrad.addColorStop(0, 'rgba(245, 158, 11, ' + (0.4 * pulse) + ')');
+    glowGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 28, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Shadow underneath
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 12, 16, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Capsule Body (Horizontal Heavy Antique Brass Capsule)
+    const capW = 28;
+    const capH = 16;
+    const rx = cx - capW / 2;
+    const ry = cy - capH / 2 + 2;
+
+    // Body Gradient
+    const bodyGrad = ctx.createLinearGradient(rx, ry, rx, ry + capH);
+    bodyGrad.addColorStop(0, '#fef08a');
+    bodyGrad.addColorStop(0.3, '#d97706');
+    bodyGrad.addColorStop(0.7, '#b45309');
+    bodyGrad.addColorStop(1, '#78350f');
+
+    ctx.fillStyle = bodyGrad;
+    ctx.strokeStyle = '#451a03';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(rx, ry, capW, capH, [8, 8, 8, 8]);
+    ctx.fill();
+    ctx.stroke();
+
+    // Metallic reinforcement steel straps & rivets
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(rx + 6, ry, 3, capH);
+    ctx.fillRect(rx + capW - 9, ry, 3, capH);
+
+    // Rivets
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.arc(rx + 7.5, ry + 3, 1, 0, Math.PI * 2);
+    ctx.arc(rx + 7.5, ry + capH - 3, 1, 0, Math.PI * 2);
+    ctx.arc(rx + capW - 7.5, ry + 3, 1, 0, Math.PI * 2);
+    ctx.arc(rx + capW - 7.5, ry + capH - 3, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Center Padlock & Plate
+    ctx.fillStyle = '#334155';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Antique Dial Lock Shackle
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 3, 3.5, Math.PI, 0, false);
+    ctx.stroke();
+
+    // Dial Lock Golden Body
+    ctx.fillStyle = '#f59e0b';
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(cx - 4, cy - 1, 8, 8, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // 2004 Inscribed year text
+    ctx.font = 'bold 9px sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText('2004', cx, ry - 3);
+
+    // Sparkles
+    const spX = cx + Math.cos(t * 2) * 12;
+    const spY = cy + Math.sin(t * 2) * 7;
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(spX, spY, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  drawHighResCapsuleNote(cx, cy, index, name) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const t = Date.now() / 1000;
+    const bob = Math.sin(t * 2.5 + index * 1.2) * 2;
+    const drawY = cy + bob;
+
+    // Small shadow on bleacher wood
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 10, 10, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Note paper background (Antique folded parchment)
+    const pW = 18;
+    const pH = 20;
+    const px = cx - pW / 2;
+    const py = drawY - pH / 2;
+
+    const paperGrad = ctx.createLinearGradient(px, py, px + pW, py + pH);
+    paperGrad.addColorStop(0, '#fef9c3');
+    paperGrad.addColorStop(0.7, '#fef08a');
+    paperGrad.addColorStop(1, '#fde047');
+
+    ctx.fillStyle = paperGrad;
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.roundRect(px, py, pW, pH, 3);
+    ctx.fill();
+    ctx.stroke();
+
+    // Dog-eared corner fold
+    ctx.fillStyle = '#ca8a04';
+    ctx.beginPath();
+    ctx.moveTo(px + pW - 5, py);
+    ctx.lineTo(px + pW, py + 5);
+    ctx.lineTo(px + pW - 5, py + 5);
+    ctx.closePath();
+    ctx.fill();
+
+    // Clue Index Badge (1, 2, 3, 4)
+    ctx.font = 'bold 9px sans-serif';
+    ctx.fillStyle = '#b45309';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('#' + index, cx, drawY - 2);
+
+    // Decorative clue lines
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(px + 4, drawY + 4);
+    ctx.lineTo(px + pW - 4, drawY + 4);
+    ctx.moveTo(px + 4, drawY + 7);
+    ctx.lineTo(px + pW - 6, drawY + 7);
+    ctx.stroke();
+
+    // Sparkle
+    const spX = cx + Math.sin(t * 3 + index) * 8;
+    const spY = drawY - 9 + Math.cos(t * 3 + index) * 4;
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath();
+    ctx.arc(spX, spY, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
 }
 
 if (typeof window !== 'undefined') window.GameEngine = GameEngine;
