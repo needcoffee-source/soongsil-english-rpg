@@ -1801,6 +1801,12 @@ class MainApp {
       this.handleJuncheolDeskInteraction();
     } else if (target.type === 'desk_sangdae') {
       this.handleSangdaeDeskInteraction();
+    } else if (target.type === 'desk_hangangwoo') {
+      this.handleHangangwooDeskInteraction();
+    } else if (target.type === 'desk_career_counsel_1') {
+      this.handleCareerCounsel1Interaction();
+    } else if (target.type === 'desk_career_counsel_2') {
+      this.handleCareerCounsel2Interaction();
     } else if (target.type === 'desk_kyungsuk') {
       this.handleKyungsukDeskInteraction();
     } else if (target.type === 'desk_hunihuni') {
@@ -7632,17 +7638,7 @@ class MainApp {
       this.updateHpBar();
       this.showLevelUpBanner(this.playerData.level);
 
-      // 신규 교사 퀘스트 해금 알림
-      if (typeof QUEST_DEFINITIONS !== 'undefined') {
-        const curLvl = this.playerData.level;
-        const newlyUnlocked = Object.values(QUEST_DEFINITIONS).filter(q => q && q.minLevel === curLvl);
-        if (newlyUnlocked.length > 0) {
-          const names = newlyUnlocked.map(q => `[${q.teacherName}]`).join(', ');
-          setTimeout(() => {
-            this.showToast(`🎉 Lv.${curLvl} 달성! ${names}의 새로운 의뢰가 해금되었습니다!`, 'success');
-          }, 1200);
-        }
-      }
+
     }
 
     this.saveProgress();
@@ -9641,6 +9637,60 @@ class MainApp {
   // 👑 6층 교무실 갓준철 선생님 연구 책상 (26번 좌석) 인터랙션 시스템
   // =========================================================================
   // 📐 6층 교무실 30번 좌석 이상대 수학선생님 연구석 인터랙션
+  // 📖 6층 교무실 29번 좌석 한강우 국어선생님 연구석 인터랙션
+  // 💬 5층 진로상담실 [1:1 상담실 1] 진로 심층 상담석 인터랙션
+  handleCareerCounsel1Interaction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '💬 [1:1 상담실 1] 진로 심층 상담석',
+        '조용하고 아늑한 1:1 진로 심층 상담 공간입니다.\n\n' +
+        '상담 테이블 위에 학생들의 진로 흥미 검사 결과지, 맞춤형 진로 로드맵 파일철, 은은한 스탠드 조명이 켜져 있습니다.\n\n' +
+        '📝 [상담 노트]\n"한 사람 한 사람의 소중한 꿈과 가능성을 깊이 있게 마주하는 따뜻한 공간입니다."',
+        '🌟'
+      );
+    } else {
+      alert('💬 [1:1 상담실 1] 진로 심층 상담석\n\n조용하고 아늑한 1:1 진로 심층 상담 공간입니다.\n맞춤형 진로 로드맵 파일철과 은은한 스탠드가 켜져 있습니다.');
+    }
+  }
+
+  // 💬 5층 진로상담실 [1:1 상담실 2] 학습·진학 코칭석 인터랙션
+  handleCareerCounsel2Interaction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '💬 [1:1 상담실 2] 학습·진학 코칭석',
+        '차분하게 자신만의 비전을 설계하는 1:1 학습·진학 코칭 공간입니다.\n\n' +
+        '테이블 위에 자기주도학습 플래너, 고교 진학 탐색 가이드북, 따뜻한 차 한 잔이 놓여 있습니다.\n\n' +
+        '📝 [코칭 포스트잇]\n"포기하지 않고 걸어가는 모든 걸음이 너의 찬란한 미래가 될 거야!"',
+        '🌟'
+      );
+    } else {
+      alert('💬 [1:1 상담실 2] 학습·진학 코칭석\n\n차분하게 자신만의 비전을 설계하는 1:1 학습·진학 코칭 공간입니다.\n자기주도학습 플래너와 진학 가이드북이 정돈되어 있습니다.');
+    }
+  }
+
+  handleHangangwooDeskInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '📖 한강우 선생님 연구석',
+        '국어를 가르치시는 한강우 선생님의 자리입니다.\n\n' +
+        '책상 위에 정갈한 훈민정음 격자 원고지와 클래식 만년필, 단아한 벼루와 세필 붓, 그리고 두꺼운 국어 교재와 현대 문학 전집이 가지런히 정돈되어 있습니다.\n\n' +
+        '📝 [모니터 포스트잇]\n"말과 글은 그 사람의 얼과 품격을 담는 그릇이다. 아름다운 우리말을 사랑하고 가꾸자. (국어 한강우)"',
+        '👨‍🏫'
+      );
+    } else {
+      alert('📖 [한강우 선생님 연구석]\n\n국어를 가르치시는 한강우 선생님의 자리입니다.\n책상 위에 원고지와 만년필, 벼루와 붓, 국어 교재가 가지런히 정돈되어 있습니다.');
+    }
+  }
+
   handleSangdaeDeskInteraction() {
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();

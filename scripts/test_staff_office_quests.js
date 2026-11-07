@@ -97,8 +97,8 @@ const crCareer = w.classroom_career;
 assert(crCareer, 'classroom_career must exist');
 const guidebook = crCareer.interactive && crCareer.interactive.find(i => i.id === 'quest_career_guidebook');
 assert(guidebook, 'Career guidebook must exist in classroom_career');
-assert.strictEqual(guidebook.x, 48, 'Guidebook must be at consultation desk x=48');
-assert.strictEqual(guidebook.y, 12, 'Guidebook must be at consultation desk y=12');
+assert.strictEqual(guidebook.x, 18, 'Guidebook must be at consultation desk x=48');
+assert.strictEqual(guidebook.y, 14, 'Guidebook must be at consultation desk y=12');
 const mentorDesk = crCareer.interactive.find(i => i.id === 'career_clue_5');
 assert(Math.hypot(guidebook.x - mentorDesk.x, guidebook.y - mentorDesk.y) >= 5, 'Guidebook must be well separated from mentoring desk');
 console.log('✔ 9. Career guidebook on consultation desk in 5F career room (x: 48, y: 12) verified');
@@ -169,4 +169,16 @@ assert(mainCode.includes("id: 'quest_kwimjinsyong_career',\n    minLevel: 7"), '
 assert(mainCode.includes("id: 'quest_okchohan_social',\n    minLevel: 9"), 'Ok Cho-han quest must require Lv.9');
 console.log('✔ 16. Teacher quest level requirements (1 - 3 - 4 - 5 - 7 - 9) verified');
 
-console.log('\n=== ALL 5 STAFF OFFICE TEACHER TESTS PASSED SUCCESSFULLY! ===');
+// 8. Check Seat 29 Han Kang-woo Korean Teacher desk in world.js, main.js, and engine.js
+const hangangwooDesk = office.interactive.find(i => i.id === 'desk_teacher_hangangwoo');
+assert(hangangwooDesk, 'Han Kang-woo desk must exist in classroom_staff_office.interactive');
+assert.strictEqual(hangangwooDesk.x, 88);
+assert.strictEqual(hangangwooDesk.y, 19.5);
+assert(mainCode.includes('handleHangangwooDeskInteraction'), 'main.js must define handleHangangwooDeskInteraction');
+assert(mainCode.includes('desk_hangangwoo'), 'main.js must handle desk_hangangwoo routing');
+const engineCode = fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8');
+assert(engineCode.includes('isHangangwooDesk'), 'engine.js must define isHangangwooDesk');
+assert(engineCode.includes('📖 한강우'), 'engine.js must display 📖 한강우 nameplate');
+console.log('✔ 17. Seat 29 Han Kang-woo (Korean Teacher) desk decoration & interaction verified');
+
+console.log('\n=== ALL STAFF OFFICE TEACHER & DESK TESTS PASSED SUCCESSFULLY! ===');

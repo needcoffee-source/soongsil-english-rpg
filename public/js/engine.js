@@ -3103,6 +3103,238 @@ class GameEngine {
     this.drawCareerBlackboardBanner(clues, solvedCount, hasEscaped);
   }
 
+  // =========================================================================
+  // 💬 5층 진로상담실 우측: 1:1 상담실 1 & 1:1 상담실 2 렌더러
+  // =========================================================================
+  renderCareerCounselingRooms() {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 1. 방 바닥 전용 프리미엄 카펫
+    // 1:1 상담실 1 카펫 (x: 33.5..44.5, y: 4.5..13.5) - 따뜻한 세이지 민트
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
+    ctx.fillRect(33.5 * 32, 4.5 * 32, 11 * 32, 9 * 32);
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(33.5 * 32, 4.5 * 32, 11 * 32, 9 * 32);
+
+    // 1:1 상담실 2 카펫 (x: 45.5..57.5, y: 4.5..13.5) - 포근한 웜 피치
+    ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
+    ctx.fillRect(45.5 * 32, 4.5 * 32, 12 * 32, 9 * 32);
+    ctx.strokeStyle = '#e11d48';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(45.5 * 32, 4.5 * 32, 12 * 32, 9 * 32);
+
+    // 2. 출입구 웰컴 레드/그린 러너
+    // 상담실 1 도어 러너 (x: 38..40, y: 13.5..14.5)
+    ctx.fillStyle = 'rgba(6, 95, 70, 0.65)';
+    ctx.fillRect(38 * 32, 13.5 * 32, 3 * 32, 1 * 32);
+    // 상담실 2 도어 러너 (x: 50..52, y: 13.5..14.5)
+    ctx.fillStyle = 'rgba(136, 19, 55, 0.65)';
+    ctx.fillRect(50 * 32, 13.5 * 32, 3 * 32, 1 * 32);
+
+    // 3. 파티션 벽체 (원목 프레임 + 불투명 안개유리창)
+    // 북쪽 벽체 (y: 4, x: 33..58)
+    this.drawCareerPartitionWall(33, 4, 58, 4);
+    // 서쪽 벽체 (x: 33, y: 4..14)
+    this.drawCareerPartitionWall(33, 4, 33, 14);
+    // 중앙 분리벽 (x: 45, y: 4..14)
+    this.drawCareerPartitionWall(45, 4, 45, 14);
+    // 동쪽 벽체 (x: 58, y: 4..14)
+    this.drawCareerPartitionWall(58, 4, 58, 14);
+    // 남쪽 벽체 1 (y: 14, x: 33..37 및 41..45)
+    this.drawCareerPartitionWall(33, 14, 37, 14);
+    this.drawCareerPartitionWall(41, 14, 45, 14);
+    // 남쪽 벽체 2 (y: 14, x: 45..49 및 53..58)
+    this.drawCareerPartitionWall(45, 14, 49, 14);
+    this.drawCareerPartitionWall(53, 14, 58, 14);
+
+    // 4. [1:1 상담실 1] 내부 가구 및 인터랙션 테이블
+    this.drawCareerCounselDesk1(39 * 32, 8 * 32);
+
+    // 5. [1:1 상담실 2] 내부 가구 및 인터랙션 테이블
+    this.drawCareerCounselDesk2(51 * 32, 8 * 32);
+
+    // 6. 도어 상단 방 명패 현판 (실 이름표)
+    this.drawSharpLabel(39.5 * 32, 14 * 32 - 12, '💬 1:1 상담실 1', {
+      bgColor: 'rgba(6, 78, 59, 0.95)',
+      borderColor: '#34d399',
+      textColor: '#ecfdf5',
+      fontSize: 11.5,
+      paddingX: 10,
+      height: 22
+    });
+
+    this.drawSharpLabel(51.5 * 32, 14 * 32 - 12, '💬 1:1 상담실 2', {
+      bgColor: 'rgba(136, 19, 55, 0.95)',
+      borderColor: '#fda4af',
+      textColor: '#fff1f2',
+      fontSize: 11.5,
+      paddingX: 10,
+      height: 22
+    });
+
+    ctx.restore();
+  }
+
+  // 방음 파티션 벽체 렌더링 헬퍼
+  drawCareerPartitionWall(x1, y1, x2, y2) {
+    const ctx = this.ctx;
+    const px1 = x1 * 32;
+    const py1 = y1 * 32;
+    const px2 = x2 * 32;
+    const py2 = y2 * 32;
+
+    const minX = Math.min(px1, px2);
+    const maxX = Math.max(px1, px2);
+    const minY = Math.min(py1, py2);
+    const maxY = Math.max(py1, py2);
+
+    const isHoriz = (y1 === y2);
+    const thick = 8;
+
+    ctx.fillStyle = '#451a03'; // 다크 월넛 원목
+    if (isHoriz) {
+      ctx.fillRect(minX, minY - thick / 2, (maxX - minX) + 32, thick);
+      ctx.fillStyle = 'rgba(226, 232, 240, 0.55)'; // 안개 유리창
+      ctx.fillRect(minX + 4, minY - thick / 2 + 2, (maxX - minX) + 24, thick - 4);
+    } else {
+      ctx.fillRect(minX - thick / 2, minY, thick, (maxY - minY) + 32);
+      ctx.fillStyle = 'rgba(226, 232, 240, 0.55)';
+      ctx.fillRect(minX - thick / 2 + 2, minY + 4, thick - 4, (maxY - minY) + 24);
+    }
+  }
+
+  // [1:1 상담실 1] 원형 상담 테이블 & 의자 & 소품 렌더링
+  drawCareerCounselDesk1(cx, cy) {
+    const ctx = this.ctx;
+
+    // 북쪽 상담 교사용 원목 암체어
+    ctx.fillStyle = '#1e3a8a';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 22, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#60a5fa';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 남쪽 학생용 패브릭 체어
+    ctx.fillStyle = '#065f46';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 22, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#34d399';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 원형 상담 테이블 상판
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.beginPath();
+    ctx.arc(cx + 2, cy + 3, 24, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#78350f'; // 원목 브라운
+    ctx.beginPath();
+    ctx.arc(cx, cy, 23, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#9a3412';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 21, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 테이블 위 소품: 진로 상담 파일철 (하늘색)
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(cx - 12, cy - 8, 12, 16);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cx - 10, cy - 6, 8, 12);
+
+    // 따뜻한 앰버 스탠드 조명 (골드 갓)
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(cx + 10, cy - 5, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.4)';
+    ctx.beginPath();
+    ctx.arc(cx + 10, cy - 5, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 미니 다육이 화분
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(cx + 8, cy + 6, 6, 6);
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.arc(cx + 11, cy + 6, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // [1:1 상담실 2] 타원형 코칭 테이블 & 의자 & 소품 렌더링
+  drawCareerCounselDesk2(cx, cy) {
+    const ctx = this.ctx;
+
+    // 북쪽 코칭 교사용 가죽 체어
+    ctx.fillStyle = '#4c0519';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 22, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fb7185';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 남쪽 학생용 체어
+    ctx.fillStyle = '#831843';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 22, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f472b6';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 타원형 코칭 테이블 상판
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(cx + 2, cy + 3, 26, 18, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#451a03';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 25, 17, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#581c87';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 23, 15, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#e9d5ff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 테이블 위 소품: 자기주도학습 플래너 (보라색)
+    ctx.fillStyle = '#9333ea';
+    ctx.fillRect(cx - 14, cy - 6, 12, 14);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cx - 12, cy - 4, 8, 10);
+
+    // 따뜻한 차 찻잔과 모락모락 김
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx + 8, cy - 4, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.arc(cx + 8, cy - 4, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 탁상 비전 캘린더 (우측 하단)
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(cx + 4, cy + 4, 10, 8);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.strokeRect(cx + 4, cy + 4, 10, 8);
+  }
+
   // Clue 1: Medical / Aptitude PC Desk
   drawCareerStationPC(px, py) {
     this.ctx.fillStyle = '#0f172a';
@@ -6637,7 +6869,7 @@ class GameEngine {
         } else if (q && q.status === 'in_progress' && !q.guidebookCollected) {
           this.drawFloatingQuestMarker(px + 16, py - 18, 'in_progress');
         }
-      } else if (npc.questId) {
+      } else if (npc.questId && npc.id !== 'npc_librarian') {
         const qStatus = (window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
           ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
           : 'available';
@@ -11616,6 +11848,28 @@ class GameEngine {
     this.ctx.fillRect(px, py, 32, 32);
   }
 
+  isCareerRoomWall(tileX, tileY) {
+    // 5층 진로상담실 우측 1:1 상담실 1 (x: 33..45, y: 4..14) & 1:1 상담실 2 (x: 45..58, y: 4..14)
+    // 1. 북쪽 벽 (y: 4, x: 33..58)
+    if (tileY === 4 && tileX >= 33 && tileX <= 58) return true;
+    // 2. 서쪽 벽 (x: 33, y: 4..14)
+    if (tileX === 33 && tileY >= 4 && tileY <= 14) return true;
+    // 3. 중앙 분리벽 (x: 45, y: 4..14)
+    if (tileX === 45 && tileY >= 4 && tileY <= 14) return true;
+    // 4. 동쪽 벽 (x: 58, y: 4..14)
+    if (tileX === 58 && tileY >= 4 && tileY <= 14) return true;
+    // 5. 남쪽 벽 (y: 14) - 출입구는 통행 가능
+    if (tileY === 14) {
+      // 상담실 1 출입구 (38..40 passable)
+      if ((tileX >= 33 && tileX <= 37) || (tileX >= 41 && tileX <= 45)) return true;
+      // 상담실 2 출입구 (50..52 passable)
+      if ((tileX >= 45 && tileX <= 49) || (tileX >= 53 && tileX <= 58)) return true;
+    }
+    // 6. 1:1 상담 테이블 장애물 (중앙 테이블 판정)
+    if (tileY === 8 && ((tileX >= 38 && tileX <= 40) || (tileX >= 50 && tileX <= 52))) return true;
+    return false;
+  }
+
   isStaffOfficeWall(tx, ty) {
     const L = this.getStaffOfficeLayout();
 
@@ -12591,6 +12845,7 @@ class GameEngine {
     const isKyungsukDesk = (label === '23');
     const isHunihuniDesk = (label === '27');
     const isVicePrincipalDesk = (label === '14');
+    const isHangangwooDesk = (label === '29');
     const now = Date.now();
 
     // 0. 제작자 갓준철 연구석: 황금빛 펄스 후광 글로우 (바닥 조명 및 배경 아우라)
@@ -12602,6 +12857,9 @@ class GameEngine {
     if (facing === 'right') {
       if (isHunihuniDesk) {
         this.drawStaffOfficeChair(px - 10, py + h / 2, 'right', '#450a0a', '#ef4444');
+      } else if (isHangangwooDesk) {
+        // 한강우 국어선생님: 기품 있는 짙은 밤나무 원목 의자 (#291508) & 차분한 딥그린 패브릭 (#065f46)
+        this.drawStaffOfficeChair(px - 10, py + h / 2, 'right', '#291508', '#065f46');
       } else {
         this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
       }
@@ -12817,6 +13075,89 @@ class GameEngine {
           ctx.fillRect(px + 37, py + h - 17, 3, 5);
           ctx.fillStyle = '#e2e8f0';
           ctx.fillRect(px + 43, py + h - 18, 2, 7);
+        } else if (isHangangwooDesk) {
+          // [29번 한강우 국어선생님 전용 데스크 소품]
+          // 1. 모니터 (우측) - 훈민정음 서문 & 한글 맞춤법 화면
+          ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
+          ctx.fillStyle = '#065f46';
+          ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
+          ctx.fillStyle = '#fef08a';
+          ctx.fillRect(px + w - 16, py + h / 2 - 8, 2, 4);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(px + w - 16, py + h / 2 - 2, 2, 5);
+          ctx.fillStyle = '#fde047';
+          ctx.fillRect(px + w - 16, py + h / 2 + 5, 2, 3);
+
+          // 2. 📜 훈민정음 원고지 (좌측 상단 - 초록색 격자 원고지 & 만년필)
+          ctx.fillStyle = '#fefce8';
+          ctx.fillRect(px + 7, py + 7, 16, 18);
+          ctx.strokeStyle = '#86efac';
+          ctx.lineWidth = 0.8;
+          ctx.strokeRect(px + 7, py + 7, 16, 18);
+          ctx.fillStyle = 'rgba(34, 197, 94, 0.4)';
+          ctx.fillRect(px + 9, py + 10, 12, 1.5);
+          ctx.fillRect(px + 9, py + 14, 12, 1.5);
+          ctx.fillRect(px + 9, py + 18, 12, 1.5);
+          // ✒️ 클래식 만년필 (금색 펜촉 & 흑단 바디)
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(px + 18, py + 8, 2, 14);
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath();
+          ctx.moveTo(px + 19, py + 22);
+          ctx.lineTo(px + 20.5, py + 24.5);
+          ctx.lineTo(px + 17.5, py + 24.5);
+          ctx.closePath();
+          ctx.fill();
+
+          // 3. 🖌️ 전통 서예 벼루 & 먹 & 세필 붓 (좌측 하단)
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(px + 8, py + h - 22, 11, 14);
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(px + 8, py + h - 22, 11, 14);
+          ctx.fillStyle = '#020617';
+          ctx.fillRect(px + 10, py + h - 20, 7, 7);
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(px + 10, py + h - 11, 7, 2);
+          ctx.strokeStyle = '#78350f';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(px + 21, py + h - 8);
+          ctx.lineTo(px + 24, py + h - 23);
+          ctx.stroke();
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillRect(px + 23.5, py + h - 25, 2, 2.5);
+          ctx.fillStyle = '#020617';
+          ctx.fillRect(px + 23.5, py + h - 26, 2, 1.5);
+
+          // 4. 📚 두꺼운 한국 현대문학 전집 & 시집 더미 (중앙 상단)
+          ctx.fillStyle = '#4c0519';
+          ctx.fillRect(px + 25, py + 9, 13, 14);
+          ctx.fillStyle = '#9f1239';
+          ctx.fillRect(px + 27, py + 10, 10, 12);
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(px + 26, py + 11, 11, 11);
+          ctx.fillStyle = '#b45309';
+          ctx.fillRect(px + 28, py + 12, 8, 9);
+          ctx.fillStyle = '#fbbf24';
+          ctx.fillRect(px + 26.5, py + 13, 1.5, 6);
+
+          // 5. 🍵 단아한 청자 다도 찻잔 (녹차 & 모락모락 김) (중앙 하단)
+          ctx.fillStyle = '#065f46';
+          ctx.beginPath();
+          ctx.arc(px + 33, py + h - 13, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.fillStyle = '#a7f3d0';
+          ctx.beginPath();
+          ctx.arc(px + 33, py + h - 13, 3, 0, Math.PI * 2);
+          ctx.fill();
+          const teaSteam = (Date.now() / 280) % 5;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.fillRect(px + 32, py + h - 20 - teaSteam, 1.5, 1.5);
+          ctx.fillRect(px + 34, py + h - 22 - ((teaSteam + 2) % 5), 1.5, 1.5);
         } else {
           ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
           ctx.fillStyle = '#38bdf8';
@@ -13026,6 +13367,21 @@ class GameEngine {
         ctx.lineWidth = 1.5;
         ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
         ctx.fillStyle = '#fef08a';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isHangangwooDesk) {
+        // 📖 한강우 전용 명패 (국어)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '📖 한강우';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#a7f3d0';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);

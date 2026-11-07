@@ -312,7 +312,7 @@ assert(recycleTitle && recycleTitle.name === '♻️ 분리수거왕', 'title_re
 const crCareer = WORLD_DATA.classroom_career;
 const guidebook = crCareer.interactive.find(i => i.id === 'quest_career_guidebook');
 const mentorDesk = crCareer.interactive.find(i => i.id === 'career_clue_5');
-assert(guidebook.x === 48 && guidebook.y === 12, 'Career guidebook moved to (48, 12)');
+assert(guidebook.x === 18 && guidebook.y === 14, 'Career guidebook moved to (48, 12)');
 assert(Math.hypot(guidebook.x - mentorDesk.x, guidebook.y - mentorDesk.y) >= 5, 'Career guidebook separated from mentoring desk (>= 5 tiles)');
 
 const engineSrc = fs.readFileSync('public/js/engine.js', 'utf8');

@@ -176,16 +176,20 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
-      { id: "quest_career_guidebook", type: "quest_career_book", x: 48, y: 12, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
-      { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 10, y: 7, name: "🏥 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 20, y: 7, name: "🔬 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 15, y: 12, name: "💻 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 40, y: 12, name: "🎨 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 45, y: 7, name: "🤝 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 52, y: 7, name: "🔭 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
-      { id: "career_clue_7", type: "career_clue", clueIndex: 7, isDecoy: true, letter: "P", x: 23, y: 12, name: "💼 골동품 서류가방 (미지의 단서)", prompt: "단서 조사 (SPACE)" },
+      // === 좌측: 진로 방탈출 6대 단서 & 퀘스트 안내서 ===
+      { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 6, y: 6, name: "🏥 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 14, y: 6, name: "🔬 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 22, y: 6, name: "🤝 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_3", type: "career_clue", clueIndex: 3, letter: "E", x: 6, y: 10, name: "💻 공학 작업대 (IT/기술)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 14, y: 10, name: "🎨 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 22, y: 10, name: "🔭 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
+      { id: "career_clue_7", type: "career_clue", clueIndex: 7, isDecoy: true, letter: "P", x: 10, y: 14, name: "💼 골동품 서류가방 (미지의 단서)", prompt: "단서 조사 (SPACE)" },
+      { id: "quest_career_guidebook", type: "quest_career_book", x: 18, y: 14, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
       { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 6, name: "🔐 진로실 탈출 도어락", prompt: "탈출 도어락 조작 (SPACE)" },
-      { id: "note_developer_career", type: "dev_note_2", x: 4, y: 16, name: "📜 떨어진 개발자노트 (제2편)", prompt: "개발자노트 2편 읽기 (SPACE)" }
+      { id: "note_developer_career", type: "dev_note_2", x: 4, y: 16, name: "📜 떨어진 개발자노트 (제2편)", prompt: "개발자노트 2편 읽기 (SPACE)" },
+      // === 우측: 1:1 상담실 1 & 1:1 상담실 2 전용 상담석 ===
+      { id: "desk_career_counsel_1", type: "desk_career_counsel_1", x: 39, y: 8, name: "💬 [1:1 상담실 1] 진로 심층 상담석", prompt: "1:1 심층 상담석 살펴보기 (SPACE)" },
+      { id: "desk_career_counsel_2", type: "desk_career_counsel_2", x: 51, y: 8, name: "💬 [1:1 상담실 2] 학습·진학 코칭석", prompt: "1:1 코칭 상담석 살펴보기 (SPACE)" }
     ]
   },
 
@@ -419,6 +423,7 @@ const WORLD_DATA = {
       { id: "quest_okchohan_textbook", type: "quest_okchohan_book", x: 42, y: 8, name: "📘 옥촣한의 사회 탐구 교재", prompt: "사회 교재 회수하기 (SPACE)" },
       { id: "desk_developer_juncheol", type: "desk_juncheol", x: 91, y: 15, name: "👑 갓준철의 연구 책상", prompt: "갓준철 선생님 책상 (SPACE)" },
       { id: "desk_teacher_sangdae", type: "desk_sangdae", x: 90, y: 19.5, name: "📐 이상대 선생님 연구석", prompt: "수학 연구석 살펴보기 (SPACE)" },
+      { id: "desk_teacher_hangangwoo", type: "desk_hangangwoo", x: 88, y: 19.5, name: "📖 한강우 선생님 연구석", prompt: "국어 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_kyungsuk", type: "desk_kyungsuk", x: 75, y: 17.5, name: "🧪 졍경슉 선생님 연구석", prompt: "과학 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_hunihuni", type: "desk_hunihuni", x: 88, y: 17.5, name: "🥁 후니후니 선생님 연구석", prompt: "도덕 연구석 살펴보기 (SPACE)" },
       { id: "quest_library_book_office", type: "quest_library_book_of", x: 73, y: 17.5, name: "📗 [대출도서] 교무실에 꽂혀있던 과학 잡지", prompt: "과학 잡지 회수하기 (SPACE)" }
