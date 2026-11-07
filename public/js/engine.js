@@ -3110,53 +3110,32 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
 
-    // 1. 방 바닥 전용 프리미엄 카펫
-    // 1:1 상담실 1 카펫 (x: 33.5..44.5, y: 4.5..13.5) - 따뜻한 세이지 민트
+    // ========================================================
+    // [1:1 상담실 1 - 상단 세로 배치 (x: 36..57, y: 4..9)]
+    // ========================================================
+    // 1-A. 바닥 프리미엄 카펫 (세이지 민트)
     ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
-    ctx.fillRect(33.5 * 32, 4.5 * 32, 11 * 32, 9 * 32);
+    ctx.fillRect(36.5 * 32, 4.5 * 32, 20.5 * 32, 4.5 * 32);
     ctx.strokeStyle = '#059669';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(33.5 * 32, 4.5 * 32, 11 * 32, 9 * 32);
+    ctx.strokeRect(36.5 * 32, 4.5 * 32, 20.5 * 32, 4.5 * 32);
 
-    // 1:1 상담실 2 카펫 (x: 45.5..57.5, y: 4.5..13.5) - 포근한 웜 피치
-    ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
-    ctx.fillRect(45.5 * 32, 4.5 * 32, 12 * 32, 9 * 32);
-    ctx.strokeStyle = '#e11d48';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(45.5 * 32, 4.5 * 32, 12 * 32, 9 * 32);
+    // 1-B. 출입구 웰컴 러너 (x: 45..47, y: 8.8..9.8)
+    ctx.fillStyle = 'rgba(6, 95, 70, 0.7)';
+    ctx.fillRect(45 * 32, 8.8 * 32, 3 * 32, 1 * 32);
 
-    // 2. 출입구 웰컴 레드/그린 러너
-    // 상담실 1 도어 러너 (x: 38..40, y: 13.5..14.5)
-    ctx.fillStyle = 'rgba(6, 95, 70, 0.65)';
-    ctx.fillRect(38 * 32, 13.5 * 32, 3 * 32, 1 * 32);
-    // 상담실 2 도어 러너 (x: 50..52, y: 13.5..14.5)
-    ctx.fillStyle = 'rgba(136, 19, 55, 0.65)';
-    ctx.fillRect(50 * 32, 13.5 * 32, 3 * 32, 1 * 32);
+    // 1-C. 파티션 벽체 (북쪽, 서쪽, 동쪽, 남쪽 출입문 분리)
+    this.drawCareerPartitionWall(36, 4, 57, 4);  // 북쪽 벽체
+    this.drawCareerPartitionWall(36, 4, 36, 9);  // 서쪽 벽체
+    this.drawCareerPartitionWall(57, 4, 57, 9);  // 동쪽 벽체
+    this.drawCareerPartitionWall(36, 9, 44, 9);  // 남쪽 좌벽
+    this.drawCareerPartitionWall(48, 9, 57, 9);  // 남쪽 우벽
 
-    // 3. 파티션 벽체 (원목 프레임 + 불투명 안개유리창)
-    // 북쪽 벽체 (y: 4, x: 33..58)
-    this.drawCareerPartitionWall(33, 4, 58, 4);
-    // 서쪽 벽체 (x: 33, y: 4..14)
-    this.drawCareerPartitionWall(33, 4, 33, 14);
-    // 중앙 분리벽 (x: 45, y: 4..14)
-    this.drawCareerPartitionWall(45, 4, 45, 14);
-    // 동쪽 벽체 (x: 58, y: 4..14)
-    this.drawCareerPartitionWall(58, 4, 58, 14);
-    // 남쪽 벽체 1 (y: 14, x: 33..37 및 41..45)
-    this.drawCareerPartitionWall(33, 14, 37, 14);
-    this.drawCareerPartitionWall(41, 14, 45, 14);
-    // 남쪽 벽체 2 (y: 14, x: 45..49 및 53..58)
-    this.drawCareerPartitionWall(45, 14, 49, 14);
-    this.drawCareerPartitionWall(53, 14, 58, 14);
+    // 1-D. 내부 가구 및 원형 상담 테이블 (x: 46*32+16, y: 6*32+16)
+    this.drawCareerCounselDesk1(46 * 32 + 16, 6 * 32 + 16);
 
-    // 4. [1:1 상담실 1] 내부 가구 및 인터랙션 테이블
-    this.drawCareerCounselDesk1(39 * 32, 8 * 32);
-
-    // 5. [1:1 상담실 2] 내부 가구 및 인터랙션 테이블
-    this.drawCareerCounselDesk2(51 * 32, 8 * 32);
-
-    // 6. 도어 상단 방 명패 현판 (실 이름표)
-    this.drawSharpLabel(39.5 * 32, 14 * 32 - 12, '💬 1:1 상담실 1', {
+    // 1-E. 도어 명패 현판
+    this.drawSharpLabel(46.5 * 32, 9 * 32 + 18, '💬 1:1 상담실 1', {
       bgColor: 'rgba(6, 78, 59, 0.95)',
       borderColor: '#34d399',
       textColor: '#ecfdf5',
@@ -3165,7 +3144,32 @@ class GameEngine {
       height: 22
     });
 
-    this.drawSharpLabel(51.5 * 32, 14 * 32 - 12, '💬 1:1 상담실 2', {
+    // ========================================================
+    // [1:1 상담실 2 - 하단 세로 배치 (x: 36..57, y: 11..16)]
+    // ========================================================
+    // 2-A. 바닥 프리미엄 카펫 (포근한 웜 피치)
+    ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
+    ctx.fillRect(36.5 * 32, 11.5 * 32, 20.5 * 32, 4.5 * 32);
+    ctx.strokeStyle = '#e11d48';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(36.5 * 32, 11.5 * 32, 20.5 * 32, 4.5 * 32);
+
+    // 2-B. 출입구 웰컴 러너 (x: 45..47, y: 15.8..16.8)
+    ctx.fillStyle = 'rgba(136, 19, 55, 0.7)';
+    ctx.fillRect(45 * 32, 15.8 * 32, 3 * 32, 1 * 32);
+
+    // 2-C. 파티션 벽체 (북쪽, 서쪽, 동쪽, 남쪽 출입문 분리)
+    this.drawCareerPartitionWall(36, 11, 57, 11); // 북쪽 벽체
+    this.drawCareerPartitionWall(36, 11, 36, 16); // 서쪽 벽체
+    this.drawCareerPartitionWall(57, 11, 57, 16); // 동쪽 벽체
+    this.drawCareerPartitionWall(36, 16, 44, 16); // 남쪽 좌벽
+    this.drawCareerPartitionWall(48, 16, 57, 16); // 남쪽 우벽
+
+    // 2-D. 내부 가구 및 타원 코칭 테이블 (x: 46*32+16, y: 13*32+16)
+    this.drawCareerCounselDesk2(46 * 32 + 16, 13 * 32 + 16);
+
+    // 2-E. 도어 명패 현판
+    this.drawSharpLabel(46.5 * 32, 16 * 32 + 18, '💬 1:1 상담실 2', {
       bgColor: 'rgba(136, 19, 55, 0.95)',
       borderColor: '#fda4af',
       textColor: '#fff1f2',
@@ -11849,24 +11853,31 @@ class GameEngine {
   }
 
   isCareerRoomWall(tileX, tileY) {
-    // 5층 진로상담실 우측 1:1 상담실 1 (x: 33..45, y: 4..14) & 1:1 상담실 2 (x: 45..58, y: 4..14)
-    // 1. 북쪽 벽 (y: 4, x: 33..58)
-    if (tileY === 4 && tileX >= 33 && tileX <= 58) return true;
-    // 2. 서쪽 벽 (x: 33, y: 4..14)
-    if (tileX === 33 && tileY >= 4 && tileY <= 14) return true;
-    // 3. 중앙 분리벽 (x: 45, y: 4..14)
-    if (tileX === 45 && tileY >= 4 && tileY <= 14) return true;
-    // 4. 동쪽 벽 (x: 58, y: 4..14)
-    if (tileX === 58 && tileY >= 4 && tileY <= 14) return true;
-    // 5. 남쪽 벽 (y: 14) - 출입구는 통행 가능
-    if (tileY === 14) {
-      // 상담실 1 출입구 (38..40 passable)
-      if ((tileX >= 33 && tileX <= 37) || (tileX >= 41 && tileX <= 45)) return true;
-      // 상담실 2 출입구 (50..52 passable)
-      if ((tileX >= 45 && tileX <= 49) || (tileX >= 53 && tileX <= 58)) return true;
-    }
-    // 6. 1:1 상담 테이블 장애물 (중앙 테이블 판정)
-    if (tileY === 8 && ((tileX >= 38 && tileX <= 40) || (tileX >= 50 && tileX <= 52))) return true;
+    // 5층 진로상담실 우측: 세로 배치 (상단: 1:1 상담실 1 / 하단: 1:1 상담실 2)
+    // [1:1 상담실 1 - 상단 (x: 36..57, y: 4..9)]
+    // 1-A. 북쪽 벽 (y: 4, x: 36..57)
+    if (tileY === 4 && tileX >= 36 && tileX <= 57) return true;
+    // 1-B. 서쪽 벽 (x: 36, y: 4..9)
+    if (tileX === 36 && tileY >= 4 && tileY <= 9) return true;
+    // 1-C. 동쪽 벽 (x: 57, y: 4..9)
+    if (tileX === 57 && tileY >= 4 && tileY <= 9) return true;
+    // 1-D. 남쪽 벽 (y: 9, x: 36..44 및 48..57, 출입문: 45..47 통행 가능)
+    if (tileY === 9 && ((tileX >= 36 && tileX <= 44) || (tileX >= 48 && tileX <= 57))) return true;
+    // 1-E. 상담 테이블 1 충돌 판정 (x: 45..47, y: 6)
+    if (tileY === 6 && tileX >= 45 && tileX <= 47) return true;
+
+    // [1:1 상담실 2 - 하단 (x: 36..57, y: 11..16)]
+    // 2-A. 북쪽 벽 (y: 11, x: 36..57)
+    if (tileY === 11 && tileX >= 36 && tileX <= 57) return true;
+    // 2-B. 서쪽 벽 (x: 36, y: 11..16)
+    if (tileX === 36 && tileY >= 11 && tileY <= 16) return true;
+    // 2-C. 동쪽 벽 (x: 57, y: 11..16)
+    if (tileX === 57 && tileY >= 11 && tileY <= 16) return true;
+    // 2-D. 남쪽 벽 (y: 16, x: 36..44 및 48..57, 출입문: 45..47 통행 가능)
+    if (tileY === 16 && ((tileX >= 36 && tileX <= 44) || (tileX >= 48 && tileX <= 57))) return true;
+    // 2-E. 코칭 테이블 2 충돌 판정 (x: 45..47, y: 13)
+    if (tileY === 13 && tileX >= 45 && tileX <= 47) return true;
+
     return false;
   }
 
@@ -13088,76 +13099,45 @@ class GameEngine {
           ctx.fillStyle = '#fde047';
           ctx.fillRect(px + w - 16, py + h / 2 + 5, 2, 3);
 
-          // 2. 📜 훈민정음 원고지 (좌측 상단 - 초록색 격자 원고지 & 만년필)
-          ctx.fillStyle = '#fefce8';
-          ctx.fillRect(px + 7, py + 7, 16, 18);
-          ctx.strokeStyle = '#86efac';
-          ctx.lineWidth = 0.8;
-          ctx.strokeRect(px + 7, py + 7, 16, 18);
-          ctx.fillStyle = 'rgba(34, 197, 94, 0.4)';
-          ctx.fillRect(px + 9, py + 10, 12, 1.5);
-          ctx.fillRect(px + 9, py + 14, 12, 1.5);
-          ctx.fillRect(px + 9, py + 18, 12, 1.5);
-          // ✒️ 클래식 만년필 (금색 펜촉 & 흑단 바디)
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(px + 18, py + 8, 2, 14);
-          ctx.fillStyle = '#fbbf24';
-          ctx.beginPath();
-          ctx.moveTo(px + 19, py + 22);
-          ctx.lineTo(px + 20.5, py + 24.5);
-          ctx.lineTo(px + 17.5, py + 24.5);
-          ctx.closePath();
-          ctx.fill();
-
-          // 3. 🖌️ 전통 서예 벼루 & 먹 & 세필 붓 (좌측 하단)
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(px + 8, py + h - 22, 11, 14);
-          ctx.strokeStyle = '#334155';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(px + 8, py + h - 22, 11, 14);
-          ctx.fillStyle = '#020617';
-          ctx.fillRect(px + 10, py + h - 20, 7, 7);
-          ctx.fillStyle = '#1e293b';
-          ctx.fillRect(px + 10, py + h - 11, 7, 2);
-          ctx.strokeStyle = '#78350f';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(px + 21, py + h - 8);
-          ctx.lineTo(px + 24, py + h - 23);
-          ctx.stroke();
-          ctx.fillStyle = '#f8fafc';
-          ctx.fillRect(px + 23.5, py + h - 25, 2, 2.5);
-          ctx.fillStyle = '#020617';
-          ctx.fillRect(px + 23.5, py + h - 26, 2, 1.5);
-
-          // 4. 📚 두꺼운 한국 현대문학 전집 & 시집 더미 (중앙 상단)
+          // 2. 📚 두꺼운 한국 현대문학 전집 & 양장본 시집 더미 (좌측 상단)
           ctx.fillStyle = '#4c0519';
-          ctx.fillRect(px + 25, py + 9, 13, 14);
+          ctx.fillRect(px + 8, py + 8, 16, 18);
           ctx.fillStyle = '#9f1239';
-          ctx.fillRect(px + 27, py + 10, 10, 12);
+          ctx.fillRect(px + 10, py + 9, 12, 16);
           ctx.fillStyle = '#78350f';
-          ctx.fillRect(px + 26, py + 11, 11, 11);
+          ctx.fillRect(px + 9, py + 11, 14, 13);
           ctx.fillStyle = '#b45309';
-          ctx.fillRect(px + 28, py + 12, 8, 9);
+          ctx.fillRect(px + 11, py + 12, 10, 11);
           ctx.fillStyle = '#fbbf24';
-          ctx.fillRect(px + 26.5, py + 13, 1.5, 6);
+          ctx.fillRect(px + 9.5, py + 13, 2, 7);
 
-          // 5. 🍵 단아한 청자 다도 찻잔 (녹차 & 모락모락 김) (중앙 하단)
+          // 3. 📄 국어 학습 유인물 및 채점 시험지 (좌측 하단)
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillRect(px + 8, py + h - 22, 16, 14);
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 0.8;
+          ctx.strokeRect(px + 8, py + h - 22, 16, 14);
+          // 빨간 채점 펜
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(px + 11, py + h - 18, 10, 2);
+          ctx.fillRect(px + 13, py + h - 13, 7, 2);
+
+          // 4. 🍵 단아한 청자 다도 찻잔 (녹차 & 모락모락 김) (중앙 하단)
           ctx.fillStyle = '#065f46';
           ctx.beginPath();
-          ctx.arc(px + 33, py + h - 13, 5, 0, Math.PI * 2);
+          ctx.arc(px + 32, py + h - 13, 5, 0, Math.PI * 2);
           ctx.fill();
           ctx.strokeStyle = '#34d399';
           ctx.lineWidth = 1;
           ctx.stroke();
           ctx.fillStyle = '#a7f3d0';
           ctx.beginPath();
-          ctx.arc(px + 33, py + h - 13, 3, 0, Math.PI * 2);
+          ctx.arc(px + 32, py + h - 13, 3, 0, Math.PI * 2);
           ctx.fill();
           const teaSteam = (Date.now() / 280) % 5;
           ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-          ctx.fillRect(px + 32, py + h - 20 - teaSteam, 1.5, 1.5);
-          ctx.fillRect(px + 34, py + h - 22 - ((teaSteam + 2) % 5), 1.5, 1.5);
+          ctx.fillRect(px + 31, py + h - 20 - teaSteam, 1.5, 1.5);
+          ctx.fillRect(px + 33, py + h - 22 - ((teaSteam + 2) % 5), 1.5, 1.5);
         } else {
           ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
           ctx.fillStyle = '#38bdf8';

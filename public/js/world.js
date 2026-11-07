@@ -188,8 +188,8 @@ const WORLD_DATA = {
       { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 6, name: "🔐 진로실 탈출 도어락", prompt: "탈출 도어락 조작 (SPACE)" },
       { id: "note_developer_career", type: "dev_note_2", x: 4, y: 16, name: "📜 떨어진 개발자노트 (제2편)", prompt: "개발자노트 2편 읽기 (SPACE)" },
       // === 우측: 1:1 상담실 1 & 1:1 상담실 2 전용 상담석 ===
-      { id: "desk_career_counsel_1", type: "desk_career_counsel_1", x: 39, y: 8, name: "💬 [1:1 상담실 1] 진로 심층 상담석", prompt: "1:1 심층 상담석 살펴보기 (SPACE)" },
-      { id: "desk_career_counsel_2", type: "desk_career_counsel_2", x: 51, y: 8, name: "💬 [1:1 상담실 2] 학습·진학 코칭석", prompt: "1:1 코칭 상담석 살펴보기 (SPACE)" }
+      { id: "desk_career_counsel_1", type: "desk_career_counsel_1", x: 46, y: 6, name: "💬 [1:1 상담실 1] 진로 심층 상담석", prompt: "1:1 심층 상담석 살펴보기 (SPACE)" },
+      { id: "desk_career_counsel_2", type: "desk_career_counsel_2", x: 46, y: 13, name: "💬 [1:1 상담실 2] 학습·진학 코칭석", prompt: "1:1 코칭 상담석 살펴보기 (SPACE)" }
     ]
   },
 
