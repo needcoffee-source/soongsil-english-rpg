@@ -503,8 +503,8 @@ class GameEngine {
           if (!isDoor) return true;
         }
       }
-      // 6층 디벗 수리함 & 분리수거 철제 쓰레기통 장애물 충돌 판정
-      if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || tileX === 14)) {
+      // 6층 디벗 수리함 & 분리수거함 장애물 충돌 판정 (가로 4배: 타일 14~18)
+      if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || (tileX >= 14 && tileX <= 18))) {
         return true;
       }
     } else {
@@ -941,7 +941,13 @@ class GameEngine {
         if (floorData.interactive) {
           for (const obj of floorData.interactive) {
             if (obj.noInteract || !obj.prompt) continue;
-            const dist = Math.hypot(obj.x * 32 - this.player.x, obj.y * 32 - this.player.y);
+            let dist;
+            if (obj.type === 'recycle_bin') {
+              const clampedX = Math.max(obj.x * 32, Math.min(this.player.x, (obj.x + 4.5) * 32));
+              dist = Math.hypot(clampedX - this.player.x, (obj.y + 0.5) * 32 - this.player.y);
+            } else {
+              dist = Math.hypot(obj.x * 32 - this.player.x, obj.y * 32 - this.player.y);
+            }
             if (dist < minDist) {
               if (obj.type === 'plant_zone') {
                 const goal = this.getNextPlantWaterGoal();
@@ -1539,6 +1545,12 @@ class GameEngine {
         }
         for (const obj of (floorData.interactive || [])) {
           if (obj.noInteract || !obj.prompt) continue;
+          if (obj.type === 'recycle_bin') {
+            if (x >= obj.x * 32 - 10 && x <= obj.x * 32 + 175 && Math.abs(y - (obj.y + 0.5) * 32) < 36) {
+              return { type: obj.type, data: obj };
+            }
+            continue;
+          }
           if (Math.hypot(obj.x * 32 - x, obj.y * 32 - y) < 32) return { type: obj.type, data: obj };
         }
         if (floorData.elevator && Math.hypot(floorData.elevator.x * 32 - x, (floorData.elevator.y + 1.5) * 32 - y) < 48) {
@@ -8119,116 +8131,144 @@ class GameEngine {
     this.ctx.restore();
   }
 
-  // High-Res Recycle Bin Station (6층 복도 철제 분리수거함)
+  // High-Res Recycle Bin Station (6층 복도 분리수거함 - 가로 4배 대형 4구 분리배출 스테이션)
   drawHighResRecycleBin(px, py) {
     this.ctx.save();
 
-    const w = 42;
+    const w = 168; // 가로 4배 확장 (42 -> 168)
     const h = 46;
-    const bx = px - 5;
+    const bx = px - 4;
     const by = py - 14;
 
-    // 1. Soft Floor Shadow
+    // 1. 바닥 넓은 부드러운 그림자
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     this.ctx.beginPath();
-    this.ctx.ellipse(px + 16, by + h + 2, 22, 6, 0, 0, Math.PI * 2);
+    this.ctx.ellipse(bx + w / 2, by + h + 2, w / 2 + 6, 7, 0, 0, Math.PI * 2);
     this.ctx.fill();
 
-    // 2. Heavy-duty Rubber & Steel Base Feet
-    this.ctx.fillStyle = '#0f172a';
-    this.ctx.fillRect(bx + 4, by + h - 2, 6, 4);
-    this.ctx.fillRect(bx + w - 10, by + h - 2, 6, 4);
-    this.ctx.fillStyle = '#334155';
-    this.ctx.fillRect(bx + 4, by + h, 6, 2);
-    this.ctx.fillRect(bx + w - 10, by + h, 6, 2);
+    // 2. 바닥 고무 & 스틸 지지대 다리 (4개 구역 균등 배치)
+    const legPositions = [bx + 8, bx + 50, bx + 104, bx + w - 16];
+    for (const lx of legPositions) {
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillRect(lx, by + h - 2, 8, 4);
+      this.ctx.fillStyle = '#334155';
+      this.ctx.fillRect(lx, by + h, 8, 2);
+    }
 
-    // 3. Brushed Stainless Steel Body
+    // 3. 메인 스테인리스 스틸 캐비닛 몸체 (수평 와이드 브러시드 메탈 그라데이션)
     const metalGrad = this.ctx.createLinearGradient(bx, by, bx + w, by);
     metalGrad.addColorStop(0, '#64748b');
-    metalGrad.addColorStop(0.15, '#94a3b8');
-    metalGrad.addColorStop(0.5, '#e2e8f0');
-    metalGrad.addColorStop(0.85, '#94a3b8');
+    metalGrad.addColorStop(0.12, '#94a3b8');
+    metalGrad.addColorStop(0.28, '#cbd5e1');
+    metalGrad.addColorStop(0.5, '#f1f5f9');
+    metalGrad.addColorStop(0.72, '#cbd5e1');
+    metalGrad.addColorStop(0.88, '#94a3b8');
     metalGrad.addColorStop(1, '#475569');
 
     this.ctx.fillStyle = metalGrad;
     this.ctx.beginPath();
     if (typeof this.ctx.roundRect === 'function') {
-      this.ctx.roundRect(bx, by, w, h - 2, [4, 4, 2, 2]);
+      this.ctx.roundRect(bx, by, w, h - 2, [5, 5, 2, 2]);
     } else {
       this.ctx.rect(bx, by, w, h - 2);
     }
     this.ctx.fill();
 
     this.ctx.strokeStyle = '#334155';
-    this.ctx.lineWidth = 1.2;
+    this.ctx.lineWidth = 1.4;
     this.ctx.stroke();
 
-    // 4. Hooded Intake Bevel
-    this.ctx.fillStyle = '#1e293b';
-    this.ctx.fillRect(bx + 2, by + 2, w - 4, 14);
-    this.ctx.strokeStyle = '#475569';
-    this.ctx.lineWidth = 0.8;
-    this.ctx.strokeRect(bx + 2, by + 2, w - 4, 14);
-
-    // 5. 4 Distinct Sorting Slots (CAN, PET, PAPER, TRASH)
-    const slotW = 7;
-    const slotH = 8;
-    const startX = bx + 4;
-    const slotGap = 2;
-    const slots = [
-      { ring: '#38bdf8', label: '캔' },
-      { ring: '#4ade80', label: '페트' },
-      { ring: '#fbbf24', label: '종이' },
-      { ring: '#94a3b8', label: '일반' }
-    ];
-
-    for (let i = 0; i < slots.length; i++) {
-      const sx = startX + i * (slotW + slotGap);
-      const sy = by + 5;
-      const s = slots[i];
-
-      this.ctx.fillStyle = '#090d16';
-      this.ctx.fillRect(sx, sy, slotW, slotH);
-
-      this.ctx.strokeStyle = s.ring;
-      this.ctx.lineWidth = 1;
-      this.ctx.strokeRect(sx, sy, slotW, slotH);
-
-      this.ctx.fillStyle = s.ring;
-      this.ctx.font = 'bold 5px sans-serif';
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.fillText(s.label, sx + slotW / 2, sy + slotH / 2);
-    }
-
-    // 6. Cabinet Door Divider
-    this.ctx.strokeStyle = '#64748b';
+    // 은은한 스테인리스 헤어라인 질감 라인
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     this.ctx.lineWidth = 0.8;
     this.ctx.beginPath();
-    this.ctx.moveTo(bx + w / 2, by + 18);
-    this.ctx.lineTo(bx + w / 2, by + h - 4);
+    this.ctx.moveTo(bx + 4, by + 19);
+    this.ctx.lineTo(bx + w - 4, by + 19);
     this.ctx.stroke();
 
-    // Handles
+    // 4. 상단 후드 인테이크 베벨 (어두운 투입구 상판)
     this.ctx.fillStyle = '#1e293b';
-    this.ctx.fillRect(bx + w / 2 - 4, by + 28, 2, 8);
-    this.ctx.fillRect(bx + w / 2 + 2, by + 28, 2, 8);
+    this.ctx.fillRect(bx + 2, by + 2, w - 4, 15);
+    this.ctx.strokeStyle = '#475569';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(bx + 2, by + 2, w - 4, 15);
 
-    // 7. Green Recycling Emblem (♻️)
-    this.ctx.fillStyle = '#15803d';
-    this.ctx.font = 'bold 12px sans-serif';
+    // 5. 4대 전용 분리배출 구역 (캔·병류 / 플라스틱 / 종이류 / 일반쓰레기)
+    const sectionW = (w - 8) / 4; // 160 / 4 = 40px each
+    const slots = [
+      { ring: '#38bdf8', label: '캔·병류', icon: '🥫', sub: 'CAN/BOTTLE' },
+      { ring: '#4ade80', label: '플라스틱', icon: '🥤', sub: 'PLASTIC' },
+      { ring: '#fbbf24', label: '종이류', icon: '📦', sub: 'PAPER' },
+      { ring: '#94a3b8', label: '일반쓰레기', icon: '🗑️', sub: 'TRASH' }
+    ];
+
+    for (let i = 0; i < 4; i++) {
+      const secX = bx + 4 + i * sectionW;
+      const s = slots[i];
+
+      // 상단 투입구 슬롯
+      const slotW = sectionW - 8;
+      const slotH = 9;
+      const slotX = secX + 4;
+      const slotY = by + 5;
+
+      this.ctx.fillStyle = '#090d16';
+      this.ctx.fillRect(slotX, slotY, slotW, slotH);
+
+      this.ctx.strokeStyle = s.ring;
+      this.ctx.lineWidth = 1.2;
+      this.ctx.strokeRect(slotX, slotY, slotW, slotH);
+
+      // 슬롯 내부 색상 텍스트 (한글 명칭)
+      this.ctx.fillStyle = s.ring;
+      this.ctx.font = 'bold 7px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(s.label, slotX + slotW / 2, slotY + slotH / 2);
+
+      // 하단 도어 분할 및 전면 패널 연출
+      if (i > 0) {
+        // 도어 간 세로 구분선
+        this.ctx.strokeStyle = '#475569';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(secX, by + 18);
+        this.ctx.lineTo(secX, by + h - 3);
+        this.ctx.stroke();
+      }
+
+      // 각 도어의 손잡이
+      this.ctx.fillStyle = '#1e293b';
+      this.ctx.fillRect(secX + sectionW / 2 - 5, by + 30, 2, 7);
+      this.ctx.fillRect(secX + sectionW / 2 + 3, by + 30, 2, 7);
+
+      // 각 도어 중앙 아이콘 및 엠블럼
+      this.ctx.font = '10px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(s.icon, secX + sectionW / 2, by + 24);
+
+      // 영문 서브 레이블
+      this.ctx.fillStyle = '#475569';
+      this.ctx.font = 'bold 5.5px sans-serif';
+      this.ctx.fillText(s.sub, secX + sectionW / 2, by + 39);
+    }
+
+    // 6. 중앙 상단 초록색 ♻️ 에코 마크
+    this.ctx.fillStyle = '#16a34a';
+    this.ctx.font = 'bold 13px sans-serif';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
-    this.ctx.fillText('♻️', bx + w / 2, by + 23);
+    this.ctx.fillText('♻️', bx + w / 2, by + 25);
 
-    // 8. Floating Sharp Label
-    this.drawSharpLabel(px + 16, by - 12, '♻️ 분리수거 철제 쓰레기통', {
+    // 7. 정중앙 상단 플로팅 라벨
+    this.drawSharpLabel(bx + w / 2, by - 12, '♻️ 분리수거함', {
       bgColor: 'rgba(15, 23, 42, 0.94)',
       borderColor: '#22c55e',
       textColor: '#86efac',
-      fontSize: 11.5,
-      paddingX: 8,
-      height: 20
+      fontSize: 12,
+      paddingX: 10,
+      height: 21
     });
 
     this.ctx.restore();

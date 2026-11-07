@@ -821,7 +821,7 @@ const TITLE_DEFINITIONS = [
   {
     id: 'title_recycle_king',
     name: '♻️ 분리수거왕',
-    desc: '6층 복도 철제 분리수거함에서 환경과 지구를 지키는 올바른 분리배출 퀴즈를 완벽하게 통과한 환경 지킴이!',
+    desc: '6층 복도 분리수거함에서 환경과 지구를 지키는 올바른 분리배출 퀴즈를 완벽하게 통과한 환경 지킴이!',
     costType: 'quest',
     costAmount: 0
   }
@@ -9226,7 +9226,7 @@ class MainApp {
     }
   }
 
-  // ♻️ 6층 복도 철제 분리수거함 퀴즈 시스템 (분리수거왕 칭호 획득)
+  // ♻️ 6층 복도 분리수거함 퀴즈 시스템 (분리수거왕 칭호 획득)
   handleRecycleBinInteraction() {
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();

@@ -290,14 +290,18 @@ assert(dibut && dibut.name === '📱 디벗 수리함', 'dibut_repair_box_6 name
 
 const recycleBin = f6.interactive.find(i => i.id === 'recycle_bin_6');
 assert(recycleBin && recycleBin.x === 14 && recycleBin.y === 16, 'recycle_bin_6 placed at x: 14, y: 16 where 갓준철 was standing');
+assert(recycleBin.name === '♻️ 분리수거함', 'recycle_bin_6 name is ♻️ 분리수거함');
 assert(recycleBin.type === 'recycle_bin', 'recycle_bin_6 has type recycle_bin');
 assert(recycleBin.prompt && recycleBin.prompt.includes('SPACE'), 'recycle_bin_6 has SPACE interaction prompt');
 
 engine.player.room = 'hallway';
 engine.player.floor = 6;
 assert(engine.checkCollision(14 * 32 + 16, 16 * 32 + 16) === true, 'Tile (14, 16) occupied by recycle bin is solid/blocked');
+assert(engine.checkCollision(16 * 32 + 16, 16 * 32 + 16) === true, 'Tile (16, 16) occupied by 4x wide recycle bin is solid/blocked');
+assert(engine.checkCollision(18 * 32 + 16, 16 * 32 + 16) === true, 'Tile (18, 16) occupied by 4x wide recycle bin is solid/blocked');
 assert(engine.checkCollision(8 * 32 + 16, 16 * 32 + 16) === true, 'Tile (8, 16) occupied by dibut cabinet is solid/blocked');
 assert(engine.checkCollision(14 * 32 + 16, 15 * 32 + 16) === false, 'Tile above recycle bin (14, 15) is passable');
+assert(engine.checkCollision(16 * 32 + 16, 15 * 32 + 16) === false, 'Tile above recycle bin (16, 15) is passable');
 
 assert(typeof engine.drawHighResRecycleBin === 'function', 'drawHighResRecycleBin method exists on GameEngine');
 assert(typeof app.handleRecycleBinInteraction === 'function', 'handleRecycleBinInteraction method exists on MainApp');
@@ -313,6 +317,8 @@ assert(Math.hypot(guidebook.x - mentorDesk.x, guidebook.y - mentorDesk.y) >= 5, 
 
 const engineSrc = fs.readFileSync('public/js/engine.js', 'utf8');
 assert(engineSrc.includes("npc.id === 'npc_student_worried' || (npc.name && npc.name.includes('학생'))"), 'Student NPC name label is skipped in renderNPCs');
+assert(engineSrc.includes("const w = 168;"), 'Recycle bin width expanded 4x to 168px');
+assert(engineSrc.includes("'♻️ 분리수거함'"), 'Recycle bin draw label updated to ♻️ 분리수거함');
 const indexHtmlContent = fs.readFileSync('public/index.html', 'utf8');
 assert(indexHtmlContent.includes('id="modal-recycle-quiz"'), 'index.html contains modal-recycle-quiz');
 

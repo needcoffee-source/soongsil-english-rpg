@@ -93,7 +93,7 @@ const WORLD_DATA = {
       interactive: [
         { id: "board_leaderboard_6", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
         { id: "dibut_repair_box_6", type: "dibut_repair_box", x: 8, y: 16, name: "📱 디벗 수리함", noInteract: true },
-        { id: "recycle_bin_6", type: "recycle_bin", x: 14, y: 16, name: "♻️ 분리수거 철제 쓰레기통", prompt: "분리수거 퀴즈 풀기 (SPACE)" },
+        { id: "recycle_bin_6", type: "recycle_bin", x: 14, y: 16, name: "♻️ 분리수거함", prompt: "분리수거 퀴즈 풀기 (SPACE)" },
         { id: "mirror_hallway_6", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" },
         { id: "water_purifier_hallway_6", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
