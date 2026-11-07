@@ -3860,6 +3860,32 @@ class MainApp {
       } catch (e) {}
     };
 
+    // 🗑️ 브라우저 로컬 세이브 데이터 완전 초기화 버튼 바인딩
+    const btnClearLocal = document.getElementById('btn-clear-local-data');
+    if (btnClearLocal) {
+      btnClearLocal.addEventListener('click', () => {
+        if (confirm('⚠️ 브라우저에 저장된 모든 학생 플레이 기록과 로컬 데이터를 완전히 초기화(삭제)하시겠습니까?\n\n초기화 후 페이지가 새로고침되며 깨끗한 상태로 처음부터 시작합니다.')) {
+          try {
+            const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('soongsil_'));
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            localStorage.setItem('soongsil_storage_purge_v215', 'done');
+          } catch (e) {}
+          location.reload();
+        }
+      });
+    }
+
+    // 🚀 버전 갱신에 따른 1회성 자동 로컬스토리지 정리 (학생 데이터 일괄 초기화 요청 반영)
+    try {
+      const PURGE_KEY = 'soongsil_storage_purge_v215';
+      if (!localStorage.getItem(PURGE_KEY)) {
+        const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('soongsil_'));
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        localStorage.setItem(PURGE_KEY, 'done');
+        console.log('[Storage] Automatically purged old local student data for clean v215 start.');
+      }
+    } catch (e) {}
+
     document.getElementById('btn-start-game').addEventListener('click', async () => {
       const checkFs = document.getElementById('check-auto-fullscreen');
       if (checkFs && checkFs.checked) {
@@ -5068,7 +5094,7 @@ class MainApp {
         title: '💍 장신구 2', 
         emptyIcon: isAcc2Unlocked ? '💍' : '🔒',
         isLocked: !isAcc2Unlocked,
-        lockMsg: '추후 퀘스트로 해금 예정'
+        lockMsg: '14번 교감선생님 [3대 덕목 검증] 퀘스트로 해금'
       }
     ];
 
@@ -5093,7 +5119,7 @@ class MainApp {
         `;
         card.addEventListener('click', () => {
           if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
-          alert('🔒 장신구 2번 슬롯은 현재 잠겨 있습니다.\n추후 퀘스트를 클리어하면 해금되어 착용할 수 있습니다!');
+          alert('🔒 장신구 2번 슬롯은 현재 잠겨 있습니다.\n\n6층 교무실 14번 교감선생님의 [숭실 3대 덕목 검증: 지·덕·체 모범 학생 인증] 퀘스트를 완료하면 영구 해금됩니다!');
         });
         container.appendChild(card);
         return;
