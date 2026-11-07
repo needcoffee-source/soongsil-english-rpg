@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=215">
+  <link rel="manifest" href="/manifest.json?v=216">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=215">
+  <link rel="stylesheet" href="css/style.css?v=216">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -353,8 +353,7 @@
           <span>⛶ 태블릿 전체화면으로 시작 (상단 탭/주소창 자동 숨김)</span>
         </label>
         <button id="btn-start-game" class="btn-primary" style="width:100%;">숭실 오픈월드 입장하기 🚀</button>
-        <button id="btn-clear-local-data" type="button" style="background:none; border:none; color:#f87171; font-size:11.5px; cursor:pointer; text-decoration:underline; padding:4px; margin-top:2px;">🗑️ 브라우저에 저장된 내 학생 세이브 데이터 완전 초기화</button>
-      </div>
+              </div>
     </div>
   </div>
 
@@ -2153,6 +2152,12 @@
                 <a href="/api/admin/export-progress" download="students_progress_backup.json" style="text-decoration:none; font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#065f46; color:#a7f3d0; border:1px solid #10b981; display:inline-flex; align-items:center; gap:4px;" title="누적된 모든 학생의 플레이 데이터(레벨/골드/인벤토리) JSON 파일 다운로드">
                   📥 백업 다운로드
                 </a>
+                                <button type="button" id="btn-admin-clear-device-storage" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#7f1d1d; color:#fecaca; border:1px solid #ef4444; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="현재 이 PC/브라우저에 저장된 학생 로컬스토리지 데이터를 모두 초기화합니다.">
+                  🧹 이 기기 로컬 데이터 초기화
+                </button>
+                <button type="button" id="btn-admin-wipe-all-students" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#450a0a; color:#f87171; border:1px solid #dc2626; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="서버에 저장된 전교생 세이브 데이터를 모두 삭제(일괄 초기화)합니다.">
+                  ⚠️ 전교생 데이터 전체 초기화
+                </button>
                 <button type="button" id="btn-trigger-restore-progress" style="font-size:12px; font-weight:700; padding:4px 10px; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; display:inline-flex; align-items:center; gap:4px; cursor:pointer;" title="다운로드해 둔 백업 JSON 파일로 학생 데이터 일괄 복원">
                   📤 백업 복원
                 </button>
@@ -2295,19 +2300,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=215"></script>
-  <script src="js/dialog.js?v=215"></script>
+  <script src="js/audio.js?v=216"></script>
+  <script src="js/dialog.js?v=216"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=215"></script>
-  <script src="js/engine.js?v=215"></script>
-  <script src="js/quiz.js?v=215"></script>
-  <script src="js/crafting.js?v=215"></script>
-  <script src="js/network.js?v=215"></script>
-  <script src="js/acid_rain.js?v=215"></script>
-  <script src="js/brawl_ball.js?v=215"></script>
-  <script src="js/uphill_rush.js?v=215"></script>
-  <script src="js/main.js?v=215"></script>
+  <script src="js/world.js?v=216"></script>
+  <script src="js/engine.js?v=216"></script>
+  <script src="js/quiz.js?v=216"></script>
+  <script src="js/crafting.js?v=216"></script>
+  <script src="js/network.js?v=216"></script>
+  <script src="js/acid_rain.js?v=216"></script>
+  <script src="js/brawl_ball.js?v=216"></script>
+  <script src="js/uphill_rush.js?v=216"></script>
+  <script src="js/main.js?v=216"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

@@ -494,11 +494,11 @@
       "type": "equipment",
       "slot": "accessory",
       "stats": {
-        "atk": 20,
-        "def": 12,
-        "hp": 40
+        "atk": 15,
+        "def": 10,
+        "hp": 30
       },
-      "effect": "공격력(ATK) +20, 방어력(DEF) +12, 최대체력 +40"
+      "effect": "공격력(ATK) +15, 방어력(DEF) +10, 최대체력 +30"
     }
   },
   {

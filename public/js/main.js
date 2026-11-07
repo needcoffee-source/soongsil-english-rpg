@@ -129,8 +129,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 전리품',
     tierColor: '#dc2626',
     effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
-    source: '1학년 2반 숭실 청동 드래곤 보스 격파 또는 6층 교무실 10번 옥촣한 선생님 사회 퀘스트 완료 시 획득',
-    recipe: '1-2 청동 드래곤 처치 전리품 / 사회 퀘스트'
+    source: '퀘스트',
+    recipe: '퀘스트'
   },
   {
     id: 'item_perfect_exam',
@@ -380,9 +380,10 @@ window.ITEM_CODEX_DATABASE = [
     category: 'accessory', subCategory: 'accessory',
     tierBadge: '교목 장신구',
     tierColor: '#d97706',
-    effect: '공격력 +20, 방어력 +12, 체력 +40 증가',
+    effect: '공격력 +15, 방어력 +10, 체력 +30 증가',
     source: '복도 식물존 옆 악세서리 세공대에서 제작',
-    recipe: '황금 은행잎 10개 + 50G'
+    recipe: '황금 은행잎 10개 + 50G',
+    stats: { atk: 15, def: 10, hp: 30 }
   },
   {
     id: 'equip_elevator_pass',
@@ -403,8 +404,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '유물 장신구',
     tierColor: '#f59e0b',
     effect: '공격력 +3, 방어력 +3 증가 (매각 불가)',
-    source: '야외 스탠드 2004 타임캡슐 발굴 후 14번 교감선생님께 롤링페이퍼 작성 시 수령',
-    recipe: '교감선생님 1차 퀘스트 보상',
+    source: '히든 퀘스트',
+    recipe: '히든 퀘스트 보상',
     stats: { atk: 3, def: 3 }
   },
 
@@ -539,7 +540,7 @@ const ALL_GAME_ITEMS = {
   'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
-  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
+  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 10, hp: 30 }, effect: '공격력 +15, 방어력 +10, 체력 +30' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
@@ -3860,21 +3861,6 @@ class MainApp {
       } catch (e) {}
     };
 
-    // 🗑️ 브라우저 로컬 세이브 데이터 완전 초기화 버튼 바인딩
-    const btnClearLocal = document.getElementById('btn-clear-local-data');
-    if (btnClearLocal) {
-      btnClearLocal.addEventListener('click', () => {
-        if (confirm('⚠️ 브라우저에 저장된 모든 학생 플레이 기록과 로컬 데이터를 완전히 초기화(삭제)하시겠습니까?\n\n초기화 후 페이지가 새로고침되며 깨끗한 상태로 처음부터 시작합니다.')) {
-          try {
-            const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('soongsil_'));
-            keysToRemove.forEach(k => localStorage.removeItem(k));
-            localStorage.setItem('soongsil_storage_purge_v215', 'done');
-          } catch (e) {}
-          location.reload();
-        }
-      });
-    }
-
     // 🚀 버전 갱신에 따른 1회성 자동 로컬스토리지 정리 (학생 데이터 일괄 초기화 요청 반영)
     try {
       const PURGE_KEY = 'soongsil_storage_purge_v215';
@@ -4629,6 +4615,12 @@ class MainApp {
     let bonusHp = 0;
 
     if (this.playerData.equipment) {
+      // 장신구 1, 2 동일 아이템 중복 착용 방지 안전 정리
+      if (this.playerData.equipment.accessory && this.playerData.equipment.accessory2) {
+        if (this.playerData.equipment.accessory.item === this.playerData.equipment.accessory2.item) {
+          this.playerData.equipment.accessory2 = null;
+        }
+      }
       Object.values(this.playerData.equipment).forEach(eq => {
         if (eq) {
           if (eq.item && window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[eq.item]?.meta?.stats) {
@@ -4809,6 +4801,14 @@ class MainApp {
         slot = 'accessory2';
       } else {
         slot = 'accessory';
+      }
+
+      // 동일한 장신구 중복 착용 차단 검사 (같은 장신구 2개 동시 착용 불가)
+      const otherSlot = (slot === 'accessory') ? 'accessory2' : 'accessory';
+      if (this.playerData.equipment[otherSlot] && this.playerData.equipment[otherSlot].item === itemId) {
+        if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
+        this.showToast('⚠️ 동일한 장신구는 동시에 중복 착용할 수 없습니다!', 'warning');
+        return;
       }
     } else {
       if (this.playerData.equipment[slot] && this.playerData.equipment[slot].item === itemId) {
@@ -5094,7 +5094,7 @@ class MainApp {
         title: '💍 장신구 2', 
         emptyIcon: isAcc2Unlocked ? '💍' : '🔒',
         isLocked: !isAcc2Unlocked,
-        lockMsg: '14번 교감선생님 [3대 덕목 검증] 퀘스트로 해금'
+        lockMsg: '퀘스트로 해금'
       }
     ];
 
@@ -5551,8 +5551,8 @@ class MainApp {
           this.addItem('equip_ginkgo_talisman', '합심의 황금 은행잎 부적', 1, '🍂', {
             type: 'equipment',
             slot: 'accessory',
-            stats: { atk: 20, def: 12, hp: 40 },
-            effect: '공격력 +20, 방어력 +12, 체력 +40'
+            stats: { atk: 15, def: 10, hp: 30 },
+            effect: '공격력 +15, 방어력 +10, 체력 +30'
           });
           rewardItemsList.push('🍂 합심의 황금 은행잎 부적 (1% 초특급 대박 장신구 득템!)');
         }
@@ -7261,6 +7261,53 @@ class MainApp {
           }
         } catch (e) {
           alert('저장 중 오류: ' + e.message);
+        }
+      });
+    }
+
+    // 관제탑: 이 기기 로컬 데이터 초기화
+    const btnAdminClearDevice = document.getElementById('btn-admin-clear-device-storage');
+    if (btnAdminClearDevice) {
+      btnAdminClearDevice.addEventListener('click', () => {
+        if (confirm('🧹 [이 기기 로컬 데이터 초기화]\n\n현재 이 PC/브라우저에 저장된 모든 학생 플레이 기록과 로컬 데이터를 초기화(삭제)하시겠습니까?\n\n초기화 후 브라우저가 새로고침되며 초기 상태로 시작합니다.')) {
+          try {
+            const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('soongsil_'));
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            localStorage.setItem('soongsil_storage_purge_v216', 'done');
+          } catch (e) {}
+          location.reload();
+        }
+      });
+    }
+
+    // 관제탑: 전교생 서버 데이터 일괄 초기화
+    const btnAdminWipeAll = document.getElementById('btn-admin-wipe-all-students');
+    if (btnAdminWipeAll) {
+      btnAdminWipeAll.addEventListener('click', async () => {
+        if (!confirm('⚠️ [전교생 데이터 전체 일괄 초기화 - 위험]\n\n정말로 서버에 누적 저장된 모든 학생의 플레이 데이터(레벨, 골드, 인벤토리 등)를 완전히 삭제하시겠습니까?\n\n이 작업은 절대 되돌릴 수 없습니다!')) {
+          return;
+        }
+        const confirmText = prompt('정말 전교생 데이터를 초기화하려면 확인란에 "초기화"를 정확히 입력해 주세요:');
+        if (confirmText !== '초기화') {
+          alert('초기화가 취소되었습니다.');
+          return;
+        }
+        try {
+          const res = await fetch('/api/admin/clear-all-students-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await res.json();
+          if (data && data.success) {
+            alert('✅ 서버의 전교생 플레이 데이터가 성공적으로 전체 초기화되었습니다.');
+            if (typeof this.loadSavedStudentsForEditor === 'function') {
+              this.loadSavedStudentsForEditor();
+            }
+          } else {
+            alert('전체 초기화 실패: 서버 오류');
+          }
+        } catch (e) {
+          alert('초기화 요청 중 오류: ' + e.message);
         }
       });
     }

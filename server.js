@@ -310,6 +310,28 @@ app.get('/api/admin/all-students-progress', (req, res) => {
   res.json({ success: true, students: getStudentsProgress() });
 });
 
+app.post('/api/admin/clear-all-students-progress', (req, res) => {
+  studentsProgressCache = {};
+  try {
+    fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Failed to clear students_progress.json:', e);
+  }
+  Object.values(players).forEach(p => {
+    if (!p.isTeacher) {
+      p.level = 1;
+      p.exp = 0;
+      p.gold = 10;
+      p.inventory = [];
+      p.equipment = { weapon: null, helmet: null, armor: null, shoes: null, accessory: null, accessory2: null };
+      p.isAccessory2Unlocked = false;
+      io.to(p.id).emit('student_progress_reset_by_admin', { studentId: p.studentId });
+    }
+  });
+  broadcastStudentList();
+  res.json({ success: true });
+});
+
 app.post('/api/admin/delete-student-progress', (req, res) => {
   let body = req.body;
   if (typeof body === 'string') {
@@ -646,7 +668,7 @@ const ALL_GAME_ITEMS = {
   'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
-  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 20, def: 12, hp: 40 }, effect: '공격력 +20, 방어력 +12, 체력 +40' } },
+  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 10, hp: 30 }, effect: '공격력 +15, 방어력 +10, 체력 +30' } },
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
