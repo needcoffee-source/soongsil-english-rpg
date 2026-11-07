@@ -11424,6 +11424,7 @@ class MainApp {
     if (!modal) return;
 
     const isRewardClaimed = !!(this.playerData && this.playerData.timeCapsuleRewardClaimed);
+    const isAcc2Unlocked = !!(this.playerData && this.playerData.isAccessory2Unlocked);
 
     const btnCloseX = document.getElementById('btn-close-vp-modal-x');
     const btnCloseBottom = document.getElementById('btn-close-vp-modal-bottom');
@@ -11450,6 +11451,7 @@ class MainApp {
       }
     }
 
+    this.updateVicePrincipalDialogue();
     this.renderVicePrincipalGuestbook();
     this.renderVicePrincipalVirtuesQuest();
 
@@ -11490,10 +11492,64 @@ class MainApp {
           rewardSection.style.display = 'none';
           claimedSection.style.display = 'block';
         }
+
+        // 후속 퀘스트 (3대 덕목 검증) 렌더링 및 대화문 전환
+        this.updateVicePrincipalDialogue();
+        this.renderVicePrincipalVirtuesQuest();
+        this.showToast('📜 [후속 퀘스트 오픈!] 교감선생님의 [숭실 3대 덕목 인증] 퀘스트가 해금되었습니다!', 'info');
       });
     }
 
     modal.classList.remove('hidden');
+  }
+
+  updateVicePrincipalDialogue() {
+    const dialogueEl = document.getElementById('vp-dialogue-content');
+    if (!dialogueEl) return;
+
+    const isRewardClaimed = !!(this.playerData && this.playerData.timeCapsuleRewardClaimed);
+    const isAcc2Unlocked = !!(this.playerData && this.playerData.isAccessory2Unlocked);
+
+    if (isAcc2Unlocked) {
+      dialogueEl.innerHTML = `
+        <p style="margin: 0 0 10px 0; color: #a78bfa; font-weight: 700;">
+          "허허, 어서 오게나! 지·덕·체(智·德·體)를 모두 완벽히 겸비한 우리 숭실의 진정한 모범 학생! 🌟"
+        </p>
+        <p style="margin: 0 0 10px 0;">
+          2004년 선배들의 땀이 어린 승리 완장과 함께 자네가 보여준 체력, 품성, 지혜는 후배들에게도 크나큰 귀감이 될 걸세.
+        </p>
+        <p style="margin: 0;">
+          두 개의 장신구를 당당히 착용하고, 숭실의 넓은 배움터를 종횡무진 활약하길 교감선생님이 언제나 힘차게 응원하마! 👍
+        </p>
+      `;
+    } else if (isRewardClaimed) {
+      dialogueEl.innerHTML = `
+        <p style="margin: 0 0 10px 0; color: #c4b5fd; font-weight: 700;">
+          "어서 오게나! 2004년 선배들의 뜻을 아름답게 이어받은 자랑스러운 학생이로군. 🏫"
+        </p>
+        <p style="margin: 0 0 10px 0;">
+          방금 수여한 [선배의 낡은 승리 완장]은 숭실의 긍지가 담긴 귀한 유물 장신구란다.
+          하지만 우리 학교에서는 <b>3대 덕목(지·덕·체)</b>을 몸소 증명하고 <b>레벨 10</b>에 도달한 모범 학생에게만 <b>[💍 장신구 2중 착용 자격]</b>을 정식으로 인가하고 있지!
+        </p>
+        <p style="margin: 0;">
+          체력(언덕길 등교 챌린지), 품성(분리수거 상식), 지혜(도서관 & 역사관 열람)를 모두 증명하고 나의 역사 구술 시험에 통과해보렴. 자네의 도전을 기다리마!
+        </p>
+      `;
+    } else {
+      dialogueEl.innerHTML = `
+        <p style="margin: 0 0 10px 0; color: #fef08a; font-weight: 700;">
+          "오오, 자네가 운동장 스탠드 틈새의 그 타임캡슐을 풀고 편지를 찾아냈단 말인가! 정말 감격스럽구나...!"
+        </p>
+        <p style="margin: 0 0 10px 0;">
+          2004년 그해 가을은 우리 숭실의 역사에 영원히 남을 눈부신 계절이었단다.
+          교내 축구대회 결승전 날, 스탠드가 떠나가라 울려 퍼지던 전교생의 함성과 교가 소리... 3:1로 역전승을 거두고 마지막 휘슬이 울렸을 때, 아이들과 선생님들이 서로 얼싸안고 눈물을 흘렸지!
+        </p>
+        <p style="margin: 0;">
+          졸업을 앞둔 3학년 5반 학생들이 자신들의 청춘과 승리의 기쁨, 그리고 주장의 승리 완장을 캡슐에 넣으며 <i>'20년 뒤 후배들아, 지치지 말고 힘차게 날아올라라!'</i>라고 다짐했던 그 순간이 지금도 눈앞에 선하구나.
+          자네가 20년 만에 그 약속을 이어받았어. 정말 고맙고 자랑스럽구나!
+        </p>
+      `;
+    }
   }
 
   claimTimeCapsuleFromVicePrincipal() {
@@ -11720,6 +11776,7 @@ class MainApp {
           }
 
           this.showToast('🎉 [지·덕·체 인증 성공!] 💍 장신구 2 슬롯이 영구 해금되었습니다!', 'success');
+          this.updateVicePrincipalDialogue();
           this.renderVicePrincipalVirtuesQuest();
         } else {
           if (window.AudioManager && window.AudioManager.playWrong) {

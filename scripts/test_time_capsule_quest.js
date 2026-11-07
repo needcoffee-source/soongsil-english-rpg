@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 
 console.log('========================================================');
-console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=211)');
+console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=212)');
 console.log('========================================================\n');
 
 let passed = 0;
@@ -202,10 +202,10 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
   });
 });
 
-test('Cache-buster tag v=211 is cleanly applied in index.html', () => {
+test('Cache-buster tag v=212 is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=211/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=211 tags, found ${matches}`);
+  const matches = (indexHtml.match(/v=212/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 v=212 tags, found ${matches}`);
   assert(!indexHtml.includes('v=210'), 'Found stale v=210 tag in index.html');
 });
 
