@@ -680,7 +680,7 @@ const ALL_GAME_ITEMS = {
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
-  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3 (매각 불가)' } },
+  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
 
 };
 

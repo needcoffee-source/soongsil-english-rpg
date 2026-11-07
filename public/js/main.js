@@ -403,7 +403,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'accessory', subCategory: 'accessory',
     tierBadge: '유물 장신구',
     tierColor: '#f59e0b',
-    effect: '공격력 +3, 방어력 +3 증가 (매각 불가)',
+    effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)',
     source: '히든 퀘스트',
     recipe: '히든 퀘스트 보상',
     stats: { atk: 3, def: 3 }
@@ -565,7 +565,7 @@ const ALL_GAME_ITEMS = {
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
-  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '2004년 축구 우승 선배들의 땀과 혼이 깃든 완장 · 공격력 +3, 방어력 +3 (매각 불가)' } }
+  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } }
 
 };
 
@@ -7595,6 +7595,15 @@ class MainApp {
     // 1번 구현: 도서관 '오늘의 지혜 명언' 독서 버프 (경험치 +15%)
     if ((this.playerData.readingExpBuffUntil && Date.now() < this.playerData.readingExpBuffUntil) || (this.isBuffActive && this.isBuffActive('reading_exp'))) {
       finalAmount = Math.max(1, Math.round(finalAmount * 1.15));
+    }
+
+    // 🎗️ 선배의 낡은 승리 완장 장착 효과: 폭풍 성장 부스터 (모든 획득 경험치 +10% 보너스)
+    const hasVintageArmband = this.playerData.equipment && (
+      (this.playerData.equipment.accessory && this.playerData.equipment.accessory.item === 'equip_vintage_armband') ||
+      (this.playerData.equipment.accessory2 && this.playerData.equipment.accessory2.item === 'equip_vintage_armband')
+    );
+    if (hasVintageArmband && amount > 0) {
+      finalAmount += Math.max(1, Math.round(amount * 0.10));
     }
 
     this.playerData.exp += finalAmount;

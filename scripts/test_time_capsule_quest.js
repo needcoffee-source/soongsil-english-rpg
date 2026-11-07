@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 
 console.log('========================================================');
-console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=217)');
+console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=218)');
 console.log('========================================================\n');
 
 let passed = 0;
@@ -125,6 +125,10 @@ test('Reward item stats adjusted: atk: 3, def: 3 (no hp), sell price 0 (매각 �
   assert(!serverCode.includes('stats: { atk: 3, def: 3, hp: 3 }'), 'server must not have hp in stats');
   assert(!mainCode.includes('stats: { atk: 3, def: 3, hp: 3 }'), 'client must not have hp in stats');
 
+  // Check EXP +10% booster
+  assert(mainCode.includes("hasVintageArmband"), 'main.js must implement hasVintageArmband in addExp');
+  assert(mainCode.includes("모든 획득 경험치(EXP) +10% 증가"), 'effect description must state EXP +10% booster');
+
   // Check sell price is 0
   assert(mainCode.includes("'equip_vintage_armband': 0"), 'sell price must be 0 (매각 불가)');
   assert(mainCode.includes("invItem.item === 'equip_vintage_armband'"), 'store modal must block selling armband');
@@ -202,10 +206,10 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
   });
 });
 
-test('Cache-buster tag v=217 is cleanly applied in index.html', () => {
+test('Cache-buster tag v=218 is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=217/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=217 tags, found ${matches}`);
+  const matches = (indexHtml.match(/v=218/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 v=218 tags, found ${matches}`);
   assert(!indexHtml.includes('v=210'), 'Found stale v=210 tag in index.html');
 });
 
