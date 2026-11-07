@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 
 console.log('========================================================');
-console.log('🧪 TESTING 2004 ALUMNI SECRET TIME CAPSULE & VICE PRINCIPAL QUEST (v=210)');
+console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=211)');
 console.log('========================================================\n');
 
 let passed = 0;
@@ -104,6 +104,7 @@ test('main.js handles time_capsule, capsule_clue, and vice principal routing', (
   assert(mainCode.includes('handleVicePrincipalInteraction'));
   assert(mainCode.includes('openVicePrincipalCapsuleModal'));
   assert(mainCode.includes('claimTimeCapsuleFromVicePrincipal'));
+  assert(mainCode.includes('renderVicePrincipalVirtuesQuest'));
 });
 
 test('Password deduction matches 3 - 5 - 0 - 4 in code', () => {
@@ -127,6 +128,34 @@ test('Reward item stats adjusted: atk: 3, def: 3 (no hp), sell price 0 (매각 �
   // Check sell price is 0
   assert(mainCode.includes("'equip_vintage_armband': 0"), 'sell price must be 0 (매각 불가)');
   assert(mainCode.includes("invItem.item === 'equip_vintage_armband'"), 'store modal must block selling armband');
+});
+
+// 5. Follow-up Quest: Virtues & Accessory 2 Unlock Checks
+test('Virtues Quest requires Level 10 and checks 3 virtues (체, 덕, 지)', () => {
+  const mainCode = fs.readFileSync('public/js/main.js', 'utf8');
+  assert(mainCode.includes('pLevel >= 10'), 'level >= 10 check required');
+  assert(mainCode.includes('uphillCleared') || mainCode.includes('uphillBestTime'), 'physique virtue check required');
+  assert(mainCode.includes('recycleQuizCleared') || mainCode.includes('title_recycle_king'), 'virtue check required');
+  assert(mainCode.includes('visitedLibraryHistory') && mainCode.includes('visitedMuseumHistory'), 'wisdom virtue check required');
+});
+
+test('Final History Quiz options: Q1 is Baird (Option 3), Q2 is Truth Reverence (Option 2) - neither is Option 1', () => {
+  const indexHtml = fs.readFileSync('public/index.html', 'utf8');
+  const mainCode = fs.readFileSync('public/js/main.js', 'utf8');
+
+  // Verify questions text
+  assert(indexHtml.includes('베어드(배위량) 박사'), 'Q1 option Baird must exist');
+  assert(indexHtml.includes('진실을 숭상한다'), 'Q2 option Truth Reverence must exist');
+
+  // Verify answer validation logic
+  assert(mainCode.includes("q1Val === '3' && q2Val === '2'"), 'Q1 must be 3 and Q2 must be 2');
+  assert(!mainCode.includes("q1Val === '1'"), 'Q1 answer must NOT be option 1');
+  assert(!mainCode.includes("q2Val === '1'"), 'Q2 answer must NOT be option 1');
+
+  // Verify reward unlocks isAccessory2Unlocked and title
+  assert(mainCode.includes('this.playerData.isAccessory2Unlocked = true'));
+  assert(mainCode.includes('title_soongsil_virtues_master'));
+  assert(mainCode.includes('🌟 지·덕·체 모범생'));
 });
 
 test('Modals and rolling paper elements exist in index.html for both bleachers and Vice Principal', () => {
@@ -155,7 +184,17 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
     'vp-reward-claimed-section',
     'input-vp-capsule-msg',
     'btn-submit-vp-capsule',
-    'vp-capsule-notes-list'
+    'vp-capsule-notes-list',
+    'vp-virtues-quest-section',
+    'vp-virtues-level-badge',
+    'vp-virtues-completed-view',
+    'vp-virtues-inprogress-view',
+    'vp-badge-physique',
+    'vp-badge-virtue',
+    'vp-badge-wisdom',
+    'vp-virtues-lock-notice',
+    'vp-virtues-quiz-box',
+    'btn-submit-vp-quiz'
   ];
 
   requiredIds.forEach(id => {
@@ -163,11 +202,11 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
   });
 });
 
-test('Cache-buster tag v=210 is cleanly applied in index.html', () => {
+test('Cache-buster tag v=211 is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=210/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=210 tags, found ${matches}`);
-  assert(!indexHtml.includes('v=209'), 'Found stale v=209 tag in index.html');
+  const matches = (indexHtml.match(/v=211/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 v=211 tags, found ${matches}`);
+  assert(!indexHtml.includes('v=210'), 'Found stale v=210 tag in index.html');
 });
 
 console.log(`\n========================================================`);

@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=210">
+  <link rel="manifest" href="/manifest.json?v=211">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=210">
+  <link rel="stylesheet" href="css/style.css?v=211">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -2294,19 +2294,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=210"></script>
-  <script src="js/dialog.js?v=210"></script>
+  <script src="js/audio.js?v=211"></script>
+  <script src="js/dialog.js?v=211"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=210"></script>
-  <script src="js/engine.js?v=210"></script>
-  <script src="js/quiz.js?v=210"></script>
-  <script src="js/crafting.js?v=210"></script>
-  <script src="js/network.js?v=210"></script>
-  <script src="js/acid_rain.js?v=210"></script>
-  <script src="js/brawl_ball.js?v=210"></script>
-  <script src="js/uphill_rush.js?v=210"></script>
-  <script src="js/main.js?v=210"></script>
+  <script src="js/world.js?v=211"></script>
+  <script src="js/engine.js?v=211"></script>
+  <script src="js/quiz.js?v=211"></script>
+  <script src="js/crafting.js?v=211"></script>
+  <script src="js/network.js?v=211"></script>
+  <script src="js/acid_rain.js?v=211"></script>
+  <script src="js/brawl_ball.js?v=211"></script>
+  <script src="js/uphill_rush.js?v=211"></script>
+  <script src="js/main.js?v=211"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
@@ -2778,6 +2778,118 @@
           자네가 남겨준 롤링페이퍼 덕분에 숭실의 20년 역사가 아름답게 이어지고 있단다! 👍
         </div>
       </div>
+
+      <!-- 🏃 숭실 3대 덕목 검증 (지·덕·체 모범 학생 인증 & 장신구 2 해금) -->
+      <div id="vp-virtues-quest-section" style="display: none; background: rgba(15, 23, 42, 0.9); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="font-size: 15px; font-weight: 800; color: #c4b5fd; display: flex; align-items: center; gap: 6px;">
+            <span>🏃</span> <span>[후속 퀘스트] 숭실 3대 덕목: 지·덕·체 모범 학생 인증</span>
+          </div>
+          <span id="vp-virtues-level-badge" style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; border: 1px solid #64748b; background: rgba(30, 41, 59, 0.5); color: #94a3b8;">
+            Lv.1 / Lv.10
+          </span>
+        </div>
+
+        <div style="font-size: 12.5px; color: #cbd5e1; line-height: 1.6; word-break: keep-all; margin-bottom: 12px;">
+          교감선생님이 학교의 3대 덕목(지혜, 품성, 체력)을 행동으로 증명한 학생에게 <b>[💍 장신구 2 슬롯 해금 특별 인가]</b>를 수여합니다.
+        </div>
+
+        <!-- Completed View (if already unlocked) -->
+        <div id="vp-virtues-completed-view" style="display: none; background: rgba(22, 101, 52, 0.35); border: 1.5px solid #22c55e; border-radius: 10px; padding: 14px; text-align: center;">
+          <div style="font-size: 15px; font-weight: 800; color: #86efac; margin-bottom: 4px;">
+            🎉 지·덕·체 모범 학생 인증 완료!
+          </div>
+          <div style="font-size: 13px; color: #f8fafc; line-height: 1.5;">
+            <b>💍 장신구 2 슬롯이 영구 해금되었습니다!</b><br>
+            <span style="font-size: 11.5px; color: #94a3b8;">(인벤토리 [I] 창에서 두 개의 장신구를 자유롭게 동시 착용할 수 있습니다.)</span>
+          </div>
+        </div>
+
+        <!-- In-Progress View -->
+        <div id="vp-virtues-inprogress-view">
+          <!-- 3대 덕목 체크리스트 -->
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+            
+            <!-- 체력 -->
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: #f8fafc;">🏃 [체(體)] 정문 언덕길 등교 챌린지 완주</div>
+                <div style="font-size: 11px; color: #94a3b8;">정문 배움터 지킴이 선생님과 언덕길 2,500m 돌파</div>
+              </div>
+              <span id="vp-badge-physique" style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid #475569; background: rgba(30, 41, 59, 0.5); color: #94a3b8; white-space: nowrap;">
+                확인 중...
+              </span>
+            </div>
+
+            <!-- 품성 -->
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: #f8fafc;">♻️ [덕(德)] 6층 분리수거함 퀴즈 통과</div>
+                <div style="font-size: 11px; color: #94a3b8;">6층 복도 분리수거함 올바른 배출 퀴즈 만점</div>
+              </div>
+              <span id="vp-badge-virtue" style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid #475569; background: rgba(30, 41, 59, 0.5); color: #94a3b8; white-space: nowrap;">
+                확인 중...
+              </span>
+            </div>
+
+            <!-- 지혜 -->
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: #f8fafc;">🏛️ [지(智)] 도서관 & 역사관 역사 자료 열람</div>
+                <div style="font-size: 11px; color: #94a3b8;">2층 도서관 역사 서가 및 4층 숭실 역사관 열람</div>
+              </div>
+              <span id="vp-badge-wisdom" style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: 1px solid #475569; background: rgba(30, 41, 59, 0.5); color: #94a3b8; white-space: nowrap;">
+                확인 중...
+              </span>
+            </div>
+          </div>
+
+          <!-- Lock Notice (if requirements not met) -->
+          <div id="vp-virtues-lock-notice" style="background: rgba(30, 41, 59, 0.6); border: 1px dashed #64748b; border-radius: 8px; padding: 10px; text-align: center; font-size: 12px; color: #fbbf24; margin-bottom: 8px;">
+            ⚠️ 3대 덕목을 모두 완수하면 교감선생님의 최종 역사 시험이 해금됩니다.
+          </div>
+
+          <!-- Final History Quiz Box (unlocked when all 3 virtues are done) -->
+          <div id="vp-virtues-quiz-box" style="display: none; background: rgba(30, 41, 59, 0.85); border: 1.5px solid #fbbf24; border-radius: 10px; padding: 14px; margin-top: 10px;">
+            <div style="font-size: 13.5px; font-weight: 800; color: #fde047; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+              <span>📝</span> <span>교감선생님의 숭실 역사 인증 시험 (2문항)</span>
+            </div>
+
+            <!-- 문제 1 -->
+            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid #475569; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-size: 13px; font-weight: 700; color: #93c5fd; line-height: 1.5; margin-bottom: 8px; word-break: keep-all;">
+                Q1. 1897년 10월, 평양에서 13명의 학생으로 우리 숭실의 첫 배움터를 세우고 민족 근대 교육의 씨앗을 뿌리신 설립자(선교사)의 존함은 누구인가?
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: #f8fafc;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q1" value="1"> ① 언더우드 박사</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q1" value="2"> ② 아펜젤러 박사</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q1" value="3"> ③ 베어드(배위량) 박사</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q1" value="4"> ④ 스크랜턴 박사</label>
+              </div>
+            </div>
+
+            <!-- 문제 2 -->
+            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid #475569; border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+              <div style="font-size: 13px; font-weight: 700; color: #93c5fd; line-height: 1.5; margin-bottom: 8px; word-break: keep-all;">
+                Q2. 우리 학교의 자랑스러운 교명인 '숭실(崇實)'에 담긴 참된 의미는 무엇인가?
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: #f8fafc;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q2" value="1"> ① 배움을 실천한다</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q2" value="2"> ② 진실을 숭상한다</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q2" value="3"> ③ 열매를 맺는다</label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="radio" name="vp-q2" value="4"> ④ 충의를 드높인다</label>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button id="btn-submit-vp-quiz" class="btn-primary" style="width: 100%; padding: 12px; font-size: 14.5px; font-weight: 800; background: linear-gradient(135deg, #8b5cf6, #6d28d9); border: 1.5px solid #a78bfa; border-radius: 8px; cursor: pointer; color: #fff; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+              🎓 역사 시험 답안 제출 & 장신구 2 해금
+            </button>
+          </div>
+        </div>
+      </div>
+
 
       <!-- Rolling Paper List -->
       <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid #475569; border-radius: 12px; padding: 14px; margin-bottom: 16px;">

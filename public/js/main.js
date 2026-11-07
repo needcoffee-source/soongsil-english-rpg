@@ -833,6 +833,13 @@ const TITLE_DEFINITIONS = [
     desc: '야외 스탠드 관람석 틈새에 숨겨진 2004년 선배들의 타임캡슐 4단계 추리 퍼즐을 모두 풀고 감동의 편지를 발굴한 모험가!',
     costType: 'quest',
     costAmount: 0
+  },
+  {
+    id: 'title_soongsil_virtues_master',
+    name: '🌟 지·덕·체 모범생',
+    desc: '14번 교감선생님의 엄격한 지·덕·체 3대 덕목 검증을 모두 통과하고 장신구 2 슬롯 인가를 획득한 숭실의 참된 모범생!',
+    costType: 'quest',
+    costAmount: 0
   }
 ];
 
@@ -3318,6 +3325,7 @@ class MainApp {
     const currentExhibit = exhibits[idx - 1] || exhibits[0];
     const wasExplored = !!this.playerData.historyVitrines[idx - 1];
     this.playerData.historyVitrines[idx - 1] = true;
+    this.playerData.visitedMuseumHistory = true;
 
     const totalExplored = this.playerData.historyVitrines.filter(Boolean).length;
     this.saveProgress();
@@ -7878,6 +7886,7 @@ class MainApp {
   // 추가 서가-D: 역사·사회 서가 (1897 숭실 독립사 & 인문고전)
   handleBookshelfHisInteraction() {
     this.recordBookshelfVisit('bookshelf_his');
+    this.playerData.visitedLibraryHistory = true;
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -9377,6 +9386,7 @@ class MainApp {
 
             if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
             if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
+            this.playerData.recycleQuizCleared = true;
 
             let bonusText = '';
             if (isFirst) {
@@ -11441,6 +11451,7 @@ class MainApp {
     }
 
     this.renderVicePrincipalGuestbook();
+    this.renderVicePrincipalVirtuesQuest();
 
     const btnSubmit = document.getElementById('btn-submit-vp-capsule');
     const inputMsg = document.getElementById('input-vp-capsule-msg');
@@ -11545,6 +11556,182 @@ class MainApp {
       `;
       listEl.appendChild(card);
     });
+  }
+
+  renderVicePrincipalVirtuesQuest() {
+    const isTimeCapsuleClaimed = !!(this.playerData && this.playerData.timeCapsuleRewardClaimed);
+    const section = document.getElementById('vp-virtues-quest-section');
+    if (!section) return;
+
+    if (!isTimeCapsuleClaimed) {
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = 'block';
+
+    const pLevel = (this.playerData && this.playerData.level) || 1;
+    const isLevel10 = pLevel >= 10;
+    const isAcc2Unlocked = !!(this.playerData && this.playerData.isAccessory2Unlocked);
+
+    const completedView = document.getElementById('vp-virtues-completed-view');
+    const inProgressView = document.getElementById('vp-virtues-inprogress-view');
+
+    if (isAcc2Unlocked) {
+      if (completedView) completedView.style.display = 'block';
+      if (inProgressView) inProgressView.style.display = 'none';
+      return;
+    }
+
+    if (completedView) completedView.style.display = 'none';
+    if (inProgressView) inProgressView.style.display = 'block';
+
+    // Level badge
+    const levelEl = document.getElementById('vp-virtues-level-badge');
+    if (levelEl) {
+      if (isLevel10) {
+        levelEl.innerHTML = '✅ 레벨 조건 달성 (Lv.' + pLevel + ' / 최소 필요: Lv.10)';
+        levelEl.style.borderColor = '#10b981';
+        levelEl.style.color = '#34d399';
+        levelEl.style.background = 'rgba(16, 185, 129, 0.15)';
+      } else {
+        levelEl.innerHTML = '🔒 레벨 부족 (Lv.' + pLevel + ' / 최소 필요: Lv.10)';
+        levelEl.style.borderColor = '#ef4444';
+        levelEl.style.color = '#f87171';
+        levelEl.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
+    }
+
+    // 3대 덕목 상태 확인
+    const isPhysiqueDone = Boolean(
+      this.playerData.uphillCleared ||
+      (this.playerData.uphillBestTime && this.playerData.uphillBestTime > 0) ||
+      (Array.isArray(this.playerData.uphillTopRecords) && this.playerData.uphillTopRecords.length > 0)
+    );
+
+    const isVirtueDone = Boolean(
+      this.playerData.recycleQuizCleared ||
+      (this.playerData.titles && (this.playerData.titles.includes('title_recycle_king') || this.playerData.titles.includes('♻️ 분리수거왕')))
+    );
+
+    const isWisdomDone = Boolean(
+      (this.playerData.visitedLibraryHistory || (this.playerData.bookshelvesVisited && this.playerData.bookshelvesVisited.includes('bookshelf_his'))) &&
+      (this.playerData.visitedMuseumHistory || (Array.isArray(this.playerData.historyVitrines) && this.playerData.historyVitrines.some(v => v)))
+    );
+
+    const badgePhysique = document.getElementById('vp-badge-physique');
+    if (badgePhysique) {
+      if (isPhysiqueDone) {
+        badgePhysique.innerHTML = '✅ 완주 완료 (체력 증명)';
+        badgePhysique.style.color = '#34d399';
+        badgePhysique.style.borderColor = '#10b981';
+        badgePhysique.style.background = 'rgba(16, 185, 129, 0.2)';
+      } else {
+        badgePhysique.innerHTML = '🔒 미완료 (정문 언덕길 챌린지)';
+        badgePhysique.style.color = '#f87171';
+        badgePhysique.style.borderColor = '#ef4444';
+        badgePhysique.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
+    }
+
+    const badgeVirtue = document.getElementById('vp-badge-virtue');
+    if (badgeVirtue) {
+      if (isVirtueDone) {
+        badgeVirtue.innerHTML = '✅ 통과 완료 (품성 증명)';
+        badgeVirtue.style.color = '#34d399';
+        badgeVirtue.style.borderColor = '#10b981';
+        badgeVirtue.style.background = 'rgba(16, 185, 129, 0.2)';
+      } else {
+        badgeVirtue.innerHTML = '🔒 미완료 (6층 분리수거 퀴즈)';
+        badgeVirtue.style.color = '#f87171';
+        badgeVirtue.style.borderColor = '#ef4444';
+        badgeVirtue.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
+    }
+
+    const badgeWisdom = document.getElementById('vp-badge-wisdom');
+    if (badgeWisdom) {
+      if (isWisdomDone) {
+        badgeWisdom.innerHTML = '✅ 열람 완료 (지혜 증명)';
+        badgeWisdom.style.color = '#34d399';
+        badgeWisdom.style.borderColor = '#10b981';
+        badgeWisdom.style.background = 'rgba(16, 185, 129, 0.2)';
+      } else {
+        badgeWisdom.innerHTML = '🔒 미완료 (도서관 & 역사관)';
+        badgeWisdom.style.color = '#f87171';
+        badgeWisdom.style.borderColor = '#ef4444';
+        badgeWisdom.style.background = 'rgba(239, 68, 68, 0.15)';
+      }
+    }
+
+    const allVirtuesDone = isLevel10 && isPhysiqueDone && isVirtueDone && isWisdomDone;
+
+    const quizBox = document.getElementById('vp-virtues-quiz-box');
+    const lockNotice = document.getElementById('vp-virtues-lock-notice');
+
+    if (allVirtuesDone) {
+      if (quizBox) quizBox.style.display = 'block';
+      if (lockNotice) lockNotice.style.display = 'none';
+    } else {
+      if (quizBox) quizBox.style.display = 'none';
+      if (lockNotice) {
+        lockNotice.style.display = 'block';
+        if (!isLevel10) {
+          lockNotice.innerHTML = '⚠️ <b>최소 레벨 10 이상</b> 달성해야 교감선생님의 최종 역사 시험에 응시할 수 있습니다. (현재: Lv.' + pLevel + ')';
+        } else {
+          lockNotice.innerHTML = '⚠️ <b>[체(體) · 덕(德) · 지(智)]</b> 3대 덕목을 모두 완수하면 교감선생님의 역사 시험이 해금됩니다.';
+        }
+      }
+    }
+
+    // Bind Quiz submit button
+    const btnSubmitQuiz = document.getElementById('btn-submit-vp-quiz');
+    if (btnSubmitQuiz && !btnSubmitQuiz._bound) {
+      btnSubmitQuiz._bound = true;
+      btnSubmitQuiz.addEventListener('click', () => {
+        const q1Val = (document.querySelector('input[name="vp-q1"]:checked') || {}).value;
+        const q2Val = (document.querySelector('input[name="vp-q2"]:checked') || {}).value;
+
+        if (!q1Val || !q2Val) {
+          this.showToast('1번과 2번 문제의 정답을 모두 선택해주세요!', 'warning');
+          return;
+        }
+
+        // Q1 정답: 3번 (베어드 박사), Q2 정답: 2번 (진실을 숭상한다)
+        // 두 문제 모두 정답이 1번이 아님!
+        if (q1Val === '3' && q2Val === '2') {
+          // 정답 통과!
+          this.playerData.isAccessory2Unlocked = true;
+          this.playerData.virtuesQuestCompleted = true;
+
+          if (!this.playerData.titles) this.playerData.titles = [];
+          const tId = 'title_soongsil_virtues_master';
+          const tName = '🌟 지·덕·체 모범생';
+          if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
+          if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
+
+          this.addGold(200);
+          this.addExp(200);
+          this.saveProgress();
+
+          if (typeof this.renderTitles === 'function') this.renderTitles();
+          if (typeof this.renderInventory === 'function') this.renderInventory();
+          if (window.AudioManager && window.AudioManager.playFanfare) {
+            window.AudioManager.playFanfare();
+          }
+
+          this.showToast('🎉 [지·덕·체 인증 성공!] 💍 장신구 2 슬롯이 영구 해금되었습니다!', 'success');
+          this.renderVicePrincipalVirtuesQuest();
+        } else {
+          if (window.AudioManager && window.AudioManager.playWrong) {
+            window.AudioManager.playWrong();
+          }
+          let wrongMsg = '⚠️ 오답이 있습니다! 교감선생님의 질문과 도서관·역사관 자료를 다시 확인해보세요.\n\n';
+          if (q1Val !== '3') wrongMsg += '• 1번 문제 (설립자) 오답\n';
+          if (q2Val !== '2') wrongMsg += '• 2번 문제 (숭실의 의미) 오답\n';
+          alert(wrongMsg);
+        }
+      });
+    }
   }
 }
 

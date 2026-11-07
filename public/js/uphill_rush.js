@@ -892,6 +892,7 @@ class UphillRushGame {
       highlightRankIdx = app.playerData.uphillTopRecords.indexOf(this.elapsedMs);
       isNewRecord = (highlightRankIdx === 0);
       app.playerData.uphillBestTime = app.playerData.uphillTopRecords[0];
+      app.playerData.uphillCleared = true;
 
       if (titleUnlocked) {
         if (!app.playerData.titles) app.playerData.titles = [];
