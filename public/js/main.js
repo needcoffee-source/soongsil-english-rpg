@@ -833,13 +833,6 @@ const TITLE_DEFINITIONS = [
     desc: '야외 스탠드 관람석 틈새에 숨겨진 2004년 선배들의 타임캡슐 4단계 추리 퍼즐을 모두 풀고 감동의 편지를 발굴한 모험가!',
     costType: 'quest',
     costAmount: 0
-  },
-  {
-    id: 'title_soongsil_virtues_master',
-    name: '🌟 지·덕·체 모범생',
-    desc: '14번 교감선생님의 엄격한 지·덕·체 3대 덕목 검증을 모두 통과하고 장신구 2 슬롯 인가를 획득한 숭실의 참된 모범생!',
-    costType: 'quest',
-    costAmount: 0
   }
 ];
 
@@ -3326,6 +3319,19 @@ class MainApp {
     const wasExplored = !!this.playerData.historyVitrines[idx - 1];
     this.playerData.historyVitrines[idx - 1] = true;
     this.playerData.visitedMuseumHistory = true;
+
+    // 1차 퀘스트 완료 후 2차 퀘스트 [지(智)] 역사관 덕목 진행 인정
+    if (this.playerData.timeCapsuleRewardClaimed) {
+      this.playerData.virtueWisdomMuseum = true;
+      if (this.playerData.virtueWisdomLibrary) {
+        if (!this.playerData.virtueWisdomDone) {
+          this.playerData.virtueWisdomDone = true;
+          this.showToast('📚 [숭실 3대 덕목 - 지(智)] 도서관 & 역사관 사료 열람 완료! 지혜 증명 완료!', 'success');
+        }
+      } else {
+        this.showToast('🏛️ [숭실 3대 덕목 - 지(智)] 4층 숭실 역사관 열람 완료! (2층 도서관 역사 서가도 방문하세요)', 'info');
+      }
+    }
 
     const totalExplored = this.playerData.historyVitrines.filter(Boolean).length;
     this.saveProgress();
@@ -7887,6 +7893,19 @@ class MainApp {
   handleBookshelfHisInteraction() {
     this.recordBookshelfVisit('bookshelf_his');
     this.playerData.visitedLibraryHistory = true;
+
+    // 1차 퀘스트 완료 후 2차 퀘스트 [지(智)] 도서관 역사 서가 덕목 진행 인정
+    if (this.playerData.timeCapsuleRewardClaimed) {
+      this.playerData.virtueWisdomLibrary = true;
+      if (this.playerData.virtueWisdomMuseum) {
+        if (!this.playerData.virtueWisdomDone) {
+          this.playerData.virtueWisdomDone = true;
+          this.showToast('📚 [숭실 3대 덕목 - 지(智)] 도서관 & 역사관 사료 열람 완료! 지혜 증명 완료!', 'success');
+        }
+      } else {
+        this.showToast('📖 [숭실 3대 덕목 - 지(智)] 2층 도서관 역사 서가 열람 완료! (4층 역사관도 방문하세요)', 'info');
+      }
+    }
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -9387,6 +9406,14 @@ class MainApp {
             if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
             if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
             this.playerData.recycleQuizCleared = true;
+
+            // 1차 퀘스트 완료 후 2차 퀘스트 [덕(德)] 분리수거 품성 덕목 진행 인정
+            if (this.playerData.timeCapsuleRewardClaimed) {
+              if (!this.playerData.virtueMannerDone) {
+                this.playerData.virtueMannerDone = true;
+                this.showToast('♻️ [숭실 3대 덕목 - 덕(德)] 6층 분리수거 퀴즈 통과! 품성 증명 완료!', 'success');
+              }
+            }
 
             let bonusText = '';
             if (isFirst) {
@@ -11657,21 +11684,12 @@ class MainApp {
       }
     }
 
-    // 3대 덕목 상태 확인
-    const isPhysiqueDone = Boolean(
-      this.playerData.uphillCleared ||
-      (this.playerData.uphillBestTime && this.playerData.uphillBestTime > 0) ||
-      (Array.isArray(this.playerData.uphillTopRecords) && this.playerData.uphillTopRecords.length > 0)
-    );
-
-    const isVirtueDone = Boolean(
-      this.playerData.recycleQuizCleared ||
-      (this.playerData.titles && (this.playerData.titles.includes('title_recycle_king') || this.playerData.titles.includes('♻️ 분리수거왕')))
-    );
-
+    // 3대 덕목 상태 확인 (1차 퀘스트를 완료해야만 2차 퀘스트가 진행 및 인정됨)
+    const isPhysiqueDone = Boolean(this.playerData.timeCapsuleRewardClaimed && this.playerData.virtuePhysiqueDone);
+    const isVirtueDone = Boolean(this.playerData.timeCapsuleRewardClaimed && this.playerData.virtueMannerDone);
     const isWisdomDone = Boolean(
-      (this.playerData.visitedLibraryHistory || (this.playerData.bookshelvesVisited && this.playerData.bookshelvesVisited.includes('bookshelf_his'))) &&
-      (this.playerData.visitedMuseumHistory || (Array.isArray(this.playerData.historyVitrines) && this.playerData.historyVitrines.some(v => v)))
+      this.playerData.timeCapsuleRewardClaimed &&
+      (this.playerData.virtueWisdomDone || (this.playerData.virtueWisdomLibrary && this.playerData.virtueWisdomMuseum))
     );
 
     const badgePhysique = document.getElementById('vp-badge-physique');
@@ -11744,6 +11762,11 @@ class MainApp {
     if (btnSubmitQuiz && !btnSubmitQuiz._bound) {
       btnSubmitQuiz._bound = true;
       btnSubmitQuiz.addEventListener('click', () => {
+        if (!this.playerData || !this.playerData.timeCapsuleRewardClaimed) {
+          this.showToast('1차 퀘스트(타임캡슐 롤링페이퍼 및 선배 완장 수령)를 먼저 완료해야 2차 퀘스트를 진행할 수 있습니다!', 'warning');
+          return;
+        }
+
         const q1Val = (document.querySelector('input[name="vp-q1"]:checked') || {}).value;
         const q2Val = (document.querySelector('input[name="vp-q2"]:checked') || {}).value;
 
@@ -11759,14 +11782,10 @@ class MainApp {
           this.playerData.isAccessory2Unlocked = true;
           this.playerData.virtuesQuestCompleted = true;
 
-          if (!this.playerData.titles) this.playerData.titles = [];
-          const tId = 'title_soongsil_virtues_master';
-          const tName = '🌟 지·덕·체 모범생';
-          if (!this.playerData.titles.includes(tId)) this.playerData.titles.push(tId);
-          if (!this.playerData.titles.includes(tName)) this.playerData.titles.push(tName);
+          // [지·덕·체 모범생] 칭호는 요청에 따라 삭제 (부여하지 않음)
 
           this.addGold(200);
-          this.addExp(200);
+          this.addExp(300);
           this.saveProgress();
 
           if (typeof this.renderTitles === 'function') this.renderTitles();
@@ -11775,7 +11794,7 @@ class MainApp {
             window.AudioManager.playFanfare();
           }
 
-          this.showToast('🎉 [지·덕·체 인증 성공!] 💍 장신구 2 슬롯이 영구 해금되었습니다!', 'success');
+          this.showToast('🎉 [지·덕·체 인증 성공!] 💍 장신구 2 슬롯이 영구 해금되었습니다! (+300 EXP, +200 Gold)', 'success');
           this.updateVicePrincipalDialogue();
           this.renderVicePrincipalVirtuesQuest();
         } else {

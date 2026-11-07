@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 
 console.log('========================================================');
-console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=212)');
+console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=213)');
 console.log('========================================================\n');
 
 let passed = 0;
@@ -131,12 +131,12 @@ test('Reward item stats adjusted: atk: 3, def: 3 (no hp), sell price 0 (매각 �
 });
 
 // 5. Follow-up Quest: Virtues & Accessory 2 Unlock Checks
-test('Virtues Quest requires Level 10 and checks 3 virtues (체, 덕, 지)', () => {
+test('Virtues Quest requires Level 10 and 1차 퀘스트 completion for 3 virtues (체, 덕, 지)', () => {
   const mainCode = fs.readFileSync('public/js/main.js', 'utf8');
   assert(mainCode.includes('pLevel >= 10'), 'level >= 10 check required');
-  assert(mainCode.includes('uphillCleared') || mainCode.includes('uphillBestTime'), 'physique virtue check required');
-  assert(mainCode.includes('recycleQuizCleared') || mainCode.includes('title_recycle_king'), 'virtue check required');
-  assert(mainCode.includes('visitedLibraryHistory') && mainCode.includes('visitedMuseumHistory'), 'wisdom virtue check required');
+  assert(mainCode.includes('this.playerData.timeCapsuleRewardClaimed && this.playerData.virtuePhysiqueDone'), 'physique virtue must require 1st quest completion');
+  assert(mainCode.includes('this.playerData.timeCapsuleRewardClaimed && this.playerData.virtueMannerDone'), 'manner virtue must require 1st quest completion');
+  assert(mainCode.includes('virtueWisdomLibrary') && mainCode.includes('virtueWisdomMuseum'), 'wisdom virtue check required');
 });
 
 test('Final History Quiz options: Q1 is Baird (Option 3), Q2 is Truth Reverence (Option 2) - neither is Option 1', () => {
@@ -152,10 +152,10 @@ test('Final History Quiz options: Q1 is Baird (Option 3), Q2 is Truth Reverence 
   assert(!mainCode.includes("q1Val === '1'"), 'Q1 answer must NOT be option 1');
   assert(!mainCode.includes("q2Val === '1'"), 'Q2 answer must NOT be option 1');
 
-  // Verify reward unlocks isAccessory2Unlocked and title
+  // Verify reward unlocks isAccessory2Unlocked and +300 EXP (title removed)
   assert(mainCode.includes('this.playerData.isAccessory2Unlocked = true'));
-  assert(mainCode.includes('title_soongsil_virtues_master'));
-  assert(mainCode.includes('🌟 지·덕·체 모범생'));
+  assert(mainCode.includes('this.addExp(300)'));
+  assert(!mainCode.includes("title_soongsil_virtues_master'"), 'title_soongsil_virtues_master should be removed from rewards');
 });
 
 test('Modals and rolling paper elements exist in index.html for both bleachers and Vice Principal', () => {
@@ -202,10 +202,10 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
   });
 });
 
-test('Cache-buster tag v=212 is cleanly applied in index.html', () => {
+test('Cache-buster tag v=213 is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=212/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=212 tags, found ${matches}`);
+  const matches = (indexHtml.match(/v=213/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 v=213 tags, found ${matches}`);
   assert(!indexHtml.includes('v=210'), 'Found stale v=210 tag in index.html');
 });
 

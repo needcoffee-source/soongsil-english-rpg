@@ -894,6 +894,16 @@ class UphillRushGame {
       app.playerData.uphillBestTime = app.playerData.uphillTopRecords[0];
       app.playerData.uphillCleared = true;
 
+      // 1차 퀘스트 완료 후 2차 퀘스트 [체(體)] 덕목 진행 인정
+      if (app.playerData.timeCapsuleRewardClaimed) {
+        if (!app.playerData.virtuePhysiqueDone) {
+          app.playerData.virtuePhysiqueDone = true;
+          if (typeof app.showToast === 'function') {
+            app.showToast('🏃 [숭실 3대 덕목 - 체(體)] 정문 언덕길 완주! 체력 증명 완료!', 'success');
+          }
+        }
+      }
+
       if (titleUnlocked) {
         if (!app.playerData.titles) app.playerData.titles = [];
         const tId = 'title_uphill_master';
