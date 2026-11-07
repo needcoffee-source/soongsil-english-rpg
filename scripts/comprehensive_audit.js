@@ -99,6 +99,28 @@ function extractObject(code, varName) {
   return vm.runInNewContext('(' + objCode + ')', sandbox);
 }
 
+function extractArray(code, varName) {
+  const startIdx = code.indexOf(varName);
+  if (startIdx === -1) return null;
+  const openBracket = code.indexOf('[', startIdx);
+  let depth = 0;
+  let endIdx = -1;
+  for (let i = openBracket; i < code.length; i++) {
+    if (code[i] === '[') depth++;
+    else if (code[i] === ']') {
+      depth--;
+      if (depth === 0) {
+        endIdx = i + 1;
+        break;
+      }
+    }
+  }
+  if (endIdx === -1) return null;
+  const arrCode = code.slice(openBracket, endIdx);
+  const sandbox = {};
+  return vm.runInNewContext('(' + arrCode + ')', sandbox);
+}
+
 const serverItems = extractObject(serverCode, 'ALL_GAME_ITEMS');
 const mainItems = extractObject(mainCode, 'ALL_GAME_ITEMS');
 
@@ -176,9 +198,9 @@ check('History hall entrance portal prompt is clean "🏛️ 숭실역사관"', 
 console.log('\n--- 5. CACHE BUSTER CONSISTENCY AUDIT ---');
 const indexHtml = fs.readFileSync('public/index.html', 'utf8');
 const vOldMatches = (indexHtml.match(/v=171/g) || []).length;
-const vCurMatches = (indexHtml.match(/v=213/g) || []).length;
+const vCurMatches = (indexHtml.match(/v=214/g) || []).length;
 check('No stale v=171 cache tags in index.html', vOldMatches === 0, `Found ${vOldMatches} stale tags`);
-check('All assets use v=213 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=213 tags`);
+check('All assets use v=214 cache tags in index.html', vCurMatches >= 8, `Found ${vCurMatches} v=214 tags`);
 
 // 6. DOM Element ID Integrity Audit
 console.log('\n--- 6. DOM ELEMENT ID INTEGRITY AUDIT ---');
@@ -265,6 +287,16 @@ check('server.js normalizes singleton room floors (playground -> 1)', serverCode
 check('engine.update does not early-return before BrawlBall.update when stunned', engineCode.includes('const isMovementLocked =') && !engineCode.includes('if (isBrawlStunned) return;'));
 check('brawl_ball.js defines getEntityVisualPos and getPlayerTeam', brawlCode.includes('getEntityVisualPos(entity)') && brawlCode.includes('getPlayerTeam(p, isLocal'));
 check('brawl_ball.js defines isMatchHost() to prevent duplicate goal/bot packets', brawlCode.includes('isMatchHost()'));
+
+// 11. Item Codex (숭실백과사전) Integrity Audit
+console.log('\n--- 11. ITEM CODEX & ENCYCLOPEDIA AUDIT ---');
+const codexArray = extractArray(mainCode, 'window.ITEM_CODEX_DATABASE =');
+check('ITEM_CODEX_DATABASE parsed successfully', Array.isArray(codexArray) && codexArray.length >= 40);
+const codexIds = new Set((codexArray || []).map(i => i.id));
+check('Vintage Armband exists in ITEM_CODEX_DATABASE', codexIds.has('equip_vintage_armband'));
+const nonQuestServerItems = Object.keys(serverItems).filter(k => !serverItems[k].meta || serverItems[k].meta.type !== 'quest');
+const missingInCodex = nonQuestServerItems.filter(k => !codexIds.has(k));
+check(`All non-quest game items exist in Codex (${nonQuestServerItems.length} items)`, missingInCodex.length === 0, `Missing: ${missingInCodex.join(', ')}`);
 
 console.log('\n====================================================');
 console.log(` AUDIT RESULT: ${passedChecks} / ${totalChecks} PASSED`);

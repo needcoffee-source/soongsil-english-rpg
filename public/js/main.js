@@ -129,8 +129,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 전리품',
     tierColor: '#dc2626',
     effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
-    source: '1학년 2반 숭실 청동 드래곤 보스 격파 시 획득',
-    recipe: '1-2 청동 드래곤 처치 전리품'
+    source: '1학년 2반 숭실 청동 드래곤 보스 격파 또는 6층 교무실 10번 옥촣한 선생님 사회 퀘스트 완료 시 획득',
+    recipe: '1-2 청동 드래곤 처치 전리품 / 사회 퀘스트'
   },
   {
     id: 'item_perfect_exam',
@@ -394,6 +394,18 @@ window.ITEM_CODEX_DATABASE = [
     effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
     source: '1학년 2반 가죽 골렘 토벌 시 획득',
     recipe: '가죽 골렘 토벌'
+  },
+  {
+    id: 'equip_vintage_armband',
+    name: '선배의 낡은 승리 완장',
+    icon: '🎗️',
+    category: 'accessory', subCategory: 'accessory',
+    tierBadge: '유물 장신구',
+    tierColor: '#f59e0b',
+    effect: '공격력 +3, 방어력 +3 증가 (매각 불가)',
+    source: '야외 스탠드 2004 타임캡슐 발굴 후 14번 교감선생님께 롤링페이퍼 작성 시 수령',
+    recipe: '교감선생님 1차 퀘스트 보상',
+    stats: { atk: 3, def: 3 }
   },
 
   // 7. Tier 4 Heritage Equipment & Materials (4티어 숭실 헤리티지 세트)
@@ -11782,9 +11794,8 @@ class MainApp {
           this.playerData.isAccessory2Unlocked = true;
           this.playerData.virtuesQuestCompleted = true;
 
-          // [지·덕·체 모범생] 칭호는 요청에 따라 삭제 (부여하지 않음)
+          // [지·덕·체 모범생] 칭호 및 골드 보상은 요청에 따라 삭제 (EXP +300만 지급)
 
-          this.addGold(200);
           this.addExp(300);
           this.saveProgress();
 
@@ -11794,7 +11805,7 @@ class MainApp {
             window.AudioManager.playFanfare();
           }
 
-          this.showToast('🎉 [지·덕·체 인증 성공!] 💍 장신구 2 슬롯이 영구 해금되었습니다! (+300 EXP, +200 Gold)', 'success');
+          this.showToast('🎉 [지·덕·체 인증 성공!] 💍 장신구 2 슬롯이 영구 해금되었습니다! (+300 EXP)', 'success');
           this.updateVicePrincipalDialogue();
           this.renderVicePrincipalVirtuesQuest();
         } else {
