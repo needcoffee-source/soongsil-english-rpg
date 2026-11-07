@@ -160,4 +160,13 @@ assert(kwimQuestSnippet.includes("itemKey: 'item_courage_potion'"), 'quest_kwimj
 assert(kwimQuestSnippet.includes('count: 2'), 'quest_kwimjinsyong_career must reward 2 courage potions');
 console.log('✔ 15. quest_kwimjinsyong_career (진로) definition and rewards (150 EXP, Courage Potion x2) verified');
 
+// 7. Check minLevel requirements in QUEST_DEFINITIONS
+assert(mainCode.includes("id: 'quest_joshua_intro',\n    minLevel: 1"), 'Joshua quest must require Lv.1');
+assert(mainCode.includes("id: 'quest_kimmijin_art',\n    minLevel: 3"), 'Kim Jin-mi quest must require Lv.3');
+assert(mainCode.includes("id: 'quest_library_missing_books',\n    minLevel: 4"), 'Librarian quest must require Lv.4');
+assert(mainCode.includes("id: 'quest_yosunyu_info',\n    minLevel: 5"), 'Yo Sun-yu quest must require Lv.5');
+assert(mainCode.includes("id: 'quest_kwimjinsyong_career',\n    minLevel: 7"), 'Kwim Jin-syong quest must require Lv.7');
+assert(mainCode.includes("id: 'quest_okchohan_social',\n    minLevel: 9"), 'Ok Cho-han quest must require Lv.9');
+console.log('✔ 16. Teacher quest level requirements (1 - 3 - 4 - 5 - 7 - 9) verified');
+
 console.log('\n=== ALL 5 STAFF OFFICE TEACHER TESTS PASSED SUCCESSFULLY! ===');

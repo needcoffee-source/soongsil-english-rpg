@@ -866,9 +866,10 @@ window.BOSS_CONFIG = {
 // =========================================================================
 // 🏛️ 6층 교무실 교사 퀘스트 정의 (RPG Quest Dispatch System)
 // =========================================================================
-const QUEST_DEFINITIONS = {
+window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   'quest_joshua_intro': {
     id: 'quest_joshua_intro',
+    minLevel: 1,
     teacherId: 'npc_teacher_joshua',
     teacherName: 'Joshua 선생님',
     teacherRole: '3학년 영어',
@@ -918,6 +919,7 @@ const QUEST_DEFINITIONS = {
   },
   'quest_okchohan_social': {
     id: 'quest_okchohan_social',
+    minLevel: 9,
     teacherId: 'npc_teacher_okchohan',
     teacherName: '옥촣한 선생님',
     teacherRole: '사회',
@@ -969,6 +971,7 @@ const QUEST_DEFINITIONS = {
   },
   'quest_kimmijin_art': {
     id: 'quest_kimmijin_art',
+    minLevel: 3,
     teacherId: 'npc_teacher_kimmijin',
     teacherName: '김진믜 선생님',
     teacherRole: '미술',
@@ -1024,6 +1027,7 @@ const QUEST_DEFINITIONS = {
   },
   quest_yosunyu_info: {
     id: 'quest_yosunyu_info',
+    minLevel: 5,
     teacherId: 'npc_teacher_yosunyu',
     teacherName: '요션유 선생님',
     teacherRole: '정보',
@@ -1076,6 +1080,7 @@ const QUEST_DEFINITIONS = {
   },
   quest_kwimjinsyong_career: {
     id: 'quest_kwimjinsyong_career',
+    minLevel: 7,
     teacherId: 'npc_teacher_kwimjinsyong',
     teacherName: '귐즨숑 선생님',
     teacherRole: '진로',
@@ -1121,6 +1126,7 @@ const QUEST_DEFINITIONS = {
   },
   'quest_library_missing_books': {
     id: 'quest_library_missing_books',
+    minLevel: 4,
     teacherId: 'npc_librarian',
     teacherName: '사서 선생님',
     teacherRole: '2층 도서관',
@@ -1177,6 +1183,7 @@ const QUEST_DEFINITIONS = {
     ]
   }
 };
+window.QUEST_DEFINITIONS = QUEST_DEFINITIONS;
 
 class MainApp {
   constructor() {
@@ -7624,6 +7631,18 @@ class MainApp {
       this.recalcCombatStats();
       this.updateHpBar();
       this.showLevelUpBanner(this.playerData.level);
+
+      // 신규 교사 퀘스트 해금 알림
+      if (typeof QUEST_DEFINITIONS !== 'undefined') {
+        const curLvl = this.playerData.level;
+        const newlyUnlocked = Object.values(QUEST_DEFINITIONS).filter(q => q && q.minLevel === curLvl);
+        if (newlyUnlocked.length > 0) {
+          const names = newlyUnlocked.map(q => `[${q.teacherName}]`).join(', ');
+          setTimeout(() => {
+            this.showToast(`🎉 Lv.${curLvl} 달성! ${names}의 새로운 의뢰가 해금되었습니다!`, 'success');
+          }, 1200);
+        }
+      }
     }
 
     this.saveProgress();
@@ -10417,6 +10436,7 @@ class MainApp {
     if (id === 'npc_teacher_kimmijin') questId = 'quest_kimmijin_art';
     if (id === 'npc_teacher_yosunyu') questId = 'quest_yosunyu_info';
     if (id === 'npc_teacher_kwimjinsyong') questId = 'quest_kwimjinsyong_career';
+    if (id === 'npc_librarian') questId = 'quest_library_missing_books';
     if (!QUEST_DEFINITIONS[questId]) {
       const found = Object.values(QUEST_DEFINITIONS).find(q => q.teacherId === id);
       if (found) questId = found.id;
@@ -10427,7 +10447,12 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests[questId];
 
-    if (!quest) return 'available';
+    if (!quest) {
+      const pLevel = (this.playerData && this.playerData.level) || 1;
+      const minLevel = qDef.minLevel || 1;
+      if (pLevel < minLevel) return 'locked';
+      return 'available';
+    }
     if (quest.status === 'done') return 'done';
     if (quest.status === 'completed') return 'completed';
     if (quest.status === 'in_progress') {
@@ -10668,7 +10693,12 @@ class MainApp {
     // Status Badge
     const badgeEl = document.getElementById('quest-status-badge');
     if (badgeEl) {
-      if (status === 'available') {
+      if (status === 'locked') {
+        badgeEl.style.background = '#fee2e2';
+        badgeEl.style.color = '#dc2626';
+        badgeEl.style.borderColor = '#f87171';
+        badgeEl.innerText = '🔒 최소 Lv.' + (qDef.minLevel || 1) + ' 달성 필요';
+      } else if (status === 'available') {
         badgeEl.style.background = '#fef08a';
         badgeEl.style.color = '#854d0e';
         badgeEl.style.borderColor = '#eab308';
@@ -10698,7 +10728,10 @@ class MainApp {
     // Story Text
     const storyEl = document.getElementById('quest-modal-story');
     if (storyEl) {
-      if (status === 'available') storyEl.innerText = qDef.story;
+      if (status === 'locked') {
+        const pLevel = (this.playerData && this.playerData.level) || 1;
+        storyEl.innerText = `반갑다! ${qDef.teacherName}이란다. 😊\n\n하지만 이 과제는 어느 정도 학교 생활과 모험에 익숙해진 학생에게 맡기고 싶단다.\n먼저 학교 곳곳을 모험하며 레벨 Lv.${qDef.minLevel} 이상을 달성한 뒤에 다시 나를 찾아와 주렴!\n\n(현재 나의 레벨: Lv.${pLevel} / 필요 레벨: Lv.${qDef.minLevel})`;
+      } else if (status === 'available') storyEl.innerText = qDef.story;
       else if (status === 'in_progress') storyEl.innerText = qDef.inProgressStory;
       else if (status === 'completed') storyEl.innerText = qDef.completeStory;
       else if (status === 'done') storyEl.innerText = qDef.doneStory;
@@ -10764,7 +10797,22 @@ class MainApp {
     if (actContainer) {
       actContainer.innerHTML = '';
 
-      if (status === 'available') {
+      if (status === 'locked') {
+        const pLevel = (this.playerData && this.playerData.level) || 1;
+        const btnLocked = document.createElement('button');
+        btnLocked.disabled = true;
+        btnLocked.style.cssText = 'padding: 8px 20px; font-size: 13px; font-weight: 800; background: #64748b; color: #cbd5e1; border: 1.5px solid #475569; border-radius: 8px; cursor: not-allowed;';
+        btnLocked.innerText = `🔒 Lv.${qDef.minLevel} 달성 후 수락 가능 (현재 Lv.${pLevel})`;
+        actContainer.appendChild(btnLocked);
+
+        const btnClose = document.createElement('button');
+        btnClose.className = 'btn-secondary';
+        btnClose.style.cssText = 'padding: 8px 18px; font-size: 13px; border-radius: 8px; cursor: pointer;';
+        btnClose.innerText = '닫기';
+        btnClose.addEventListener('click', () => this.closeQuestDispatchModal());
+        actContainer.appendChild(btnClose);
+
+      } else if (status === 'available') {
         const btnReject = document.createElement('button');
         btnReject.className = 'btn-secondary';
         btnReject.style.cssText = 'padding: 8px 18px; font-size: 13px; border-radius: 8px; cursor: pointer;';
@@ -10828,6 +10876,14 @@ class MainApp {
 
   acceptQuest(questId) {
     const qDef = (typeof QUEST_DEFINITIONS !== 'undefined') ? QUEST_DEFINITIONS[questId] : null;
+    if (qDef && qDef.minLevel) {
+      const pLevel = (this.playerData && this.playerData.level) || 1;
+      if (pLevel < qDef.minLevel) {
+        if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
+        this.showToast(`🔒 최소 레벨 Lv.${qDef.minLevel} 이상 필요합니다! (현재: Lv.${pLevel})`, 'warning');
+        return;
+      }
+    }
     if (!this.playerData.quests) this.playerData.quests = {};
     this.playerData.quests[questId] = {
       status: 'in_progress',

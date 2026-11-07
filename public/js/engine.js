@@ -931,8 +931,22 @@ class GameEngine {
         if (floorData.npcs) {
           for (const npc of floorData.npcs) {
             const dist = Math.hypot(npc.x * 32 - this.player.x, npc.y * 32 - this.player.y);
-            if (dist < 64 && dist < minDist) {
-              closest = { type: 'npc', data: npc, name: npc.name, prompt: `대화하기 (${npc.name})` };
+            const qStatus = (npc.questId && window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
+              ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
+              : null;
+            let prompt = `대화하기 (${npc.name})`;
+            if (qStatus === 'locked') {
+              prompt = `🔒 의뢰 잠김 (레벨 부족) (SPACE)`;
+            } else if (qStatus === 'available') {
+              prompt = `📜 퀘스트 수락 (SPACE) [ ! ]`;
+            } else if (qStatus === 'in_progress') {
+              prompt = `📋 퀘스트 진행 확인 (SPACE) [ ? ]`;
+            } else if (qStatus === 'completed') {
+              prompt = `🎉 퀘스트 완료 & 보상 수령 (SPACE) [ ? ]`;
+            }
+            const interactRadius = (npc.questId ? 75 : 64);
+            if (dist < interactRadius && dist < minDist) {
+              closest = { type: 'npc', data: npc, name: npc.name, prompt: prompt };
               minDist = dist;
             }
           }
@@ -1340,7 +1354,9 @@ class GameEngine {
             ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
             : null;
           let prompt = `대화하기 (${npc.name})`;
-          if (qStatus === 'available') {
+          if (qStatus === 'locked') {
+            prompt = `🔒 의뢰 잠김 (레벨 부족) (SPACE)`;
+          } else if (qStatus === 'available') {
             prompt = `📜 퀘스트 수락 (SPACE) [ ! ]`;
           } else if (qStatus === 'in_progress') {
             prompt = `📋 퀘스트 진행 확인 (SPACE) [ ? ]`;
@@ -6621,6 +6637,13 @@ class GameEngine {
         } else if (q && q.status === 'in_progress' && !q.guidebookCollected) {
           this.drawFloatingQuestMarker(px + 16, py - 18, 'in_progress');
         }
+      } else if (npc.questId) {
+        const qStatus = (window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
+          ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
+          : 'available';
+        if (qStatus && qStatus !== 'done') {
+          this.drawFloatingQuestMarker(px + 16, py - 18, qStatus);
+        }
       }
 
       // 학생 NPC 밑의 이름 안내 라벨 제거 (깔끔한 시각 디자인 유지)
@@ -9324,15 +9347,12 @@ class GameEngine {
       return;
     }
 
-    // 2. Quest Marker (! or ?)
+    // 2. Quest Marker (! or ? or 🔒)
     const app = window.MainApp;
-    if (app && app.playerData && app.playerData.quests) {
-      const q = app.playerData.quests['quest_library_missing_books'];
-      if (!q) {
-        this.drawFloatingQuestMarker(lx, ly - 14, 'available');
-      } else if (q.status === 'in_progress') {
-        const allDone = (q.bookPgCollected && q.bookOfCollected && q.bookHiCollected);
-        this.drawFloatingQuestMarker(lx, ly - 14, allDone ? 'completed' : 'in_progress');
+    if (app && typeof app.getTeacherQuestStatus === 'function') {
+      const qStatus = app.getTeacherQuestStatus('quest_library_missing_books');
+      if (qStatus && qStatus !== 'done') {
+        this.drawFloatingQuestMarker(lx, ly - 14, qStatus);
       }
     }
   }
@@ -11719,7 +11739,26 @@ class GameEngine {
     const bob = Math.sin(Date.now() / 240) * 3.5;
     const my = cy + bob;
 
-    if (status === 'available') {
+    if (status === 'locked') {
+      // 0. 자물쇠 [ 🔒 ] (레벨 부족 잠김)
+      ctx.shadowColor = 'rgba(239, 68, 68, 0.4)';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = '#7f1d1d';
+      ctx.beginPath();
+      ctx.arc(cx, my, 11, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#fca5a5';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.shadowBlur = 0;
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🔒', cx, my);
+
+    } else if (status === 'available') {
       // 1. 노란색 느낌표 [ ! ] + 빛나는 펄스 아우라
       const pulse = (Math.sin(Date.now() / 200) + 1) / 2;
 
