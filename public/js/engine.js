@@ -374,6 +374,9 @@ class GameEngine {
       if (this.player.floor === 2) {
         return WORLD_DATA.LIBRARY_WIDTH || 20;
       }
+      if (this.player.floor === 3) {
+        return WORLD_DATA.FLOOR_3_HALLWAY_WIDTH || 12;
+      }
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
     if (this.player && this.player.room === 'room_staff_office') {
@@ -384,6 +387,9 @@ class GameEngine {
     }
     if (this.player && this.player.room === 'room_secret_history') {
       return WORLD_DATA.SECRET_HISTORY_WIDTH || 16;
+    }
+    if (this.player && (this.player.room === 'room_health' || this.player.room === 'room_wee')) {
+      return WORLD_DATA.HEALTH_WEE_WIDTH || 20;
     }
     return WORLD_DATA.MAP_WIDTH || 30;
   }
@@ -403,6 +409,9 @@ class GameEngine {
     }
     if (this.player && this.player.room === 'room_secret_history') {
       return WORLD_DATA.SECRET_HISTORY_HEIGHT || 20;
+    }
+    if (this.player && (this.player.room === 'room_health' || this.player.room === 'room_wee')) {
+      return WORLD_DATA.HEALTH_WEE_HEIGHT || 20;
     }
     return WORLD_DATA.MAP_HEIGHT || 20;
   }
@@ -500,11 +509,15 @@ class GameEngine {
         const floorData = WORLD_DATA.floors[this.player.floor];
         if (floorData) {
           const isDoor = floorData.rooms.some(r => ((r.id === "room_career" || r.id === "room_staff_office") ? (tileX >= r.doorX - 1 && tileX <= r.doorX + 2) : r.doorX === tileX) && r.doorY === tileY);
-          if (!isDoor) return true;
+          const isElevator = (floorData.elevator && Math.abs(tileX - floorData.elevator.x) <= 1 && tileY >= floorData.elevator.y);
+          if (!isDoor && !isElevator) return true;
         }
       }
       // 6층 디벗 수리함 & 분리수거함 장애물 충돌 판정 (가로 4배: 타일 14~18)
       if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || (tileX >= 14 && tileX <= 18))) {
+        return true;
+      }
+      if (this.player.floor === 3 && tileY === 7 && tileX === 1) {
         return true;
       }
     } else {
@@ -540,16 +553,16 @@ class GameEngine {
       }
 
       if (this.player.room === 'room_health') {
-        if ((tileX >= 22 && tileX <= 24) && ((tileY >= 6 && tileY <= 7) || (tileY >= 11 && tileY <= 12))) return true;
-        if ((tileX >= 8 && tileX <= 10) && (tileY >= 6 && tileY <= 7)) return true;
-        if (tileX === 15 && tileY === 4) return true;
-        if (tileX === 4 && (tileY === 6 || tileY === 11)) return true;
+        if ((tileX >= 14 && tileX <= 16) && ((tileY >= 6 && tileY <= 7) || (tileY >= 11 && tileY <= 12))) return true;
+        if ((tileX >= 5 && tileX <= 7) && (tileY >= 6 && tileY <= 7)) return true;
+        if (tileX === 10 && tileY === 4) return true;
+        if (tileX === 3 && (tileY === 6 || tileY === 11)) return true;
       }
 
       if (this.player.room === 'room_wee') {
-        if ((tileX >= 8 && tileX <= 10) && (tileY >= 6 && tileY <= 7)) return true;
-        if ((tileX >= 21 && tileX <= 23) && ((tileY >= 7 && tileY <= 8) || (tileY >= 12 && tileY <= 13))) return true;
-        if (tileX === 4 && (tileY === 6 || tileY === 11)) return true;
+        if ((tileX >= 5 && tileX <= 7) && (tileY >= 6 && tileY <= 7)) return true;
+        if ((tileX >= 14 && tileX <= 16) && ((tileY >= 6 && tileY <= 7) || (tileY >= 11 && tileY <= 12))) return true;
+        if (tileX === 3 && (tileY === 6 || tileY === 11)) return true;
       }
 
       if (tileY >= cr.exitDoor.y + 1) return true; // bottom wall
@@ -887,6 +900,10 @@ class GameEngine {
           this.player.x = 16 * 32;
           this.player.y = 5 * 32;
           this.player.roomName = WORLD_DATA.floors[2] ? WORLD_DATA.floors[2].name : '2층 도서관 (독립 전용층)';
+        } else if (this.player.floor === 3) {
+          this.player.x = 9 * 32;
+          this.player.y = 6 * 32;
+          this.player.roomName = WORLD_DATA.floors[3] ? WORLD_DATA.floors[3].name : '3층 복도 (보건 & 힐링 구역)';
         } else {
           this.player.x = 15 * 32;
           this.player.y = 10 * 32;
@@ -895,13 +912,13 @@ class GameEngine {
       } else if (room === 'room_health') {
         this.player.floor = 3;
         this.player.room = 'room_health';
-        this.player.x = 15 * 32;
+        this.player.x = 10 * 32;
         this.player.y = 15 * 32;
         this.player.roomName = '🏥 보건실 (Health Care)';
       } else if (room === 'room_wee') {
         this.player.floor = 3;
         this.player.room = 'room_wee';
-        this.player.x = 15 * 32;
+        this.player.x = 10 * 32;
         this.player.y = 15 * 32;
         this.player.roomName = '🕊️ Wee클래스 (상담실)';
       } else if (room === 'room_career') {
@@ -5649,6 +5666,12 @@ class GameEngine {
       ledColor: '#38bdf8',
       name: '중앙 엘리베이터 (5층)',
       prompt: '엘리베이터 층 선택 (SPACE)'
+    } : (currentFloor === 3) ? {
+      state: 'ready',
+      ledText: '[ 3F ]',
+      ledColor: '#34d399',
+      name: '중앙 엘리베이터 (3층)',
+      prompt: '엘리베이터 층 선택 (SPACE)'
     } : (isHallway ? this.getElevatorStatus() : {
       state: 'ready',
       ledText: '[ 1F ▲ ]',
@@ -5781,14 +5804,25 @@ class GameEngine {
     }
 
     // Official School Motto Banner mounted in Center Hallway
-    this.drawSharpLabel(15 * 32 + 16, 26, '🏫 교훈: 참과 사랑에 사는 사명인', {
-      bgColor: '#1e1b4b',
-      borderColor: '#f59e0b',
-      textColor: '#fef08a',
-      fontSize: 12.5,
-      paddingX: 14,
-      height: 22
-    });
+    if (this.player.floor === 3) {
+      this.drawSharpLabel(6 * 32, 26, '🏥 3층: 건강과 마음 힐링 구역 (Health & Healing)', {
+        bgColor: '#064e3b',
+        borderColor: '#34d399',
+        textColor: '#a7f3d0',
+        fontSize: 12,
+        paddingX: 12,
+        height: 22
+      });
+    } else {
+      this.drawSharpLabel(15 * 32 + 16, 26, '🏫 교훈: 참과 사랑에 사는 사명인', {
+        bgColor: '#1e1b4b',
+        borderColor: '#f59e0b',
+        textColor: '#fef08a',
+        fontSize: 12.5,
+        paddingX: 14,
+        height: 22
+      });
+    }
 
     // 4. Staircases & Elevator
     if (fData && fData.stairsDown) {
@@ -5891,7 +5925,9 @@ class GameEngine {
     const isCareerRoom = (this.player.room === 'room_career');
     const isStaffOffice = (this.player.room === 'room_staff_office');
     const isSecretHistory = (this.player.room === 'room_secret_history');
-    const centerTileX = isStaffOffice ? 45 : (isCareerRoom ? 30 : 15);
+    const isHealthRoom = (this.player.room === 'room_health');
+    const isWeeRoom = (this.player.room === 'room_wee');
+    const centerTileX = isStaffOffice ? 45 : (isCareerRoom ? 30 : ((isHealthRoom || isWeeRoom) ? 10 : 15));
     if (!isStaffOffice && !isSecretHistory) {
       this.drawHighResBlackboard(cr, centerTileX);
       this.drawHighResWallClock(centerTileX * 32, 16);
@@ -15242,20 +15278,20 @@ class GameEngine {
     this.ctx.strokeRect(tx * 32, ty * 32, 32, 32);
   }
 
-  // 🏥 3층 보건실 실내 전체 렌더링
+  // 🏥 3층 보건실 실내 전체 렌더링 (도서관 규격 20 x 20 독립공간)
   renderHealthRoom(cr) {
     const ctx = this.ctx;
     ctx.save();
 
-    // 1. 중앙 힐링 민트 러너 & 보건 십자가 엠블럼
+    // 1. 중앙 힐링 민트 러너 & 보건 십자가 엠블럼 (x: 8.5~11.5, y: 5..17)
     ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
-    ctx.fillRect(13.5 * 32, 5 * 32, 3 * 32, 12 * 32);
+    ctx.fillRect(8.5 * 32, 5 * 32, 3 * 32, 12 * 32);
     ctx.strokeStyle = '#10b981';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(13.5 * 32, 5 * 32, 3 * 32, 12 * 32);
+    ctx.strokeRect(8.5 * 32, 5 * 32, 3 * 32, 12 * 32);
 
-    // 중앙 바닥 그린 크로스 심볼 (Green Cross)
-    const cx = 15 * 32;
+    // 중앙 바닥 그린 크로스 심볼 (Green Cross at cx: 10, cy: 10)
+    const cx = 10 * 32;
     const cy = 10 * 32;
     ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
     ctx.fillRect(cx - 6, cy - 18, 12, 36);
@@ -15265,25 +15301,25 @@ class GameEngine {
     ctx.strokeRect(cx - 6, cy - 18, 12, 36);
     ctx.strokeRect(cx - 18, cy - 6, 36, 12);
 
-    // 2. 보건 선생님 진료 데스크 (x: 9, y: 6)
-    this.drawHighResNurseDesk(9 * 32, 6 * 32);
+    // 2. 보건 선생님 진료 데스크 (x: 6, y: 6)
+    this.drawHighResNurseDesk(6 * 32, 6 * 32);
 
-    // 3. 회복 침대 2조 (x: 23, y: 6 / x: 23, y: 11)
-    this.drawHighResHealthBed(23 * 32, 6 * 32, '🛏️ 회복 침대 1번', 1);
-    this.drawHighResHealthBed(23 * 32, 11 * 32, '🛏️ 회복 침대 2번', 2);
+    // 3. 회복 침대 2조 (x: 15, y: 6 / x: 15, y: 11)
+    this.drawHighResHealthBed(15 * 32, 6 * 32, '🛏️ 회복 침대 1번', 1);
+    this.drawHighResHealthBed(15 * 32, 11 * 32, '🛏️ 회복 침대 2번', 2);
 
-    // 4. 응급 구급약 & 약초 캐비닛 (x: 15, y: 4)
-    this.drawHighResMedicalCabinet(15 * 32, 4 * 32);
+    // 4. 응급 구급약 & 약초 캐비닛 (x: 10, y: 4)
+    this.drawHighResMedicalCabinet(10 * 32, 4 * 32);
 
-    // 5. 자동 신장·체중 측정기 (x: 4, y: 6)
-    this.drawHighResHealthScale(4 * 32, 6 * 32);
+    // 5. 자동 신장·체중 측정기 (x: 3, y: 6)
+    this.drawHighResHealthScale(3 * 32, 6 * 32);
 
-    // 6. 한미 시력 검사표 (x: 4, y: 11)
-    this.drawHighResEyeChart(4 * 32, 11 * 32);
+    // 6. 한미 시력 검사표 (x: 3, y: 11)
+    this.drawHighResEyeChart(3 * 32, 11 * 32);
 
     // 7. 실내 관엽 식물 (산세베리아 / 스파티필름)
     this.drawHighResHealthPlant(2 * 32, 4 * 32);
-    this.drawHighResHealthPlant(27 * 32, 4 * 32);
+    this.drawHighResHealthPlant(17 * 32, 4 * 32);
 
     ctx.restore();
   }
@@ -15511,48 +15547,48 @@ class GameEngine {
     ctx.fill();
   }
 
-  // 🕊️ 3층 Wee클래스 실내 전체 렌더링
+  // 🕊️ 3층 Wee클래스 실내 전체 렌더링 (도서관 규격 20 x 20 독립공간)
   renderWeeClassRoom(cr) {
     const ctx = this.ctx;
     ctx.save();
 
     // 1. 포근한 라벤더 & 피치 원형 카페트 2개
-    // 상담석 라벤더 카펫
+    // 상담석 라벤더 카펫 (x: 6, y: 6)
     ctx.fillStyle = 'rgba(167, 139, 250, 0.22)';
     ctx.beginPath();
-    ctx.ellipse(9 * 32 + 6, 7 * 32, 54, 38, 0, 0, Math.PI * 2);
+    ctx.ellipse(6 * 32 + 6, 7 * 32, 46, 34, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#8b5cf6';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // 힐링 라운지 피치 카펫
+    // 힐링 라운지 피치 카펫 (x: 15, y: 9)
     ctx.fillStyle = 'rgba(251, 146, 60, 0.22)';
     ctx.beginPath();
-    ctx.ellipse(22 * 32, 9 * 32 + 16, 68, 52, 0, 0, Math.PI * 2);
+    ctx.ellipse(15 * 32, 9 * 32 + 16, 54, 46, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#f97316';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // 2. 전문상담 선생님 상담 데스크 (x: 9, y: 6)
-    this.drawHighResWeeDesk(9 * 32, 6 * 32);
+    // 2. 전문상담 선생님 상담 데스크 (x: 6, y: 6)
+    this.drawHighResWeeDesk(6 * 32, 6 * 32);
 
-    // 3. 토닥토닥 힐링 쿠션 & 빈백 라운지 (x: 22, y: 7)
-    this.drawHighResWeeLounge(22 * 32, 7 * 32);
+    // 3. 토닥토닥 힐링 쿠션 & 빈백 라운지 (x: 15, y: 6)
+    this.drawHighResWeeLounge(15 * 32, 6 * 32);
 
-    // 4. 따뜻한 캐모마일 허브차 테이블 (x: 22, y: 12)
-    this.drawHighResWeeTeaTable(22 * 32, 12 * 32);
+    // 4. 따뜻한 캐모마일 허브차 테이블 (x: 15, y: 11)
+    this.drawHighResWeeTeaTable(15 * 32, 11 * 32);
 
-    // 5. 익명 고민 & 따뜻한 응원 우체통 (x: 4, y: 6)
-    this.drawHighResWeeMailbox(4 * 32, 6 * 32);
+    // 5. 익명 고민 & 따뜻한 응원 우체통 (x: 3, y: 6)
+    this.drawHighResWeeMailbox(3 * 32, 6 * 32);
 
-    // 6. 오늘 나의 감정 날씨판 (x: 4, y: 11)
-    this.drawHighResEmotionBoard(4 * 32, 11 * 32);
+    // 6. 오늘 나의 감정 날씨판 (x: 3, y: 11)
+    this.drawHighResEmotionBoard(3 * 32, 11 * 32);
 
     // 7. 실내 따뜻한 화분
     this.drawHighResHealthPlant(2 * 32, 4 * 32);
-    this.drawHighResHealthPlant(27 * 32, 4 * 32);
+    this.drawHighResHealthPlant(17 * 32, 4 * 32);
 
     ctx.restore();
   }
