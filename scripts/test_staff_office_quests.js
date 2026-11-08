@@ -97,11 +97,11 @@ const crCareer = w.classroom_career;
 assert(crCareer, 'classroom_career must exist');
 const guidebook = crCareer.interactive && crCareer.interactive.find(i => i.id === 'quest_career_guidebook');
 assert(guidebook, 'Career guidebook must exist in classroom_career');
-assert.strictEqual(guidebook.x, 18, 'Guidebook must be at consultation desk x=48');
-assert.strictEqual(guidebook.y, 14, 'Guidebook must be at consultation desk y=12');
+assert.strictEqual(guidebook.x, 55, 'Guidebook must be at 1:1 counseling room 1 corner x=55');
+assert.strictEqual(guidebook.y, 5, 'Guidebook must be at 1:1 counseling room 1 corner y=5');
 const mentorDesk = crCareer.interactive.find(i => i.id === 'career_clue_5');
 assert(Math.hypot(guidebook.x - mentorDesk.x, guidebook.y - mentorDesk.y) >= 5, 'Guidebook must be well separated from mentoring desk');
-console.log('✔ 9. Career guidebook on consultation desk in 5F career room (x: 48, y: 12) verified');
+console.log('✔ 9. Career guidebook in 1:1 counseling room 1 corner (x: 55, y: 5) verified');
 
 // Test Worried Student on 6th floor hallway east window
 const f6 = w.floors[6];

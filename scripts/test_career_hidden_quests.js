@@ -133,25 +133,27 @@ console.log('✅ 7. Quest 2 Step 1: Recipe discovered, quest in_progress');
 // Test Quest 2 Step 2: Try without ingredients -> shows requirement
 app.handleCareerCounsel2Interaction();
 assert(lastDialog.title.includes('재료 준비 중'), 'Dialog must show missing ingredients');
-console.log('✅ 8. Quest 2 Step 2: Missing ingredients properly checked (2 Forsythia, 1 Herb)');
+assert(lastDialog.text.includes('향긋한 허브: 0 / 5개'), 'Dialog must show 5 herbs required');
+assert(lastDialog.text.includes('노란 개나리 꽃잎: 0 / 2개'), 'Dialog must show 2 forsythia required');
+console.log('✅ 8. Quest 2 Step 2: Missing ingredients properly checked (5 Herbs, 2 Forsythia)');
 
 // Test Quest 2 Step 3: Add partial ingredients -> still missing
-app.addItem('item_forsythia', '개나리 꽃잎', 1, '🌼');
+app.addItem('item_forsythia', '개나리 꽃잎', 2, '🌼');
+app.addItem('item_herb', '향긋한 허브', 3, '🌿'); // only 3 out of 5
 app.handleCareerCounsel2Interaction();
 assert.strictEqual(app.playerData.hiddenQuestCareer2, 'in_progress');
 
-// Add full ingredients
-app.addItem('item_forsythia', '개나리 꽃잎', 1, '🌼'); // total 2
-app.addItem('item_herb', '향긋한 허브', 1, '🌿'); // total 1
+// Add remaining ingredients
+app.addItem('item_herb', '향긋한 허브', 2, '🌿'); // total 5
 
 // Test Quest 2 Step 4: Turn in at counsel 2 -> consumes ingredients, receives exactly 1 ginkgo leaf
 const ginkgoBeforeQ2 = app.getItemCount('item_ginkgo');
 app.handleCareerCounsel2Interaction();
 assert.strictEqual(app.playerData.hiddenQuestCareer2, 'completed', 'Quest 2 must be completed');
 assert.strictEqual(app.getItemCount('item_forsythia'), 0, '2 Forsythia must be consumed');
-assert.strictEqual(app.getItemCount('item_herb'), 0, '1 Herb must be consumed');
+assert.strictEqual(app.getItemCount('item_herb'), 0, '5 Herbs must be consumed');
 assert.strictEqual(app.getItemCount('item_ginkgo'), ginkgoBeforeQ2 + 1, 'Must receive exactly 1 ginkgo leaf');
-console.log('✅ 9. Quest 2 Step 3 & 4: Ingredients consumed & rewarded exactly 1 황금 은행잎');
+console.log('✅ 9. Quest 2 Step 3 & 4: 5 Herbs and 2 Forsythia consumed & rewarded exactly 1 황금 은행잎');
 
 // Test Quest 2 Step 5: Post-completion visit
 app.handleCareerCounsel2Interaction();

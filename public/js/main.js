@@ -762,6 +762,18 @@ const CAREER_ESCAPE_CLUES = [
     options: ['Violin (바이올린)', 'Guitar (기타)', 'Piano (피아노)', 'Drum (드럼)'],
     answer: 'Piano (피아노)',
     clueReveal: '알파벳 [ P ]를 발견했습니다! ...어라? 🤔 칠판의 6자리 비밀 암호(D-R-E-A-M-S) 어디에도 \'P\'가 들어갈 자리가 없는 것 같습니다!\n\n💡 [주의]: 탈출 정답과 관련 없는 낚시 단서인 것 같습니다! 🎣'
+  },
+  {
+    index: 8,
+    id: 'career_clue_8',
+    isDecoy: true,
+    title: '🎙️ 방송 마이크 부스 (미디어/음향)',
+    letter: 'K',
+    stationName: '방송 마이크 부스',
+    question: '스튜디오 마이크 콘솔에서 수상한 오디오 대본 쪽지가 발견되었습니다!\n\n"마이크를 켜고 방송을 시작하지만, 이 주파수는 탈출구로 연결되지 않는다...\n빛나는 무대 뒤에는 언제나 또 다른 함정이 도사리고 있다."\n\n임금이나 국왕을 뜻하는 영어 단어는 무엇일까요?\n💡 힌트: K로 시작하는 4글자 단어입니다!',
+    options: ['Queen (여왕)', 'Prince (왕자)', 'King (국왕)', 'Knight (기사)'],
+    answer: 'King (국왕)',
+    clueReveal: '알파벳 [ K ]를 발견했습니다! ...어라? 🤔 칠판의 6자리 비밀 암호(D-R-E-A-M-S) 어디에도 \'K\'가 들어갈 자리가 없습니다!\n\n💡 [주의]: 탈출 정답과 관련 없는 낚시 단서인 것 같습니다! 🎣'
   }
 ];
 
@@ -1936,12 +1948,12 @@ class MainApp {
                 window.AudioManager.playCorrect();
               }
               if (!Array.isArray(this.playerData.careerClues)) {
-                this.playerData.careerClues = [false, false, false, false, false, false, false];
+                this.playerData.careerClues = [false, false, false, false, false, false, false, false];
               }
               this.playerData.careerClues[clueIndex - 1] = true;
               this.saveProgress();
 
-              const solvedCount = this.playerData.careerClues.filter(Boolean).length;
+              const solvedCount = this.playerData.careerClues.slice(0, 6).filter(Boolean).length;
 
               if (feedEl && feedTextEl) {
                 feedEl.classList.remove('hidden');
@@ -1989,7 +2001,7 @@ class MainApp {
     }
     const clues = this.playerData.careerClues;
     const letters = ['D', 'R', 'E', 'A', 'M', 'S'];
-    const solvedCount = clues.filter(Boolean).length;
+    const solvedCount = clues.slice(0, 6).filter(Boolean).length;
     const allSolved = clues.slice(0, 6).every(Boolean);
     const hasEscaped = !!this.playerData.hasEscapedCareerRoom;
 
@@ -9768,15 +9780,15 @@ class MainApp {
 
     // 2. 퀘스트 진행 중인 경우 -> 재료 확인 및 달이기
     if (quest2State === 'in_progress') {
-      const forsythiaCount = (typeof this.getItemCount === 'function' ? this.getItemCount('item_forsythia') : 0) || 0;
       const herbCount = (typeof this.getItemCount === 'function' ? this.getItemCount('item_herb') : 0) || 0;
+      const forsythiaCount = (typeof this.getItemCount === 'function' ? this.getItemCount('item_forsythia') : 0) || 0;
 
-      // 재료 충족: 개나리 꽃잎 2개 + 약초 1개
-      if (forsythiaCount >= 2 && herbCount >= 1) {
+      // 재료 충족: 향긋한 허브 5개 + 노란 개나리 꽃잎 2개
+      if (herbCount >= 5 && forsythiaCount >= 2) {
+        this.removeItem('item_herb', 5);
         this.removeItem('item_forsythia', 2);
-        this.removeItem('item_herb', 1);
 
-        const completeMsg = '모아온 [노란 개나리 꽃잎 2개]와 [향긋한 허브 1개]를 찻주전자에 넣고 따뜻한 온수를 부었습니다!\n\n' +
+        const completeMsg = '모아온 [향긋한 허브 5개]와 [노란 개나리 꽃잎 2개]를 찻주전자에 넣고 따뜻한 온수를 부었습니다!\n\n' +
           '은은한 황금빛 김과 함께 달콤하고 향긋한 허브티가 완성되었습니다.\n' +
           '한 모금 마시자 가슴을 짓누르던 시험 스트레스와 불안감이 눈 녹듯 사르르 풀려납니다.\n\n' +
           '찻잔 받침대 아래에 감사의 징표로 반짝이는 황금 은행잎이 놓여 있습니다.\n\n' +
@@ -9811,12 +9823,9 @@ class MainApp {
       // 재료 부족 안내
       const needMsg = '따뜻한 찻잔 옆에 찻주전자가 정갈하게 준비되어 있습니다.\n\n' +
         '📜 [허브티에 필요한 재료]\n' +
-        `• 🌼 노란 개나리 꽃잎: ${forsythiaCount} / 2개\n` +
-        `• 🌿 향긋한 허브: ${herbCount} / 1개\n\n` +
-        '🔍 [재료 구하는 곳]\n' +
-        '• 7층 [1학년 1반] 교실의 개나리 화분 & 허브 화단 (SPACE 눌러 퀴즈 풀기)\n' +
-        '• 7층 1학년 5반 [연금술사 졍경슉 선생님]의 연금술 솥에서 골드로 즉시 연성\n' +
-        '• (이미 가방🎒에 모아둔 재료가 있다면 바로 차를 달일 수 있습니다!)';
+        `• 🌿 향긋한 허브: ${herbCount} / 5개\n` +
+        `• 🌼 노란 개나리 꽃잎: ${forsythiaCount} / 2개\n\n` +
+        '향긋한 허브 5개와 노란 개나리 꽃잎 2개를 모아오면 따뜻한 허브티를 달일 수 있습니다.';
       if (window.RPGDialog) {
         window.RPGDialog.show('🍵 [1:1 상담실 2] 특제 허브티 재료 준비 중', needMsg, '🌿');
       } else {
@@ -9827,8 +9836,8 @@ class MainApp {
 
     // 3. 최초 발견 -> 퀘스트 시작!
     const startMsg = '자기주도학습 플래너를 살펴보던 중, 뒤표지에 손글씨로 적힌 특별한 메모를 발견했습니다!\n\n' +
-      '📜 [마음 치유의 특제 허브티 레시피]\n"시험과 진로에 대한 불안감으로 마음이 턱 막힐 때는, 7층 1학년 1반에서 피어난 [노란 개나리 꽃잎 2개]와 [향긋한 허브 1개]를 달여 마셔보렴. 굳었던 마음이 사르르 녹아내린단다."\n\n' +
-      '✨ [히든 퀘스트 시작!] 7층 1-1반 교실 화단(또는 가방/연금술)에서 개나리 꽃잎 2개와 향긋한 허브 1개를 모아와 따뜻한 허브티를 달여보자!';
+      '📜 [마음 치유의 특제 허브티 레시피]\n"시험과 진로에 대한 불안감으로 마음이 턱 막힐 때는, [향긋한 허브 5개]와 [노란 개나리 꽃잎 2개]를 달여 마셔보렴. 굳었던 마음이 사르르 녹아내린단다."\n\n' +
+      '✨ [히든 퀘스트 시작!] 향긋한 허브 5개와 노란 개나리 꽃잎 2개를 모아와 따뜻한 허브티를 달여보자!';
 
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();
@@ -9848,7 +9857,7 @@ class MainApp {
     } else {
       alert(startMsg);
     }
-    this.showToast('✨ [히든 퀘스트] 마음 치유의 허브티 레시피 발견! 개나리 꽃잎 2개와 허브 1개를 모아오세요.', 'info');
+    this.showToast('✨ [히든 퀘스트] 특제 허브티 레시피 발견! 향긋한 허브 5개와 노란 개나리 꽃잎 2개를 모아오세요.', 'info');
   }
 
   handleHangangwooDeskInteraction() {
@@ -10773,7 +10782,7 @@ class MainApp {
       window.AudioManager.playCollect();
     }
 
-    this.showToast('📘 5층 진로상담실 책상에서 [진로 적성 검사 안내서]를 회수했습니다!', 'success');
+    this.showToast('📘 5층 1:1 상담실 1 구석에서 [진로 적성 검사 안내서]를 회수했습니다!', 'success');
 
     if (quest.studentComforted) {
       setTimeout(() => {

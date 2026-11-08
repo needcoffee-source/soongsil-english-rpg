@@ -3104,10 +3104,9 @@ class GameEngine {
     this.drawCareerStationDecoy(10 * 32, 14 * 32);
     this.drawCareerClueLabel(10 * 32 + 16, 14 * 32 - 18, 7, '골동품 서류가방', 'P', clues[6]);
 
-    // 8-B. Draw Career Quest Guidebook on dedicated consultation desk (x: 18, y: 14)
-    if (!window.MainApp || typeof window.MainApp.isQuestCareerBookCollected !== 'function' || !window.MainApp.isQuestCareerBookCollected()) {
-      this.drawCareerQuestGuideBook(18 * 32, 14 * 32);
-    }
+    // 8-B. Draw Decoy Clue Station 8: 🎙️ Broadcast Studio & Sound Booth (x: 18, y: 14)
+    this.drawCareerStationBroadcast(18 * 32, 14 * 32);
+    this.drawCareerClueLabel(18 * 32 + 16, 14 * 32 - 18, 8, '방송 마이크 부스', 'K', clues[7]);
 
     // 9. Draw Fallen Developer Note #2 (가장 왼쪽 아래편: x: 4, y: 16)
     this.drawHighResDevNote(4 * 32, 16 * 32, '📜 떨어진 개발자노트 (제2편)');
@@ -3152,6 +3151,11 @@ class GameEngine {
 
     // 1-D. 내부 가구 및 원형 상담 테이블 (x: 50*32+16, y: 6*32+16)
     this.drawCareerCounselDesk1(50 * 32 + 16, 6 * 32 + 16);
+
+    // 1-F. 가장 구석 책상 위 진로 적성 검사 안내서 (x: 55, y: 5)
+    if (!window.MainApp || typeof window.MainApp.isQuestCareerBookCollected !== 'function' || !window.MainApp.isQuestCareerBookCollected()) {
+      this.drawCareerQuestGuideBook(55 * 32, 5 * 32);
+    }
 
     // 1-E. 서쪽 출입구 상단 도어 명패 현판
     this.drawSharpLabel(42.5 * 32, 5.2 * 32, '💬 1:1 상담실 1', {
@@ -3566,6 +3570,64 @@ class GameEngine {
     this.ctx.fillRect(px + 7, py + 4, 3, 5);
     this.ctx.fillRect(px + 22, py + 4, 3, 5);
     this.ctx.fillRect(px + 13, py - 3, 6, 3);
+  }
+
+  // Decoy Clue 8: Broadcast Studio & Sound Booth (x: 18, y: 14)
+  drawCareerStationBroadcast(px, py) {
+    // Studio acoustic mat
+    this.ctx.fillStyle = 'rgba(79, 70, 229, 0.16)';
+    this.ctx.fillRect(px - 14, py - 6, 60, 42);
+    this.ctx.strokeStyle = '#6366f1';
+    this.ctx.lineWidth = 1.2;
+    this.ctx.strokeRect(px - 14, py - 6, 60, 42);
+
+    // Studio audio console desk
+    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillRect(px - 4, py + 8, 40, 18);
+    this.ctx.fillStyle = '#1e1b4b';
+    this.ctx.fillRect(px - 2, py + 10, 36, 14);
+
+    // Mixer sliders & knobs
+    this.ctx.fillStyle = '#38bdf8';
+    this.ctx.fillRect(px + 2, py + 13, 3, 7);
+    this.ctx.fillRect(px + 8, py + 12, 3, 8);
+    this.ctx.fillRect(px + 14, py + 15, 3, 5);
+    // Green/Yellow/Red VU meter
+    this.ctx.fillStyle = '#22c55e';
+    this.ctx.fillRect(px + 20, py + 14, 5, 2);
+    this.ctx.fillStyle = '#eab308';
+    this.ctx.fillRect(px + 20, py + 12, 5, 2);
+    this.ctx.fillStyle = '#ef4444';
+    this.ctx.fillRect(px + 20, py + 10, 5, 2);
+
+    // Boom arm & Studio Condenser Microphone
+    this.ctx.strokeStyle = '#64748b';
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(px + 30, py + 10);
+    this.ctx.lineTo(px + 26, py - 2);
+    this.ctx.lineTo(px + 16, py - 4);
+    this.ctx.stroke();
+
+    // Mic body (silver cylinder)
+    this.ctx.fillStyle = '#cbd5e1';
+    this.ctx.fillRect(px + 12, py - 8, 8, 12);
+    this.ctx.strokeStyle = '#334155';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(px + 12, py - 8, 8, 12);
+    // Pop filter circle
+    this.ctx.strokeStyle = '#0284c7';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.arc(px + 9, py - 2, 5, 0, Math.PI * 2);
+    this.ctx.stroke();
+
+    // Glowing ON AIR red box
+    this.ctx.fillStyle = '#dc2626';
+    this.ctx.fillRect(px + 2, py - 8, 10, 5);
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = 'bold 3px sans-serif';
+    this.ctx.fillText('ON AIR', px + 3, py - 4);
   }
 
   // Digital Escape Keypad
@@ -11887,6 +11949,8 @@ class GameEngine {
     if (tileX === 43 && ((tileY >= 4 && tileY <= 5) || (tileY >= 8 && tileY <= 9))) return true;
     // 1-E. 상담 테이블 1 충돌 판정 (x: 50, y: 6..7)
     if ((tileY === 6 || tileY === 7) && tileX === 50) return true;
+    // 1-F. 가장 구석 책상 위 진로 적성 검사 안내서 (x: 55, y: 5)
+    if (tileY === 5 && tileX === 55) return true;
 
     // [1:1 상담실 2 - 하단 (x: 43..57, y: 11..16)]
     // 2-A. 북쪽 벽 (y: 11, x: 43..57)

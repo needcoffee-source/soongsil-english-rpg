@@ -176,7 +176,7 @@ const WORLD_DATA = {
     desks: [],
     npcs: [],
     interactive: [
-      // === 좌측: 진로 방탈출 6대 단서 & 퀘스트 안내서 ===
+      // === 좌측: 진로 방탈출 6대 단서 & 2대 페이크 단서 ===
       { id: "career_clue_1", type: "career_clue", clueIndex: 1, letter: "D", x: 6, y: 6, name: "🏥 적성검사 PC (의료/생명)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_2", type: "career_clue", clueIndex: 2, letter: "R", x: 14, y: 6, name: "🔬 과학 연구대 (학술/탐구)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_5", type: "career_clue", clueIndex: 5, letter: "M", x: 22, y: 6, name: "🤝 멘토링 데스크 (교육/리더십)", prompt: "단서 조사 (SPACE)" },
@@ -184,11 +184,12 @@ const WORLD_DATA = {
       { id: "career_clue_4", type: "career_clue", clueIndex: 4, letter: "A", x: 14, y: 10, name: "🎨 예술 이젤 (문화/창작)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_6", type: "career_clue", clueIndex: 6, letter: "S", x: 22, y: 10, name: "🔭 우주 탐구관 (자연/천문)", prompt: "단서 조사 (SPACE)" },
       { id: "career_clue_7", type: "career_clue", clueIndex: 7, isDecoy: true, letter: "P", x: 10, y: 14, name: "💼 골동품 서류가방 (미지의 단서)", prompt: "단서 조사 (SPACE)" },
-      { id: "quest_career_guidebook", type: "quest_career_book", x: 18, y: 14, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
+      { id: "career_clue_8", type: "career_clue", clueIndex: 8, isDecoy: true, letter: "K", x: 18, y: 14, name: "🎙️ 방송 마이크 부스 (미디어/음향)", prompt: "단서 조사 (SPACE)" },
       { id: "career_exit_keypad", type: "career_exit_keypad", x: 30, y: 6, name: "🔐 진로실 탈출 도어락", prompt: "탈출 도어락 조작 (SPACE)" },
       { id: "note_developer_career", type: "dev_note_2", x: 4, y: 16, name: "📜 떨어진 개발자노트 (제2편)", prompt: "개발자노트 2편 읽기 (SPACE)" },
       // === 우측: 1:1 상담실 1 & 1:1 상담실 2 전용 상담석 (가로 14타일 중심: x: 50) ===
       { id: "desk_career_counsel_1", type: "desk_career_counsel_1", x: 50, y: 6, name: "💬 [1:1 상담실 1] 진로 심층 상담석", prompt: "1:1 심층 상담석 살펴보기 (SPACE)" },
+      { id: "quest_career_guidebook", type: "quest_career_book", x: 55, y: 5, name: "📘 진로 적성 검사 안내서", prompt: "진로 적성 검사 안내서 회수하기 (SPACE)" },
       { id: "desk_career_counsel_2", type: "desk_career_counsel_2", x: 50, y: 13, name: "💬 [1:1 상담실 2] 학습·진학 코칭석", prompt: "1:1 코칭 상담석 살펴보기 (SPACE)" }
     ]
   },

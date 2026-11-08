@@ -1319,6 +1319,7 @@ class UphillRushGame {
     }
 
     // 7. 🦘 Render Player Character (with Jump & Shadows)
+    const pPersp = this.getPerspective(this.playerY);
     const isInvincible = Date.now() < this.invincibleUntil;
     const isBlinking = isInvincible && (Math.floor(Date.now() / 100) % 2 === 0);
 
