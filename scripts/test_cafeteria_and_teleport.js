@@ -270,6 +270,7 @@ app.playerData.hasCafeteriaKey = true;
 window.RPGDialog.lastMsg = null;
 app.handleCafeteriaEntranceInteraction();
 assert(window.RPGDialog.lastMsg.includes('정문 개방 성공'), 'Should open door when level >= 12 and key held');
+assert(!window.RPGDialog.lastMsg.includes('대규모 급식 콘텐츠가 곧 오픈됩니다'), 'Should delete deprecated opening notice');
 
 console.log('✔ [5/5] Cafeteria key quest & entrance validation verified flawlessly!');
 

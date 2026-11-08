@@ -2198,7 +2198,7 @@ class MainApp {
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
-    const welcomeMsg = `🍱 [학생 급식실 - 정문 개방 성공!]\n\n"철컥! 🔑 [급식실 열쇠]가 자물쇠에 꼭 들어맞으며 육중한 자동문이 경쾌한 멜로디와 함께 활짝 열립니다!"\n\n따끈따끈하고 맛있는 점심 식사의 고소한 냄새가 코끝을 스칩니다.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎉 12레벨 급식실 입장 퀘스트 완료!\n✨ 학생 급식실 내부 공간 및 대규모 급식 콘텐츠가 곧 오픈됩니다!\n━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    const welcomeMsg = `🍱 [학생 급식실 - 정문 개방 성공!]\n\n"철컥! 🔑 [급식실 열쇠]가 자물쇠에 꼭 들어맞으며 육중한 자동문이 경쾌한 멜로디와 함께 활짝 열립니다!"\n\n따끈따끈하고 맛있는 점심 식사의 고소한 냄새가 코끝을 스칩니다.`;
 
     if (window.RPGDialog) {
       window.RPGDialog.show('🍱 학생 급식실 입장 성공!', welcomeMsg, '🎉');
