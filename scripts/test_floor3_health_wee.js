@@ -1,12 +1,12 @@
 // scripts/test_floor3_health_wee.js
-// Verification suite for Floor 3 (보건실 & Wee클래스 - 가로형 복도 & 20x20 독립공간) (v=234)
+// Verification suite for Floor 3 (보건실 & Wee클래스 - 가로형 복도 & 20x20 독립공간) (v=235)
 
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
 console.log('======================================================================');
-console.log('🧪 TESTING FLOOR 3: HORIZONTAL CORRIDOR & 20x20 INDEPENDENT ROOMS (v=234)');
+console.log('🧪 TESTING FLOOR 3: HORIZONTAL CORRIDOR & 20x20 INDEPENDENT ROOMS (v=235)');
 console.log('======================================================================\n');
 
 let passedTests = 0;
@@ -188,12 +188,12 @@ test('8. main.js defines all required interaction methods for Health Room and We
   assert(mainCode.includes('handleWeeEmotionBoardInteraction'), 'handleWeeEmotionBoardInteraction should exist');
 });
 
-test('9. index.html contains 3F elevator, teleport, and GM warp entries with v=234 cache buster', () => {
+test('9. index.html contains 3F elevator, teleport, and GM warp entries with v=235 cache buster', () => {
   const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
   assert(html.includes('data-target="floor_3"'), 'Elevator floor 3 button should exist');
   assert(html.includes('3층 복도 (보건실 & Wee클래스)'), '3F elevator option should mention 보건실 & Wee클래스');
-  const countV234 = (html.match(/v=234/g) || []).length;
-  assert(countV234 >= 8, `Expected at least 8 v=234 tags, got ${countV234}`);
+  const countV234 = (html.match(/v=235/g) || []).length;
+  assert(countV234 >= 8, `Expected at least 8 v=235 tags, got ${countV234}`);
 });
 
 console.log(`\n----------------------------------------------------------------------`);

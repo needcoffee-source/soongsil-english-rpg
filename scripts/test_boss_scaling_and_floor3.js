@@ -1,13 +1,13 @@
 // scripts/test_boss_scaling_and_floor3.js
 // Verification suite for Boss Scaling (Bronze Dragon 1.5x, Final God 1.4x, Sloth 2.0x),
-// Floor 3 Horizontally Long Hallway, and Golem Label ([1차 관문 보스] removed) (v=234)
+// Floor 3 Horizontally Long Hallway, and Golem Label ([1차 관문 보스] removed) (v=235)
 
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
 console.log('======================================================================');
-console.log('🧪 TESTING BOSS SCALING (1.5x, 1.4x, 2.0x), FLOOR 3 & GOLEM LABEL (v=234)');
+console.log('🧪 TESTING BOSS SCALING (1.5x, 1.4x, 2.0x), FLOOR 3 & GOLEM LABEL (v=235)');
 console.log('======================================================================\n');
 
 let passedTests = 0;
@@ -118,8 +118,8 @@ test('10. Soccer boss interaction distance increased to 96 to match larger boss 
 const htmlSrc = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
 const mainSrc = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
 
-test('11. Cache buster bumped to v=234 and elevator travels to x: 56 on floor 3', () => {
-  assert(htmlSrc.includes('?v=234'), 'Cache buster v=234 in index.html');
+test('11. Cache buster bumped to v=235 and elevator travels to x: 56 on floor 3', () => {
+  assert(htmlSrc.includes('?v=235'), 'Cache buster v=235 in index.html');
   assert(mainSrc.includes("56 * 32, 6 * 32"), 'Elevator warps to 56 * 32 on floor 3');
 });
 

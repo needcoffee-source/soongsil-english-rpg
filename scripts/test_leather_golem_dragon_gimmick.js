@@ -1,7 +1,7 @@
 const fs = require('fs');
 const assert = require('assert');
 
-console.log('=== TEST SUITE: Leather Golem 1:1 Raid, Wood Set Gimmick & Bronze Dragon (v=234) ===\n');
+console.log('=== TEST SUITE: Leather Golem 1:1 Raid, Wood Set Gimmick & Bronze Dragon (v=235) ===\n');
 
 global.window = global;
 
@@ -240,10 +240,10 @@ assert(html.includes('✨ [골렘 연화 비책 발동] 한강우 선생님의 �
 console.log('  [PASS] index.html banner element verified.');
 
 // 7. Verifying HTML version tag
-console.log('\n7. Verifying HTML cache buster v=234...');
-assert(html.includes('v=234'), "index.html must use v=234");
+console.log('\n7. Verifying HTML cache buster v=235...');
+assert(html.includes('v=235'), "index.html must use v=235");
 assert(!html.includes('v=232'), "index.html must not contain legacy v=232");
-console.log('  [PASS] Cache buster v=234 fully applied.');
+console.log('  [PASS] Cache buster v=235 fully applied.');
 
 console.log('\n======================================================');
 console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (Confirmed Gimmick Logic Verified)');

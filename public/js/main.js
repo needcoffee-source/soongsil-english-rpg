@@ -5605,12 +5605,91 @@ class MainApp {
       (this.engine && this.engine.player && this.engine.player.room === 'room_702') ||
       (bossData && (bossData.id === 'boss_leather_golem' || bossData.id === 'boss_s1_treegolem' || (bossData.name && bossData.name.includes('골렘'))))
     );
+
+    // ========================================================
+    // 🪵 1학년 2반: 가죽 골렘 1:1 솔로 상시 토벌 (교사 협동 레이드와 완전 분리)
+    // ========================================================
+    if (isLeatherGolemRaid) {
+      let useWeaknessScroll = false;
+      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
+      if (hasWeaknessScroll) {
+        const confirmUse = confirm(
+          "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘의 체력을 50% 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 체력 50% 반감 ➔ HP 1,000)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 유지)"
+        );
+        if (confirmUse) {
+          useWeaknessScroll = true;
+        }
+      }
+
+      const finalHp = useWeaknessScroll ? 1000 : 2000;
+      window.BOSS_CONFIG = {
+        ...window.BOSS_CONFIG,
+        name: '🪵 가죽 골렘',
+        title: '1-2반 1:1 솔로 상시 토벌',
+        level: 10,
+        mode: 'solo', // 무조건 1:1 솔로 레이드로 고정
+        unitFilter: 'ALL',
+        maxHp: finalHp,
+        currentHp: finalHp,
+        atk: 30,
+        def: 14,
+        rewardGold: 100,
+        rewardExp: 200,
+        isWeakened: useWeaknessScroll,
+        expiresAt: Date.now() + 180 * 1000
+      };
+
+      this.bossState.currentHp = finalHp;
+      this.bossState.maxHp = finalHp;
+      this.bossState.hasAttacked = false;
+      this.bossState.damageDealt = 0;
+
+      document.getElementById('boss-raid-title').innerText = '🪵 가죽 골렘 [1:1 솔로 상시 토벌]';
+      document.getElementById('boss-name-label').innerText = '🪵 가죽 골렘';
+
+      const weaknessBanner = document.getElementById('raid-weakness-alert-banner');
+      if (weaknessBanner) {
+        if (useWeaknessScroll) {
+          weaknessBanner.style.display = 'block';
+          weaknessBanner.classList.remove('hidden');
+          weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)';
+        } else {
+          weaknessBanner.style.display = 'none';
+          weaknessBanner.classList.add('hidden');
+        }
+      }
+
+      if (useWeaknessScroll) {
+        document.getElementById('raid-battle-log').innerHTML = `<span style="color:#22c55e; font-weight:bold;">✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)</span><br>⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+      } else {
+        document.getElementById('raid-battle-log').innerHTML = `⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+      }
+
+      this.updateBossRaidUI();
+      this.loadNextBossQuestion();
+      this.modalBossRaid.classList.remove('hidden');
+
+      if (this.bossTimerInterval) clearInterval(this.bossTimerInterval);
+      this.bossTimerInterval = setInterval(() => {
+        if (this.modalBossRaid && !this.modalBossRaid.classList.contains('hidden')) {
+          this.updateBossRaidTimerOnly();
+        } else {
+          clearInterval(this.bossTimerInterval);
+          this.bossTimerInterval = null;
+        }
+      }, 500);
+      return;
+    }
+
+    // ========================================================
+    // 🏟️ 운동장/외부 보스 레이드 (교사 협동 레이드 또는 청동 드래곤 솔로)
+    // ========================================================
     const isDragonRaid = (
       (this.engine && this.engine.player && this.engine.player.room === 'playground' && bossData && (bossData.id === 'boss_bronze_dragon' || (bossData.name && bossData.name.includes('드래곤')))) ||
       (bossData && bossData.id === 'boss_bronze_dragon')
     );
 
-    const isSoloRaid = (!window.BOSS_CONFIG.active && (isLeatherGolemRaid || isDragonRaid));
+    const isSoloRaid = (!window.BOSS_CONFIG.active && isDragonRaid);
 
     if (!window.BOSS_CONFIG.active && !isSoloRaid) {
       if (this.playerData.isTeacher) {
@@ -5627,66 +5706,23 @@ class MainApp {
       }
     }
 
-    let useWeaknessScroll = false;
-    if (isLeatherGolemRaid) {
-      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
-      if (hasWeaknessScroll) {
-        // 소지한 채 1:1 레이드 시작 시 사용 확인 팝업
-        const confirmUse = confirm(
-          "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘의 체력을 50% 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 체력 50% 반감 ➔ HP 1,000)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 유지)"
-        );
-        if (confirmUse) {
-          useWeaknessScroll = true;
-        }
-      }
-    }
-
-    if (isSoloRaid) {
-      if (isLeatherGolemRaid) {
-        const baseHp = (bossData && bossData.maxHp) || 2000;
-        const finalHp = useWeaknessScroll ? Math.round(baseHp * 0.5) : baseHp;
-
-        window.BOSS_CONFIG = {
-          ...window.BOSS_CONFIG,
-          name: '🪵 가죽 골렘',
-          level: (bossData && bossData.level) || 10,
-          mode: 'solo',
-          unitFilter: 'ALL',
-          maxHp: finalHp,
-          currentHp: finalHp,
-          atk: (bossData && bossData.atk) || 30,
-          def: (bossData && bossData.def) || 14,
-          rewardGold: 100,
-          rewardExp: 200,
-          isWeakened: useWeaknessScroll,
-          expiresAt: Date.now() + 180 * 1000
-        };
-      } else if (isDragonRaid) {
-        const baseHp = (bossData && bossData.maxHp) || 5000;
-        window.BOSS_CONFIG = {
-          ...window.BOSS_CONFIG,
-          name: '🐲 고대 청동 드래곤',
-          level: (bossData && bossData.level) || 15,
-          mode: 'solo',
-          unitFilter: 'ALL',
-          maxHp: baseHp,
-          currentHp: baseHp,
-          atk: (bossData && bossData.atk) || 45,
-          def: (bossData && bossData.def) || 20,
-          rewardGold: 250,
-          rewardExp: 400,
-          isWeakened: false,
-          expiresAt: Date.now() + 180 * 1000
-        };
-      }
-    } else if (isLeatherGolemRaid) {
-      if (useWeaknessScroll && window.BOSS_CONFIG.mode === 'solo') {
-        window.BOSS_CONFIG.maxHp = Math.round((window.BOSS_CONFIG.maxHp || 2000) * 0.5);
-        window.BOSS_CONFIG.currentHp = window.BOSS_CONFIG.maxHp;
-        window.BOSS_CONFIG.isWeakened = true;
-      } else {
-        window.BOSS_CONFIG.isWeakened = false;
-      }
+    if (isSoloRaid && isDragonRaid) {
+      const baseHp = (bossData && bossData.maxHp) || 5000;
+      window.BOSS_CONFIG = {
+        ...window.BOSS_CONFIG,
+        name: '🐲 고대 청동 드래곤',
+        level: (bossData && bossData.level) || 15,
+        mode: 'solo',
+        unitFilter: 'ALL',
+        maxHp: baseHp,
+        currentHp: baseHp,
+        atk: (bossData && bossData.atk) || 45,
+        def: (bossData && bossData.def) || 20,
+        rewardGold: 250,
+        rewardExp: 400,
+        isWeakened: false,
+        expiresAt: Date.now() + 180 * 1000
+      };
     }
 
     if (this.bossState.currentHp <= 0 || isSoloRaid) {
@@ -5796,13 +5832,7 @@ class MainApp {
     this.bossState.maxHp = state.maxHp || 3000;
     this.bossState.currentHp = state.currentHp !== undefined ? state.currentHp : this.bossState.maxHp;
 
-    // WORLD_DATA의 1학년 2반 보스 이름/스탯도 동기화
-    if (window.WORLD_DATA && WORLD_DATA.classroom_702 && WORLD_DATA.classroom_702.boss) {
-      WORLD_DATA.classroom_702.boss.name = state.name || '👾 고목 골렘';
-      WORLD_DATA.classroom_702.boss.maxHp = state.maxHp || 3000;
-      WORLD_DATA.classroom_702.boss.atk = state.atk || 18;
-      WORLD_DATA.classroom_702.boss.def = state.def || 5;
-    }
+// 1학년 2반은 가죽 골렘 상시 토벌로 완전 분리 유지 (교사 협동 레이드와 비연동)
 
     const badge = document.getElementById('admin-boss-status-badge');
     if (badge) {

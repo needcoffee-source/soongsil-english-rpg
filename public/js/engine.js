@@ -685,7 +685,7 @@ class GameEngine {
       const pg = WORLD_DATA.playground;
       const gymGate = (pg && pg.gymGate) || { x: 2, y: 48 };
       // Check if player stepped on the west gym gate (x: 1~3, y: 47~49)
-      if (Math.abs(tileX - gymGate.x) <= 1 && Math.abs(tileY - gymGate.y) <= 1) {
+      if (Math.abs(tileX - gymGate.x) <= 1 && tileY >= 47 && tileY <= 51) {
         if (!this.player.isTeacher) {
           this.player.x = 4.2 * 32;
           if (!this._lastGymNotice || Date.now() - this._lastGymNotice > 2000) {
@@ -4236,19 +4236,16 @@ class GameEngine {
     this.ctx.fillRect(px + 30, by - 10, 10, 18);
     this.ctx.restore();
 
-    // Boss Nameplate (교사 이벤트 시작 여부에 따른 상태 표시)
-    const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🪵 가죽 골렘');
-    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 2000) : (boss.maxHp || 2000);
-    const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
-    const labelText = isRaidActive
-      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
-      : `${bName} (HP ${bMaxHp})`;
+    // 1학년 2반 가죽 골렘 전용 네임플레이트 (외부 협동 레이드와 완전 분리)
+    const bName = '🪵 가죽 골렘';
+    const bMaxHp = (boss && boss.maxHp) || 2000;
+    const bCurHp = (boss && boss.currentHp !== undefined) ? boss.currentHp : bMaxHp;
+    const labelText = `${bName} (HP ${bCurHp}/${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 58, labelText, {
-      bgColor: isRaidActive ? 'rgba(127, 29, 29, 0.96)' : 'rgba(30, 41, 59, 0.94)',
-      borderColor: isRaidActive ? '#f87171' : '#94a3b8',
-      textColor: isRaidActive ? '#fef08a' : '#e2e8f0',
+      bgColor: 'rgba(69, 26, 3, 0.96)',
+      borderColor: '#f59e0b',
+      textColor: '#fef08a',
       fontSize: 13,
       paddingX: 12,
       height: 24
@@ -5979,20 +5976,15 @@ class GameEngine {
       this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
 
       if (cr.boss) {
+        // 1학년 2반은 외부 레이드와 완전히 분리된 1:1 가죽 골렘 상시 토벌 고정
         const effectiveBoss = {
           ...cr.boss,
-          name: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
-            ? window.BOSS_CONFIG.name
-            : (cr.boss.name || '🪵 가죽 골렘'),
-          maxHp: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
-            ? window.BOSS_CONFIG.maxHp
-            : (cr.boss.maxHp || 2000),
-          atk: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
-            ? window.BOSS_CONFIG.atk
-            : (cr.boss.atk || 30),
-          def: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
-            ? window.BOSS_CONFIG.def
-            : (cr.boss.def || 14)
+          id: 'boss_leather_golem',
+          name: '🪵 가죽 골렘',
+          maxHp: 2000,
+          currentHp: 2000,
+          atk: 30,
+          def: 14
         };
         this.drawHighResBossGolem(effectiveBoss);
       }
@@ -13920,11 +13912,12 @@ class GameEngine {
   drawHighResGymGate(px, py) {
     this.ctx.save();
 
-    // 1. Asphalt Road Connection branching off West from Tartan Track (tx: 0..3.6, ty: 47..49)
+    // 1. Asphalt Road Connection branching off West from Tartan Track (tx: 0..3.6, ty: 47..51)
+    // 세로로 2배 확장 (기존 72 -> 144, 현재 상단에서 아래방향으로만 확장)
     const roadX = 0;
     const roadW = Math.max(3.6 * 32, px + 24);
     const roadY = py - 36;
-    const roadH = 72;
+    const roadH = 144;
 
     this.ctx.fillStyle = '#1e293b'; // dark asphalt
     this.ctx.fillRect(roadX, roadY, roadW, roadH);
@@ -13934,7 +13927,7 @@ class GameEngine {
     this.ctx.fillRect(roadX, roadY, roadW, 3);
     this.ctx.fillRect(roadX, roadY + roadH - 3, roadW, 3);
 
-    // 2. Yellow Zebra Pedestrian Crosswalk stripes
+    // 2. Yellow Zebra Pedestrian Crosswalk stripes (세로 2배로 확장된 도로 전체로 신장)
     const stripeCount = 4;
     for (let i = 0; i < stripeCount; i++) {
       const zx = roadX + 10 + i * 22;
@@ -13942,14 +13935,7 @@ class GameEngine {
       this.ctx.fillRect(zx, roadY + 6, 12, roadH - 12);
     }
 
-    // Road Stencil Surface Marking
-    this.ctx.save();
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-    this.ctx.font = '700 9.5px "Pretendard", sans-serif';
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-    this.ctx.fillText('⬅️ 체육관·주차장 [교직원 전용]', roadX + roadW / 2 + 10, roadY + roadH / 2);
-    this.ctx.restore();
+    // 가운데 ~~교직원 전용 글씨는 요청에 따라 완전 삭제됨
 
     // 3. Boom Barrier / Parking Gate (차단기) on North curb
     const bx = roadX + roadW - 18;
