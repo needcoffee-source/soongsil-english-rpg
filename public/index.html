@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=229">
+  <link rel="manifest" href="/manifest.json?v=230">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=229">
+  <link rel="stylesheet" href="css/style.css?v=230">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -212,6 +212,11 @@
             <optgroup label="🌟 5층 — 진로 & 특별 구역">
               <option value="5_hallway">🌟 5층 복도</option>
               <option value="5_room_career">🌟 진로상담실 (진로 방탈출)</option>
+            </optgroup>
+            <optgroup label="🏥 3층 — 보건실 & Wee클래스">
+              <option value="3_hallway">🏥 3층 복도 (보건 & 힐링 구역)</option>
+              <option value="3_room_health">🏥 보건실 (Health Care)</option>
+              <option value="3_room_wee">🕊️ Wee클래스 (상담실)</option>
             </optgroup>
             <optgroup label="📚 2층 — 도서관 구역">
               <option value="2_hallway">📚 2층 도서관 (독립 전용층)</option>
@@ -1016,6 +1021,14 @@
           <span class="elevator-tag" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #075985; color: #bae6fd; font-weight: 800;">10G 소모 ➔</span>
         </button>
 
+        <!-- 3층 -->
+        <button class="btn-elevator-floor" data-target="floor_3" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(30, 41, 59, 0.85); border: 2px solid #10b981; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div>
+            <div style="font-size: 15px; font-weight: 900; color: #34d399;">🏥 3층 — 보건실 & Wee클래스 (Health & Wee)</div>
+          </div>
+          <span class="elevator-tag" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #064e3b; color: #a7f3d0; font-weight: 800;">10G 소모 ➔</span>
+        </button>
+
         <!-- 2층 -->
         <button class="btn-elevator-floor" data-target="floor_2" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(30, 41, 59, 0.85); border: 2px solid #0284c7; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
           <div>
@@ -1066,6 +1079,12 @@
         <button class="btn-teleport-dest" data-target="floor_5" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #38bdf8; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
           <div style="font-size: 15px; font-weight: 900; color: #38bdf8;">🌟 5층 복도</div>
           <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #075985; color: #bae6fd; font-weight: 800;">이동 ➔</span>
+        </button>
+
+        <!-- 3층 복도 -->
+        <button class="btn-teleport-dest" data-target="floor_3" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(30, 41, 59, 0.9); border: 1.5px solid #10b981; border-radius: 10px; color: #fff; cursor: pointer; text-align: left;">
+          <div style="font-size: 15px; font-weight: 900; color: #34d399;">🏥 3층 복도 (보건 & 힐링)</div>
+          <span style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; background: #064e3b; color: #a7f3d0; font-weight: 800;">이동 ➔</span>
         </button>
 
         <!-- 2층 도서관 -->
@@ -2300,19 +2319,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=229"></script>
-  <script src="js/dialog.js?v=229"></script>
+  <script src="js/audio.js?v=230"></script>
+  <script src="js/dialog.js?v=230"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=229"></script>
-  <script src="js/engine.js?v=229"></script>
-  <script src="js/quiz.js?v=229"></script>
-  <script src="js/crafting.js?v=229"></script>
-  <script src="js/network.js?v=229"></script>
-  <script src="js/acid_rain.js?v=229"></script>
-  <script src="js/brawl_ball.js?v=229"></script>
-  <script src="js/uphill_rush.js?v=229"></script>
-  <script src="js/main.js?v=229"></script>
+  <script src="js/world.js?v=230"></script>
+  <script src="js/engine.js?v=230"></script>
+  <script src="js/quiz.js?v=230"></script>
+  <script src="js/crafting.js?v=230"></script>
+  <script src="js/network.js?v=230"></script>
+  <script src="js/acid_rain.js?v=230"></script>
+  <script src="js/brawl_ball.js?v=230"></script>
+  <script src="js/uphill_rush.js?v=230"></script>
+  <script src="js/main.js?v=230"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

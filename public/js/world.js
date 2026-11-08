@@ -56,6 +56,28 @@ const WORLD_DATA = {
       ]
     },
 
+    // 3층: 보건 & 힐링 구역 (보건실 & Wee클래스)
+    3: {
+      name: "3층 복도 (보건 & 힐링 구역)",
+      rooms: [
+        { id: "room_health", name: "🏥 보건실", doorX: 14, doorY: 5, targetX: 15, targetY: 15, locked: false },
+        { id: "room_wee", name: "🕊️ Wee클래스", doorX: 28, doorY: 5, targetX: 15, targetY: 15, locked: false },
+        { id: "room_301", name: "3학년 1반", doorX: 38, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "3학년 1반 선배들의 심화 자율학습 중입니다. (현재 준비 중 🚧)" },
+        { id: "room_302", name: "3학년 2반", doorX: 46, doorY: 5, targetX: 15, targetY: 14, locked: true, lockMessage: "3학년 2반 선배들의 심화 자율학습 중입니다. (현재 준비 중 🚧)" }
+      ],
+      elevator: { x: 56, y: 3 },
+      interactive: [
+        { id: "board_leaderboard_3", type: "leaderboard", x: 3, y: 6, name: "랭킹보드", prompt: "랭킹보드 확인" },
+        { id: "board_health_3", type: "health_board", x: 6, y: 6, name: "📋 3층 건강·마음 힐링 게시판", prompt: "건강 게시판 살펴보기 (SPACE)" },
+        { id: "dibut_repair_box_3", type: "dibut_repair_box", x: 8, y: 16, name: "📱 3층 스마트 디벗 충전함", noInteract: true },
+        { id: "plant_hallway_3_1", type: "plant_zone", subType: "monstera", x: 21, y: 17, name: "🪴 복도 힐링 식물존", prompt: "물 주기 (SPACE) 💧" },
+        { id: "plant_hallway_3_2", type: "plant_zone", subType: "areca", x: 35, y: 17, name: "🪴 복도 힐링 식물존", prompt: "물 주기 (SPACE) 💧" },
+        { id: "water_purifier_hallway_3", type: "water_purifier", x: 43, y: 17, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" },
+        { id: "mirror_hallway_3", type: "mirror", x: 56, y: 16, name: "🪞 복도 전신 거울", prompt: "외모 단정 체크 (SPACE)" }
+      ],
+      npcs: []
+    },
+
     // 5층: 테스트 구역 (교실 제외한 순수 복도 공간)
     5: {
       name: "5층 복도 (진로 & 선배 구역)",
@@ -194,7 +216,82 @@ const WORLD_DATA = {
     ]
   },
 
-    // 🏛️ 숭실역사관 (Soongsil History Museum - 1-1반 크기: 30 x 20)
+  // 🏥 보건실 (Health Care Room - 30 x 20)
+  classroom_health: {
+    name: "🏥 보건실 (Health Care)",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "🏥 숭실 건강 증진 게시판",
+      prompt: "보건 게시판 확인 (SPACE)"
+    },
+    teacherDesk: {
+      x: 9,
+      y: 6,
+      name: "🩺 보건 선생님 진료석",
+      prompt: "건강 상담 및 진료 (SPACE)"
+    },
+    gatherSpots: [],
+    desks: [],
+    npcs: [
+      {
+        id: "npc_nurse",
+        name: "보건 선생님",
+        role: "보건실",
+        x: 9,
+        y: 5,
+        avatar: "teacher",
+        dialogue: "어디 아픈 곳은 없니? 숭실의 모험도 건강이 최우선이란다! 아프거나 지쳤을 땐 언제든 보건실 침대에서 쉬어가렴. (침대에서 휴식 시 HP 100% 완전 회복!)"
+      }
+    ],
+    interactive: [
+      { id: "health_bed_1", type: "health_bed", bedIndex: 1, x: 23, y: 6, name: "🛏️ 보건실 회복 침대 1번", prompt: "침대에 누워 휴식하기 (HP 100% 회복) (SPACE)" },
+      { id: "health_bed_2", type: "health_bed", bedIndex: 2, x: 23, y: 11, name: "🛏️ 보건실 회복 침대 2번", prompt: "침대에 누워 휴식하기 (HP 100% 회복) (SPACE)" },
+      { id: "health_cabinet", type: "health_cabinet", x: 15, y: 4, name: "💊 응급 구급약 & 약초 캐비닛", prompt: "구급약품 살펴보기 (SPACE)" },
+      { id: "health_scale", type: "health_scale", x: 4, y: 6, name: "⚖️ 자동 신장·체중 측정기", prompt: "신체 검사 측정하기 (SPACE)" },
+      { id: "health_eye_chart", type: "health_eye_chart", x: 4, y: 11, name: "👁️ 한미 시력 검사표", prompt: "시력 검사하기 (SPACE)" }
+    ]
+  },
+
+  // 🕊️ Wee클래스 (Student Counseling & Healing Room - 30 x 20)
+  classroom_wee: {
+    name: "🕊️ Wee클래스 (상담실)",
+    exitDoor: { x: 15, y: 17 },
+    blackboard: {
+      x: 15,
+      y: 2,
+      name: "🕊️ Wee클래스 따뜻한 마음 나눔터",
+      prompt: "마음 나눔 보드 확인 (SPACE)"
+    },
+    teacherDesk: {
+      x: 9,
+      y: 6,
+      name: "💬 전문상담 선생님 상담석",
+      prompt: "마음 고민 상담하기 (SPACE)"
+    },
+    gatherSpots: [],
+    desks: [],
+    npcs: [
+      {
+        id: "npc_counselor_wee",
+        name: "Wee클래스 전문상담 선생님",
+        role: "Wee클래스",
+        x: 9,
+        y: 5,
+        avatar: "teacher",
+        dialogue: "안녕! 마음에 무거운 짐이나 걱정거리가 있다면 언제든 편하게 털어놓으렴. 너는 이미 존재 자체로 소중하고 빛나는 사람이란다. ✨"
+      }
+    ],
+    interactive: [
+      { id: "wee_cushion_lounge", type: "wee_cushion_lounge", x: 22, y: 7, name: "🧸 토닥토닥 힐링 쿠션 & 빈백 라운지", prompt: "폭신한 쿠션에 기대어 쉬기 (SPACE)" },
+      { id: "wee_tea_table", type: "wee_tea_table", x: 22, y: 12, name: "🫖 따뜻한 캐모마일 허브차 테이블", prompt: "따뜻한 차 마시기 (SPACE)" },
+      { id: "wee_mailbox", type: "wee_mailbox", x: 4, y: 6, name: "📬 익명 고민 & 따뜻한 응원 우체통", prompt: "마음 우체통 열어보기 (SPACE)" },
+      { id: "wee_emotion_board", type: "wee_emotion_board", x: 4, y: 11, name: "🌈 오늘 나의 감정 날씨판", prompt: "오늘의 마음 날씨 체크 (SPACE)" }
+    ]
+  },
+
+  // 🏛️ 숭실역사관 (Soongsil History Museum - 1-1반 크기: 30 x 20)
   classroom_history: {
     name: "🏛️ 숭실역사관 (History Hall)",
     exitDoor: { x: 15, y: 17 },

@@ -539,6 +539,19 @@ class GameEngine {
         return false;
       }
 
+      if (this.player.room === 'room_health') {
+        if ((tileX >= 22 && tileX <= 24) && ((tileY >= 6 && tileY <= 7) || (tileY >= 11 && tileY <= 12))) return true;
+        if ((tileX >= 8 && tileX <= 10) && (tileY >= 6 && tileY <= 7)) return true;
+        if (tileX === 15 && tileY === 4) return true;
+        if (tileX === 4 && (tileY === 6 || tileY === 11)) return true;
+      }
+
+      if (this.player.room === 'room_wee') {
+        if ((tileX >= 8 && tileX <= 10) && (tileY >= 6 && tileY <= 7)) return true;
+        if ((tileX >= 21 && tileX <= 23) && ((tileY >= 7 && tileY <= 8) || (tileY >= 12 && tileY <= 13))) return true;
+        if (tileX === 4 && (tileY === 6 || tileY === 11)) return true;
+      }
+
       if (tileY >= cr.exitDoor.y + 1) return true; // bottom wall
       if (tileY <= 3) return true; // front blackboard & wall
       if (cr.teacherDesk && tileX === cr.teacherDesk.x && tileY === cr.teacherDesk.y) return true;
@@ -553,6 +566,8 @@ class GameEngine {
   }
 
   getCurrentClassroomData() {
+    if (this.player.room === 'room_health' && WORLD_DATA.classroom_health) return WORLD_DATA.classroom_health;
+    if (this.player.room === 'room_wee' && WORLD_DATA.classroom_wee) return WORLD_DATA.classroom_wee;
     if (this.player.room === 'room_history' && WORLD_DATA.classroom_history) return WORLD_DATA.classroom_history;
     if (this.player.room === 'room_secret_history' && WORLD_DATA.classroom_secret_history) return WORLD_DATA.classroom_secret_history;
     if (this.player.room === 'room_staff_office' && WORLD_DATA.classroom_staff_office) return WORLD_DATA.classroom_staff_office;
@@ -777,6 +792,7 @@ class GameEngine {
     }
     this.player.room = roomId;
     if (roomId === 'playground') this.player.floor = 1;
+    else if (roomId === 'room_health' || roomId === 'room_wee') this.player.floor = 3;
     else if (roomId === 'room_career') this.player.floor = 5;
     else if (roomId === 'room_staff_office') this.player.floor = 6;
     else if (roomId === 'room_history' || roomId === 'room_secret_history') this.player.floor = 0;
@@ -876,6 +892,18 @@ class GameEngine {
           this.player.y = 10 * 32;
           this.player.roomName = WORLD_DATA.floors[this.player.floor] ? WORLD_DATA.floors[this.player.floor].name : `${this.player.floor}층 복도`;
         }
+      } else if (room === 'room_health') {
+        this.player.floor = 3;
+        this.player.room = 'room_health';
+        this.player.x = 15 * 32;
+        this.player.y = 15 * 32;
+        this.player.roomName = '🏥 보건실 (Health Care)';
+      } else if (room === 'room_wee') {
+        this.player.floor = 3;
+        this.player.room = 'room_wee';
+        this.player.x = 15 * 32;
+        this.player.y = 15 * 32;
+        this.player.roomName = '🕊️ Wee클래스 (상담실)';
       } else if (room === 'room_career') {
         this.player.floor = 5;
         this.player.room = 'room_career';
@@ -5843,6 +5871,10 @@ class GameEngine {
       for (let ty = 0; ty < curH; ty++) {
         if (ty <= 2 || tx === 0 || tx === curW - 1 || ty >= curH - 2) {
           this.drawHighResWall(tx, ty, true);
+        } else if (this.player.room === 'room_health') {
+          this.drawHealthRoomFloorTile(tx, ty);
+        } else if (this.player.room === 'room_wee') {
+          this.drawWeeRoomFloorTile(tx, ty);
         } else if (this.player.room === 'room_staff_office') {
           this.drawStaffOfficeFloorTile(tx, ty);
         } else if (this.player.room === 'room_history') {
@@ -5871,8 +5903,8 @@ class GameEngine {
     } else if (isCareerRoom) {
       this.drawHighResLockers(4, 17, 6);
       this.drawHighResLockers(50, 17, 6);
-    } else if (this.player.room === 'room_history' || this.player.room === 'room_705' || this.player.room === 'room_secret_history') {
-      // Museum and Alchemy Lab have custom atmospheric layouts without standard school lockers
+    } else if (this.player.room === 'room_history' || this.player.room === 'room_705' || this.player.room === 'room_secret_history' || this.player.room === 'room_health' || this.player.room === 'room_wee') {
+      // Museum, Alchemy Lab, Health Room, and Wee Class have custom atmospheric layouts without standard school lockers
     } else {
       this.drawHighResLockers(3, 17, 5);
       this.drawHighResLockers(22, 17, 5);
@@ -5941,6 +5973,10 @@ class GameEngine {
       this.renderHistoryMuseum(cr);
     } else if (this.player.room === 'room_secret_history') {
       this.renderSecretHistoryRoom(cr);
+    } else if (this.player.room === 'room_health') {
+      this.renderHealthRoom(cr);
+    } else if (this.player.room === 'room_wee') {
+      this.renderWeeClassRoom(cr);
     } else if (this.player.room === 'room_staff_office') {
       this.renderStaffOffice(cr);
     } else if (this.player.floor === 5) {
@@ -15178,6 +15214,559 @@ class GameEngine {
     ctx.fill();
 
     ctx.restore();
+  }
+
+  // =========================================================================
+  // 🏥 3층 보건실 & 🕊️ Wee클래스 전용 렌더러
+  // =========================================================================
+
+  // 보건실 바닥 타일: 청결하고 차분한 파스텔 민트/세이지 격자 세라믹
+  drawHealthRoomFloorTile(tx, ty) {
+    const isAlt = (tx + ty) % 2 === 0;
+    this.ctx.fillStyle = isAlt ? '#ecfdf5' : '#f0fdf4';
+    this.ctx.fillRect(tx * 32, ty * 32, 32, 32);
+
+    this.ctx.strokeStyle = 'rgba(16, 185, 129, 0.12)';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(tx * 32, ty * 32, 32, 32);
+  }
+
+  // Wee클래스 바닥 타일: 포근하고 따뜻한 피치/허니 파켓 원목
+  drawWeeRoomFloorTile(tx, ty) {
+    const isAlt = (tx + ty) % 2 === 0;
+    this.ctx.fillStyle = isAlt ? '#fef3c7' : '#fffbeb';
+    this.ctx.fillRect(tx * 32, ty * 32, 32, 32);
+
+    this.ctx.strokeStyle = 'rgba(217, 119, 6, 0.12)';
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeRect(tx * 32, ty * 32, 32, 32);
+  }
+
+  // 🏥 3층 보건실 실내 전체 렌더링
+  renderHealthRoom(cr) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 1. 중앙 힐링 민트 러너 & 보건 십자가 엠블럼
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
+    ctx.fillRect(13.5 * 32, 5 * 32, 3 * 32, 12 * 32);
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(13.5 * 32, 5 * 32, 3 * 32, 12 * 32);
+
+    // 중앙 바닥 그린 크로스 심볼 (Green Cross)
+    const cx = 15 * 32;
+    const cy = 10 * 32;
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
+    ctx.fillRect(cx - 6, cy - 18, 12, 36);
+    ctx.fillRect(cx - 18, cy - 6, 36, 12);
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - 6, cy - 18, 12, 36);
+    ctx.strokeRect(cx - 18, cy - 6, 36, 12);
+
+    // 2. 보건 선생님 진료 데스크 (x: 9, y: 6)
+    this.drawHighResNurseDesk(9 * 32, 6 * 32);
+
+    // 3. 회복 침대 2조 (x: 23, y: 6 / x: 23, y: 11)
+    this.drawHighResHealthBed(23 * 32, 6 * 32, '🛏️ 회복 침대 1번', 1);
+    this.drawHighResHealthBed(23 * 32, 11 * 32, '🛏️ 회복 침대 2번', 2);
+
+    // 4. 응급 구급약 & 약초 캐비닛 (x: 15, y: 4)
+    this.drawHighResMedicalCabinet(15 * 32, 4 * 32);
+
+    // 5. 자동 신장·체중 측정기 (x: 4, y: 6)
+    this.drawHighResHealthScale(4 * 32, 6 * 32);
+
+    // 6. 한미 시력 검사표 (x: 4, y: 11)
+    this.drawHighResEyeChart(4 * 32, 11 * 32);
+
+    // 7. 실내 관엽 식물 (산세베리아 / 스파티필름)
+    this.drawHighResHealthPlant(2 * 32, 4 * 32);
+    this.drawHighResHealthPlant(27 * 32, 4 * 32);
+
+    ctx.restore();
+  }
+
+  // 보건실 진료 데스크
+  drawHighResNurseDesk(dx, dy) {
+    const ctx = this.ctx;
+    // 우드/화이트 메디컬 데스크
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(dx - 18, dy - 8, 48, 28);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(dx - 18, dy - 8, 48, 28);
+
+    // 모니터 & 키보드
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(dx - 12, dy - 6, 14, 10);
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(dx - 10, dy - 4, 10, 6);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(dx - 12, dy + 6, 14, 4);
+
+    // 청진기 (Stethoscope)
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(dx + 12, dy - 1, 5, 0, Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.arc(dx + 12, dy + 6, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 진료 차트 클립보드
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(dx + 18, dy - 4, 9, 12);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(dx + 19, dy - 3, 7, 10);
+  }
+
+  // 보건실 회복 침대
+  drawHighResHealthBed(bx, by, label, bedIdx) {
+    const ctx = this.ctx;
+    const now = Date.now();
+    const bob = Math.sin((now + bedIdx * 300) / 250) * 1.5;
+
+    // 침대 프레임 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.beginPath();
+    ctx.ellipse(bx + 16, by + 32, 28, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 우드 헤드보드
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(bx - 12, by - 12, 56, 10);
+
+    // 침대 본체 프레임
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(bx - 10, by - 4, 52, 38);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(bx - 10, by - 4, 52, 38);
+
+    // 푹신한 베개
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(bx - 6, by - 2, 44, 10);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(bx - 6, by - 2, 44, 10);
+
+    // 포근한 민트색 이불 (Folded Mint Blanket)
+    ctx.fillStyle = '#a7f3d0';
+    ctx.fillRect(bx - 8, by + 10, 48, 22);
+    ctx.strokeStyle = '#34d399';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(bx - 8, by + 10, 48, 22);
+
+    // 이불 위 귀여운 하트 스티치
+    ctx.fillStyle = '#059669';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('💚', bx + 16, by + 23);
+
+    // 머리 위 떠다니는 회복 안내 뱃지
+    this.drawSharpLabel(bx + 16, by - 22 + bob, label, {
+      bgColor: 'rgba(6, 78, 59, 0.95)',
+      borderColor: '#34d399',
+      textColor: '#ecfdf5',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
+  }
+
+  // 응급 구급약 & 약초 캐비닛
+  drawHighResMedicalCabinet(cx, cy) {
+    const ctx = this.ctx;
+    // 벽면 약장 캐비닛 본체
+    ctx.fillStyle = '#f1f5f9';
+    ctx.fillRect(cx - 18, cy - 14, 36, 28);
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx - 18, cy - 14, 36, 28);
+
+    // 선반 2단
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - 16, cy);
+    ctx.lineTo(cx + 16, cy);
+    ctx.stroke();
+
+    // 상단: 적십자 마크
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(cx - 2, cy - 12, 4, 10);
+    ctx.fillRect(cx - 5, cy - 9, 10, 4);
+
+    // 하단: 형형색색 포션병 & 붕대
+    ctx.fillStyle = '#ef4444'; // 빨간 물약
+    ctx.fillRect(cx - 12, cy + 3, 5, 8);
+    ctx.fillStyle = '#10b981'; // 허브 오일
+    ctx.fillRect(cx - 4, cy + 2, 5, 9);
+    ctx.fillStyle = '#38bdf8'; // 소독약
+    ctx.fillRect(cx + 4, cy + 3, 5, 8);
+    ctx.fillStyle = '#ffffff'; // 붕대 롤
+    ctx.beginPath();
+    ctx.arc(cx + 12, cy + 7, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    this.drawSharpLabel(cx, cy + 22, '💊 응급 구급약장', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#38bdf8',
+      textColor: '#ffffff',
+      fontSize: 10,
+      paddingX: 6,
+      height: 18
+    });
+  }
+
+  // 자동 신장·체중 측정기
+  drawHighResHealthScale(sx, sy) {
+    const ctx = this.ctx;
+    // 발판
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(sx - 12, sy + 14, 24, 8);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(sx - 12, sy + 14, 24, 8);
+
+    // 발바닥 모양
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(sx - 8, sy + 16, 5, 4);
+    ctx.fillRect(sx + 3, sy + 16, 5, 4);
+
+    // 측정 바 (Height Ruler)
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(sx - 2, sy - 18, 4, 32);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(sx - 2, sy - 18, 4, 32);
+
+    // 디지털 LCD 화면
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(sx - 8, sy - 8, 16, 8);
+    ctx.fillStyle = '#4ade80';
+    ctx.font = 'bold 6px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('172.5', sx, sy - 2);
+
+    // 머리 접촉 바
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(sx - 8, sy - 18, 16, 3);
+  }
+
+  // 한미 시력 검사표
+  drawHighResEyeChart(ex, ey) {
+    const ctx = this.ctx;
+    // 화이트 보드
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(ex - 10, ey - 18, 20, 36);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(ex - 10, ey - 18, 20, 36);
+
+    // 0.1 ~ 2.0 시력 검사 문자들 (E 글자 크기별)
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('E', ex, ey - 9);
+
+    ctx.font = 'bold 6.5px sans-serif';
+    ctx.fillText('Ǝ  E', ex, ey - 2);
+
+    ctx.font = 'bold 4.5px sans-serif';
+    ctx.fillText('E  m  Ǝ', ex, ey + 4);
+
+    // 적/녹 시력 판별 라인
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(ex - 8, ey + 9, 7, 2);
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(ex + 1, ey + 9, 7, 2);
+  }
+
+  // 실내 힐링 화분
+  drawHighResHealthPlant(px, py) {
+    const ctx = this.ctx;
+    // 화분
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.moveTo(px + 4, py + 12);
+    ctx.lineTo(px + 28, py + 12);
+    ctx.lineTo(px + 24, py + 26);
+    ctx.lineTo(px + 8, py + 26);
+    ctx.closePath();
+    ctx.fill();
+
+    // 싱싱한 잎사귀
+    ctx.fillStyle = '#059669';
+    ctx.beginPath();
+    ctx.ellipse(px + 16, py + 6, 12, 16, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.ellipse(px + 12, py + 4, 8, 12, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 🕊️ 3층 Wee클래스 실내 전체 렌더링
+  renderWeeClassRoom(cr) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 1. 포근한 라벤더 & 피치 원형 카페트 2개
+    // 상담석 라벤더 카펫
+    ctx.fillStyle = 'rgba(167, 139, 250, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(9 * 32 + 6, 7 * 32, 54, 38, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 힐링 라운지 피치 카펫
+    ctx.fillStyle = 'rgba(251, 146, 60, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(22 * 32, 9 * 32 + 16, 68, 52, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f97316';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 2. 전문상담 선생님 상담 데스크 (x: 9, y: 6)
+    this.drawHighResWeeDesk(9 * 32, 6 * 32);
+
+    // 3. 토닥토닥 힐링 쿠션 & 빈백 라운지 (x: 22, y: 7)
+    this.drawHighResWeeLounge(22 * 32, 7 * 32);
+
+    // 4. 따뜻한 캐모마일 허브차 테이블 (x: 22, y: 12)
+    this.drawHighResWeeTeaTable(22 * 32, 12 * 32);
+
+    // 5. 익명 고민 & 따뜻한 응원 우체통 (x: 4, y: 6)
+    this.drawHighResWeeMailbox(4 * 32, 6 * 32);
+
+    // 6. 오늘 나의 감정 날씨판 (x: 4, y: 11)
+    this.drawHighResEmotionBoard(4 * 32, 11 * 32);
+
+    // 7. 실내 따뜻한 화분
+    this.drawHighResHealthPlant(2 * 32, 4 * 32);
+    this.drawHighResHealthPlant(27 * 32, 4 * 32);
+
+    ctx.restore();
+  }
+
+  // Wee클래스 전문상담 데스크
+  drawHighResWeeDesk(dx, dy) {
+    const ctx = this.ctx;
+    // 따뜻한 오크 원목 책상
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(dx - 18, dy - 8, 48, 28);
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(dx - 16, dy - 6, 44, 24);
+
+    // 상담 기록 일지 노란 노트
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(dx - 10, dy - 2, 12, 16);
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(dx - 10, dy - 2, 12, 16);
+
+    // 작은 다육이 화분
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(dx + 12, dy - 2, 8, 8);
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.arc(dx + 16, dy - 4, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 따뜻한 스탠드 조명
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(dx + 22, dy + 10, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 토닥토닥 힐링 쿠션 & 대형 빈백 라운지
+  drawHighResWeeLounge(lx, ly) {
+    const ctx = this.ctx;
+    const now = Date.now();
+
+    // 1. 대형 푹신한 오렌지/핑크 빈백 소파 (Beanbag)
+    ctx.fillStyle = '#f472b6';
+    ctx.beginPath();
+    ctx.ellipse(lx - 12, ly + 4, 20, 16, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#db2777';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath();
+    ctx.ellipse(lx + 14, ly + 6, 18, 14, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 2. 귀여운 곰인형 (Teddy Bear Plushie)
+    ctx.fillStyle = '#92400e';
+    // 몸통
+    ctx.beginPath();
+    ctx.ellipse(lx, ly + 2, 9, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 머리
+    ctx.beginPath();
+    ctx.arc(lx, ly - 8, 8, 0, Math.PI * 2);
+    ctx.fill();
+    // 귀
+    ctx.beginPath();
+    ctx.arc(lx - 6, ly - 14, 3.5, 0, Math.PI * 2);
+    ctx.arc(lx + 6, ly - 14, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    // 눈과 코
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(lx - 3, ly - 9, 2, 2);
+    ctx.fillRect(lx + 1, ly - 9, 2, 2);
+    ctx.fillRect(lx - 1.5, ly - 6, 3, 2);
+    // 빨간 리본
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(lx - 3, ly - 2, 6, 3);
+
+    // 3. 은은하게 떠오르는 사랑 하트 이펙트 (Heart particles)
+    const heartFloat = (now / 200) % 20;
+    const heartAlpha = Math.max(0, 1 - heartFloat / 20);
+    ctx.fillStyle = `rgba(244, 63, 94, ${heartAlpha})`;
+    ctx.font = '12px sans-serif';
+    ctx.fillText('💖', lx + 12, ly - 16 - heartFloat);
+
+    this.drawSharpLabel(lx, ly - 26, '🧸 토닥토닥 힐링 라운지', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#f472b6',
+      textColor: '#fdf2f8',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
+  }
+
+  // 따뜻한 캐모마일 허브차 테이블
+  drawHighResWeeTeaTable(tx, ty) {
+    const ctx = this.ctx;
+    // 원형 티 테이블
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.arc(tx, ty, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 레이스 테이블보
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(tx, ty, 15, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 도자기 주전자 (Teapot)
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(tx - 3, ty - 2, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // 찻잔 2개 & 김 모락모락
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(tx + 6, ty - 4, 6, 5);
+    ctx.fillRect(tx - 12, ty + 4, 6, 5);
+    ctx.fillStyle = '#ca8a04'; // 향긋한 노란 차
+    ctx.fillRect(tx + 7, ty - 3, 4, 2);
+    ctx.fillRect(tx - 11, ty + 5, 4, 2);
+
+    this.drawSharpLabel(tx, ty + 28, '🫖 따뜻한 허브차 테이블', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#f59e0b',
+      textColor: '#ffffff',
+      fontSize: 10,
+      paddingX: 6,
+      height: 18
+    });
+  }
+
+  // 익명 고민 & 따뜻한 응원 우체통
+  drawHighResWeeMailbox(mx, my) {
+    const ctx = this.ctx;
+    // 나무 기둥
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(mx - 3, my + 6, 6, 16);
+
+    // 빨간 우체통 몸체
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.roundRect(mx - 12, my - 16, 24, 22, [6, 6, 2, 2]);
+    ctx.fill();
+    ctx.strokeStyle = '#991b1b';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 편지 투입구
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(mx - 8, my - 10, 16, 3);
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(mx - 8, my - 10, 16, 3);
+
+    // 하트 심볼
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('💌', mx, my - 1);
+
+    this.drawSharpLabel(mx, my - 24, '📬 마음 우체통', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#ef4444',
+      textColor: '#ffffff',
+      fontSize: 10,
+      paddingX: 6,
+      height: 18
+    });
+  }
+
+  // 오늘 나의 감정 날씨판
+  drawHighResEmotionBoard(bx, by) {
+    const ctx = this.ctx;
+    // 우드 프레임 코르크 게시판
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(bx - 12, by - 16, 24, 34);
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(bx - 10, by - 14, 20, 30);
+
+    // 4가지 날씨 뱃지 (☀️ ⛅ 🌧️ 🌈)
+    ctx.font = '8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('☀️', bx - 4, by - 6);
+    ctx.fillText('⛅', bx + 4, by - 6);
+    ctx.fillText('🌧️', bx - 4, by + 4);
+    ctx.fillText('🌈', bx + 4, by + 4);
+
+    // 알록달록 포스트잇 메모들
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(bx - 6, by + 8, 4, 4);
+    ctx.fillStyle = '#bae6fd';
+    ctx.fillRect(bx + 2, by + 8, 4, 4);
+
+    this.drawSharpLabel(bx, by - 24, '🌈 감정 날씨판', {
+      bgColor: 'rgba(15, 23, 42, 0.92)',
+      borderColor: '#fbbf24',
+      textColor: '#ffffff',
+      fontSize: 10,
+      paddingX: 6,
+      height: 18
+    });
   }
 }
 

@@ -1598,6 +1598,18 @@ class MainApp {
       const npc = target.data;
       if (!npc) return;
 
+      // 3층 보건실 보건 선생님
+      if (npc.id === 'npc_nurse' || (npc.name && npc.name.includes('보건'))) {
+        this.handleNurseInteraction(npc);
+        return;
+      }
+
+      // 3층 Wee클래스 전문상담 선생님
+      if (npc.id === 'npc_counselor_wee' || (npc.name && (npc.name.includes('Wee') || npc.name.includes('상담')))) {
+        this.handleWeeCounselorInteraction(npc);
+        return;
+      }
+
       // 6층 교무실 14번 좌석 교감선생님 (타임캡슐 2004년 스토리 & 롤링페이퍼 최종 보상)
       if (npc.id === 'npc_teacher_vice_principal' || (npc.name && npc.name.includes('교감'))) {
         this.handleVicePrincipalInteraction(npc);
@@ -1860,6 +1872,293 @@ class MainApp {
       this.handleSecretHistoryChest();
     } else if (target.type === 'secret_history_book') {
       this.handleSecretHistoryBook(target.data || target);
+    } else if (target.type === 'health_bed') {
+      this.handleHealthBedInteraction(target.data || target);
+    } else if (target.type === 'health_cabinet') {
+      this.handleHealthCabinetInteraction();
+    } else if (target.type === 'health_scale') {
+      this.handleHealthScaleInteraction();
+    } else if (target.type === 'health_eye_chart') {
+      this.handleHealthEyeChartInteraction();
+    } else if (target.type === 'health_board') {
+      this.handleHealthBoardInteraction();
+    } else if (target.type === 'wee_cushion_lounge') {
+      this.handleWeeCushionInteraction();
+    } else if (target.type === 'wee_tea_table') {
+      this.handleWeeTeaTableInteraction();
+    } else if (target.type === 'wee_mailbox') {
+      this.handleWeeMailboxInteraction();
+    } else if (target.type === 'wee_emotion_board') {
+      this.handleWeeEmotionBoardInteraction();
+    }
+  }
+
+  // =========================================================================
+  // 🏥 3층 보건실 & 🕊️ Wee클래스 상호작용
+  // =========================================================================
+
+  // 1. 보건실 회복 침대 (HP 100% 완전 회복)
+  handleHealthBedInteraction(target) {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const maxHp = this.playerData.maxHp || 100;
+    const wasFull = (this.playerData.hp >= maxHp);
+
+    this.playerData.hp = maxHp;
+    this.playerData.isFallen = false;
+    this.saveProgress();
+    this.updateHUD();
+
+    if (window.AudioManager && typeof window.AudioManager.playLevelUp === 'function') {
+      window.AudioManager.playLevelUp();
+    }
+
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      this.engine.addFloatingText('❤️ HP 100% FULL RECOVERY! ✨', this.engine.player.x, this.engine.player.y - 25, '#22c55e');
+    }
+
+    if (wasFull) {
+      this.showToast('🛏️ 보건실 포근한 침대에서 잠시 눈을 붙였습니다. 컨디션 최고! ✨', 'info');
+    } else {
+      this.showToast('🛏️ 보건실 침대에서 푹 쉬어 체력이 100% 완전 회복되었습니다! (HP 완충) ❤️', 'success');
+    }
+  }
+
+  // 2. 응급 구급약 & 약초 캐비닛 (비상 물약/허브 지급)
+  handleHealthCabinetInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    if (!this.playerData.healthCabinetClaimed) {
+      this.playerData.healthCabinetClaimed = true;
+      this.addItem('item_red_potion', '빨간 물약', 1, '🧪', { type: 'consumable', effect: 'HP +10 회복' });
+      this.addItem('item_herb', '향긋한 허브', 2, '🌿', { type: 'material', effect: '물약 및 허브티 제작 재료' });
+      this.saveProgress();
+
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+
+      const msg = "💊 [응급 구급약 & 약초 캐비닛]\n\n소독약, 멸균 붕대, 해열 진통제와 깨끗하게 건조된 약초들이 가지런히 정리되어 있습니다.\n\n비상 응급용으로 [🧪 빨간 물약 1개]와 [🌿 향긋한 허브 2개]를 챙겼습니다!\n\n(가방(🎒)에 안전하게 보관되었습니다.)";
+      if (window.RPGDialog) {
+        window.RPGDialog.show('💊 보건실 구급약장', msg, '💊');
+      } else {
+        alert(msg);
+      }
+    } else {
+      const msg = "💊 [응급 구급약 & 약초 캐비닛]\n\n상처 소독약, 멸균 거즈, 체온계와 비상약들이 상시 구비되어 있습니다.\n\n\"몸이 아프거나 다쳤을 때는 언제든 보건 선생님께 말씀드리세요!\"";
+      if (window.RPGDialog) {
+        window.RPGDialog.show('💊 보건실 구급약장', msg, '💊');
+      } else {
+        alert(msg);
+      }
+    }
+  }
+
+  // 3. 자동 신장·체중 측정기
+  handleHealthScaleInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const msg = "⚖️ [자동 신장·체중 측정기]\n\n삑-! 측정이 정확하게 완료되었습니다.\n\n• 신장(키): 173.5 cm\n• 체중: 58.6 kg\n• 체질량 지수(BMI): 19.5 (정상/건강 표준 체형)\n• 신체 활력도: 최상 (S등급)\n\n💡 보건 팁: '청소년기 규칙적인 스트레칭과 균형 잡힌 학교 급식은 건강한 성장의 지름길입니다!'";
+    if (window.RPGDialog) {
+      window.RPGDialog.show('⚖️ 신체 검사 측정기', msg, '⚖️');
+    } else {
+      alert(msg);
+    }
+  }
+
+  // 4. 한미 시력 검사표
+  handleHealthEyeChartInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const msg = "👁️ [한미 시력 검사표]\n\n숟가락 가리개로 한쪽 눈을 가리고 측정합니다...\n\n• 좌안(왼쪽 눈): 1.5 🟢\n• 우안(오른쪽 눈): 1.5 🟢\n• 판정: 맑고 선명한 독수리의 눈빛! 🦅\n\n💡 눈 건강 팁: '스마트폰이나 디벗 화면을 50분 본 뒤에는 창밖의 먼 산이나 푸른 나무를 1분간 바라보며 눈 근육을 풀어주세요!'";
+    if (window.RPGDialog) {
+      window.RPGDialog.show('👁️ 시력 검사표', msg, '👁️');
+    } else {
+      alert(msg);
+    }
+  }
+
+  // 5. 3층 건강·마음 힐링 게시판
+  handleHealthBoardInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const msg = "📋 [3층 건강 증진 & 마음 힐링 게시판]\n\n1. 올바른 손 씻기 6단계: 흐르는 물에 비누로 30초 이상 뽀득뽀득!\n2. 기침 예절: 기침할 땐 손이 아닌 옷소매 안쪽으로 가리기\n3. 하루 수분 섭취: 복도 정수기 물 8잔(1.5L) 이상 마시기\n4. 마음 건강: 힘든 고민이 있을 땐 혼자 끙끙 앓지 말고 Wee클래스 문을 두드리세요. 💖";
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📋 3층 힐링 게시판', msg, '📋');
+    } else {
+      alert(msg);
+    }
+  }
+
+  // 6. 보건 선생님 대화 & 퀴즈
+  handleNurseInteraction(npc) {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const curHp = this.playerData.hp || 0;
+    const maxHp = this.playerData.maxHp || 100;
+
+    let greeting = `"안녕 학생! 어디 다치거나 아픈 곳은 없니? 🩺\n\n숭실의 교정을 탐험할 때도 건강과 안전이 언제나 최우선이란다!\n\n`;
+    if (curHp < maxHp) {
+      greeting += `지금 체력이 ${curHp}/${maxHp}로 지쳐 보이는구나. 보건실 침대에 누워 잠시 쉬면 체력이 100% 완전 회복된단다!\n\n`;
+    }
+    greeting += `간단한 건강 영단어 퀴즈를 풀어볼래? 맞히면 응급 물약을 선물로 줄게!"`;
+
+    const dialog = window.RPGDialog;
+    if (dialog) {
+      dialog.confirm(
+        '🩺 보건 선생님',
+        greeting,
+        '🩺',
+        () => {
+          this.openNurseQuiz();
+        },
+        () => {},
+        '🩺 건강 영단어 퀴즈 풀기',
+        '다음에 하기'
+      );
+    } else {
+      if (confirm(greeting)) {
+        this.openNurseQuiz();
+      }
+    }
+  }
+
+  openNurseQuiz() {
+    const q = {
+      title: '🩺 보건 상식 영어 퀴즈',
+      question: '상처가 났을 때 감염을 막고 지혈하기 위해 환부에 감는 \'붕대\'를 뜻하는 영어 단어는 무엇일까요?\n\n💡 힌트: B로 시작하는 7글자 의료 용품입니다!',
+      options: ['Blanket (담요)', 'Bridge (다리)', 'Bandage (붕대)', 'Basket (바구니)'],
+      answer: 'Bandage (붕대)'
+    };
+
+    const promptText = `${q.question}\n\n1. ${q.options[0]}\n2. ${q.options[1]}\n3. ${q.options[2]}\n4. ${q.options[3]}`;
+    const ans = prompt(promptText, '3');
+    if (ans === '3' || (ans && ans.toLowerCase().includes('bandage'))) {
+      if (window.AudioManager && typeof window.AudioManager.playCorrect === 'function') {
+        window.AudioManager.playCorrect();
+      }
+      this.addItem('item_red_potion', '빨간 물약', 2, '🧪', { type: 'consumable', effect: 'HP +10 회복' });
+      this.addExp(80);
+      this.saveProgress();
+      this.showToast('🎉 정답입니다! [🧪 빨간 물약 2개]와 80 EXP를 획득했습니다!', 'success');
+    } else if (ans !== null) {
+      if (window.AudioManager && typeof window.AudioManager.playWrong === 'function') {
+        window.AudioManager.playWrong();
+      }
+      this.showToast('아쉽네요! 정답은 Bandage (붕대)였습니다. 다음에 다시 도전해보세요!', 'warning');
+    }
+  }
+
+  // 7. Wee클래스 토닥토닥 힐링 쿠션 & 빈백 라운지
+  handleWeeCushionInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const maxHp = this.playerData.maxHp || 100;
+    this.playerData.hp = Math.min(maxHp, this.playerData.hp + 20);
+    this.saveProgress();
+    this.updateHUD();
+
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      this.engine.addFloatingText('💖 마음의 평온 (+20 HP) ✨', this.engine.player.x, this.engine.player.y - 25, '#f472b6');
+    }
+
+    const msg = "🧸 [토닥토닥 힐링 쿠션 & 빈백 라운지]\n\n폭신하고 큼직한 빈백 쿠션에 온몸을 깊숙이 파묻고 곰인형을 안은 채 눈을 감습니다.\n(3초간 깊게 심호흡... 들이마시고... 내쉬고...)\n\n가슴속을 짓누르던 스트레스와 긴장감이 봄눈 녹듯 사르르 풀려납니다... ☁️💖\n\n[효과]: 마음의 평온 상태 달성! (체력 +20 회복!)";
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🧸 토닥토닥 힐링 라운지', msg, '🧸');
+    } else {
+      alert(msg);
+    }
+  }
+
+  // 8. 따뜻한 캐모마일 허브차 테이블
+  handleWeeTeaTableInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const maxHp = this.playerData.maxHp || 100;
+    this.playerData.hp = Math.min(maxHp, this.playerData.hp + 15);
+    this.saveProgress();
+    this.updateHUD();
+
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      this.engine.addFloatingText('🫖 따뜻한 차 한 모금 (+15 HP) 🍵', this.engine.player.x, this.engine.player.y - 25, '#f59e0b');
+    }
+
+    const msg = "🫖 [따뜻한 캐모마일 허브차]\n\n상담 선생님께서 은은한 사과 향이 감도는 따뜻한 캐모마일 차를 찻잔에 따라주셨습니다.\n\n조심스레 한 모금 마시자 향긋한 온기가 온몸 구석구석 퍼져나갑니다. 🍵\n\n\"몸도 마음도 따뜻해졌으니, 남은 하루도 힘차게 보낼 수 있을 것 같습니다!\"\n(체력 +15 회복)";
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🫖 따뜻한 허브차 테이블', msg, '🫖');
+    } else {
+      alert(msg);
+    }
+  }
+
+  // 9. 익명 고민 & 따뜻한 응원 우체통
+  handleWeeMailboxInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const notes = [
+      "💌 \"시험 점수가 조금 아쉽더라도 너무 자책하지 마. 네가 흘린 땀방울과 노력은 절대 사라지지 않고 더 큰 너를 만드는 밑거름이 될 거야!\" - 3학년 선배가",
+      "💌 \"친구와 다퉈서 마음이 무거웠는데, 먼저 솔직하게 '미안해'라고 말했더니 더 단단한 우정이 되었어. 용기를 내봐!\" - 2학년 친구가",
+      "💌 \"내가 어떤 사람이 될지 아직 몰라도 괜찮아. 지금 매일 성실하게 배우고 성장하는 너의 모습 그 자체로 이미 충분히 빛나고 있어. 🌟\" - 숭실 교직원 일동"
+    ];
+    const chosenNote = notes[Math.floor(Math.random() * notes.length)];
+    const msg = `📬 [익명 고민 & 따뜻한 응원 우체통]\n\n우체통 안에서 숭실 친구들과 선배들이 남긴 따뜻한 손편지 하나를 꺼내 읽었습니다.\n\n${chosenNote}\n\n(마음 한구석이 뭉클해지며 새로운 용기가 솟아납니다!)`;
+    if (window.RPGDialog) {
+      window.RPGDialog.show('📬 마음 우체통', msg, '📬');
+    } else {
+      alert(msg);
+    }
+  }
+
+  // 10. 오늘 나의 감정 날씨판
+  handleWeeEmotionBoardInteraction() {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const dialog = window.RPGDialog;
+    const msg = "🌈 [오늘 나의 감정 날씨판]\n\n오늘 당신의 마음 날씨는 어떤가요?\n현재 자신의 감정을 들여다보고 스스로를 다독여주세요.\n\n1. ☀️ 맑음 (에너지 넘치고 활기참!)\n2. ⛅ 구름 (차분하고 생각이 많음)\n3. 🌧️ 비 (조금 지치고 위로가 필요함)\n4. 🌈 무지개 (희망차고 가슴 설렘!)";
+
+    const promptAns = prompt(`${msg}\n\n번호(1~4)를 입력하세요:`, '1');
+    if (!promptAns) return;
+
+    let response = "";
+    if (promptAns.trim() === '1') {
+      response = "☀️ [오늘의 마음 날씨: 맑음!]\n\n반짝이는 햇살처럼 긍정적인 에너지가 가득하군요! 오늘 만나는 친구들에게도 당신의 밝은 미소를 나누어주세요! 😊✨";
+    } else if (promptAns.trim() === '2') {
+      response = "⛅ [오늘의 마음 날씨: 구름]\n\n구름이 낀 날은 나 자신을 차분하게 돌아보기에 가장 좋은 날이랍니다. 조급해하지 말고 나만의 페이스대로 걸어가세요! 🌿";
+    } else if (promptAns.trim() === '3') {
+      response = "🌧️ [오늘의 마음 날씨: 비]\n\n비가 내리는 날이 있어야 메마른 땅에 꽃이 피어난답니다. 오늘 하루 고생 많았어요. 잠시 쉬어가도 괜찮아요, 토닥토닥... 💖";
+    } else {
+      response = "🌈 [오늘의 마음 날씨: 무지개]\n\n비 온 뒤에 뜨는 영롱한 무지개처럼 기분 좋은 설렘이 가득하네요! 당신의 소중한 꿈을 향해 멋지게 도약해보세요! 🚀";
+    }
+
+    if (dialog) {
+      dialog.show('🌈 감정 날씨판', response, '🌈');
+    } else {
+      alert(response);
+    }
+  }
+
+  // 11. Wee클래스 전문상담 선생님
+  handleWeeCounselorInteraction(npc) {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const msg = `"안녕 학생! Wee클래스에 잘 왔단다. 🕊️\n\n학교생활을 하다 보면 학업, 교우 관계, 진로 때문에 마음이 무겁고 지칠 때가 있지.\n\n언제든 기댈 곳이 필요하거나 따뜻한 대화가 고플 땐 주저 말고 찾아오렴. 너의 이야기는 항상 비밀이 보장되고, 온 마음을 다해 들어줄게.\n\n폭신한 빈백에 기대어 잠시 쉬어가거나 따뜻한 허브차 한 잔 마시고 가렴! 💖"`;
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🕊️ Wee클래스 전문상담 선생님', msg, '🕊️');
+    } else {
+      alert(msg);
     }
   }
 
@@ -3118,6 +3417,7 @@ class MainApp {
       let isCurrent = false;
       if (target === 'floor_6' && curRoom === 'hallway' && curFloor === 6) isCurrent = true;
       if (target === 'floor_5' && curRoom === 'hallway' && curFloor === 5) isCurrent = true;
+      if (target === 'floor_3' && curRoom === 'hallway' && curFloor === 3) isCurrent = true;
       if (target === 'floor_2' && curRoom === 'hallway' && curFloor === 2) isCurrent = true;
       if ((target === 'floor_7' || target === 'floor_1') && curRoom === 'hallway' && curFloor === 7) isCurrent = true;
       if (target === 'playground' && curRoom === 'playground') isCurrent = true;
@@ -3194,6 +3494,13 @@ class MainApp {
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+        this.saveProgress();
+      });
+    } else if (target === 'floor_3') {
+      if (window.AudioManager) window.AudioManager.playSelect();
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 3;
+        this.engine.warpToRoom('hallway', '3층 복도 (보건 & 힐링 구역)', 56 * 32, 6 * 32);
         this.saveProgress();
       });
     } else if (target === 'floor_2') {
@@ -6564,6 +6871,12 @@ class MainApp {
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 5;
         this.engine.warpToRoom('hallway', '5층 복도 (진로 & 선배 구역)', 56 * 32, 6 * 32);
+      });
+    } else if (target === 'floor_3') {
+      targetName = '🏥 3층 복도';
+      this.engine.triggerFadeWarp(() => {
+        this.engine.player.floor = 3;
+        this.engine.warpToRoom('hallway', '3층 복도 (보건 & 힐링 구역)', 56 * 32, 6 * 32);
       });
     } else if (target === 'floor_2') {
       targetName = '📚 2층 도서관';
