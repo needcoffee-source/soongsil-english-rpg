@@ -1594,18 +1594,29 @@ class GameEngine {
         }
       }
       if (cr.boss) {
-        const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+        const isGolemSolo = (this.player.room === 'room_702');
+        const isRaidActive = isGolemSolo || !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
         if (isRaidActive) {
           const bossDist = Math.hypot(cr.boss.x * 32 - this.player.x, cr.boss.y * 32 - this.player.y);
-          if (bossDist < 96) {
+          if (bossDist < 96 && bossDist < minDist) {
+            const bossPrompt = isGolemSolo ? '1:1 가죽 골렘 레이드 도전 (SPACE)' : (cr.boss.prompt || '보스 레이드');
             const bossObj = {
               ...cr.boss,
-              name: window.BOSS_CONFIG.name || cr.boss.name,
-              maxHp: window.BOSS_CONFIG.maxHp || cr.boss.maxHp,
-              atk: window.BOSS_CONFIG.atk || cr.boss.atk,
-              def: window.BOSS_CONFIG.def || cr.boss.def
+              name: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+                ? window.BOSS_CONFIG.name
+                : (cr.boss.name || '🪵 가죽 골렘'),
+              maxHp: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+                ? window.BOSS_CONFIG.maxHp
+                : (cr.boss.maxHp || 2000),
+              atk: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+                ? window.BOSS_CONFIG.atk
+                : (cr.boss.atk || 30),
+              def: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+                ? window.BOSS_CONFIG.def
+                : (cr.boss.def || 14),
+              prompt: bossPrompt
             };
-            closest = { type: 'boss_raid', data: bossObj, name: bossObj.name, prompt: bossObj.prompt || '보스 레이드' };
+            closest = { type: 'boss_raid', data: bossObj, name: bossObj.name, prompt: bossPrompt };
             minDist = bossDist;
           }
         }
@@ -1938,16 +1949,27 @@ class GameEngine {
         }
       }
       if (cr.boss) {
-        const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
+        const isGolemSolo = (this.player.room === 'room_702');
+        const isRaidActive = isGolemSolo || !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
         if (isRaidActive && Math.hypot(cr.boss.x * 32 - x, cr.boss.y * 32 - y) < 76) {
+          const bossPrompt = isGolemSolo ? '1:1 가죽 골렘 레이드 도전 (SPACE)' : (cr.boss.prompt || '보스 레이드');
           const bossObj = {
             ...cr.boss,
-            name: window.BOSS_CONFIG.name || cr.boss.name,
-            maxHp: window.BOSS_CONFIG.maxHp || cr.boss.maxHp,
-            atk: window.BOSS_CONFIG.atk || cr.boss.atk,
-            def: window.BOSS_CONFIG.def || cr.boss.def
+            name: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+              ? window.BOSS_CONFIG.name
+              : (cr.boss.name || '🪵 가죽 골렘'),
+            maxHp: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+              ? window.BOSS_CONFIG.maxHp
+              : (cr.boss.maxHp || 2000),
+            atk: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+              ? window.BOSS_CONFIG.atk
+              : (cr.boss.atk || 30),
+            def: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+              ? window.BOSS_CONFIG.def
+              : (cr.boss.def || 14),
+            prompt: bossPrompt
           };
-          return { type: 'boss_raid', data: bossObj, name: bossObj.name };
+          return { type: 'boss_raid', data: bossObj, name: bossObj.name, prompt: bossPrompt };
         }
       }
       if (cr.craftTable && Math.hypot(cr.craftTable.x * 32 - x, cr.craftTable.y * 32 - y) < 48) {
@@ -5947,43 +5969,31 @@ class GameEngine {
     }
 
     if (isBossRoom) {
-      const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-      if (isRaidActive) {
-        // === 1학년 2반: 시즌1 보스 레이드 전용 연출 (진행 중) ===
-        // Red Raid Carpet Runner from Door to Boss
-        this.ctx.fillStyle = 'rgba(153, 27, 27, 0.45)';
-        this.ctx.fillRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
-        this.ctx.strokeStyle = '#f59e0b';
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
+      // === 1학년 2반: 가죽 골렘 1:1 솔로 상시 레이드 전용 구역 ===
+      // Red Raid Carpet Runner from Door to Boss
+      this.ctx.fillStyle = 'rgba(153, 27, 27, 0.45)';
+      this.ctx.fillRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
+      this.ctx.strokeStyle = '#f59e0b';
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeRect(13 * 32, 6 * 32, 4 * 32, 11 * 32);
 
-        if (cr.boss) {
-          const bName = ((window.BOSS_CONFIG.name || cr.boss.name || '').toLowerCase());
-          const effectiveBoss = {
-            ...cr.boss,
-            name: window.BOSS_CONFIG.name || cr.boss.name,
-            maxHp: window.BOSS_CONFIG.maxHp || cr.boss.maxHp,
-            atk: window.BOSS_CONFIG.atk || cr.boss.atk,
-            def: window.BOSS_CONFIG.def || cr.boss.def
-          };
-
-          if (bName.includes('골드') || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
-            this.drawHighResBossDragon(effectiveBoss);
-          } else if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
-            this.drawHighResBossDemon(effectiveBoss);
-          } else if (bName.includes('케르베로스') || bName.includes('수행평가') || bName.includes('cerberus')) {
-            this.drawHighResBossCerberus(effectiveBoss);
-          } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
-            this.drawHighResBossFinalGod(effectiveBoss);
-          } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
-            this.drawHighResBossSlothTitan(effectiveBoss);
-          } else {
-            this.drawHighResBossGolem(effectiveBoss);
-          }
-        }
-      } else {
-        // 교사가 레이드 종료 버튼을 누르면 보스가 사라지고 대기 상태로 전환
-        this.drawPeacefulBossChamber(cr);
+      if (cr.boss) {
+        const effectiveBoss = {
+          ...cr.boss,
+          name: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+            ? window.BOSS_CONFIG.name
+            : (cr.boss.name || '🪵 가죽 골렘'),
+          maxHp: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+            ? window.BOSS_CONFIG.maxHp
+            : (cr.boss.maxHp || 2000),
+          atk: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+            ? window.BOSS_CONFIG.atk
+            : (cr.boss.atk || 30),
+          def: (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name.includes('골렘'))
+            ? window.BOSS_CONFIG.def
+            : (cr.boss.def || 14)
+        };
+        this.drawHighResBossGolem(effectiveBoss);
       }
       // 1학년 2반 상호작용 오브젝트 (요션유의 알고리즘 USB 등)
       if (cr.interactive) {
@@ -6314,22 +6324,25 @@ class GameEngine {
     }
 
     // ========================================================
-    // 7. NEW BOSS RAID ARENA: 서쪽 골대 앞 신규 보스 레이드 전장 (x: 13, y: 35)
+    // 7. NEW BOSS RAID ARENA: 축구장 청동 드래곤 레이드 전장 (x: 18, y: 35)
     // ========================================================
     const pg = WORLD_DATA.playground;
     const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
       (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
-       window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태')));
-    const soccerBossObj = (pg && pg.boss) || (isSoccerRaid ? {
+       window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태') ||
+       window.BOSS_CONFIG.name.includes('드래곤') || window.BOSS_CONFIG.name.includes('dragon')));
+    const soccerBossObj = (window.BOSS_CONFIG && window.BOSS_CONFIG.active && !window.BOSS_CONFIG.name.includes('골렘')) ? {
       id: 'boss_soccer_raid',
       type: 'boss_raid',
-      x: 13,
+      x: 18,
       y: 35,
       name: window.BOSS_CONFIG.name,
-      prompt: '보스 레이드'
-    } : null);
+      prompt: '청동 드래곤 레이드 (SPACE)'
+    } : (pg && pg.boss);
     if (soccerBossObj) {
-      this.drawSoccerBossArena(13 * 32, 35 * 32, soccerBossObj);
+      const bx = (soccerBossObj.x || 18) * 32 + 16;
+      const by = (soccerBossObj.y || 35) * 32 + 16;
+      this.drawSoccerBossArena(bx, by, soccerBossObj);
     }
 
     // ========================================================
@@ -7924,7 +7937,7 @@ class GameEngine {
     this.ctx.restore();
 
     // Draw Active Boss Sprite
-    const bCfg = window.BOSS_CONFIG || boss;
+    const bCfg = (window.BOSS_CONFIG && window.BOSS_CONFIG.active) ? window.BOSS_CONFIG : boss;
     const bName = ((bCfg && bCfg.name) || boss.name || '').toLowerCase();
 
     if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
@@ -7935,13 +7948,12 @@ class GameEngine {
       this.drawHighResBossFinalGod(boss);
     } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
       this.drawHighResBossSlothTitan(boss);
-    } else if (bName.includes('드래곤') || bName.includes('dragon') || bName.includes('용')) {
-      this.drawHighResBossDragon(boss);
     } else {
-      this.drawHighResBossDemon(boss);
+      this.drawHighResBossDragon(boss);
     }
 
-    this.drawSharpLabel(bx, by + 46, '⚔️ [SPACE: 보스 레이드 도전]', {
+    const promptText = (boss && boss.prompt) ? boss.prompt : '⚔️ [SPACE: 청동 드래곤 레이드 도전]';
+    this.drawSharpLabel(bx, by + 46, promptText.includes('SPACE') ? promptText : `⚔️ [SPACE: ${promptText}]`, {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#ef4444',
       textColor: '#ffffff',

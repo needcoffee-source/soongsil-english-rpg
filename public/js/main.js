@@ -517,6 +517,7 @@ const ALL_GAME_ITEMS = {
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
+  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 50% 반감 (2,000 HP ➔ 1,000 HP)' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
@@ -1599,6 +1600,12 @@ class MainApp {
       if (!npc) return;
 
       // 3층 보건실 보건 선생님
+      // 1학년 2반 담임 한강우 선생님 (가죽 골렘 1:1 레이드 & 나무 세트 3종 연화 비책 기믹)
+      if (npc.id === 'npc_teacher_kangwoo' || (npc.name && npc.name.includes('한강우'))) {
+        this.handleTeacherKangwooInteraction(npc);
+        return;
+      }
+
       if (npc.id === 'npc_nurse' || (npc.name && npc.name.includes('보건'))) {
         this.handleNurseInteraction(npc);
         return;
@@ -1993,6 +2000,67 @@ class MainApp {
       window.RPGDialog.show('📋 3층 힐링 게시판', msg, '📋');
     } else {
       alert(msg);
+    }
+  }
+
+  // 1학년 2반 담임 한강우 선생님 (가죽 골렘 1:1 상시 레이드 안내 & 나무 세트 3종 연화 비책 기믹)
+  handleTeacherKangwooInteraction(npc) {
+    const isWoodSwordEquipped = this.isItemEquipped('equip_wood_sword');
+    const isWoodHelmetEquipped = this.isItemEquipped('equip_wood_helmet');
+    const isWoodArmorEquipped = this.isItemEquipped('equip_wood_armor');
+    const isFullWoodSet = isWoodSwordEquipped && isWoodHelmetEquipped && isWoodArmorEquipped;
+
+    const hasScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
+
+    if (isFullWoodSet) {
+      if (!hasScroll) {
+        this.addItem('item_golem_weakness_scroll', '📜 한강우의 골렘 연화 비책', 1, '📜', {
+          type: 'quest',
+          effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 50% 반감 (2,000 HP ➔ 1,000 HP)'
+        });
+        this.saveProgress(true);
+
+        const title = '👨‍🏫 한강우 선생님';
+        const msg = `오! 자네는 1-1반에서 직접 목재를 수집해 목검, 목제 투구, 목제 흉갑까지 [나무 세트 3종]을 완벽하게 착용했군! 👏\n\n기본기를 충실히 닦은 자만이 거목의 영혼과 공명할 수 있는 법이지. 옛 고서에서 전해 내려오는 이 [📜 골렘 연화 비책]을 자네에게 전수하겠네!\n\n✨ [비책 효과]\n이 비책을 품고 1-2반으로 들어가 [🪵 가죽 골렘]과 1:1 결투를 치르면, 골렘의 거친 외피가 부드럽게 연화되어 최대 체력이 절반(2,000 HP ➔ 1,000 HP)으로 대폭 줄어든단다!\n\n어서 2반 문을 열고 들어가 1:1 레이드에서 승리를 쟁취해보렴!`;
+        if (window.RPGDialog) {
+          window.RPGDialog.show(title, msg, '👨‍🏫');
+        } else {
+          alert(`💬 [${title}]\n\n${msg}`);
+        }
+        if (typeof this.showItemToast === 'function') {
+          this.showItemToast('📜 [한강우의 골렘 연화 비책] 획득! (가죽 골렘 체력 50% 반감)');
+        }
+      } else {
+        const title = '👨‍🏫 한강우 선생님';
+        const msg = `자네가 품고 있는 [📜 한강우의 골렘 연화 비책]이 이미 1-2반 가죽 골렘의 거친 기운을 절반(1,000 HP)으로 약화시키고 있단다!\n\n나무 세트 3종을 갖춘 자네의 실력이라면 충분히 승리할 수 있을 걸세. 1-2반 교실로 들어가 당당하게 1:1 레이드에 도전해보렴!`;
+        if (window.RPGDialog) {
+          window.RPGDialog.show(title, msg, '👨‍🏫');
+        } else {
+          alert(`💬 [${title}]\n\n${msg}`);
+        }
+      }
+      return;
+    }
+
+    // Wood set is NOT fully equipped:
+    const hasSwordInInv = this.hasItem('equip_wood_sword');
+    const hasHelmetInInv = this.hasItem('equip_wood_helmet');
+    const hasArmorInInv = this.hasItem('equip_wood_armor');
+    const ownsAllThree = hasSwordInInv && hasHelmetInInv && hasArmorInInv;
+
+    const title = '👨‍🏫 한강우 선생님';
+    let msg = `안녕! 1학년 2반 담임 한강우 선생님이란다. 👨‍🏫\n\n🪵 [1-2반 1:1 가죽 골렘 레이드 상시 개방]\n이 2반 문으로 들어가면 1차 관문 보스 '가죽 골렘'과 언제든 1:1 단판 승부를 겨룰 수 있단다!\n\n`;
+
+    if (ownsAllThree) {
+      msg += `💡 [선생님의 조언: 장비 착용 필요!]\n가방을 보니 나무검, 나무투구, 나무갑옷을 모두 제작해 두었구나!\n하지만 아직 직접 몸에 [착용]하지 않았단다.\n\n우측 가방(🎒)을 열어 3개 장비를 모두 착용한 상태로 나에게 다시 말을 걸면, 골렘의 체력을 절반으로 깎아주는 특수 비책을 전수해주마!`;
+    } else {
+      msg += `⚔️ [특별 공략 기믹: 골렘 연화 비책]\n가죽 골렘의 체력(2,000 HP)이 너무 단단해 버겁다면... 1-1반 교실 화단과 복도에서 목재를 모아 [나무검], [나무투구], [나무갑옷] (나무 세트 3종)을 모두 제작하여 직접 [착용]한 뒤 나를 찾아오렴!\n골렘의 체력을 50% 줄여주는 [📜 골렘 연화 비책]을 전수해 주겠네!\n\n🐲 [청동 드래곤 출현]\n참고로 2차 보스인 '고대 청동 드래곤'은 운동장 넓은 천연잔디 축구장으로 이동했단다! 골렘을 쓰러뜨리고 엘리베이터를 개방해 축구장으로 진출해보렴!`;
+    }
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show(title, msg, '👨‍🏫');
+    } else {
+      alert(`💬 [${title}]\n\n${msg}`);
     }
   }
 
@@ -5533,7 +5601,18 @@ class MainApp {
   openBossRaid(bossData) {
     this.recalcCombatStats();
 
-    if (!window.BOSS_CONFIG.active) {
+    const isLeatherGolemRaid = (
+      (this.engine && this.engine.player && this.engine.player.room === 'room_702') ||
+      (bossData && (bossData.id === 'boss_leather_golem' || bossData.id === 'boss_s1_treegolem' || (bossData.name && bossData.name.includes('골렘'))))
+    );
+    const isDragonRaid = (
+      (this.engine && this.engine.player && this.engine.player.room === 'playground' && bossData && (bossData.id === 'boss_bronze_dragon' || (bossData.name && bossData.name.includes('드래곤')))) ||
+      (bossData && bossData.id === 'boss_bronze_dragon')
+    );
+
+    const isSoloRaid = (!window.BOSS_CONFIG.active && (isLeatherGolemRaid || isDragonRaid));
+
+    if (!window.BOSS_CONFIG.active && !isSoloRaid) {
       if (this.playerData.isTeacher) {
         const goSetup = confirm(
           '⏳ 현재 보스레이드 이벤트가 [대기 중]입니다.\n\n[확인]: 보스레이드 이벤트 시작/옵션 설정창 열기\n[취소]: 교사 계정으로 즉시 테스트 전투 입장'
@@ -5548,17 +5627,70 @@ class MainApp {
       }
     }
 
-    if (this.bossState.currentHp <= 0) {
+    if (isSoloRaid) {
+      if (isLeatherGolemRaid) {
+        const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
+        const baseHp = (bossData && bossData.maxHp) || 2000;
+        const finalHp = hasWeaknessScroll ? Math.round(baseHp * 0.5) : baseHp;
+
+        window.BOSS_CONFIG = {
+          ...window.BOSS_CONFIG,
+          name: '🪵 가죽 골렘',
+          level: (bossData && bossData.level) || 10,
+          mode: 'solo',
+          unitFilter: 'ALL',
+          maxHp: finalHp,
+          currentHp: finalHp,
+          atk: (bossData && bossData.atk) || 30,
+          def: (bossData && bossData.def) || 14,
+          rewardGold: 100,
+          rewardExp: 200,
+          isWeakened: hasWeaknessScroll,
+          expiresAt: Date.now() + 180 * 1000
+        };
+      } else if (isDragonRaid) {
+        const baseHp = (bossData && bossData.maxHp) || 5000;
+        window.BOSS_CONFIG = {
+          ...window.BOSS_CONFIG,
+          name: '🐲 고대 청동 드래곤',
+          level: (bossData && bossData.level) || 15,
+          mode: 'solo',
+          unitFilter: 'ALL',
+          maxHp: baseHp,
+          currentHp: baseHp,
+          atk: (bossData && bossData.atk) || 45,
+          def: (bossData && bossData.def) || 20,
+          rewardGold: 250,
+          rewardExp: 400,
+          isWeakened: false,
+          expiresAt: Date.now() + 180 * 1000
+        };
+      }
+    } else if (isLeatherGolemRaid) {
+      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
+      if (hasWeaknessScroll && window.BOSS_CONFIG.mode === 'solo') {
+        window.BOSS_CONFIG.maxHp = Math.round((window.BOSS_CONFIG.maxHp || 2000) * 0.5);
+        window.BOSS_CONFIG.currentHp = window.BOSS_CONFIG.maxHp;
+        window.BOSS_CONFIG.isWeakened = true;
+      }
+    }
+
+    if (this.bossState.currentHp <= 0 || isSoloRaid) {
       this.bossState.currentHp = window.BOSS_CONFIG.maxHp;
     }
     this.bossState.maxHp = window.BOSS_CONFIG.maxHp;
     this.bossState.hasAttacked = false;
     this.bossState.damageDealt = 0;
 
-    const modeTag = window.BOSS_CONFIG.mode === 'coop' ? '협동 레이드' : '개인 레이드';
+    const modeTag = window.BOSS_CONFIG.mode === 'coop' ? '협동 레이드' : '1:1 솔로 레이드';
     document.getElementById('boss-raid-title').innerText = `${window.BOSS_CONFIG.name} [${modeTag}]`;
     document.getElementById('boss-name-label').innerText = window.BOSS_CONFIG.name;
-    document.getElementById('raid-battle-log').innerHTML = `⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+
+    if (window.BOSS_CONFIG.isWeakened) {
+      document.getElementById('raid-battle-log').innerHTML = `<span style="color:#22c55e; font-weight:bold;">✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP ${this.bossState.maxHp.toLocaleString()})</span><br>⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+    } else {
+      document.getElementById('raid-battle-log').innerHTML = `⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+    }
 
     this.updateBossRaidUI();
     this.loadNextBossQuestion();
@@ -7167,7 +7299,7 @@ class MainApp {
           goldEl.value = 50;
           expEl.value = 100;
         } else if (val === 'dragon') {
-          nameEl.value = '🐉 숭실 청동 드래곤';
+          nameEl.value = '🐲 고대 청동 드래곤';
           hpEl.value = 5000;
           atkEl.value = 50;
           defEl.value = 20;

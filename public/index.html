@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=231">
+  <link rel="manifest" href="/manifest.json?v=232">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=231">
+  <link rel="stylesheet" href="css/style.css?v=232">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -1838,8 +1838,8 @@
             <div class="input-row">
               <label style="flex:1; font-size:12px; color:#fca5a5;">보스 프리셋 선택
                 <select id="admin-boss-preset">
-                  <option value="golem">👾 가죽 골렘 (1학년 2반 1차 · 10인 권장 · HP 2000 / ATK 30 / DEF 14)</option>
-                  <option value="dragon">🐉 숭실 청동 드래곤 (1학년 2반 2차 · 20인 권장 · HP 5000 / ATK 50 / DEF 20)</option>
+                  <option value="golem">🪵 가죽 골렘 (1학년 2반 1:1 솔로 상시 개방 · HP 2000 / ATK 30 / DEF 14)</option>
+                  <option value="dragon">🐲 고대 청동 드래곤 (운동장 천연잔디 축구장 · HP 5000 / ATK 45 / DEF 20)</option>
                   <option value="demon">😈 중간고사 대마왕 (축구장 서쪽 골대 · 20인 협동 8턴 · HP 7500 / ATK 86 / DEF 28 · 300G / 600 EXP)</option>
                   <option value="cerberus">🐕 수행평가 3두마수 케르베로스 (축구장 서쪽 골대 · 30인 권장 · HP 8000 / ATK 90 / DEF 28 · 200G / 400 EXP)</option>
                   <option value="final_god">💀 기말고사 파멸신 (축구장 서쪽 골대 · 25~30인 협동 · HP 10000 / ATK 95 / DEF 35 · 400G / 800 EXP)</option>
@@ -1984,6 +1984,7 @@
                       <option value="item_courage_potion">🧪 용기의 물약 (보라) (3분간 공격력 +5)</option>
                       <option value="item_boss_leather">🥋 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
                       <option value="item_bronze_heart">❤️‍🔥 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
+                      <option value="item_golem_weakness_scroll">📜 한강우의 골렘 연화 비책 (가죽 골렘 HP 50% 반감)</option>
                       <option value="equip_leather_sword">🗡️ 가죽손잡이 세이버 (공격력 +22)</option>
                       <option value="item_ginkgo">🍂 황금 은행잎</option>
                       <option value="equip_bronze_sword">⚔️ 청동검 (공격력 +30)</option>
@@ -2057,6 +2058,7 @@
                     <option value="item_eval_paper">📜 A+ 만점 수행평가지 (케르베로스 전리품)</option>
                     <option value="item_boss_leather">🥋 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
                     <option value="item_bronze_heart">❤️‍🔥 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
+                      <option value="item_golem_weakness_scroll">📜 한강우의 골렘 연화 비책 (가죽 골렘 HP 50% 반감)</option>
                   </optgroup>
                   <optgroup label="👟 신발 & 이벤트 특수 장비">
                     <option value="equip_shoes_samdidas">👟 삼디다스 실내화 (질주 가능, ATK/DEF +2, HP +10)</option>
@@ -2319,19 +2321,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=231"></script>
-  <script src="js/dialog.js?v=231"></script>
+  <script src="js/audio.js?v=232"></script>
+  <script src="js/dialog.js?v=232"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=231"></script>
-  <script src="js/engine.js?v=231"></script>
-  <script src="js/quiz.js?v=231"></script>
-  <script src="js/crafting.js?v=231"></script>
-  <script src="js/network.js?v=231"></script>
-  <script src="js/acid_rain.js?v=231"></script>
-  <script src="js/brawl_ball.js?v=231"></script>
-  <script src="js/uphill_rush.js?v=231"></script>
-  <script src="js/main.js?v=231"></script>
+  <script src="js/world.js?v=232"></script>
+  <script src="js/engine.js?v=232"></script>
+  <script src="js/quiz.js?v=232"></script>
+  <script src="js/crafting.js?v=232"></script>
+  <script src="js/network.js?v=232"></script>
+  <script src="js/acid_rain.js?v=232"></script>
+  <script src="js/brawl_ball.js?v=232"></script>
+  <script src="js/uphill_rush.js?v=232"></script>
+  <script src="js/main.js?v=232"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
@@ -2427,7 +2429,7 @@
               <span style="font-size: 11px; font-weight: 800; background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 6px;">권장: Lv.10~11</span>
             </div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
-              <li><b>위치</b>: 7층 <code>1학년 2반 보스 교실</code> (2차 심층 레이드) ➔ <code>숭실 청동 드래곤</code> 출현</li>
+              <li><b>위치</b>: 지상 운동장 <code>천연잔디 축구장</code> (x: 18, y: 35) ➔ <code>고대 청동 드래곤</code> 출현</li>
               <li><b>목표</b>: 1~4단원 통합 영어 퀴즈로 청동 드래곤 격파</li>
               <li><b>보상</b>: <code>청동 드래곤의 심장(❤️‍🔥)</code> ➔ 3티어 <b>[청동검 · 청동투구 · 청동갑옷]</b> 제작</li>
             </ul>
