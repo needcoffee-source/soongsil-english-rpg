@@ -272,7 +272,26 @@ app.handleCafeteriaEntranceInteraction();
 assert(window.RPGDialog.lastMsg.includes('정문 개방 성공'), 'Should open door when level >= 12 and key held');
 assert(!window.RPGDialog.lastMsg.includes('대규모 급식 콘텐츠가 곧 오픈됩니다'), 'Should delete deprecated opening notice');
 
-console.log('✔ [5/6] Cafeteria key quest & entrance validation verified flawlessly!');
+// Verify warp into cafeteria room
+assert.strictEqual(engine.player.room, 'room_cafeteria', 'Opening cafeteria door should warp to room_cafeteria');
+assert.strictEqual(engine.player.x, 21 * 32, 'X coord in cafeteria should be 21 * 32');
+assert.strictEqual(engine.player.y, 20 * 32, 'Y coord in cafeteria should be 20 * 32');
+assert.strictEqual(engine.getMapWidth(), 42, 'Cafeteria width should be 42');
+assert.strictEqual(engine.getMapHeight(), 24, 'Cafeteria height should be 24');
+
+// Verify collision in cafeteria
+assert.strictEqual(engine.checkCafeteriaCollision(5, 12), true, 'Student dining table should block');
+assert.strictEqual(engine.checkCafeteriaCollision(11, 12), false, 'Aisle between columns should be passable');
+assert.strictEqual(engine.checkCafeteriaCollision(32, 12), false, 'Doorway to teacher dining should be passable');
+assert.strictEqual(engine.checkCafeteriaCollision(32, 8), true, 'Wall to teacher dining should block');
+
+// Verify exit door in cafeteria
+engine.exitClassroom();
+assert.strictEqual(engine.player.room, 'playground', 'Stepping on exit door in cafeteria should warp to playground');
+assert.strictEqual(engine.player.x, 86 * 32, 'X coord should be 86 * 32 (playground cafeteria entrance)');
+assert.strictEqual(engine.player.y, 5 * 32, 'Y coord should be 5 * 32');
+
+console.log('✔ [5/6] Cafeteria key quest & interior space navigation verified flawlessly!');
 
 // 7. Test Soongsil History Hall Monsters Question Unit (Lesson 6)
 const historyMob = WORLD_DATA.classroom_history.historyMonsters[0];

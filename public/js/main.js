@@ -1745,6 +1745,26 @@ class MainApp {
       this.handleEVChargerEasterEgg();
     } else if (target.type === 'cafeteria') {
       this.handleCafeteriaEntranceInteraction();
+    } else if (target.type === 'cafeteria_serving') {
+      const msg = `🍱 [급식 배부대]\n\n"위생적인 스테인리스 온장 배식대에서 김이 모락모락 피어오릅니다.\n따끈따끈한 쌀밥과 얼큰한 국, 노릇노릇하게 갓 튀겨진 돈까스와 신선한 샐러드가 식욕을 돋웁니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('🍱 급식 배부대', msg, '🍱');
+      else alert(msg);
+    } else if (target.type === 'cafeteria_tray_return') {
+      const msg = `🥣 [퇴식구 & 잔반 버리는 곳]\n\n"식사를 마친 식판과 수저를 분리하여 반납하는 퇴식구입니다.\n잔반 수거통과 수저 분리함이 청결하게 정돈되어 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('🥣 퇴식구 & 잔반 버리는 곳', msg, '🥣');
+      else alert(msg);
+    } else if (target.type === 'cafeteria_kitchen') {
+      const msg = `🍳 [조리실]\n\n"위생적인 조리 환경을 위해 대형 조리용 솥과 가스레인지가 청결하게 관리되고 있습니다.\n조리사 선생님들이 정성껏 학생들의 점심 식사를 준비하는 공간입니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('🍳 조리실', msg, '🍳');
+      else alert(msg);
+    } else if (target.type === 'cafeteria_teacher_room') {
+      const msg = `📋 [교사 급식실]\n\n"학생 급식실과 분리된 교직원 전용 식사 공간입니다.\n학생 식당과 동일한 규격의 식탁이 정갈하게 놓여 있어 선생님들이 조용히 식사를 하실 수 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('📋 교사 급식실', msg, '📋');
+      else alert(msg);
+    } else if (target.type === 'cafeteria_water') {
+      const msg = `🚰 [급식실 음수대]\n\n"시원하고 깨끗한 물이 나오는 대용량 정수기입니다.\n식사 전후로 시원한 물을 마실 수 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('🚰 급식실 음수대', msg, '🚰');
+      else alert(msg);
     } else if (target.type === 'cafeteria_key_safe') {
       this.handleCafeteriaKeySafeInteraction();
     } else if (target.type === 'alchemy_cauldron') {
@@ -2206,6 +2226,16 @@ class MainApp {
       alert(welcomeMsg);
     }
     this.showToast('🍱 [급식실 열쇠 사용!] 학생 급식실 정문이 활짝 열렸습니다!', 'success');
+
+    if (this.engine) {
+      if (typeof this.engine.triggerFadeWarp === 'function') {
+        this.engine.triggerFadeWarp(() => {
+          this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 21 * 32, 20 * 32);
+        });
+      } else {
+        this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 21 * 32, 20 * 32);
+      }
+    }
   }
 
   // 6. 보건 선생님 대화 & 퀴즈

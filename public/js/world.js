@@ -23,6 +23,8 @@ const WORLD_DATA = {
   PLAYGROUND_HEIGHT: 54,
   GYM_PLAZA_WIDTH: 56, // 숭실 7층 체육관 & 주차장 광장 (56 x 36 타일)
   GYM_PLAZA_HEIGHT: 36, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
+  CAFETERIA_WIDTH: 42, // 학생 급식실 대형 식음 공간 (42 x 24 타일)
+  CAFETERIA_HEIGHT: 24,
   MAP_HEIGHT: 20,
 
   floors: {
@@ -562,6 +564,26 @@ const WORLD_DATA = {
       { id: 31, label: "31", x: 67, y: 5, facing: "down", group: "top" },
       { id: 32, label: "32", x: 66, y: 7, facing: "right", group: "top" },
       { id: 33, label: "33", x: 68, y: 7, facing: "left", group: "top" }
+    ]
+  },
+
+  // 🍱 학생 급식실 (Cafeteria - 42 x 24 타일 대형 식당 공간)
+  classroom_cafeteria: {
+    name: "🍱 학생 급식실 (Cafeteria)",
+    width: 42,
+    height: 24,
+    exitDoor: { x: 21, y: 22, name: "🚪 운동장 출구", prompt: "운동장으로 나가기 (SPACE)" },
+    blackboard: null,
+    teacherDesk: null,
+    gatherSpots: [],
+    desks: [],
+    npcs: [],
+    interactive: [
+      { id: "cafeteria_serving_counter", type: "cafeteria_serving", x: 22, y: 7, name: "🍱 급식 배부대", prompt: "급식 배부대 둘러보기 (SPACE)" },
+      { id: "cafeteria_tray_return", type: "cafeteria_tray_return", x: 4, y: 19, name: "🥣 퇴식구 & 잔반 버리는 곳", prompt: "퇴식구 둘러보기 (SPACE)" },
+      { id: "cafeteria_kitchen_door", type: "cafeteria_kitchen", x: 8, y: 6, name: "🍳 조리실", prompt: "조리실 둘러보기 (SPACE)" },
+      { id: "cafeteria_teacher_dining", type: "cafeteria_teacher_room", x: 36, y: 11, name: "📋 교사 급식실", prompt: "교사 급식실 둘러보기 (SPACE)" },
+      { id: "cafeteria_water_dispenser", type: "cafeteria_water", x: 30, y: 12, name: "🚰 급식실 음수대", prompt: "시원한 물 마시기 (SPACE)" }
     ]
   },
   classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },

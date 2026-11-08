@@ -726,7 +726,7 @@ function sanitizeGear(g) {
 
 // Normalize floor for singleton rooms (playground, career, staff_office, history)
 function normalizeSingletonRoomFloor(room, floor) {
-  if (room === 'playground' || room === 'playground_gym') return 1;
+  if (room === 'playground' || room === 'playground_gym' || room === 'room_cafeteria') return 1;
   if (room === 'room_career') return 5;
   if (room === 'room_staff_office') return 6;
   if (room === 'room_history') return 0;
