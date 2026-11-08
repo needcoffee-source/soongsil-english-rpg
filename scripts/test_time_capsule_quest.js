@@ -3,7 +3,7 @@ const path = require('path');
 const assert = require('assert');
 
 console.log('========================================================');
-console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=225)');
+console.log('🧪 TESTING 2004 TIME CAPSULE & VIRTUES ACCESSORY 2 QUEST (v=226)');
 console.log('========================================================\n');
 
 let passed = 0;
@@ -92,7 +92,7 @@ test('engine.js includes time_capsule & capsule_clue routing and 14번 교감선
   assert(engineCode.includes('drawHighResTimeCapsule'));
   assert(engineCode.includes('drawHighResCapsuleNote'));
   assert(engineCode.includes('isVicePrincipalDesk'));
-  assert(engineCode.includes('14 교감'));
+  assert(engineCode.includes('🏫 교감선생님'));
 });
 
 // 4. MainApp & Quest Checks
@@ -206,10 +206,10 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
   });
 });
 
-test('Cache-buster tag v=225 is cleanly applied in index.html', () => {
+test('Cache-buster tag v=226 is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=225/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=225 tags, found ${matches}`);
+  const matches = (indexHtml.match(/v=226/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 v=226 tags, found ${matches}`);
   assert(!indexHtml.includes('v=210'), 'Found stale v=210 tag in index.html');
 });
 

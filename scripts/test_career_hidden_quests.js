@@ -102,8 +102,9 @@ console.log('✅ 2. Quest 1 Step 1: Secret note discovered, quest in_progress');
 
 // Test Quest 1 Step 2: Try counsel 1 again without bookmark -> gives hint
 app.handleCareerCounsel1Interaction();
-assert(lastDialog.text.includes('29번 한강우 국어선생님'), 'Dialog must guide player to Han Kang-woo desk');
-console.log('✅ 3. Quest 1 Step 2: In-progress hint points to Teacher Han Kang-woo');
+assert(lastDialog.text.includes('한강우 국어선생님'), 'Dialog must guide player to Han Kang-woo desk');
+assert(!lastDialog.text.includes('29번'), 'Dialog must not mention 29번');
+console.log('✅ 3. Quest 1 Step 2: In-progress hint points to Teacher Han Kang-woo (no 29번)');
 
 // Test Quest 1 Step 3: Visit Han Kang-woo desk -> obtains bookmark
 app.handleHangangwooDeskInteraction();

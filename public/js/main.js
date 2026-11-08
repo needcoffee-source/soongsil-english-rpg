@@ -561,10 +561,10 @@ const ALL_GAME_ITEMS = {
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
-  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
-  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
-  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
-  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
+  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
+  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
+  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
+  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
   'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } }
 
 };
@@ -1139,7 +1139,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 하지만 지금 정말 큰일이란다... 며칠 전 대출되었던 소중한 학교 도서 3권이 제때 반납되지 않고 학교 곳곳에 흩어져 버렸어!
 
 1. 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치에 누군가 두고 갔다는 제보가 있어.
-2. 📗 [최신 과학 잡지]: 6층 교무실 23번 과학 선생님(졍경슉 선생님) 연구석 주변에 꽂혀 있단다.
+2. 📗 [최신 과학 잡지]: 6층 교무실 과학 졍경슉 선생님 연구석 주변에 꽂혀 있단다.
 3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
 
 학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
@@ -5140,7 +5140,7 @@ class MainApp {
         `;
         card.addEventListener('click', () => {
           if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
-          alert('🔒 장신구 2번 슬롯은 현재 잠겨 있습니다.\n\n6층 교무실 14번 교감선생님의 [숭실 3대 덕목 검증: 지·덕·체 모범 학생 인증] 퀘스트를 완료하면 영구 해금됩니다!');
+          alert('🔒 장신구 2번 슬롯은 현재 잠겨 있습니다.\n\n6층 교무실 교감선생님의 [숭실 3대 덕목 검증: 지·덕·체 모범 학생 인증] 퀘스트를 완료하면 영구 해금됩니다!');
         });
         container.appendChild(card);
         return;
@@ -7765,7 +7765,7 @@ class MainApp {
               if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
                 window.AudioManager.playFanfare();
               }
-              this.showToast('🎉 [김진믜 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김진믜 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+              this.showToast('🎉 [김진믜 선생님의 미술 프로젝트] 모든 목표 달성! 김진믜 선생님께 돌아가 의뢰를 완료하세요!', 'success');
             }, 500);
           } else {
             this.showToast('🌼 [김진믜 선생님의 미술 프로젝트] 개나리 꽃잎 3송이 수집 완료! (스케치북 회수 필요)', 'info');
@@ -7903,7 +7903,7 @@ class MainApp {
       window.AudioManager.playSelect();
     }
 
-    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 디지털 학습존(디벗 단말기 옆) 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (세계 명화 도록, 스포츠 교본)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 23번 과학 연구석 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
+    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 디지털 학습존(디벗 단말기 옆) 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (세계 명화 도록, 스포츠 교본)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 과학 졍경슉 선생님 연구석 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
 
     if (window.RPGDialog) {
       window.RPGDialog.show('🖥️ 도서 검색용 컴퓨터', story, '🖥️');
@@ -9673,7 +9673,7 @@ class MainApp {
 
     // 2. 한강우 선생님 연구석에서 격려 책갈피를 찾아온 경우 -> 퀘스트 완료!
     if (hasBookmark) {
-      const completeMsg = '29번 한강우 국어선생님 연구석에서 찾은 [격려의 책갈피]를 10년 전 선배의 고민 편지 옆에 소중히 꽂았습니다!\n\n' +
+      const completeMsg = '한강우 국어선생님 연구석에서 찾은 [격려의 책갈피]를 10년 전 선배의 고민 편지 옆에 소중히 꽂았습니다!\n\n' +
         '📝 [에필로그]\n놀랍게도 편지 속 10년 전 학생은 훗날 아름다운 시집을 펴낸 작가가 되어, 모교 숭실의 후배들에게 따뜻한 응원을 보내고 있습니다!\n\n' +
         '시간을 넘어 맺어진 사제 간의 마음에 깊은 감동이 차오릅니다.\n\n' +
         '🎁 [보상 획득]\n🍂 황금 은행잎 1개를 획득했습니다!';
@@ -9708,8 +9708,8 @@ class MainApp {
     if (quest1State === 'in_progress') {
       const hintMsg = '파일철 사이에 끼워진 10년 전 선배의 빛바랜 고민 편지입니다.\n\n' +
         '"선생님, 저는 글을 쓰고 시를 읽는 것이 가장 행복하지만... 문학으로는 살아가기 힘들다는 말에 가슴이 무너집니다. 제 꿈을 믿고 가도 될까요? - 10년 전 어느 학생"\n\n' +
-        '🔍 [추적 힌트]\n쪽지 뒤편 메모: "교무실 29번 한강우 국어선생님 자리에 제 소중한 시집과 메모를 두고 온 것 같아요..."\n\n' +
-        '6층 교무실 29번 한강우 선생님 연구석을 확인해보세요!';
+        '🔍 [추적 힌트]\n쪽지 뒤편 메모: "교무실 한강우 국어선생님 자리에 제 소중한 시집과 메모를 두고 온 것 같아요..."\n\n' +
+        '6층 교무실 한강우 선생님 연구석을 확인해보세요!';
       if (window.RPGDialog) {
         window.RPGDialog.show('💬 [1:1 상담실 1] 10년 전 선배의 고민 쪽지', hintMsg, '📜');
       } else {
@@ -9721,8 +9721,8 @@ class MainApp {
     // 4. 최초 발견 -> 퀘스트 시작!
     const startMsg = '맞춤형 진로 파일철을 넘기던 중, 맨 뒷장에 끼워진 낡고 바랜 양면 편지 한 장을 발견했습니다!\n\n' +
       '📜 [10년 전 숭실 선배의 편지]\n"선생님, 저는 글을 쓰고 시를 읽는 것이 세상에서 가장 행복하지만... 제 꿈을 믿고 계속 걸어가도 될까요? 문학으로는 성공하기 어렵다는 말에 밤마다 눈물이 납니다."\n\n' +
-      '쪽지 뒷면에 작은 손글씨가 적혀 있습니다:\n"추신: 교무실 29번 국어선생님 자리에 제 소중한 시집과 메모를 두고 온 것 같아요..."\n\n' +
-      '✨ [히든 퀘스트 시작!] 6층 교무실 29번 한강우 선생님 연구석을 확인해보자!';
+      '쪽지 뒷면에 작은 손글씨가 적혀 있습니다:\n"추신: 교무실 한강우 국어선생님 자리에 제 소중한 시집과 메모를 두고 온 것 같아요..."\n\n' +
+      '✨ [히든 퀘스트 시작!] 6층 교무실 한강우 선생님 연구석을 확인해보자!';
 
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();
@@ -9742,7 +9742,7 @@ class MainApp {
     } else {
       alert(startMsg);
     }
-    this.showToast('✨ [히든 퀘스트] 10년 전 선배의 고민 발견! 6층 교무실 29번 한강우 선생님 자리를 확인하세요.', 'info');
+    this.showToast('✨ [히든 퀘스트] 10년 전 선배의 고민 발견! 6층 교무실 한강우 선생님 자리를 확인하세요.', 'info');
   }
 
   // 💬 5층 진로상담실 [1:1 상담실 2] 학습·진학 코칭석 & 히든 퀘스트: 마음 치유의 특제 허브티
@@ -10777,7 +10777,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [귐즨숑 선생님의 진로 의뢰] 모든 목표 달성! 24번 귐즨숑 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [귐즨숑 선생님의 진로 의뢰] 모든 목표 달성! 귐즨숑 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -10805,7 +10805,7 @@ class MainApp {
       }
 
       setTimeout(() => {
-        this.showToast('🎉 [진로를 고민하는 학생]에게 격려 편지와 안내서를 전달했습니다! 24번 귐즨숑 선생님께 보고하세요!', 'success');
+        this.showToast('🎉 [진로를 고민하는 학생]에게 격려 편지와 안내서를 전달했습니다! 귐즨숑 선생님께 보고하세요!', 'success');
       }, 600);
       return;
     }
@@ -10856,7 +10856,7 @@ class MainApp {
           if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
             window.AudioManager.playFanfare();
           }
-          this.showToast('🎉 [요션유 선생님의 정보 과제] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+          this.showToast('🎉 [요션유 선생님의 정보 과제] 모든 목표 달성! 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
         }, 500);
       }
     }
@@ -10883,7 +10883,7 @@ class MainApp {
     quest.usbCollected = true;
     this.addItem('item_yosunyu_usb', '요션유의 알고리즘 USB', 1, '💾', {
       type: 'quest',
-      effect: '18번 좌석 정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB'
+      effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB'
     });
     this.saveProgress();
     this.updateQuestTracker();
@@ -10899,7 +10899,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [요션유 선생님의 정보 과제] 모든 목표 달성! 18번 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [요션유 선생님의 정보 과제] 모든 목표 달성! 요션유 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -11250,7 +11250,7 @@ class MainApp {
     quest.textbookCollected = true;
     this.addItem('item_okchohan_textbook', '옥촣한의 사회 탐구 교재', 1, '📘', {
       type: 'quest',
-      effect: '10번 좌석 사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재'
+      effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재'
     });
     this.saveProgress();
     this.updateQuestTracker();
@@ -11266,7 +11266,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 10번 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -11292,7 +11292,7 @@ class MainApp {
     quest.sketchbookCollected = true;
     this.addItem('item_kimmijin_sketchbook', '김진믜의 풍경화 스케치북', 1, '🎨', {
       type: 'quest',
-      effect: '15번 좌석 미술 김진믜 선생님의 섬세한 풍경화 스케치북'
+      effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북'
     });
     this.saveProgress();
     this.updateQuestTracker();
@@ -11309,7 +11309,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [김진믜 선생님의 미술 프로젝트] 모든 목표 달성! 15번 김진믜 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [김진믜 선생님의 미술 프로젝트] 모든 목표 달성! 김진믜 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -11351,7 +11351,7 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 3번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+        this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
       }, 500);
     }
   }
@@ -11374,7 +11374,7 @@ class MainApp {
             if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
               window.AudioManager.playFanfare();
             }
-            this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 3번 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+            this.showToast('🎉 [Joshua의 특별 지령] 모든 목표 달성! 6층 교무실 Joshua 선생님께 돌아가 의뢰를 완료하세요!', 'success');
           }, 600);
         }
       }
@@ -11400,7 +11400,7 @@ class MainApp {
 
         if (quest.textbookCollected) {
           setTimeout(() => {
-            this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 10번 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
+            this.showToast('🎉 [옥촣한 선생님의 사회 과제] 모든 목표 달성! 옥촣한 선생님께 돌아가 의뢰를 완료하세요!', 'success');
           }, 600);
         }
       }
@@ -11696,7 +11696,7 @@ class MainApp {
           if (window.AudioManager && window.AudioManager.playFanfare) {
             window.AudioManager.playFanfare();
           }
-          this.showToast('🎉 [2004년 타임캡슐] 해금 성공! 6층 교무실 14번 교감선생님께 발굴 소식을 전하세요!', 'success');
+          this.showToast('🎉 [2004년 타임캡슐] 해금 성공! 6층 교무실 교감선생님께 발굴 소식을 전하세요!', 'success');
           this.openTimeCapsuleOpenedModal(true);
         } else {
           if (window.AudioManager && window.AudioManager.playWrong) window.AudioManager.playWrong();
@@ -11837,9 +11837,9 @@ class MainApp {
     }
 
     if (!this.playerData.timeCapsuleUnlocked && !this.playerData.hasOpenedTimeCapsule) {
-      const introMsg = '허허, 어서 오렴! 숭실의 14번 교감선생님이란다. 🏫\n\n운동장 야외 스탠드 관람석 틈새에 아주 오래전 선배들이 묻어둔 [비밀 타임캡슐]이 있다는 전설을 알고 있니?\n\n스탠드 주변에 흩어진 4개의 단서 쪽지를 찾아 자물쇠 비밀번호를 풀면 20년 전 우리 학교의 뜨거운 감동과 마주할 수 있을 거란다.\n\n캡슐의 자물쇠를 열게 되거든 꼭 내게 찾아와 그 소식을 전해주렴!';
+      const introMsg = '허허, 어서 오렴! 숭실의 교감선생님이란다. 🏫\n\n운동장 야외 스탠드 관람석 틈새에 아주 오래전 선배들이 묻어둔 [비밀 타임캡슐]이 있다는 전설을 알고 있니?\n\n스탠드 주변에 흩어진 4개의 단서 쪽지를 찾아 자물쇠 비밀번호를 풀면 20년 전 우리 학교의 뜨거운 감동과 마주할 수 있을 거란다.\n\n캡슐의 자물쇠를 열게 되거든 꼭 내게 찾아와 그 소식을 전해주렴!';
       if (window.RPGDialog) {
-        window.RPGDialog.show('🏫 교감선생님 (14번 좌석)', introMsg, '👨‍🏫');
+        window.RPGDialog.show('🏫 교감선생님', introMsg, '👨‍🏫');
       } else {
         alert('💬 [교감선생님]\n\n' + introMsg);
       }

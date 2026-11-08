@@ -12879,6 +12879,11 @@ class GameEngine {
     const isHunihuniDesk = (label === '27');
     const isVicePrincipalDesk = (label === '14');
     const isHangangwooDesk = (label === '29');
+    const isJoshuaDesk = (label === '3');
+    const isOkchohanDesk = (label === '10');
+    const isKimmijinDesk = (label === '15');
+    const isYosunyuDesk = (label === '18');
+    const isKwimjinsyongDesk = (label === '24');
     const now = Date.now();
 
     // 0. 제작자 갓준철 연구석: 황금빛 펄스 후광 글로우 (바닥 조명 및 배경 아우라)
@@ -13358,10 +13363,10 @@ class GameEngine {
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);
       } else if (isVicePrincipalDesk) {
-        // 🏫 14번 교감선생님 전용 명패
-        ctx.font = 'bold 11px "Pretendard", "Noto Sans KR", sans-serif';
-        const displayLabel = '🏫 14 교감';
-        const tw = Math.max(52, ctx.measureText(displayLabel).width + 12);
+        // 🏫 교감선생님 전용 명패 (14번 번호 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🏫 교감선생님';
+        const tw = Math.max(68, ctx.measureText(displayLabel).width + 12);
         const th = 18;
         ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
         ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
@@ -13384,6 +13389,81 @@ class GameEngine {
         ctx.lineWidth = 1.5;
         ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
         ctx.fillStyle = '#a7f3d0';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isJoshuaDesk) {
+        // 🇬🇧 Joshua 전용 명패 (3번 번호 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🇬🇧 Joshua';
+        const tw = Math.max(54, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#60a5fa';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#93c5fd';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isOkchohanDesk) {
+        // 🌏 옥촣한 전용 명패 (10번 번호 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🌏 옥촣한';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#7dd3fc';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isKimmijinDesk) {
+        // 🎨 김진믜 전용 명패 (15번 번호 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🎨 김진믜';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#f472b6';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#fbcfe8';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isYosunyuDesk) {
+        // 💻 요션유 전용 명패 (18번 번호 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '💻 요션유';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#e9d5ff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isKwimjinsyongDesk) {
+        // 🌟 귐즨숑 전용 명패 (24번 번호 삭제)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🌟 귐즨숑';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#fef08a';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);

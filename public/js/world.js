@@ -414,7 +414,7 @@ const WORLD_DATA = {
         x: 41.0,
         y: 20.875,
         avatar: "teacher",
-        dialogue: "허허, 어서 오렴! 숭실의 14번 교감선생님이란다. 🏫"
+        dialogue: "허허, 어서 오렴! 숭실의 교감선생님이란다. 🏫"
       }
     ],
     interactive: [
