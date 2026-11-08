@@ -374,9 +374,7 @@ class GameEngine {
       if (this.player.floor === 2) {
         return WORLD_DATA.LIBRARY_WIDTH || 20;
       }
-      if (this.player.floor === 3) {
-        return WORLD_DATA.FLOOR_3_HALLWAY_WIDTH || 12;
-      }
+
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
     if (this.player && this.player.room === 'room_staff_office') {
@@ -517,7 +515,7 @@ class GameEngine {
       if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || (tileX >= 14 && tileX <= 18))) {
         return true;
       }
-      if (this.player.floor === 3 && tileY === 7 && tileX === 1) {
+      if (this.player.floor === 3 && tileY === 6 && tileX === 48) {
         return true;
       }
     } else {
@@ -901,9 +899,9 @@ class GameEngine {
           this.player.y = 5 * 32;
           this.player.roomName = WORLD_DATA.floors[2] ? WORLD_DATA.floors[2].name : '2층 도서관 (독립 전용층)';
         } else if (this.player.floor === 3) {
-          this.player.x = 9 * 32;
+          this.player.x = 56 * 32;
           this.player.y = 6 * 32;
-          this.player.roomName = WORLD_DATA.floors[3] ? WORLD_DATA.floors[3].name : '3층 복도 (보건 & 힐링 구역)';
+          this.player.roomName = WORLD_DATA.floors[3] ? WORLD_DATA.floors[3].name : '3층 복도 (보건실 & Wee클래스)';
         } else {
           this.player.x = 15 * 32;
           this.player.y = 10 * 32;
@@ -1342,7 +1340,7 @@ class GameEngine {
         } : null);
         if (soccerBossObj) {
           const bDist = Math.hypot(soccerBossObj.x * 32 - this.player.x, (soccerBossObj.y + 0.5) * 32 - this.player.y);
-          if (bDist < 72 && bDist < minDist) {
+          if (bDist < 96 && bDist < minDist) {
             closest = {
               type: 'boss_raid',
               data: soccerBossObj,
@@ -1797,7 +1795,7 @@ class GameEngine {
           name: window.BOSS_CONFIG.name,
           prompt: '보스 레이드'
         } : null);
-        if (soccerBossObj && Math.hypot(soccerBossObj.x * 32 - x, (soccerBossObj.y + 0.5) * 32 - y) < 64) {
+        if (soccerBossObj && Math.hypot(soccerBossObj.x * 32 - x, (soccerBossObj.y + 0.5) * 32 - y) < 96) {
           return { type: 'boss_raid', data: soccerBossObj, name: soccerBossObj.name, prompt: soccerBossObj.prompt || '보스 레이드' };
         }
         if (pg.basketballMonsters) {
@@ -4240,12 +4238,12 @@ class GameEngine {
 
     // Boss Nameplate (교사 이벤트 시작 여부에 따른 상태 표시)
     const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '👾 가죽 골렘');
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🪵 가죽 골렘');
     const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 2000) : (boss.maxHp || 2000);
     const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
       ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
-      : `⏳ [1차 관문 보스] ${bName} (HP ${bMaxHp})`;
+      : `${bName} (HP ${bMaxHp})`;
 
     this.drawSharpLabel(px, py - 58, labelText, {
       bgColor: isRaidActive ? 'rgba(127, 29, 29, 0.96)' : 'rgba(30, 41, 59, 0.94)',
@@ -4267,6 +4265,10 @@ class GameEngine {
     const tailSway = Math.sin(now / 340) * 8;
 
     this.ctx.save();
+    // 1.5x Scale for Ancient Bronze Dragon
+    this.ctx.translate(px, py);
+    this.ctx.scale(1.5, 1.5);
+    this.ctx.translate(-px, -py);
 
     // 1. Ancient Bronze & Verdigris (청동 녹청) Magic Circle on Floor
     this.ctx.strokeStyle = 'rgba(180, 83, 9, 0.92)'; // Deep Metallic Bronze
@@ -4532,9 +4534,9 @@ class GameEngine {
     const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
       ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
-      : `⏳ [2차 관문 보스] ${bName} (HP ${bMaxHp})`;
+      : `${bName} (HP ${bMaxHp})`;
 
-    this.drawSharpLabel(px, py - 66, labelText, {
+    this.drawSharpLabel(px, py - 95, labelText, {
       bgColor: isRaidActive ? 'rgba(69, 26, 3, 0.96)' : 'rgba(30, 41, 59, 0.94)',
       borderColor: isRaidActive ? '#14b8a6' : '#94a3b8',
       textColor: isRaidActive ? '#fed7aa' : '#e2e8f0',
@@ -5019,9 +5021,9 @@ class GameEngine {
     const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
       ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
-      : `⏳ [축구장 보스] ${bName} (HP ${bMaxHp})`;
+      : `${bName} (HP ${bMaxHp})`;
 
-    this.drawSharpLabel(px, py - 66, labelText, {
+    this.drawSharpLabel(px, py - 115, labelText, {
       bgColor: isRaidActive ? 'rgba(124, 45, 18, 0.96)' : 'rgba(30, 41, 59, 0.94)',
       borderColor: isRaidActive ? '#ea580c' : '#fdba74',
       textColor: isRaidActive ? '#ffedd5' : '#fed7aa',
@@ -5041,6 +5043,10 @@ class GameEngine {
     const scytheGlow = 0.6 + Math.sin(now / 160) * 0.4;
 
     this.ctx.save();
+    // 1.4x Scale for Final Exam God of Ruin
+    this.ctx.translate(px, py);
+    this.ctx.scale(1.4, 1.4);
+    this.ctx.translate(-px, -py);
 
     // 1. OMR Answer Sheet Grid on Floor
     this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
@@ -5164,9 +5170,9 @@ class GameEngine {
     const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
       ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
-      : `⏳ [최종보스] ${bName} (HP ${bMaxHp})`;
+      : `${bName} (HP ${bMaxHp})`;
 
-    this.drawSharpLabel(px, py - 72, labelText, {
+    this.drawSharpLabel(px, py - 105, labelText, {
       bgColor: isRaidActive ? 'rgba(15, 23, 42, 0.98)' : 'rgba(30, 41, 59, 0.94)',
       borderColor: isRaidActive ? '#38bdf8' : '#94a3b8',
       textColor: isRaidActive ? '#e0f2fe' : '#cbd5e1',
@@ -5185,6 +5191,10 @@ class GameEngine {
     const zFloat = (now / 400) % 30;
 
     this.ctx.save();
+    // 2.0x Scale for God of Sloth / Sloth Titan
+    this.ctx.translate(px, py);
+    this.ctx.scale(2.0, 2.0);
+    this.ctx.translate(-px, -py);
 
     // 1. Water Ripple Pool
     this.ctx.strokeStyle = 'rgba(14, 165, 233, 0.8)';
@@ -5826,16 +5836,7 @@ class GameEngine {
     }
 
     // Official School Motto Banner mounted in Center Hallway
-    if (this.player.floor === 3) {
-      this.drawSharpLabel(6 * 32, 26, '🏥 3층: 건강과 마음 힐링 구역 (Health & Healing)', {
-        bgColor: '#064e3b',
-        borderColor: '#34d399',
-        textColor: '#a7f3d0',
-        fontSize: 12,
-        paddingX: 12,
-        height: 22
-      });
-    } else {
+    if (this.player.floor !== 3) {
       this.drawSharpLabel(15 * 32 + 16, 26, '🏫 교훈: 참과 사랑에 사는 사명인', {
         bgColor: '#1e1b4b',
         borderColor: '#f59e0b',
@@ -7903,14 +7904,32 @@ class GameEngine {
     const pulse = 0.7 + Math.sin(now / 180) * 0.3;
     const rot = now / 1200;
 
+    // Draw Active Boss Sprite
+    const bCfg = (window.BOSS_CONFIG && window.BOSS_CONFIG.active) ? window.BOSS_CONFIG : boss;
+    const bName = ((bCfg && bCfg.name) || boss.name || '').toLowerCase();
+
+    // Dynamically scale arena magic circle and prompt offset depending on boss scale
+    let arenaRadius = 78;
+    let promptOffsetY = 48;
+    if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+      arenaRadius = 126; // 2.0x Sloth Titan
+      promptOffsetY = 88;
+    } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
+      arenaRadius = 96;  // 1.4x Final Exam God of Ruin
+      promptOffsetY = 74;
+    } else if (bName.includes('드래곤') || bName.includes('dragon')) {
+      arenaRadius = 104; // 1.5x Ancient Bronze Dragon
+      promptOffsetY = 82;
+    }
+
     // Sacred Magic Circle
     this.ctx.save();
     this.ctx.translate(bx, by);
 
     this.ctx.strokeStyle = `rgba(250, 204, 21, ${pulse})`;
-    this.ctx.lineWidth = 3;
+    this.ctx.lineWidth = 3.5;
     this.ctx.beginPath();
-    this.ctx.arc(0, 0, 72, 0, Math.PI * 2);
+    this.ctx.arc(0, 0, arenaRadius, 0, Math.PI * 2);
     this.ctx.stroke();
 
     this.ctx.fillStyle = 'rgba(234, 88, 12, 0.18)';
@@ -7922,8 +7941,8 @@ class GameEngine {
     this.ctx.beginPath();
     for (let r = 0; r < 8; r++) {
       const ang = (r * Math.PI) / 4;
-      this.ctx.moveTo(Math.cos(ang) * 45, Math.sin(ang) * 45);
-      this.ctx.lineTo(Math.cos(ang) * 68, Math.sin(ang) * 68);
+      this.ctx.moveTo(Math.cos(ang) * (arenaRadius * 0.6), Math.sin(ang) * (arenaRadius * 0.6));
+      this.ctx.lineTo(Math.cos(ang) * (arenaRadius * 0.94), Math.sin(ang) * (arenaRadius * 0.94));
     }
     this.ctx.stroke();
 
@@ -7931,14 +7950,10 @@ class GameEngine {
       const ang = (r * Math.PI) / 3;
       this.ctx.fillStyle = '#fef08a';
       this.ctx.beginPath();
-      this.ctx.arc(Math.cos(ang) * 56, Math.sin(ang) * 56, 3, 0, Math.PI * 2);
+      this.ctx.arc(Math.cos(ang) * (arenaRadius * 0.78), Math.sin(ang) * (arenaRadius * 0.78), 3.5, 0, Math.PI * 2);
       this.ctx.fill();
     }
     this.ctx.restore();
-
-    // Draw Active Boss Sprite
-    const bCfg = (window.BOSS_CONFIG && window.BOSS_CONFIG.active) ? window.BOSS_CONFIG : boss;
-    const bName = ((bCfg && bCfg.name) || boss.name || '').toLowerCase();
 
     if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
       this.drawHighResBossDemon(boss);
@@ -7953,7 +7968,7 @@ class GameEngine {
     }
 
     const promptText = (boss && boss.prompt) ? boss.prompt : '⚔️ [SPACE: 청동 드래곤 레이드 도전]';
-    this.drawSharpLabel(bx, by + 46, promptText.includes('SPACE') ? promptText : `⚔️ [SPACE: ${promptText}]`, {
+    this.drawSharpLabel(bx, by + promptOffsetY, promptText.includes('SPACE') ? promptText : `⚔️ [SPACE: ${promptText}]`, {
       bgColor: 'rgba(15, 23, 42, 0.92)',
       borderColor: '#ef4444',
       textColor: '#ffffff',

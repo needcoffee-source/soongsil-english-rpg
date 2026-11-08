@@ -3568,7 +3568,7 @@ class MainApp {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 3;
-        this.engine.warpToRoom('hallway', '3층 복도 (보건 & 힐링 구역)', 9 * 32, 6 * 32);
+        this.engine.warpToRoom('hallway', '3층 복도 (보건실 & Wee클래스)', 56 * 32, 6 * 32);
         this.saveProgress();
       });
     } else if (target === 'floor_2') {
