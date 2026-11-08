@@ -523,6 +523,17 @@ class GameEngine {
         return false;
       }
 
+      if (this.player.room === 'room_career') {
+        if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
+        if (tileX <= 1 || tileX >= curMapWidth - 2) return true;
+        // Exit Door area is ALWAYS passable
+        if (cr && cr.exitDoor && Math.abs(tileX - cr.exitDoor.x) <= 1 && tileY >= cr.exitDoor.y) {
+          return false;
+        }
+        if (this.isCareerRoomWall(tileX, tileY)) return true;
+        return false;
+      }
+
       // Exit Door area is ALWAYS passable
       if (Math.abs(tileX - cr.exitDoor.x) <= 1 && tileY >= cr.exitDoor.y) {
         return false;
@@ -3015,43 +3026,48 @@ class GameEngine {
     const hasEscaped = !!(app && app.playerData && app.playerData.hasEscapedCareerRoom);
     const solvedCount = clues.filter(Boolean).length;
 
-    // 1. Zone Carpets / Mats
-    // Clue 1: Aptitude PC (x: 10, y: 7) - Cyan carpet
+    // 1. Zone Carpets / Mats (좌측 공간으로 정돈 배치)
+    // Clue 1: Aptitude PC (x: 6, y: 6) - Cyan carpet
     this.ctx.fillStyle = 'rgba(6, 182, 212, 0.16)';
-    this.ctx.fillRect(8.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.fillRect(4.5 * 32, 4.8 * 32, 3.5 * 32, 2.8 * 32);
     this.ctx.strokeStyle = '#0891b2';
     this.ctx.lineWidth = 1.5;
-    this.ctx.strokeRect(8.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeRect(4.5 * 32, 4.8 * 32, 3.5 * 32, 2.8 * 32);
 
-    // Clue 2: Science Lab (x: 20, y: 7) - Emerald carpet
+    // Clue 2: Science Lab (x: 14, y: 6) - Emerald carpet
     this.ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
-    this.ctx.fillRect(18.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.fillRect(12.5 * 32, 4.8 * 32, 3.5 * 32, 2.8 * 32);
     this.ctx.strokeStyle = '#059669';
-    this.ctx.strokeRect(18.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(12.5 * 32, 4.8 * 32, 3.5 * 32, 2.8 * 32);
 
-    // Clue 3: IT Coding Desk (x: 15, y: 12) - Violet carpet
-    this.ctx.fillStyle = 'rgba(139, 92, 246, 0.16)';
-    this.ctx.fillRect(13.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
-    this.ctx.strokeStyle = '#7c3aed';
-    this.ctx.strokeRect(13.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
-
-    // Clue 4: Art Easel (x: 40, y: 12) - Amber carpet
-    this.ctx.fillStyle = 'rgba(245, 158, 11, 0.16)';
-    this.ctx.fillRect(38.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
-    this.ctx.strokeStyle = '#d97706';
-    this.ctx.strokeRect(38.5 * 32, 10.8 * 32, 3.5 * 32, 2.8 * 32);
-
-    // Clue 5: Mentoring Desk (x: 45, y: 7) - Blue carpet
+    // Clue 5: Mentoring Desk (x: 22, y: 6) - Blue carpet
     this.ctx.fillStyle = 'rgba(59, 130, 246, 0.16)';
-    this.ctx.fillRect(43.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.fillRect(20.5 * 32, 4.8 * 32, 3.5 * 32, 2.8 * 32);
     this.ctx.strokeStyle = '#2563eb';
-    this.ctx.strokeRect(43.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(20.5 * 32, 4.8 * 32, 3.5 * 32, 2.8 * 32);
 
-    // Clue 6: Astronomy Lab (x: 52, y: 7) - Indigo carpet
+    // Clue 3: IT Coding Desk (x: 6, y: 10) - Violet carpet
+    this.ctx.fillStyle = 'rgba(139, 92, 246, 0.16)';
+    this.ctx.fillRect(4.5 * 32, 8.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#7c3aed';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(4.5 * 32, 8.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 4: Art Easel (x: 14, y: 10) - Amber carpet
+    this.ctx.fillStyle = 'rgba(245, 158, 11, 0.16)';
+    this.ctx.fillRect(12.5 * 32, 8.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.strokeStyle = '#d97706';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(12.5 * 32, 8.8 * 32, 3.5 * 32, 2.8 * 32);
+
+    // Clue 6: Astronomy Lab (x: 22, y: 10) - Indigo carpet
     this.ctx.fillStyle = 'rgba(99, 102, 241, 0.16)';
-    this.ctx.fillRect(50.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.fillRect(20.5 * 32, 8.8 * 32, 3.5 * 32, 2.8 * 32);
     this.ctx.strokeStyle = '#4f46e5';
-    this.ctx.strokeRect(50.5 * 32, 5.8 * 32, 3.5 * 32, 2.8 * 32);
+    this.ctx.lineWidth = 1.5;
+    this.ctx.strokeRect(20.5 * 32, 8.8 * 32, 3.5 * 32, 2.8 * 32);
 
     // Central Exit Carpet Runner at Doorlock (x: 28.5 ~ 31.5, y: 5.2 ~ 7.0)
     this.ctx.fillStyle = hasEscaped ? 'rgba(34, 197, 94, 0.22)' : 'rgba(239, 68, 68, 0.22)';
@@ -3060,38 +3076,38 @@ class GameEngine {
     this.ctx.lineWidth = 2;
     this.ctx.strokeRect(28.5 * 32, 5.2 * 32, 3 * 32, 1.8 * 32);
 
-    // 2. Draw Station 1: 🏥 Aptitude PC (x: 10, y: 7)
-    this.drawCareerStationPC(10 * 32, 7 * 32);
-    this.drawCareerClueLabel(10 * 32 + 16, 7 * 32 - 18, 1, '적성검사 PC', 'D', clues[0]);
+    // 2. Draw Station 1: 🏥 Aptitude PC (x: 6, y: 6)
+    this.drawCareerStationPC(6 * 32, 6 * 32);
+    this.drawCareerClueLabel(6 * 32 + 16, 6 * 32 - 18, 1, '적성검사 PC', 'D', clues[0]);
 
-    // 3. Draw Station 2: 🔬 Science Lab (x: 20, y: 7)
-    this.drawCareerStationLab(20 * 32, 7 * 32);
-    this.drawCareerClueLabel(20 * 32 + 16, 7 * 32 - 18, 2, '과학 연구대', 'R', clues[1]);
+    // 3. Draw Station 2: 🔬 Science Lab (x: 14, y: 6)
+    this.drawCareerStationLab(14 * 32, 6 * 32);
+    this.drawCareerClueLabel(14 * 32 + 16, 6 * 32 - 18, 2, '과학 연구대', 'R', clues[1]);
 
-    // 4. Draw Station 3: 💻 Engineering / IT Desk (x: 15, y: 12)
-    this.drawCareerStationTech(15 * 32, 12 * 32);
-    this.drawCareerClueLabel(15 * 32 + 16, 12 * 32 - 18, 3, '공학 작업대', 'E', clues[2]);
+    // 4. Draw Station 5: 🤝 Mentoring Desk (x: 22, y: 6)
+    this.drawCareerStationMentor(22 * 32, 6 * 32);
+    this.drawCareerClueLabel(22 * 32 + 16, 6 * 32 - 18, 5, '멘토링 데스크', 'M', clues[4]);
 
-    // 5. Draw Station 4: 🎨 Art Easel (x: 40, y: 12)
-    this.drawCareerStationArt(40 * 32, 12 * 32);
-    this.drawCareerClueLabel(40 * 32 + 16, 12 * 32 - 18, 4, '예술 이젤', 'A', clues[3]);
+    // 5. Draw Station 3: 💻 Engineering / IT Desk (x: 6, y: 10)
+    this.drawCareerStationTech(6 * 32, 10 * 32);
+    this.drawCareerClueLabel(6 * 32 + 16, 10 * 32 - 18, 3, '공학 작업대', 'E', clues[2]);
 
-    // 6. Draw Station 5: 🤝 Mentoring Desk (x: 45, y: 7)
-    this.drawCareerStationMentor(45 * 32, 7 * 32);
-    this.drawCareerClueLabel(45 * 32 + 16, 7 * 32 - 18, 5, '멘토링 데스크', 'M', clues[4]);
+    // 6. Draw Station 4: 🎨 Art Easel (x: 14, y: 10)
+    this.drawCareerStationArt(14 * 32, 10 * 32);
+    this.drawCareerClueLabel(14 * 32 + 16, 10 * 32 - 18, 4, '예술 이젤', 'A', clues[3]);
 
-    // 6-B. Draw Career Quest Guidebook on dedicated consultation desk (x: 48, y: 12)
+    // 7. Draw Station 6: 🔭 Astronomy Lab (x: 22, y: 10)
+    this.drawCareerStationSpace(22 * 32, 10 * 32);
+    this.drawCareerClueLabel(22 * 32 + 16, 10 * 32 - 18, 6, '우주 탐구관', 'S', clues[5]);
+
+    // 8. Draw Decoy Clue Station 7: 💼 Vintage Briefcase (x: 10, y: 14)
+    this.drawCareerStationDecoy(10 * 32, 14 * 32);
+    this.drawCareerClueLabel(10 * 32 + 16, 14 * 32 - 18, 7, '골동품 서류가방', 'P', clues[6]);
+
+    // 8-B. Draw Career Quest Guidebook on dedicated consultation desk (x: 18, y: 14)
     if (!window.MainApp || typeof window.MainApp.isQuestCareerBookCollected !== 'function' || !window.MainApp.isQuestCareerBookCollected()) {
-      this.drawCareerQuestGuideBook(48 * 32, 12 * 32);
+      this.drawCareerQuestGuideBook(18 * 32, 14 * 32);
     }
-
-    // 7. Draw Station 6: 🔭 Astronomy Lab (x: 52, y: 7)
-    this.drawCareerStationSpace(52 * 32, 7 * 32);
-    this.drawCareerClueLabel(52 * 32 + 16, 7 * 32 - 18, 6, '우주 탐구관', 'S', clues[5]);
-
-    // 8. Draw Decoy Clue Station 7: 💼 Vintage Briefcase (x: 23, y: 12)
-    this.drawCareerStationDecoy(23 * 32, 12 * 32);
-    this.drawCareerClueLabel(23 * 32 + 16, 12 * 32 - 18, 7, '골동품 서류가방', 'P', clues[6]);
 
     // 9. Draw Fallen Developer Note #2 (가장 왼쪽 아래편: x: 4, y: 16)
     this.drawHighResDevNote(4 * 32, 16 * 32, '📜 떨어진 개발자노트 (제2편)');
@@ -3099,10 +3115,12 @@ class GameEngine {
     // 10. Draw Digital Escape Keypad (x: 30, y: 6)
     this.drawCareerKeypadStation(30 * 32, 6 * 32, hasEscaped, solvedCount);
 
-    // 9. Chalkboard Mission Header on the Top Wall (x: 30, y: 2)
+    // 11. Chalkboard Mission Header on the Top Wall (x: 30, y: 2)
     this.drawCareerBlackboardBanner(clues, solvedCount, hasEscaped);
-  }
 
+    // 12. 💬 우측 1:1 상담실 1 & 1:1 상담실 2 (세로 상/하 배치) 렌더링 호출
+    this.renderCareerCounselingRooms();
+  }
   // =========================================================================
   // 💬 5층 진로상담실 우측: 1:1 상담실 1 & 1:1 상담실 2 렌더러
   // =========================================================================
