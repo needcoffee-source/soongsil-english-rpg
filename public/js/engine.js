@@ -543,7 +543,7 @@ class GameEngine {
               if (!this._lastMeetingRoomNotice || Date.now() - this._lastMeetingRoomNotice > 2500) {
                 this._lastMeetingRoomNotice = Date.now();
                 if (window.MainApp && typeof window.MainApp.showToast === 'function') {
-                  window.MainApp.showToast(`🚫 [소회의실 출입 제한] 12레벨 이상 모범 학생만 회의실에 출입할 수 있습니다! (현재: Lv.${pLevel} / 필요: Lv.12)`, 'warning');
+                  window.MainApp.showToast(`🚫 [소회의실 출입 제한] 12레벨 이상부터 출입할 수 있습니다! (현재: Lv.${pLevel} / 필요: Lv.12)`, 'warning');
                 }
               }
               return true;
@@ -1554,7 +1554,8 @@ class GameEngine {
             }
           }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
-          if (dist < 64 && dist < minDist) {
+          const maxDist = (item.type === 'cafeteria_key_safe') ? 80 : 64;
+          if (dist < maxDist && dist < minDist) {
             let promptText = item.prompt || '조사하기 (SPACE)';
             if (item.type === 'door_secret_history') {
               const isUnlocked = !!(window.MainApp && window.MainApp.playerData && window.MainApp.playerData.secretHistoryRoomUnlocked);
@@ -1915,7 +1916,8 @@ class GameEngine {
         }
         if (cr.interactive) {
           for (const item of cr.interactive) {
-            if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
+            const tapDist = (item.type === 'cafeteria_key_safe') ? 80 : 48;
+          if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < tapDist) {
               return { type: item.type, data: item, name: item.name };
             }
           }
@@ -1948,7 +1950,8 @@ class GameEngine {
               continue;
             }
           }
-          if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < 48) {
+          const tapDist = (item.type === 'cafeteria_key_safe') ? 80 : 48;
+          if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < tapDist) {
             return { type: item.type, data: item, name: item.name };
           }
         }
@@ -13977,7 +13980,7 @@ class GameEngine {
     const counselDoorCenter = ((C.doorX1 + C.doorX2) / 2 + 0.5) * 32;
 
     const plaques = [
-      { text: '📋 소회의실 (Lv.12+)', x: 17.5 * 32, y: 4 * 32 + 12, bg: '#1e3a8a', border: '#fbbf24', color: '#fef08a' },
+      { text: '📋 소회의실', x: 17.5 * 32, y: 4 * 32 + 12, bg: '#1e3a8a', border: '#fbbf24', color: '#fef08a' },
       { text: '☕ 탕비실', x: 33 * 32, y: 6.5 * 32, bg: '#7c2d12', border: '#fdba74', color: '#ffedd5' },
       { text: '🖨️ 인쇄실', x: 44 * 32, y: 8.4 * 32, bg: '#0f172a', border: '#94a3b8', color: '#f8fafc' },
       { text: '💬 상담실', x: counselCenter, y: 4 * 32 + 12, bg: '#065f46', border: '#6ee7b7', color: '#ecfdf5' }
@@ -14001,17 +14004,6 @@ class GameEngine {
       this.ctx.fillStyle = p.color;
       this.ctx.fillText(p.text, p.x, p.y + 0.5);
     }
-
-    // 소회의실 출입구 문턱 (tx: 23.5, ty: 10) 안내 뱃지
-    this.drawSharpLabel(23.5 * 32, 10 * 32 + 16, '🔒 소회의실 입구 (Lv.12+)', {
-      bgColor: 'rgba(30, 27, 75, 0.94)',
-      borderColor: '#fbbf24',
-      borderWidth: 1.5,
-      textColor: '#fef08a',
-      fontSize: 10.5,
-      paddingX: 8,
-      height: 20
-    });
 
     this.ctx.restore();
   }

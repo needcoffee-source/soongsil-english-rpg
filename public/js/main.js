@@ -240,7 +240,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'quest',
     tierBadge: '입장 열쇠',
     tierColor: '#f59e0b',
-    effect: '12레벨 이상 모범 학생 급식실 정문 출입용 황금 열쇠',
+    effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠',
     source: '6층 교무실 소회의실 보관함'
   },
 
@@ -528,7 +528,7 @@ const ALL_GAME_ITEMS = {
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 50% 반감 (2,000 HP ➔ 1,000 HP)' } },
-  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '12레벨 이상 모범 학생 급식실 정문 출입용 황금 열쇠' } },
+  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
@@ -2097,7 +2097,7 @@ class MainApp {
 
     // 1. 레벨 12 미만 차단
     if (pLevel < 12 && !isTeacher) {
-      const msg = `🚫 [소회의실 비밀 보관함 - 접근 제한]\n\n"이 고대 보관함은 12레벨 이상의 모범 학생 전용입니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n모험을 더 진행하여 12레벨을 달성한 뒤 다시 조사해주세요."`;
+      const msg = `🚫 [소회의실 비밀 보관함 - 접근 제한]\n\n"이 보관함은 12레벨 이상부터 조사할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n모험을 더 진행하여 12레벨을 달성한 뒤 다시 조사해주세요."`;
       if (window.RPGDialog) {
         window.RPGDialog.show('🚫 접근 제한', msg, '🔒');
       } else {
@@ -2143,7 +2143,7 @@ class MainApp {
     this.playerData.hasCafeteriaKey = true;
     this.addItem('item_cafeteria_key', '급식실 열쇠', 1, '🔑', {
       type: 'quest',
-      effect: '12레벨 이상 모범 학생 급식실 정문 출입용 황금 열쇠'
+      effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠'
     });
     this.saveProgress(true);
 
@@ -2174,7 +2174,7 @@ class MainApp {
 
     // 1. 레벨 12 미만인 경우
     if (pLevel < 12 && !isTeacher) {
-      const msg = `🚫 [학생 급식실 - 12레벨 출입 제한]\n\n"학생 급식실은 철저한 위생 관리와 영양 관리를 위해 12레벨 이상의 모범 학생만 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n더 많은 퀘스트와 몬스터 토벌을 통해 12레벨을 달성하고 다시 찾아오세요!"`;
+      const msg = `🚫 [학생 급식실 - 12레벨 출입 제한]\n\n"학생 급식실은 12레벨 이상부터 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n더 많은 퀘스트와 몬스터 토벌을 통해 12레벨을 달성하고 다시 찾아오세요!"`;
       if (window.RPGDialog) {
         window.RPGDialog.show('🚫 학생 급식실 입장 불가', msg, '🍱');
       } else {
@@ -2185,7 +2185,7 @@ class MainApp {
 
     // 2. 12레벨 이상이지만 열쇠가 없는 경우
     if (!hasKey && !isTeacher) {
-      const msg = `🔒 [학생 급식실 - 정문 잠김]\n\n"철컥... 급식실 정문이 굳게 잠겨 있습니다!\n\n출입하려면 전용 [🔑 급식실 열쇠]가 필요합니다.\n\n📜 [입장 퀘스트 힌트]:\n6층 교무실 서쪽의 [소회의실(Lv.12+)]에 봉인된 비밀 보관함이 있습니다.\n1897 헤리티지 세트(무기는 컴싸 마법봉 대체 가능)를 풀착용하고 조사하면 급식실 열쇠를 획득할 수 있습니다!"`;
+      const msg = `🔒 [학생 급식실 - 정문 잠김]\n\n"철컥... 급식실 정문이 굳게 잠겨 있습니다!\n\n급식실에 입장하려면 [🔑 급식실 열쇠]를 찾아야 합니다.\n학교 안 어딘가에 숨겨진 급식실 열쇠를 찾아오세요!"`;
       if (window.RPGDialog) {
         window.RPGDialog.show('🔒 급식실 열쇠 필요', msg, '🔑');
       } else {

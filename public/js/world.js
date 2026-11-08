@@ -510,7 +510,7 @@ const WORLD_DATA = {
       }
     ],
     interactive: [
-      { id: "safe_cafeteria_key", type: "cafeteria_key_safe", x: 17, y: 4, name: "🗝️ 소회의실 비밀 보관함 (급식실 열쇠)", prompt: "문서 보관함 조사하기 (SPACE)" },
+      { id: "safe_cafeteria_key", type: "cafeteria_key_safe", x: 17, y: 6, name: "🗝️ 소회의실 비밀 보관함 (급식실 열쇠)", prompt: "문서 보관함 조사하기 (SPACE)" },
       { id: "note_developer_staff_office", type: "dev_note_3", x: 8, y: 3, name: "📜 떨어진 개발자노트 (제3편)", prompt: "개발자노트 3편 읽기 (SPACE)" },
       { id: "quest_joshua_memo", type: "quest_memo", x: 51, y: 4, name: "📝 Joshua의 영단어 메모", prompt: "단어 메모 회수하기 (SPACE)" },
       { id: "quest_okchohan_textbook", type: "quest_okchohan_book", x: 42, y: 8, name: "📘 옥촣한의 사회 탐구 교재", prompt: "사회 교재 회수하기 (SPACE)" },

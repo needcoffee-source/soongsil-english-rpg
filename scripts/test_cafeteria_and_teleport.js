@@ -83,8 +83,8 @@ assert(staffOffice, 'classroom_staff_office must exist');
 const safeObj = staffOffice.interactive.find(i => i.type === 'cafeteria_key_safe');
 assert(safeObj, 'safe_cafeteria_key must exist in classroom_staff_office.interactive');
 assert.strictEqual(safeObj.x, 17, 'Safe x should be 17');
-assert.strictEqual(safeObj.y, 4, 'Safe y should be 4');
-console.log('✔ [1/5] WORLD_DATA interactive safe verified at (17, 4) in 소회의실');
+assert.strictEqual(safeObj.y, 6, 'Safe y should be 6 (center of conference table)');
+console.log('✔ [1/5] WORLD_DATA interactive safe verified at (17, 6) in 소회의실');
 
 // 2. Load engine.js
 vm.runInThisContext(fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8'));
@@ -252,7 +252,7 @@ assert(window.RPGDialog.lastMsg.includes('전설의 컴싸 마법봉'), 'Success
 app.playerData.level = 10;
 window.RPGDialog.lastMsg = null;
 app.handleCafeteriaEntranceInteraction();
-assert(window.RPGDialog.lastMsg.includes('12레벨 이상의 모범 학생만 입장'), 'Should deny Level < 12');
+assert(window.RPGDialog.lastMsg.includes('12레벨 이상부터 입장할 수 있습니다'), 'Should deny Level < 12');
 
 // Case B: Level >= 12 but no key
 app.playerData.level = 12;
@@ -260,7 +260,9 @@ app.playerData.inventory = app.playerData.inventory.filter(i => i.item !== 'item
 app.playerData.hasCafeteriaKey = false;
 window.RPGDialog.lastMsg = null;
 app.handleCafeteriaEntranceInteraction();
-assert(window.RPGDialog.lastMsg.includes('급식실 열쇠'), 'Should require cafeteria key');
+assert(window.RPGDialog.lastMsg.includes('급식실에 입장하려면 [🔑 급식실 열쇠]를 찾아야 합니다'), 'Should require cafeteria key with simple hint');
+assert(!window.RPGDialog.lastMsg.includes('1897'), 'Should NOT spoil 1897 set requirements at the door');
+assert(!window.RPGDialog.lastMsg.includes('소회의실'), 'Should NOT spoil meeting room safe location at the door');
 
 // Case C: Level >= 12 AND has key
 app.playerData.inventory.push({ item: 'item_cafeteria_key', count: 1 });
@@ -274,3 +276,4 @@ console.log('✔ [5/5] Cafeteria key quest & entrance validation verified flawle
 console.log('\n========================================');
 console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (5/5)');
 console.log('========================================');
+process.exit(0);
