@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=238">
+  <link rel="manifest" href="/manifest.json?v=239">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=238">
+  <link rel="stylesheet" href="css/style.css?v=239">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -1343,10 +1343,10 @@
 
   <!-- 4-C2. 1:1 Field Monster Battle Modal (농구장 1:1 퀴즈 배틀) -->
   <div id="modal-field-battle" class="modal-overlay hidden" style="z-index: 110;">
-    <div class="modal-card quiz-card field-battle-card" style="max-width: 540px; border: 2.5px solid #f97316;">
-      <div class="modal-header field-battle-header" style="background: linear-gradient(135deg, #7c2d12, #c2410c); border-bottom: 2px solid #ea580c;">
+    <div id="battle-modal-card" class="modal-card quiz-card field-battle-card" style="max-width: 540px; border: 2.5px solid #f97316;">
+      <div id="battle-modal-header" class="modal-header field-battle-header" style="background: linear-gradient(135deg, #7c2d12, #c2410c); border-bottom: 2px solid #ea580c;">
         <div>
-          <span class="quiz-unit-badge" style="background:#ea580c; color:#fff;">🏀 농구장 1:1 배틀 · 5단원 (L5. Walk into Korea)</span>
+          <span id="battle-quiz-unit-badge" class="quiz-unit-badge" style="background:#ea580c; color:#fff;">🏀 농구장 1:1 배틀 · 5단원 (L5. Walk into Korea)</span>
           <h3 id="battle-monster-title" style="margin:4px 0 0; color:#fef08a;">🏀 덩크 고블린</h3>
         </div>
         <button class="btn-modal-close" id="btn-close-battle-x">✕</button>
@@ -2325,19 +2325,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=238"></script>
-  <script src="js/dialog.js?v=238"></script>
+  <script src="js/audio.js?v=239"></script>
+  <script src="js/dialog.js?v=239"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=238"></script>
-  <script src="js/engine.js?v=238"></script>
-  <script src="js/quiz.js?v=238"></script>
-  <script src="js/crafting.js?v=238"></script>
-  <script src="js/network.js?v=238"></script>
-  <script src="js/acid_rain.js?v=238"></script>
-  <script src="js/brawl_ball.js?v=238"></script>
-  <script src="js/uphill_rush.js?v=238"></script>
-  <script src="js/main.js?v=238"></script>
+  <script src="js/world.js?v=239"></script>
+  <script src="js/engine.js?v=239"></script>
+  <script src="js/quiz.js?v=239"></script>
+  <script src="js/crafting.js?v=239"></script>
+  <script src="js/network.js?v=239"></script>
+  <script src="js/acid_rain.js?v=239"></script>
+  <script src="js/brawl_ball.js?v=239"></script>
+  <script src="js/uphill_rush.js?v=239"></script>
+  <script src="js/main.js?v=239"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

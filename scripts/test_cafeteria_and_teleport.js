@@ -61,7 +61,7 @@ global.document = {
     style: {}
   }),
   addEventListener: () => {},
-  createElement: () => ({ classList: { add: () => {} }, style: {}, appendChild: () => {} }),
+  createElement: () => ({ classList: { add: () => {} }, style: {}, appendChild: () => {}, addEventListener: () => {} }),
   body: { style: {} }
 };
 global.localStorage = {
@@ -272,9 +272,45 @@ app.handleCafeteriaEntranceInteraction();
 assert(window.RPGDialog.lastMsg.includes('정문 개방 성공'), 'Should open door when level >= 12 and key held');
 assert(!window.RPGDialog.lastMsg.includes('대규모 급식 콘텐츠가 곧 오픈됩니다'), 'Should delete deprecated opening notice');
 
-console.log('✔ [5/5] Cafeteria key quest & entrance validation verified flawlessly!');
+console.log('✔ [5/6] Cafeteria key quest & entrance validation verified flawlessly!');
+
+// 7. Test Soongsil History Hall Monsters Question Unit (Lesson 6)
+const historyMob = WORLD_DATA.classroom_history.historyMonsters[0];
+assert(historyMob, 'History monster must exist');
+app.playerData.hp = 100;
+app.playerData.isFallen = false;
+
+// Mock DOM elements for battle modal
+document.getElementById('battle-monster-title');
+const badgeEl = { innerText: '', style: {} };
+const headerEl = { style: {} };
+const cardEl = { style: {} };
+const logEl = { innerHTML: '' };
+const qEl = { innerText: '' };
+const optEl = { innerHTML: '', appendChild: () => {} };
+
+const origGetElementById = document.getElementById;
+document.getElementById = (id) => {
+  if (id === 'battle-quiz-unit-badge') return badgeEl;
+  if (id === 'battle-modal-header') return headerEl;
+  if (id === 'battle-modal-card') return cardEl;
+  if (id === 'battle-action-log') return logEl;
+  if (id === 'battle-quiz-question') return qEl;
+  if (id === 'battle-quiz-options') return optEl;
+  return origGetElementById(id);
+};
+
+// Ensure quiz manager has questions loaded
+app.quizManager.questions = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/questions_grade1.json'), 'utf8'));
+
+app.startFieldMonsterBattle(historyMob);
+assert(badgeEl.innerText.includes('6단원'), 'History monster battle badge must indicate 6단원');
+assert(badgeEl.innerText.includes('숭실 역사관'), 'History monster battle badge must mention 숭실 역사관');
+assert(logEl.innerHTML.includes('6단원'), 'Action log must indicate 6단원');
+assert(app.fieldBattleQuestion && app.fieldBattleQuestion.unit.includes('6단원'), 'Loaded question must be from 6단원 (The Beauty of Art)');
+console.log('✔ [6/6] Soongsil History Hall monsters verified to quiz 6단원 questions!');
 
 console.log('\n========================================');
-console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (5/5)');
+console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (6/6)');
 console.log('========================================');
 process.exit(0);

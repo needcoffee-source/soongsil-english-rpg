@@ -6602,9 +6602,50 @@ class MainApp {
       btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
     }
 
-    const isHistory = (mob.court === 'history');
-    const isFutsal = (mob.court === 'futsal');
+    const isHistory = !!(mob && (mob.court === 'history' || (mob.id && mob.id.startsWith('hist_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_history')));
+    const isFutsal = !!(mob && mob.court === 'futsal');
     const unitName = (isHistory || isFutsal) ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)';
+
+    const badgeEl = document.getElementById('battle-quiz-unit-badge');
+    const headerEl = document.getElementById('battle-modal-header');
+    const cardEl = document.getElementById('battle-modal-card');
+
+    if (badgeEl) {
+      if (isHistory) {
+        badgeEl.innerText = '🏛️ 숭실 역사관 1:1 배틀 · 6단원 (L6. The Beauty of Art)';
+        badgeEl.style.background = '#7e22ce';
+      } else if (isFutsal) {
+        badgeEl.innerText = '⚽ 풋살장 1:1 배틀 · 6단원 (L6. The Beauty of Art)';
+        badgeEl.style.background = '#059669';
+      } else {
+        badgeEl.innerText = '🏀 농구장 1:1 배틀 · 5단원 (L5. Walk into Korea)';
+        badgeEl.style.background = '#ea580c';
+      }
+    }
+
+    if (headerEl) {
+      if (isHistory) {
+        headerEl.style.background = 'linear-gradient(135deg, #4c1d95, #6b21a8)';
+        headerEl.style.borderBottom = '2px solid #a855f7';
+      } else if (isFutsal) {
+        headerEl.style.background = 'linear-gradient(135deg, #064e3b, #047857)';
+        headerEl.style.borderBottom = '2px solid #10b981';
+      } else {
+        headerEl.style.background = 'linear-gradient(135deg, #7c2d12, #c2410c)';
+        headerEl.style.borderBottom = '2px solid #ea580c';
+      }
+    }
+
+    if (cardEl) {
+      if (isHistory) {
+        cardEl.style.border = '2.5px solid #a855f7';
+      } else if (isFutsal) {
+        cardEl.style.border = '2.5px solid #10b981';
+      } else {
+        cardEl.style.border = '2.5px solid #f97316';
+      }
+    }
+
     const logEl = document.getElementById('battle-action-log');
     if (logEl) {
       logEl.innerHTML = `⚔️ <b>${unitName}</b> 영어 문제를 맞히면 공격하고, 틀리면 <b>풀HP의 20% 피해</b>를 입습니다!`;
@@ -6612,8 +6653,9 @@ class MainApp {
   }
 
   loadNextFieldBattleQuestion() {
-    const isHistory = (this.currentFieldMob && this.currentFieldMob.court === 'history');
-    const isFutsal = (this.currentFieldMob && this.currentFieldMob.court === 'futsal');
+    const mob = this.currentFieldMob;
+    const isHistory = !!(mob && (mob.court === 'history' || (mob.id && mob.id.startsWith('hist_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_history')));
+    const isFutsal = !!(mob && mob.court === 'futsal');
     const unitFilter = (isHistory || isFutsal) ? '6단원' : '5단원';
 
     const q = this.quizManager.getRandomQuestion(unitFilter);
