@@ -530,6 +530,27 @@ class GameEngine {
           return false;
         }
         if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
+
+        // 소회의실 (tx: 7..28, ty: 3..10) 출입 통제: 12레벨 이상 모범 학생만 출입 가능
+        if (tileX >= 7 && tileX <= 28 && tileY >= 3 && tileY <= 10) {
+          const pLevel = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.level) || (this.player && this.player.level) || 1;
+          const isTeacher = (this.player && this.player.isTeacher) || (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.isTeacher);
+          if (!isTeacher && pLevel < 12) {
+            const currentTileY = Math.floor(this.player.y / 32);
+            const currentTileX = Math.floor(this.player.x / 32);
+            const isCurrentlyInside = (currentTileX >= 7 && currentTileX <= 28 && currentTileY >= 3 && currentTileY <= 10);
+            if (!isCurrentlyInside) {
+              if (!this._lastMeetingRoomNotice || Date.now() - this._lastMeetingRoomNotice > 2500) {
+                this._lastMeetingRoomNotice = Date.now();
+                if (window.MainApp && typeof window.MainApp.showToast === 'function') {
+                  window.MainApp.showToast(`🚫 [소회의실 출입 제한] 12레벨 이상 모범 학생만 회의실에 출입할 수 있습니다! (현재: Lv.${pLevel} / 필요: Lv.12)`, 'warning');
+                }
+              }
+              return true;
+            }
+          }
+        }
+
         if (this.isStaffOfficeWall(tileX, tileY)) return true;
         return false;
       }
@@ -791,6 +812,9 @@ class GameEngine {
   }
 
   warpToRoom(roomId, roomName, x, y) {
+    if (roomId && roomId.startsWith('playground') && roomId !== 'playground_gym') {
+      roomId = 'playground';
+    }
     if (this.player.room === 'room_career' && roomId !== 'room_career') {
       if (window.MainApp && typeof window.MainApp.resetCareerEscapeProgress === 'function') {
         window.MainApp.resetCareerEscapeProgress();
@@ -12166,9 +12190,85 @@ class GameEngine {
           if (!window.MainApp || typeof window.MainApp.isQuestLibBookOfCollected !== 'function' || !window.MainApp.isQuestLibBookOfCollected()) {
             this.drawQuestLibraryBook(obj.x * 32, obj.y * 32, 'green');
           }
+        } else if (obj.type === 'cafeteria_key_safe') {
+          this.drawStaffOfficeCafeteriaSafe(obj.x * 32, obj.y * 32);
         }
       }
     }
+  }
+
+  // 6층 교무실 소회의실 비밀 문서 보관함 (급식실 열쇠 보관함) 렌더링
+  drawStaffOfficeCafeteriaSafe(px, py) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const hasKey = (window.MainApp && typeof window.MainApp.hasItem === 'function' && window.MainApp.hasItem('item_cafeteria_key')) ||
+      (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasCafeteriaKey);
+
+    const bob = Math.sin(Date.now() / 280) * 3;
+    const pulse = (Math.sin(Date.now() / 320) + 1) / 2;
+
+    // 1. 바닥 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.beginPath();
+    ctx.ellipse(px + 16, py + 26, 18, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. 보관함 본체 (앤틱 오크 목재 & 황동 금고)
+    const sx = px + 2;
+    const sy = py + 2;
+    const sw = 28;
+    const sh = 26;
+
+    // 본체 외곽
+    ctx.fillStyle = '#291404';
+    ctx.fillRect(sx, sy, sw, sh);
+
+    // 전면 플레이트
+    ctx.fillStyle = '#451a03';
+    ctx.fillRect(sx + 2, sy + 2, sw - 4, sh - 4);
+
+    // 황동 테두리 및 코너 보강 리벳
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(sx + 1, sy + 1, sw - 2, sh - 2);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(sx + 3, sy + 3, 2, 2);
+    ctx.fillRect(sx + sw - 5, sy + 3, 2, 2);
+    ctx.fillRect(sx + 3, sy + sh - 5, 2, 2);
+    ctx.fillRect(sx + sw - 5, sy + sh - 5, 2, 2);
+
+    // 중앙 다이얼 / 1897 헤리티지 문양
+    ctx.fillStyle = hasKey ? '#10b981' : '#d97706';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 15, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    if (hasKey) {
+      // 열쇠 획득 완료 상태: 개방된 초록 잠금구
+      ctx.fillStyle = '#064e3b';
+      ctx.fillRect(px + 15, py + 13, 2, 4);
+    } else {
+      // 열쇠 미획득: 황금빛 펄스 및 플로팅 황금 열쇠 아이콘
+      ctx.fillStyle = '#7c2d12';
+      ctx.fillRect(px + 15, py + 13, 2, 4);
+
+      ctx.fillStyle = `rgba(245, 158, 11, ${0.25 + pulse * 0.35})`;
+      ctx.beginPath();
+      ctx.arc(px + 16, py - 6 + bob, 14 + pulse * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = '16px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🔑', px + 16, py - 6 + bob);
+    }
+
+    ctx.restore();
   }
 
   // 교무실 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
@@ -13877,7 +13977,7 @@ class GameEngine {
     const counselDoorCenter = ((C.doorX1 + C.doorX2) / 2 + 0.5) * 32;
 
     const plaques = [
-      { text: '📋 소회의실', x: 17.5 * 32, y: 4 * 32 + 12, bg: '#1e3a8a', border: '#fbbf24', color: '#fef08a' },
+      { text: '📋 소회의실 (Lv.12+)', x: 17.5 * 32, y: 4 * 32 + 12, bg: '#1e3a8a', border: '#fbbf24', color: '#fef08a' },
       { text: '☕ 탕비실', x: 33 * 32, y: 6.5 * 32, bg: '#7c2d12', border: '#fdba74', color: '#ffedd5' },
       { text: '🖨️ 인쇄실', x: 44 * 32, y: 8.4 * 32, bg: '#0f172a', border: '#94a3b8', color: '#f8fafc' },
       { text: '💬 상담실', x: counselCenter, y: 4 * 32 + 12, bg: '#065f46', border: '#6ee7b7', color: '#ecfdf5' }
@@ -13901,6 +14001,17 @@ class GameEngine {
       this.ctx.fillStyle = p.color;
       this.ctx.fillText(p.text, p.x, p.y + 0.5);
     }
+
+    // 소회의실 출입구 문턱 (tx: 23.5, ty: 10) 안내 뱃지
+    this.drawSharpLabel(23.5 * 32, 10 * 32 + 16, '🔒 소회의실 입구 (Lv.12+)', {
+      bgColor: 'rgba(30, 27, 75, 0.94)',
+      borderColor: '#fbbf24',
+      borderWidth: 1.5,
+      textColor: '#fef08a',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
 
     this.ctx.restore();
   }

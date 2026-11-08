@@ -233,6 +233,16 @@ window.ITEM_CODEX_DATABASE = [
     source: '소비품 제작대(C)에서 제작',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
   },
+  {
+    id: 'item_cafeteria_key',
+    name: '급식실 열쇠',
+    icon: '🔑',
+    category: 'quest',
+    tierBadge: '입장 열쇠',
+    tierColor: '#f59e0b',
+    effect: '12레벨 이상 모범 학생 급식실 정문 출입용 황금 열쇠',
+    source: '6층 교무실 소회의실 보관함'
+  },
 
   // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
   {
@@ -518,6 +528,7 @@ const ALL_GAME_ITEMS = {
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 50% 반감 (2,000 HP ➔ 1,000 HP)' } },
+  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '12레벨 이상 모범 학생 급식실 정문 출입용 황금 열쇠' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
@@ -1733,7 +1744,9 @@ class MainApp {
     } else if (target.type === 'gym_ev_charger') {
       this.handleEVChargerEasterEgg();
     } else if (target.type === 'cafeteria') {
-      alert('🍽️ [학생 급식실 (조리실)]\n\n"영양사 선생님과 조리사님들이 오늘의 맛있는 점심 식사를 준비 중입니다!\n(장소는 다음 시즌 업데이트 오픈 예정)"');
+      this.handleCafeteriaEntranceInteraction();
+    } else if (target.type === 'cafeteria_key_safe') {
+      this.handleCafeteriaKeySafeInteraction();
     } else if (target.type === 'alchemy_cauldron') {
       this.openAlchemyModal();
     } else if (target.type === 'alchemy_shelf') {
@@ -2062,6 +2075,137 @@ class MainApp {
     } else {
       alert(`💬 [${title}]\n\n${msg}`);
     }
+  }
+
+  // 1897 헤리티지 세트 착용 검증 (무기는 컴싸봉으로 대체 가능)
+  is1897HeritageSetEquipped(allowOmrWand = true) {
+    const isHelm = this.isItemEquipped('equip_heritage_helmet');
+    const isArmor = this.isItemEquipped('equip_heritage_armor');
+    const isBoots = this.isItemEquipped('equip_heritage_boots');
+    const isBlade = this.isItemEquipped('equip_heritage_blade');
+    const isOmr = !!(allowOmrWand && this.isItemEquipped('equip_omr_wand'));
+    const isWep = isBlade || isOmr;
+    const isComplete = isHelm && isArmor && isBoots && isWep;
+    const weaponName = isOmr ? '컴싸 마법봉' : (isBlade ? '1897 숭실 헤리티지 블레이드' : null);
+    return { isComplete, isHelm, isArmor, isBoots, isWep, isOmr, isBlade, weaponName };
+  }
+
+  // 6층 교무실 소회의실: 급식실 열쇠 획득 퀘스트 보관함 상호작용
+  handleCafeteriaKeySafeInteraction() {
+    const pLevel = (this.playerData && this.playerData.level) || 1;
+    const isTeacher = !!(this.playerData && this.playerData.isTeacher);
+
+    // 1. 레벨 12 미만 차단
+    if (pLevel < 12 && !isTeacher) {
+      const msg = `🚫 [소회의실 비밀 보관함 - 접근 제한]\n\n"이 고대 보관함은 12레벨 이상의 모범 학생 전용입니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n모험을 더 진행하여 12레벨을 달성한 뒤 다시 조사해주세요."`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🚫 접근 제한', msg, '🔒');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    // 2. 이미 열쇠 획득 여부
+    const hasKey = this.hasItem('item_cafeteria_key') || (this.playerData && this.playerData.hasCafeteriaKey);
+    if (hasKey) {
+      const msg = `🗝️ [소회의실 비밀 보관함]\n\n"보관함 안쪽은 이미 비어 있습니다.\n\n획득하신 [🔑 급식실 열쇠]를 소지하고 운동장 북동쪽의 [학생 급식실] 정문으로 이동하세요!"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🗝️ 소회의실 문서 보관함', msg, '🔑');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    // 3. 1897 세트 착용 검증 (무기는 컴싸봉 대체 가능)
+    const check = this.is1897HeritageSetEquipped(true);
+
+    if (!check.isComplete) {
+      const statusLines = [
+        `• 투구: ${check.isHelm ? '✅ [착용 중] 1897 숭실 헤리티지 투구' : '❌ [미착용] 1897 숭실 헤리티지 투구 필요'}`,
+        `• 갑옷: ${check.isArmor ? '✅ [착용 중] 1897 숭실 헤리티지 갑옷' : '❌ [미착용] 1897 숭실 헤리티지 갑옷 필요'}`,
+        `• 신발: ${check.isBoots ? '✅ [착용 중] 1897 숭실 헤리티지 부츠' : '❌ [미착용] 1897 숭실 헤리티지 부츠 필요'}`,
+        `• 무기: ${check.isWep ? `✅ [착용 중] ${check.weaponName}` : '❌ [미착용] 1897 숭실 헤리티지 블레이드 또는 컴싸 마법봉 필요'}`
+      ].join('\n');
+
+      const msg = `🔒 [봉인된 문서 보관함 - 1897 숭실의 문양]\n\n보관함 전면에 1897년 평양 숭실학당의 고대 문양이 마법 결계로 붉게 빛나고 있습니다!\n\n"오직 숭실의 역사와 사명을 온전히 계승한 자(1897 헤리티지 4종 풀세트 착용자)만이 이 보관함을 열 수 있다."\n(※ 무기는 전설의 '컴싸 마법봉'으로 대체 가능합니다!)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 [현재 1897 장비 착용 검증]:\n${statusLines}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💡 힌트: 역사관 제단 제작 및 보스 레이드에서 획득한 1897 장비를 가방(I)에서 모두 [착용]한 후 다시 조사하세요!`;
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🔒 봉인된 문서 보관함', msg, '🔒');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    // 4. 모든 조건 충족: 급식실 열쇠 획득!
+    this.playerData.hasCafeteriaKey = true;
+    this.addItem('item_cafeteria_key', '급식실 열쇠', 1, '🔑', {
+      type: 'quest',
+      effect: '12레벨 이상 모범 학생 급식실 정문 출입용 황금 열쇠'
+    });
+    this.saveProgress(true);
+
+    if (window.AudioManager) {
+      if (typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      } else if (typeof window.AudioManager.playLevelUp === 'function') {
+        window.AudioManager.playLevelUp();
+      }
+    }
+
+    const usedWep = check.isOmr ? '전설의 컴싸 마법봉' : '1897 숭실 헤리티지 블레이드';
+    const successMsg = `✨ [1897 숭실 헤리티지 결계 해제!]\n\n착용 중인 1897 헤리티지 장비(투구·갑옷·부츠 및 ${usedWep})가 보관함의 고대 문양과 장엄하게 공명합니다!\n\n"철컥! 찰칵!"\n\n육중한 잠금장치가 해제되며, 안쪽에서 찬란하게 빛나는 [🔑 급식실 열쇠]를 발견했습니다!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔑 [획득 아이템] 급식실 열쇠 x1\n• 용도: 12레벨 이상 학생 급식실 정문 개방\n• 위치: 야외 운동장 북동쪽 (중앙 엘리베이터 우측)\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"숭실의 진정한 용사여, 이제 운동장의 학생 급식실로 당당히 나아가세요!"`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('✨ 급식실 열쇠 획득!', successMsg, '🔑');
+    } else {
+      alert(successMsg);
+    }
+    this.showToast('✨ [입장 퀘스트 완료] 1897 세트 공명으로 [급식실 열쇠]를 획득했습니다!', 'success');
+  }
+
+  // 야외 운동장: 학생 급식실 정문 상호작용 (12레벨 이상 & 급식실 열쇠 검증)
+  handleCafeteriaEntranceInteraction() {
+    const pLevel = (this.playerData && this.playerData.level) || 1;
+    const isTeacher = !!(this.playerData && this.playerData.isTeacher);
+    const hasKey = this.hasItem('item_cafeteria_key') || (this.playerData && this.playerData.hasCafeteriaKey);
+
+    // 1. 레벨 12 미만인 경우
+    if (pLevel < 12 && !isTeacher) {
+      const msg = `🚫 [학생 급식실 - 12레벨 출입 제한]\n\n"학생 급식실은 철저한 위생 관리와 영양 관리를 위해 12레벨 이상의 모범 학생만 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n더 많은 퀘스트와 몬스터 토벌을 통해 12레벨을 달성하고 다시 찾아오세요!"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🚫 학생 급식실 입장 불가', msg, '🍱');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    // 2. 12레벨 이상이지만 열쇠가 없는 경우
+    if (!hasKey && !isTeacher) {
+      const msg = `🔒 [학생 급식실 - 정문 잠김]\n\n"철컥... 급식실 정문이 굳게 잠겨 있습니다!\n\n출입하려면 전용 [🔑 급식실 열쇠]가 필요합니다.\n\n📜 [입장 퀘스트 힌트]:\n6층 교무실 서쪽의 [소회의실(Lv.12+)]에 봉인된 비밀 보관함이 있습니다.\n1897 헤리티지 세트(무기는 컴싸 마법봉 대체 가능)를 풀착용하고 조사하면 급식실 열쇠를 획득할 수 있습니다!"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🔒 급식실 열쇠 필요', msg, '🔑');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    // 3. 12레벨 이상이며 열쇠 보유 완료!
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const welcomeMsg = `🍱 [학생 급식실 - 정문 개방 성공!]\n\n"철컥! 🔑 [급식실 열쇠]가 자물쇠에 꼭 들어맞으며 육중한 자동문이 경쾌한 멜로디와 함께 활짝 열립니다!"\n\n따끈따끈하고 맛있는 점심 식사의 고소한 냄새가 코끝을 스칩니다.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎉 12레벨 급식실 입장 퀘스트 완료!\n✨ 학생 급식실 내부 공간 및 대규모 급식 콘텐츠가 곧 오픈됩니다!\n━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('🍱 학생 급식실 입장 성공!', welcomeMsg, '🎉');
+    } else {
+      alert(welcomeMsg);
+    }
+    this.showToast('🍱 [급식실 열쇠 사용!] 학생 급식실 정문이 활짝 열렸습니다!', 'success');
   }
 
   // 6. 보건 선생님 대화 & 퀴즈
@@ -7011,6 +7155,13 @@ class MainApp {
       btnClose._bound = true;
       btnClose.addEventListener('click', () => this.closeTeleportModal());
     }
+
+    if (!modal._bgBound) {
+      modal._bgBound = true;
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeTeleportModal();
+      });
+    }
   }
 
   closeTeleportModal() {
@@ -7077,7 +7228,7 @@ class MainApp {
       targetName = '🏥 3층 복도';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 3;
-        this.engine.warpToRoom('hallway', '3층 복도 (보건 & 힐링 구역)', 9 * 32, 6 * 32);
+        this.engine.warpToRoom('hallway', '3층 복도 (보건실 & Wee클래스)', 56 * 32, 6 * 32);
       });
     } else if (target === 'floor_2') {
       targetName = '📚 2층 도서관';
@@ -7089,19 +7240,19 @@ class MainApp {
       targetName = '🏀 농구장';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
-        this.engine.warpToRoom('playground_basketball', '숭실 운동장 (농구장)', 74 * 32, 16 * 32);
+        this.engine.warpToRoom('playground', '숭실 운동장 (농구장)', 74 * 32, 16 * 32);
       });
     } else if (target === 'court_futsal') {
       targetName = '⚽ 풋살장';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
-        this.engine.warpToRoom('playground_futsal', '숭실 운동장 (풋살장)', 74 * 32, 40 * 32);
+        this.engine.warpToRoom('playground', '숭실 운동장 (풋살장)', 74 * 32, 40 * 32);
       });
     } else if (target === 'field_soccer') {
       targetName = '🏟️ 축구장';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 1;
-        this.engine.warpToRoom('playground_soccer', '숭실 운동장 (축구장)', 22 * 32, 35 * 32);
+        this.engine.warpToRoom('playground', '숭실 운동장 (축구장)', 31 * 32, 35 * 32);
       });
     }
 
