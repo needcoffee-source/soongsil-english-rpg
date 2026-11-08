@@ -1245,6 +1245,9 @@ class MainApp {
       juncheolGuestbookNote: '',
       secretHistoryRoomUnlocked: false,
       openedSecretHistoryChest: false,
+      hiddenQuestCareer1: null,
+      hasHangangwooBookmark: false,
+      hiddenQuestCareer2: null,
       inventory: []
     };
 
@@ -4078,6 +4081,9 @@ class MainApp {
           if (!this.playerData.openedSecretHistoryChest && studentId) {
             this.playerData.openedSecretHistoryChest = (localStorage.getItem('soongsil_secret_history_chest_' + studentId) === 'true');
           }
+          this.playerData.hiddenQuestCareer1 = saved.hiddenQuestCareer1 || (studentId ? localStorage.getItem('soongsil_hidden_career_1_' + studentId) : null) || null;
+          this.playerData.hasHangangwooBookmark = !!(saved.hasHangangwooBookmark || (studentId && localStorage.getItem('soongsil_hangangwoo_bookmark_' + studentId) === 'true'));
+          this.playerData.hiddenQuestCareer2 = saved.hiddenQuestCareer2 || (studentId ? localStorage.getItem('soongsil_hidden_career_2_' + studentId) : null) || null;
           console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}, 704클리어: ${this.playerData.hasClearedClass704}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
@@ -4111,6 +4117,9 @@ class MainApp {
           this.playerData.equippedTitle = null;
           this.playerData.secretHistoryRoomUnlocked = (studentId && localStorage.getItem('soongsil_secret_history_unlocked_' + studentId) === 'true');
           this.playerData.openedSecretHistoryChest = (studentId && localStorage.getItem('soongsil_secret_history_chest_' + studentId) === 'true');
+          this.playerData.hiddenQuestCareer1 = studentId ? localStorage.getItem('soongsil_hidden_career_1_' + studentId) : null;
+          this.playerData.hasHangangwooBookmark = !!(studentId && localStorage.getItem('soongsil_hangangwoo_bookmark_' + studentId) === 'true');
+          this.playerData.hiddenQuestCareer2 = studentId ? localStorage.getItem('soongsil_hidden_career_2_' + studentId) : null;
           this.playerData.quests = {};
           if (studentId) {
             try {
@@ -8207,6 +8216,9 @@ class MainApp {
         quests: this.playerData.quests || {},
         secretHistoryRoomUnlocked: !!this.playerData.secretHistoryRoomUnlocked,
         openedSecretHistoryChest: !!this.playerData.openedSecretHistoryChest,
+        hiddenQuestCareer1: this.playerData.hiddenQuestCareer1 || null,
+        hasHangangwooBookmark: !!this.playerData.hasHangangwooBookmark,
+        hiddenQuestCareer2: this.playerData.hiddenQuestCareer2 || null,
         updatedAt: Date.now()
       };
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
@@ -9637,47 +9649,239 @@ class MainApp {
   // 👑 6층 교무실 갓준철 선생님 연구 책상 (26번 좌석) 인터랙션 시스템
   // =========================================================================
   // 📐 6층 교무실 30번 좌석 이상대 수학선생님 연구석 인터랙션
-  // 📖 6층 교무실 29번 좌석 한강우 국어선생님 연구석 인터랙션
-  // 💬 5층 진로상담실 [1:1 상담실 1] 진로 심층 상담석 인터랙션
+  // 💬 5층 진로상담실 [1:1 상담실 1] 진로 심층 상담석 & 히든 퀘스트: 10년 전 선배의 진로 고민
   handleCareerCounsel1Interaction() {
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();
     }
-    if (window.RPGDialog) {
-      window.RPGDialog.show(
-        '💬 [1:1 상담실 1] 진로 심층 상담석',
-        '조용하고 아늑한 1:1 진로 심층 상담 공간입니다.\n\n' +
-        '상담 테이블 위에 학생들의 진로 흥미 검사 결과지, 맞춤형 진로 로드맵 파일철, 은은한 스탠드 조명이 켜져 있습니다.\n\n' +
-        '📝 [상담 노트]\n"한 사람 한 사람의 소중한 꿈과 가능성을 깊이 있게 마주하는 따뜻한 공간입니다."',
-        '🌟'
-      );
-    } else {
-      alert('💬 [1:1 상담실 1] 진로 심층 상담석\n\n조용하고 아늑한 1:1 진로 심층 상담 공간입니다.\n맞춤형 진로 로드맵 파일철과 은은한 스탠드가 켜져 있습니다.');
+
+    const quest1State = this.playerData ? this.playerData.hiddenQuestCareer1 : null;
+    const hasBookmark = !!(this.playerData && this.playerData.hasHangangwooBookmark);
+
+    // 1. 이미 히든 퀘스트 완료
+    if (quest1State === 'completed') {
+      const msg = '10년 전 선배의 고민 편지와 한강우 국어선생님의 격려 책갈피가 파일철에 나란히 보관되어 있습니다.\n\n' +
+        '📝 [보관된 답장]\n"어떤 꿈이든 진심을 다해 쓴 글은 누군가의 어두운 밤을 비추는 등불이 된단다. 네 꿈을 결코 의심하지 마라. - 국어교사 한강우"\n\n' +
+        '꿈을 향해 걸어갈 수 있는 따뜻한 온기가 마음 깊이 전해집니다. (히든 퀘스트 완료됨)';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('💬 [1:1 상담실 1] 진로 심층 상담석', msg, '🍂');
+      } else {
+        alert(msg);
+      }
+      return;
     }
+
+    // 2. 한강우 선생님 연구석에서 격려 책갈피를 찾아온 경우 -> 퀘스트 완료!
+    if (hasBookmark) {
+      const completeMsg = '29번 한강우 국어선생님 연구석에서 찾은 [격려의 책갈피]를 10년 전 선배의 고민 편지 옆에 소중히 꽂았습니다!\n\n' +
+        '📝 [에필로그]\n놀랍게도 편지 속 10년 전 학생은 훗날 아름다운 시집을 펴낸 작가가 되어, 모교 숭실의 후배들에게 따뜻한 응원을 보내고 있습니다!\n\n' +
+        '시간을 넘어 맺어진 사제 간의 마음에 깊은 감동이 차오릅니다.\n\n' +
+        '🎁 [보상 획득]\n🍂 황금 은행잎 1개를 획득했습니다!';
+
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+
+      this.addItem('item_ginkgo', '황금 은행잎', 1, '🍂', {
+        type: 'material',
+        effect: '부활 주문서 및 합심의 황금 은행잎 부적 제작 재료'
+      });
+      this.playerData.hiddenQuestCareer1 = 'completed';
+      const studentId = this.playerData.studentId;
+      if (studentId) {
+        try {
+          localStorage.setItem('soongsil_hidden_career_1_' + studentId, 'completed');
+        } catch (e) {}
+      }
+      this.saveProgress(true);
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🎉 [히든 퀘스트 완료] 10년 전 선배의 고민', completeMsg, '🍂');
+      } else {
+        alert(completeMsg);
+      }
+      this.showToast('🎉 [히든 퀘스트 완료] 10년 전 선배의 고민 해결! 보상: 🍂 황금 은행잎 1개 획득!', 'success');
+      return;
+    }
+
+    // 3. 퀘스트 진행 중 (책갈피를 아직 못 찾음)
+    if (quest1State === 'in_progress') {
+      const hintMsg = '파일철 사이에 끼워진 10년 전 선배의 빛바랜 고민 편지입니다.\n\n' +
+        '"선생님, 저는 글을 쓰고 시를 읽는 것이 가장 행복하지만... 문학으로는 살아가기 힘들다는 말에 가슴이 무너집니다. 제 꿈을 믿고 가도 될까요? - 10년 전 어느 학생"\n\n' +
+        '🔍 [추적 힌트]\n쪽지 뒤편 메모: "교무실 29번 한강우 국어선생님 자리에 제 소중한 시집과 메모를 두고 온 것 같아요..."\n\n' +
+        '6층 교무실 29번 한강우 선생님 연구석을 확인해보세요!';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('💬 [1:1 상담실 1] 10년 전 선배의 고민 쪽지', hintMsg, '📜');
+      } else {
+        alert(hintMsg);
+      }
+      return;
+    }
+
+    // 4. 최초 발견 -> 퀘스트 시작!
+    const startMsg = '맞춤형 진로 파일철을 넘기던 중, 맨 뒷장에 끼워진 낡고 바랜 양면 편지 한 장을 발견했습니다!\n\n' +
+      '📜 [10년 전 숭실 선배의 편지]\n"선생님, 저는 글을 쓰고 시를 읽는 것이 세상에서 가장 행복하지만... 제 꿈을 믿고 계속 걸어가도 될까요? 문학으로는 성공하기 어렵다는 말에 밤마다 눈물이 납니다."\n\n' +
+      '쪽지 뒷면에 작은 손글씨가 적혀 있습니다:\n"추신: 교무실 29번 국어선생님 자리에 제 소중한 시집과 메모를 두고 온 것 같아요..."\n\n' +
+      '✨ [히든 퀘스트 시작!] 6층 교무실 29번 한강우 선생님 연구석을 확인해보자!';
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    this.playerData.hiddenQuestCareer1 = 'in_progress';
+    const sId = this.playerData.studentId;
+    if (sId) {
+      try {
+        localStorage.setItem('soongsil_hidden_career_1_' + sId, 'in_progress');
+      } catch (e) {}
+    }
+    this.saveProgress(true);
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('✨ [히든 퀘스트 발견] 10년 전 선배의 진로 고민', startMsg, '📜');
+    } else {
+      alert(startMsg);
+    }
+    this.showToast('✨ [히든 퀘스트] 10년 전 선배의 고민 발견! 6층 교무실 29번 한강우 선생님 자리를 확인하세요.', 'info');
   }
 
-  // 💬 5층 진로상담실 [1:1 상담실 2] 학습·진학 코칭석 인터랙션
+  // 💬 5층 진로상담실 [1:1 상담실 2] 학습·진학 코칭석 & 히든 퀘스트: 마음 치유의 특제 허브티
   handleCareerCounsel2Interaction() {
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();
     }
-    if (window.RPGDialog) {
-      window.RPGDialog.show(
-        '💬 [1:1 상담실 2] 학습·진학 코칭석',
-        '차분하게 자신만의 비전을 설계하는 1:1 학습·진학 코칭 공간입니다.\n\n' +
-        '테이블 위에 자기주도학습 플래너, 고교 진학 탐색 가이드북, 따뜻한 차 한 잔이 놓여 있습니다.\n\n' +
-        '📝 [코칭 포스트잇]\n"포기하지 않고 걸어가는 모든 걸음이 너의 찬란한 미래가 될 거야!"',
-        '🌟'
-      );
-    } else {
-      alert('💬 [1:1 상담실 2] 학습·진학 코칭석\n\n차분하게 자신만의 비전을 설계하는 1:1 학습·진학 코칭 공간입니다.\n자기주도학습 플래너와 진학 가이드북이 정돈되어 있습니다.');
+
+    const quest2State = this.playerData ? this.playerData.hiddenQuestCareer2 : null;
+
+    // 1. 이미 완료한 경우
+    if (quest2State === 'completed') {
+      const msg = '향긋한 개나리와 약초 허브티 향기가 방 안에 은은하게 감돌고 있습니다.\n\n' +
+        '📝 [코칭 포스트잇]\n"마음이 지칠 때는 잠시 따뜻한 차 한 잔과 함께 숨을 고르자. 포기하지 않고 걸어가는 모든 걸음이 너의 찬란한 미래가 될 거야!"\n\n' +
+        '머릿속이 맑아지고 마음이 한결 차분해집니다. (히든 퀘스트 완료됨)';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('💬 [1:1 상담실 2] 학습·진학 코칭석', msg, '🍵');
+      } else {
+        alert(msg);
+      }
+      return;
     }
+
+    // 2. 퀘스트 진행 중인 경우 -> 재료 확인 및 달이기
+    if (quest2State === 'in_progress') {
+      const forsythiaCount = (typeof this.getItemCount === 'function' ? this.getItemCount('item_forsythia') : 0) || 0;
+      const herbCount = (typeof this.getItemCount === 'function' ? this.getItemCount('item_herb') : 0) || 0;
+
+      // 재료 충족: 개나리 꽃잎 2개 + 약초 1개
+      if (forsythiaCount >= 2 && herbCount >= 1) {
+        this.removeItem('item_forsythia', 2);
+        this.removeItem('item_herb', 1);
+
+        const completeMsg = '모아온 [노란 개나리 꽃잎 2개]와 [싱싱한 약초 1개]를 찻주전자에 넣고 따뜻한 온수를 부었습니다!\n\n' +
+          '은은한 황금빛 김과 함께 달콤하고 향긋한 허브티가 완성되었습니다.\n' +
+          '한 모금 마시자 가슴을 짓누르던 시험 스트레스와 불안감이 눈 녹듯 사르르 풀려납니다.\n\n' +
+          '찻잔 받침대 아래에 감사의 징표로 반짝이는 황금 은행잎이 놓여 있습니다.\n\n' +
+          '🎁 [보상 획득]\n🍂 황금 은행잎 1개를 획득했습니다!';
+
+        if (window.AudioManager && window.AudioManager.playFanfare) {
+          window.AudioManager.playFanfare();
+        }
+
+        this.addItem('item_ginkgo', '황금 은행잎', 1, '🍂', {
+          type: 'material',
+          effect: '부활 주문서 및 합심의 황금 은행잎 부적 제작 재료'
+        });
+        this.playerData.hiddenQuestCareer2 = 'completed';
+        const studentId = this.playerData.studentId;
+        if (studentId) {
+          try {
+            localStorage.setItem('soongsil_hidden_career_2_' + studentId, 'completed');
+          } catch (e) {}
+        }
+        this.saveProgress(true);
+
+        if (window.RPGDialog) {
+          window.RPGDialog.show('🎉 [히든 퀘스트 완료] 마음 치유의 특제 허브티', completeMsg, '🍂');
+        } else {
+          alert(completeMsg);
+        }
+        this.showToast('🎉 [히든 퀘스트 완료] 특제 허브티 달이기 성공! 보상: 🍂 황금 은행잎 1개 획득!', 'success');
+        return;
+      }
+
+      // 재료 부족 안내
+      const needMsg = '따뜻한 찻잔 옆에 찻주전자가 정갈하게 준비되어 있습니다.\n\n' +
+        '📜 [허브티에 필요한 재료]\n' +
+        `• 🌼 노란 개나리 꽃잎: ${forsythiaCount} / 2개\n` +
+        `• 🌿 싱싱한 약초: ${herbCount} / 1개\n\n` +
+        '🔍 [재료 구하는 곳]\n1층 교실(1-1반 등)의 개나리 화분과 약초 화단에서 채집할 수 있습니다. 재료를 모두 모아오면 허브티를 달일 수 있습니다.';
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🍵 [1:1 상담실 2] 특제 허브티 재료 준비 중', needMsg, '🌿');
+      } else {
+        alert(needMsg);
+      }
+      return;
+    }
+
+    // 3. 최초 발견 -> 퀘스트 시작!
+    const startMsg = '자기주도학습 플래너를 살펴보던 중, 뒤표지에 손글씨로 적힌 특별한 메모를 발견했습니다!\n\n' +
+      '📜 [마음 치유의 특제 허브티 레시피]\n"시험과 진로에 대한 불안감으로 마음이 턱 막힐 때는, 1층 화단에서 피어난 [노란 개나리 꽃잎 2개]와 [싱싱한 약초 1개]를 달여 마셔보렴. 굳었던 마음이 사르르 녹아내린단다."\n\n' +
+      '✨ [히든 퀘스트 시작!] 1층에서 개나리 꽃잎 2개와 약초 1개를 모아와 따뜻한 허브티를 달여보자!';
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    this.playerData.hiddenQuestCareer2 = 'in_progress';
+    const sId = this.playerData.studentId;
+    if (sId) {
+      try {
+        localStorage.setItem('soongsil_hidden_career_2_' + sId, 'in_progress');
+      } catch (e) {}
+    }
+    this.saveProgress(true);
+
+    if (window.RPGDialog) {
+      window.RPGDialog.show('✨ [히든 퀘스트 발견] 마음 치유의 특제 허브티', startMsg, '🍵');
+    } else {
+      alert(startMsg);
+    }
+    this.showToast('✨ [히든 퀘스트] 마음 치유의 허브티 레시피 발견! 개나리 꽃잎 2개와 약초 1개를 모아오세요.', 'info');
   }
 
   handleHangangwooDeskInteraction() {
     if (window.AudioManager && window.AudioManager.playSelect) {
       window.AudioManager.playSelect();
     }
+
+    // 히든 퀘스트 1 진행 중이고 책갈피를 아직 얻지 않은 경우
+    if (this.playerData && this.playerData.hiddenQuestCareer1 === 'in_progress' && !this.playerData.hasHangangwooBookmark) {
+      const bookmarkMsg = '한강우 선생님 책상 위 두꺼운 한국 현대 문학 전집을 살펴보던 중, 책장 사이에 단정하게 꽂힌 원목 책갈피를 발견했습니다!\n\n' +
+        '🔖 [한강우 선생님의 답장 책갈피]\n"어떤 꿈이든 진심을 다해 쓴 글은 누군가의 어두운 밤을 비추는 등불이 된단다. 네 꿈을 결코 의심하지 마라. - 국어교사 한강우"\n\n' +
+        '10년 전 방황하던 제자에게 건네려 했던 따뜻한 격려의 말씀입니다.\n\n' +
+        '이 책갈피를 가지고 5층 [1:1 상담실 1]로 돌아가자!';
+
+      this.playerData.hasHangangwooBookmark = true;
+      const sId = this.playerData.studentId;
+      if (sId) {
+        try {
+          localStorage.setItem('soongsil_hangangwoo_bookmark_' + sId, 'true');
+        } catch (e) {}
+      }
+      this.saveProgress(true);
+
+      if (window.AudioManager && window.AudioManager.playCollect) {
+        window.AudioManager.playCollect();
+      }
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show('📖 한강우 선생님 연구석 - 숨겨진 책갈피', bookmarkMsg, '🔖');
+      } else {
+        alert(bookmarkMsg);
+      }
+      this.showToast('🔖 [단서 획득] 한강우 선생님의 격려 책갈피를 찾았습니다! 5층 1:1 상담실 1로 돌아가세요.', 'success');
+      return;
+    }
+
     if (window.RPGDialog) {
       window.RPGDialog.show(
         '📖 한강우 선생님 연구석',
