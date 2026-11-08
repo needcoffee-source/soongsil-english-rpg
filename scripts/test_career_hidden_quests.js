@@ -142,7 +142,7 @@ assert.strictEqual(app.playerData.hiddenQuestCareer2, 'in_progress');
 
 // Add full ingredients
 app.addItem('item_forsythia', '개나리 꽃잎', 1, '🌼'); // total 2
-app.addItem('item_herb', '싱싱한 약초', 1, '🌿'); // total 1
+app.addItem('item_herb', '향긋한 허브', 1, '🌿'); // total 1
 
 // Test Quest 2 Step 4: Turn in at counsel 2 -> consumes ingredients, receives exactly 1 ginkgo leaf
 const ginkgoBeforeQ2 = app.getItemCount('item_ginkgo');
