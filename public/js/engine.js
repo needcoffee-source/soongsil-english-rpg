@@ -3129,31 +3129,32 @@ class GameEngine {
     ctx.save();
 
     // ========================================================
-    // [1:1 상담실 1 - 상단 세로 배치 (x: 36..57, y: 4..9)]
+    // [1:1 상담실 1 - 상단 세로 배치 (x: 49..57, y: 4..9)]
+    // 가로 폭 2/3 축소 (8타일 폭 컴팩트 룸) & 서쪽(왼쪽) 출입문
     // ========================================================
     // 1-A. 바닥 프리미엄 카펫 (세이지 민트)
     ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
-    ctx.fillRect(36.5 * 32, 4.5 * 32, 20.5 * 32, 4.5 * 32);
+    ctx.fillRect(49.5 * 32, 4.5 * 32, 7.5 * 32, 4.5 * 32);
     ctx.strokeStyle = '#059669';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(36.5 * 32, 4.5 * 32, 20.5 * 32, 4.5 * 32);
+    ctx.strokeRect(49.5 * 32, 4.5 * 32, 7.5 * 32, 4.5 * 32);
 
-    // 1-B. 출입구 웰컴 러너 (x: 45..47, y: 8.8..9.8)
+    // 1-B. 서쪽 출입구 웰컴 러너 (x: 48..50, y: 6..8)
     ctx.fillStyle = 'rgba(6, 95, 70, 0.7)';
-    ctx.fillRect(45 * 32, 8.8 * 32, 3 * 32, 1 * 32);
+    ctx.fillRect(48 * 32, 6 * 32, 1.8 * 32, 2 * 32);
 
-    // 1-C. 파티션 벽체 (북쪽, 서쪽, 동쪽, 남쪽 출입문 분리)
-    this.drawCareerPartitionWall(36, 4, 57, 4);  // 북쪽 벽체
-    this.drawCareerPartitionWall(36, 4, 36, 9);  // 서쪽 벽체
+    // 1-C. 파티션 벽체 (북쪽, 동쪽, 남쪽, 서쪽 출입문 분리)
+    this.drawCareerPartitionWall(49, 4, 57, 4);  // 북쪽 벽체
     this.drawCareerPartitionWall(57, 4, 57, 9);  // 동쪽 벽체
-    this.drawCareerPartitionWall(36, 9, 44, 9);  // 남쪽 좌벽
-    this.drawCareerPartitionWall(48, 9, 57, 9);  // 남쪽 우벽
+    this.drawCareerPartitionWall(49, 9, 57, 9);  // 남쪽 벽체 (아래쪽 완전 차단)
+    this.drawCareerPartitionWall(49, 4, 49, 5);  // 서쪽 상단벽
+    this.drawCareerPartitionWall(49, 8, 49, 9);  // 서쪽 하단벽 (y 6..7은 출입구)
 
-    // 1-D. 내부 가구 및 원형 상담 테이블 (x: 46*32+16, y: 6*32+16)
-    this.drawCareerCounselDesk1(46 * 32 + 16, 6 * 32 + 16);
+    // 1-D. 내부 가구 및 원형 상담 테이블 (x: 53*32+16, y: 6*32+16)
+    this.drawCareerCounselDesk1(53 * 32 + 16, 6 * 32 + 16);
 
-    // 1-E. 도어 명패 현판
-    this.drawSharpLabel(46.5 * 32, 9 * 32 + 18, '💬 1:1 상담실 1', {
+    // 1-E. 서쪽 출입구 상단 도어 명패 현판
+    this.drawSharpLabel(48.5 * 32, 5.2 * 32, '💬 1:1 상담실 1', {
       bgColor: 'rgba(6, 78, 59, 0.95)',
       borderColor: '#34d399',
       textColor: '#ecfdf5',
@@ -3163,31 +3164,32 @@ class GameEngine {
     });
 
     // ========================================================
-    // [1:1 상담실 2 - 하단 세로 배치 (x: 36..57, y: 11..16)]
+    // [1:1 상담실 2 - 하단 세로 배치 (x: 49..57, y: 11..16)]
+    // 가로 폭 2/3 축소 (8타일 폭 컴팩트 룸) & 서쪽(왼쪽) 출입문
     // ========================================================
     // 2-A. 바닥 프리미엄 카펫 (포근한 웜 피치)
     ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
-    ctx.fillRect(36.5 * 32, 11.5 * 32, 20.5 * 32, 4.5 * 32);
+    ctx.fillRect(49.5 * 32, 11.5 * 32, 7.5 * 32, 4.5 * 32);
     ctx.strokeStyle = '#e11d48';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(36.5 * 32, 11.5 * 32, 20.5 * 32, 4.5 * 32);
+    ctx.strokeRect(49.5 * 32, 11.5 * 32, 7.5 * 32, 4.5 * 32);
 
-    // 2-B. 출입구 웰컴 러너 (x: 45..47, y: 15.8..16.8)
+    // 2-B. 서쪽 출입구 웰컴 러너 (x: 48..50, y: 13..15)
     ctx.fillStyle = 'rgba(136, 19, 55, 0.7)';
-    ctx.fillRect(45 * 32, 15.8 * 32, 3 * 32, 1 * 32);
+    ctx.fillRect(48 * 32, 13 * 32, 1.8 * 32, 2 * 32);
 
-    // 2-C. 파티션 벽체 (북쪽, 서쪽, 동쪽, 남쪽 출입문 분리)
-    this.drawCareerPartitionWall(36, 11, 57, 11); // 북쪽 벽체
-    this.drawCareerPartitionWall(36, 11, 36, 16); // 서쪽 벽체
+    // 2-C. 파티션 벽체 (북쪽, 동쪽, 남쪽, 서쪽 출입문 분리)
+    this.drawCareerPartitionWall(49, 11, 57, 11); // 북쪽 벽체
     this.drawCareerPartitionWall(57, 11, 57, 16); // 동쪽 벽체
-    this.drawCareerPartitionWall(36, 16, 44, 16); // 남쪽 좌벽
-    this.drawCareerPartitionWall(48, 16, 57, 16); // 남쪽 우벽
+    this.drawCareerPartitionWall(49, 16, 57, 16); // 남쪽 벽체 (아래쪽 완전 차단)
+    this.drawCareerPartitionWall(49, 11, 49, 12); // 서쪽 상단벽
+    this.drawCareerPartitionWall(49, 15, 49, 16); // 서쪽 하단벽 (y 13..14는 출입구)
 
-    // 2-D. 내부 가구 및 타원 코칭 테이블 (x: 46*32+16, y: 13*32+16)
-    this.drawCareerCounselDesk2(46 * 32 + 16, 13 * 32 + 16);
+    // 2-D. 내부 가구 및 타원 코칭 테이블 (x: 53*32+16, y: 13*32+16)
+    this.drawCareerCounselDesk2(53 * 32 + 16, 13 * 32 + 16);
 
-    // 2-E. 도어 명패 현판
-    this.drawSharpLabel(46.5 * 32, 16 * 32 + 18, '💬 1:1 상담실 2', {
+    // 2-E. 서쪽 출입구 상단 도어 명패 현판
+    this.drawSharpLabel(48.5 * 32, 12.2 * 32, '💬 1:1 상담실 2', {
       bgColor: 'rgba(136, 19, 55, 0.95)',
       borderColor: '#fda4af',
       textColor: '#fff1f2',
@@ -11872,29 +11874,31 @@ class GameEngine {
 
   isCareerRoomWall(tileX, tileY) {
     // 5층 진로상담실 우측: 세로 배치 (상단: 1:1 상담실 1 / 하단: 1:1 상담실 2)
-    // [1:1 상담실 1 - 상단 (x: 36..57, y: 4..9)]
-    // 1-A. 북쪽 벽 (y: 4, x: 36..57)
-    if (tileY === 4 && tileX >= 36 && tileX <= 57) return true;
-    // 1-B. 서쪽 벽 (x: 36, y: 4..9)
-    if (tileX === 36 && tileY >= 4 && tileY <= 9) return true;
+    // 가로 폭 2/3 축소 (8타일 폭: x: 49..57) & 서쪽(왼쪽) 출입문
+
+    // [1:1 상담실 1 - 상단 (x: 49..57, y: 4..9)]
+    // 1-A. 북쪽 벽 (y: 4, x: 49..57)
+    if (tileY === 4 && tileX >= 49 && tileX <= 57) return true;
+    // 1-B. 남쪽 벽 (y: 9, x: 49..57 - 아래쪽 완전 차단)
+    if (tileY === 9 && tileX >= 49 && tileX <= 57) return true;
     // 1-C. 동쪽 벽 (x: 57, y: 4..9)
     if (tileX === 57 && tileY >= 4 && tileY <= 9) return true;
-    // 1-D. 남쪽 벽 (y: 9, x: 36..44 및 48..57, 출입문: 45..47 통행 가능)
-    if (tileY === 9 && ((tileX >= 36 && tileX <= 44) || (tileX >= 48 && tileX <= 57))) return true;
-    // 1-E. 상담 테이블 1 충돌 판정 (x: 45..47, y: 6)
-    if (tileY === 6 && tileX >= 45 && tileX <= 47) return true;
+    // 1-D. 서쪽 벽 (x: 49, y: 4..9, 출입문: y 6..7 통행 가능)
+    if (tileX === 49 && ((tileY >= 4 && tileY <= 5) || (tileY >= 8 && tileY <= 9))) return true;
+    // 1-E. 상담 테이블 1 충돌 판정 (x: 53, y: 6..7)
+    if ((tileY === 6 || tileY === 7) && tileX === 53) return true;
 
-    // [1:1 상담실 2 - 하단 (x: 36..57, y: 11..16)]
-    // 2-A. 북쪽 벽 (y: 11, x: 36..57)
-    if (tileY === 11 && tileX >= 36 && tileX <= 57) return true;
-    // 2-B. 서쪽 벽 (x: 36, y: 11..16)
-    if (tileX === 36 && tileY >= 11 && tileY <= 16) return true;
+    // [1:1 상담실 2 - 하단 (x: 49..57, y: 11..16)]
+    // 2-A. 북쪽 벽 (y: 11, x: 49..57)
+    if (tileY === 11 && tileX >= 49 && tileX <= 57) return true;
+    // 2-B. 남쪽 벽 (y: 16, x: 49..57 - 아래쪽 완전 차단)
+    if (tileY === 16 && tileX >= 49 && tileX <= 57) return true;
     // 2-C. 동쪽 벽 (x: 57, y: 11..16)
     if (tileX === 57 && tileY >= 11 && tileY <= 16) return true;
-    // 2-D. 남쪽 벽 (y: 16, x: 36..44 및 48..57, 출입문: 45..47 통행 가능)
-    if (tileY === 16 && ((tileX >= 36 && tileX <= 44) || (tileX >= 48 && tileX <= 57))) return true;
-    // 2-E. 코칭 테이블 2 충돌 판정 (x: 45..47, y: 13)
-    if (tileY === 13 && tileX >= 45 && tileX <= 47) return true;
+    // 2-D. 서쪽 벽 (x: 49, y: 11..16, 출입문: y 13..14 통행 가능)
+    if (tileX === 49 && ((tileY >= 11 && tileY <= 12) || (tileY >= 15 && tileY <= 16))) return true;
+    // 2-E. 코칭 테이블 2 충돌 판정 (x: 53, y: 13..14)
+    if ((tileY === 13 || tileY === 14) && tileX === 53) return true;
 
     return false;
   }
