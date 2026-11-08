@@ -15950,12 +15950,15 @@ class GameEngine {
 
   // ========================================================
   // SCENE RENDERING: STUDENT CAFETERIA (학생 급식실)
-  // 5대 구역: 조리실, 급식배부대, 학생급식좌석(칸막이X), 퇴식구/잔반, 교사급식실(동일식탁/커피머신X)
+  // 5대 구역: 조리실(좌측 상단), 급식배부대(좌측 하단), 급식지도석(하단 중앙좌측),
+  //           학생급식좌석(중앙/상단 3열 세로 식탁, 칸막이X),
+  //           교사급식실(우측 상단, 일반식탁, 커피머신X, 원목X),
+  //           퇴식구/잔반(우측 하단), 출입구(하단 중앙우측)
   // ========================================================
   drawCafeteriaFloorTile(tx, ty) {
     const ctx = this.ctx;
-    // 1. 조리실 구역 (tx: 1..13, ty: 3..9) - 위생 테라코타 논슬립 타일
-    if (tx >= 1 && tx <= 13 && ty >= 3 && ty <= 9) {
+    // 1. 조리실 구역 (tx: 1..10, ty: 3..14) - 위생 테라코타 논슬립 타일
+    if (tx >= 1 && tx <= 10 && ty >= 3 && ty <= 14) {
       const isAlt = (tx + ty) % 2 === 0;
       ctx.fillStyle = isAlt ? '#7f1d1d' : '#991b1b';
       ctx.fillRect(tx * 32, ty * 32, 32, 32);
@@ -15965,8 +15968,8 @@ class GameEngine {
       return;
     }
 
-    // 2. 출입구 논슬립 매트 (tx: 19..23, ty: 21..22)
-    if (tx >= 19 && tx <= 23 && ty >= 21) {
+    // 2. 출입구 논슬립 매트 (tx: 23..25, ty: 21..22)
+    if (tx >= 23 && tx <= 25 && ty >= 21) {
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(tx * 32, ty * 32, 32, 32);
       ctx.fillStyle = '#334155';
@@ -15976,8 +15979,8 @@ class GameEngine {
       return;
     }
 
-    // 3. 잔반 퇴식구 발판 매트 (tx: 2..6, ty: 19..21)
-    if (tx >= 2 && tx <= 6 && ty >= 19 && ty <= 21) {
+    // 3. 잔반 퇴식구 배수 발판 매트 (tx: 31..40, ty: 15..21)
+    if (tx >= 31 && tx <= 40 && ty >= 15 && ty <= 21) {
       ctx.fillStyle = '#334155';
       ctx.fillRect(tx * 32, ty * 32, 32, 32);
       ctx.strokeStyle = '#475569';
@@ -16010,51 +16013,63 @@ class GameEngine {
   }
 
   checkCafeteriaCollision(tx, ty) {
-    // 1. 조리실 외벽 (tx: 1..13, ty: 9) - 출입구(tx: 8..9, ty: 9)는 통행 가능
-    if (ty === 9 && tx >= 1 && tx <= 13) {
-      if (tx >= 8 && tx <= 9) return false;
+    // 1. 조리실 외벽
+    // 조리실 동쪽 벽 (tx: 11, ty: 3..14) - 출입문(ty: 8..9) 개방
+    if (tx === 11 && ty >= 3 && ty <= 14) {
+      if (ty >= 8 && ty <= 9) return false;
       return true;
     }
-    // 조리실 동쪽 벽 (tx: 13, ty: 3..8)
-    if (tx === 13 && ty >= 3 && ty <= 8) return true;
-
-    // 조리실 내부 조리기구 (대형 솥/가스레인지: tx: 2..6, ty: 3..4)
-    if (tx >= 2 && tx <= 6 && ty >= 3 && ty <= 4) return true;
-    // 조리실 중앙 조리대 (tx: 4..9, ty: 6..7)
-    if (tx >= 4 && tx <= 9 && ty >= 6 && ty <= 7) return true;
-    // 조리실 세척 싱크대 (tx: 11..12, ty: 3..5)
-    if (tx >= 11 && tx <= 12 && ty >= 3 && ty <= 5) return true;
-
-    // 2. 급식 배부대 라인 (tx: 14..30, ty: 7)
-    if (ty === 7 && tx >= 14 && tx <= 30) return true;
-
-    // 3. 교사 급식실 분리벽 (tx: 32, ty: 3..21) - 출입문(ty: 11..13)은 통행 가능
-    if (tx === 32 && ty >= 3 && ty <= 21) {
-      if (ty >= 11 && ty <= 13) return false;
+    // 조리실 남쪽 벽 (ty: 15, tx: 1..11) - 배식창/출입구(tx: 5..6) 개방
+    if (ty === 15 && tx >= 1 && tx <= 11) {
+      if (tx >= 5 && tx <= 6) return false;
       return true;
     }
-    // 교사 급식실 식탁 (학생 식탁과 동일한 규격 - ty: 6..7 및 ty: 16..17)
-    if (tx >= 34 && tx <= 39 && (ty === 6 || ty === 7)) return true;
-    if (tx >= 34 && tx <= 39 && (ty === 16 || ty === 17)) return true;
 
-    // 4. 퇴식구 & 잔반 처리대 (카운터: tx: 2..5, ty: 19 / 수거통: tx: 2..4, ty: 20)
-    if (tx >= 2 && tx <= 5 && ty === 19) return true;
-    if (tx >= 2 && tx <= 4 && ty === 20) return true;
+    // 조리실 내부 조리기구
+    // 대형 회전식 국솥 & 화구 레인지 (tx: 2..5, ty: 4..5)
+    if (tx >= 2 && tx <= 5 && (ty === 4 || ty === 5)) return true;
+    // 중앙 스테인리스 조리 작업대 (tx: 3..8, ty: 8..9)
+    if (tx >= 3 && tx <= 8 && (ty === 8 || ty === 9)) return true;
+    // 세척 싱크대 (tx: 2..4, ty: 12..13)
+    if (tx >= 2 && tx <= 4 && (ty === 12 || ty === 13)) return true;
 
-    // 5. 음수대 (tx: 30, ty: 12)
-    if (tx === 30 && ty === 12) return true;
+    // 2. 급식 배부대 라인 (tx: 2..10, ty: 16..17)
+    if (tx >= 2 && tx <= 10 && (ty === 16 || ty === 17)) return true;
 
-    // 6. 학생 급식 테이블 (3열 x 3행 배치, 칸막이 없음)
-    const isCol1 = (tx >= 4 && tx <= 10);
-    const isCol2 = (tx >= 13 && tx <= 19);
-    const isCol3 = (tx >= 22 && tx <= 28);
-    const isRow1 = (ty === 12 || ty === 13);
-    const isRow2 = (ty === 15 || ty === 16);
-    const isRow3 = (ty === 18 || ty === 19);
+    // 3. 급식 지도석 / 영양사 책상 (tx: 13..15, ty: 18..19)
+    if (tx >= 13 && tx <= 15 && (ty === 18 || ty === 19)) return true;
 
-    if ((isCol1 || isCol2 || isCol3) && (isRow1 || isRow2 || isRow3)) {
+    // 4. 학생 급식 테이블 (세로로 긴 식탁 3열, tx: 14..15, 20..21, 26..27, ty: 5..14, 칸막이 없음)
+    const isCol1 = (tx === 14 || tx === 15);
+    const isCol2 = (tx === 20 || tx === 21);
+    const isCol3 = (tx === 26 || tx === 27);
+    if ((isCol1 || isCol2 || isCol3) && (ty >= 5 && ty <= 14)) {
       return true;
     }
+
+    // 5. 교사 급식실 분리벽
+    // 서쪽 벽 (tx: 31, ty: 3..13) - 출입문(ty: 8..9) 개방
+    if (tx === 31 && ty >= 3 && ty <= 13) {
+      if (ty >= 8 && ty <= 9) return false;
+      return true;
+    }
+    // 남쪽 분리벽 (교사식당과 퇴식구 사이: ty: 14, tx: 31..40)
+    if (ty === 14 && tx >= 31 && tx <= 40) return true;
+
+    // 교사 급식실 식탁 (학생 식탁과 완전히 동일한 규격 - ty: 5..6 및 ty: 9..10)
+    if (tx >= 33 && tx <= 38 && (ty === 5 || ty === 6)) return true;
+    if (tx >= 33 && tx <= 38 && (ty === 9 || ty === 10)) return true;
+
+    // 6. 퇴식구 구역
+    // 서쪽 벽 (tx: 31, ty: 15..21) - 출입구(ty: 17..19) 개방
+    if (tx === 31 && ty >= 15 && ty <= 21) {
+      if (ty >= 17 && ty <= 19) return false;
+      return true;
+    }
+    // 식판 반납 롤러 컨베이어 카운터 (tx: 33..38, ty: 16)
+    if (tx >= 33 && tx <= 38 && ty === 16) return true;
+    // 잔반 및 국물 수거통 (tx: 33..38, ty: 19)
+    if (tx >= 33 && tx <= 38 && ty === 19) return true;
 
     return false;
   }
@@ -16063,66 +16078,71 @@ class GameEngine {
     const ctx = this.ctx;
     ctx.save();
 
-    // 1. 🍳 조리실 (Kitchen Zone: tx: 1..13, ty: 3..9)
+    // 1. 🍳 조리실 (Kitchen Zone: 좌측 상단 tx: 1..10, ty: 3..14)
     this.drawCafeteriaKitchenZone();
 
-    // 2. 🍱 급식 배부대 (Serving Counter Line: tx: 14..30, ty: 6..8)
+    // 2. 🍱 급식 배부대 (Serving Counter Line: 좌측 하단 tx: 2..10, ty: 16..17)
     this.drawCafeteriaServingCounter();
 
-    // 3. 🪑 학생 급식좌석 (Student Dining Tables: 칸막이 없이!)
+    // 3. 📋 급식 지도석 / 영양사 책상 (하단 중앙좌측 tx: 13..15, ty: 18..19)
+    this.drawCafeteriaNutritionistDesk();
+
+    // 4. 🪑 학생 급식좌석 (Student Dining Tables: 중앙/상단 세로 식탁 3열, 칸막이 없이!)
     this.drawCafeteriaStudentDiningTables();
 
-    // 4. 🥣 잔반버리는 곳 (Tray Return & Waste Station: tx: 2..6, ty: 18..21)
-    this.drawCafeteriaTrayReturn();
-
-    // 5. 📋 교사 급식실 (Faculty Dining: 커피머신X, 원목테이블X, 동일식탁O)
+    // 5. 📋 교사 급식실 (Faculty Dining: 우측 상단 tx: 31..40, ty: 3..13, 커피머신X, 원목X, 동일식탁O)
     this.drawCafeteriaTeacherDining();
 
-    // 6. 🚪 출입문 및 중앙 현수막
+    // 6. 🥣 퇴식구 & 잔반버리는 곳 (Tray Return: 우측 하단 tx: 31..40, ty: 15..21)
+    this.drawCafeteriaTrayReturn();
+
+    // 7. 🚪 출입문 (Entrance Door: 하단 중앙우측 tx: 23..25, ty: 22)
     this.drawCafeteriaEntranceDoor();
 
     ctx.restore();
   }
 
-  // 1. 조리실 구역 렌더링
+  // 1. 조리실 구역 렌더링 (좌측 상단 tx: 1..10, ty: 3..14)
   drawCafeteriaKitchenZone() {
     const ctx = this.ctx;
 
-    // 조리실 외벽 벽체 (tx: 1..13, ty: 9 / 문턱 tx: 8..9)
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(1 * 32, 9 * 32, 7 * 32, 10);
-    ctx.fillRect(10 * 32, 9 * 32, 4 * 32, 10);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(1 * 32, 9 * 32 + 10, 7 * 32, 4);
-    ctx.fillRect(10 * 32, 9 * 32 + 10, 4 * 32, 4);
-
-    // 조리실 동쪽 벽 (tx: 13, ty: 3..9)
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(13 * 32 + 22, 3 * 32, 10, 6 * 32);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(13 * 32 + 20, 3 * 32, 2, 6 * 32);
-
-    // 대형 환기 후드 (tx: 2..7, ty: 3)
+    // 조리실 동쪽 벽 (tx: 11, ty: 3..14 / 출입문 ty: 8..9)
     ctx.fillStyle = '#475569';
-    ctx.fillRect(2 * 32, 3 * 32, 5 * 32, 18);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(2 * 32 + 2, 3 * 32 + 2, 5 * 32 - 4, 4);
-    ctx.strokeStyle = '#334155';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(2 * 32, 3 * 32, 5 * 32, 18);
+    ctx.fillRect(11 * 32 + 20, 3 * 32, 12, 5 * 32); // ty: 3..8
+    ctx.fillRect(11 * 32 + 20, 10 * 32, 12, 5 * 32); // ty: 10..15
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(11 * 32 + 18, 3 * 32, 2, 5 * 32);
+    ctx.fillRect(11 * 32 + 18, 10 * 32, 2, 5 * 32);
 
-    // 대형 조리용 가스레인지 & 회전식 국솥 (tx: 2..6, ty: 3..4)
+    // 조리실 남쪽 벽 (ty: 15, tx: 1..11 / 배식 통로 tx: 5..6)
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(1 * 32, 15 * 32, 4 * 32, 10);
+    ctx.fillRect(7 * 32, 15 * 32, 4 * 32 + 20, 10);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(1 * 32, 15 * 32 + 10, 4 * 32, 3);
+    ctx.fillRect(7 * 32, 15 * 32 + 10, 4 * 32 + 20, 3);
+
+    // 대형 환기 후드 (tx: 2..8, ty: 3)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(2 * 32, 3 * 32, 6 * 32, 20);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(2 * 32 + 2, 3 * 32 + 2, 6 * 32 - 4, 4);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(2 * 32, 3 * 32, 6 * 32, 20);
+
+    // 대형 회전식 국솥 & 상업용 가스레인지 (tx: 2..5, ty: 4..5)
     for (let cx = 2; cx <= 5; cx++) {
       const kx = cx * 32;
-      const ky = 3.5 * 32;
-      // 가스레인지 버너대
+      const ky = 4.2 * 32;
+      // 가스레인지 버너 베이스
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(kx + 2, ky, 28, 28);
       ctx.strokeStyle = '#64748b';
       ctx.strokeRect(kx + 2, ky, 28, 28);
 
       if (cx === 2 || cx === 4) {
-        // 대형 스테인리스 국솥 (원형 솥 & 밸브)
+        // 대형 스테인리스 회전식 국솥 (원형 솥 & 회전 밸브 핸들)
         ctx.fillStyle = '#94a3b8';
         ctx.beginPath();
         ctx.arc(kx + 16, ky + 14, 11, 0, Math.PI * 2);
@@ -16136,12 +16156,12 @@ class GameEngine {
         ctx.arc(kx + 16, ky + 14, 4, 0, Math.PI * 2);
         ctx.fill();
 
-        // 솥 양쪽 손잡이
+        // 솥 회전 핸들
         ctx.fillStyle = '#334155';
-        ctx.fillRect(kx + 2, ky + 12, 3, 4);
-        ctx.fillRect(kx + 27, ky + 12, 3, 4);
+        ctx.fillRect(kx + 1, ky + 12, 3, 4);
+        ctx.fillRect(kx + 28, ky + 12, 3, 4);
       } else {
-        // 주물 삼발이 화구
+        // 고화력 삼발이 화구
         ctx.strokeStyle = '#475569';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -16154,10 +16174,10 @@ class GameEngine {
       }
     }
 
-    // 중앙 스테인리스 조리 작업대 (tx: 4..9, ty: 6..7)
-    const px = 4 * 32;
-    const py = 6.2 * 32;
-    const pw = 6 * 32;
+    // 중앙 대형 스테인리스 조리 작업대 (tx: 3..8, ty: 8..9)
+    const px = 3.2 * 32;
+    const py = 8.2 * 32;
+    const pw = 5.6 * 32;
     const ph = 1.4 * 32;
     ctx.fillStyle = '#cbd5e1';
     ctx.fillRect(px, py, pw, ph);
@@ -16165,28 +16185,28 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(px, py, pw, ph);
 
-    // 작업대 위 조리 도구 (도마, 볼)
-    ctx.fillStyle = '#d97706'; // 나무 도마
-    ctx.fillRect(px + 14, py + 8, 24, 16);
-    ctx.fillStyle = '#94a3b8'; // 스테인리스 믹싱볼
+    // 작업대 위 조리 도구 (원목 도마, 스테인리스 믹싱볼)
+    ctx.fillStyle = '#d97706'; // 원목 도마
+    ctx.fillRect(px + 14, py + 8, 26, 16);
+    ctx.fillStyle = '#94a3b8'; // 믹싱볼
     ctx.beginPath();
-    ctx.arc(px + 64, py + 18, 9, 0, Math.PI * 2);
+    ctx.arc(px + 70, py + 18, 9, 0, Math.PI * 2);
     ctx.fill();
 
-    // 2조 세척 싱크대 (tx: 11..12, ty: 3..5)
-    const sx = 11 * 32;
-    const sy = 3.5 * 32;
+    // 2조 세척 싱크대 (tx: 2..4, ty: 12..13)
+    const sx = 2 * 32;
+    const sy = 12 * 32;
     ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(sx, sy, 2 * 32, 1.8 * 32);
+    ctx.fillRect(sx, sy, 2.8 * 32, 1.8 * 32);
     ctx.fillStyle = '#475569';
-    ctx.fillRect(sx + 4, sy + 6, 26, 42);
-    ctx.fillRect(sx + 34, sy + 6, 26, 42);
+    ctx.fillRect(sx + 4, sy + 6, 36, 42);
+    ctx.fillRect(sx + 46, sy + 6, 36, 42);
     // 수전
     ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(sx + 29, sy + 2, 6, 8);
+    ctx.fillRect(sx + 41, sy + 2, 6, 8);
 
     // 조리실 명판
-    this.drawSharpLabel(8.5 * 32, 9 * 32 - 14, '🍳 조리실 (Kitchen)', {
+    this.drawSharpLabel(6 * 32, 3.5 * 32, '🍳 조리실 (Kitchen)', {
       bgColor: '#7f1d1d',
       borderColor: '#fca5a5',
       textColor: '#ffffff',
@@ -16196,13 +16216,13 @@ class GameEngine {
     });
   }
 
-  // 2. 급식 배부대 구역 렌더링
+  // 2. 급식 배부대 구역 렌더링 (좌측 하단 tx: 2..10, ty: 16..17)
   drawCafeteriaServingCounter() {
     const ctx = this.ctx;
-    const sx = 14 * 32;
-    const sy = 6.8 * 32;
-    const sw = 17 * 32;
-    const sh = 1.2 * 32;
+    const sx = 2 * 32;
+    const sy = 16 * 32;
+    const sw = 8.5 * 32;
+    const sh = 1.5 * 32;
 
     // 온장 배식대 카운터 본체 (스테인리스 스틸)
     ctx.fillStyle = '#334155';
@@ -16213,7 +16233,7 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(sx, sy, sw, sh);
 
-    // 하단 식판 슬라이드 레일 (2줄 파이프)
+    // 하단 식판 슬라이드 레일 (2줄 크롬 파이프)
     ctx.fillStyle = '#cbd5e1';
     ctx.fillRect(sx, sy + sh + 2, sw, 3);
     ctx.fillRect(sx, sy + sh + 7, sw, 3);
@@ -16227,44 +16247,42 @@ class GameEngine {
       { name: '🍎 과일', color: '#dc2626', sub: '#f87171' }
     ];
 
-    const startVx = sx + 3.2 * 32;
+    const startVx = sx + 2.2 * 32;
     foodVats.forEach((vat, idx) => {
-      const vx = startVx + idx * 2.4 * 32;
+      const vx = startVx + idx * 1.25 * 32;
       const vy = sy + 6;
-      const vw = 58;
-      const vh = 26;
+      const vw = 34;
+      const vh = 28;
 
       ctx.fillStyle = '#64748b';
       ctx.fillRect(vx - 1, vy - 1, vw + 2, vh + 2);
       ctx.fillStyle = vat.color;
       ctx.fillRect(vx, vy, vw, vh);
       ctx.fillStyle = vat.sub;
-      ctx.fillRect(vx + 4, vy + 4, vw - 8, vh - 8);
+      ctx.fillRect(vx + 3, vy + 3, vw - 6, vh - 6);
 
       ctx.fillStyle = '#1e293b';
-      ctx.font = 'bold 9.5px sans-serif';
+      ctx.font = 'bold 8.5px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(vat.name, vx + vw / 2, vy + 17);
+      ctx.fillText(vat.name, vx + vw / 2, vy + 18);
     });
 
-    // 시작 지점: 식판 스택 및 수저 보관함 (tx: 14..15, ty: 7)
-    const tx = sx + 8;
+    // 시작 지점: 식판 스택 및 수저 보관함
+    const tx = sx + 6;
     const ty = sy + 4;
-    // 식판 스택
-    for (let s = 0; s < 4; s++) {
+    for (let s = 0; s < 3; s++) {
       ctx.fillStyle = '#cbd5e1';
-      ctx.fillRect(tx + s * 2, ty + 12 - s * 3, 34, 18);
+      ctx.fillRect(tx + s * 2, ty + 10 - s * 3, 24, 18);
       ctx.strokeStyle = '#94a3b8';
       ctx.lineWidth = 1;
-      ctx.strokeRect(tx + s * 2, ty + 12 - s * 3, 34, 18);
+      ctx.strokeRect(tx + s * 2, ty + 10 - s * 3, 24, 18);
     }
     // 수저통
     ctx.fillStyle = '#475569';
-    ctx.fillRect(tx + 46, ty + 2, 22, 24);
+    ctx.fillRect(tx + 32, ty + 2, 18, 24);
     ctx.fillStyle = '#e2e8f0';
-    ctx.fillRect(tx + 49, ty + 5, 4, 18); // 숟가락
-    ctx.fillRect(tx + 56, ty + 5, 2, 18); // 젓가락
-    ctx.fillRect(tx + 60, ty + 5, 2, 18);
+    ctx.fillRect(tx + 34, ty + 5, 3, 18);
+    ctx.fillRect(tx + 40, ty + 5, 2, 18);
 
     // 투명 비말 차단 글라스 쉴드 (Sneeze Guard)
     ctx.fillStyle = 'rgba(224, 242, 254, 0.4)';
@@ -16278,99 +16296,135 @@ class GameEngine {
       bgColor: '#0369a1',
       borderColor: '#38bdf8',
       textColor: '#ffffff',
-      fontSize: 11,
-      paddingX: 8,
-      height: 20
+      fontSize: 10.5,
+      paddingX: 7,
+      height: 19
     });
   }
 
-  // 3. 학생 급식좌석 렌더링 (칸막이 없이!)
+  // 3. 급식 지도석 / 영양사 책상 렌더링 (하단 중앙좌측 tx: 13..15, ty: 18..19)
+  drawCafeteriaNutritionistDesk() {
+    const ctx = this.ctx;
+    const dx = 13.2 * 32;
+    const dy = 18.2 * 32;
+    const dw = 2.5 * 32;
+    const dh = 1.4 * 32;
+
+    // 책상 본체
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fillRect(dx + 2, dy + 4, dw, dh);
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(dx, dy, dw, dh);
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(dx + 2, dy + 2, dw - 4, dh - 4);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(dx, dy, dw, dh);
+
+    // PC 모니터
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(dx + 8, dy + 6, 22, 16);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(dx + 10, dy + 8, 18, 12);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(dx + 17, dy + 22, 4, 6); // 받침대
+    ctx.fillRect(dx + 13, dy + 27, 12, 2);
+
+    // 급식 점검 일지 & 식단표 클립보드
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(dx + 42, dy + 7, 20, 24);
+    ctx.fillStyle = '#fef3c7';
+    ctx.fillRect(dx + 44, dy + 9, 16, 20);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(dx + 46, dy + 12, 12, 2);
+    ctx.fillRect(dx + 46, dy + 16, 12, 2);
+    ctx.fillRect(dx + 46, dy + 20, 10, 2);
+
+    // 교직원 회전 의자
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(dx + dw / 2, dy + dh + 10, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#64748b';
+    ctx.stroke();
+
+    // 지도석 명판
+    this.drawSharpLabel(dx + dw / 2, dy - 12, '📋 급식 지도석', {
+      bgColor: '#0f766e',
+      borderColor: '#2dd4bf',
+      textColor: '#ffffff',
+      fontSize: 10,
+      paddingX: 6,
+      height: 18
+    });
+  }
+
+  // 4. 학생 급식좌석 렌더링 (세로로 긴 식탁 3열, 칸막이 없이!)
   drawCafeteriaStudentDiningTables() {
     const ctx = this.ctx;
-    const colStarts = [4, 13, 22];
-    const rowStarts = [12, 15, 18];
+    const colStarts = [14, 20, 26];
 
     colStarts.forEach((cx, colIdx) => {
-      rowStarts.forEach((ry, rowIdx) => {
-        const tx = cx * 32;
-        const ty = ry * 32 + 4;
-        const tw = 7 * 32;
-        const th = 1.35 * 32;
+      const tx = cx * 32;
+      const ty = 5.2 * 32;
+      const tw = 1.8 * 32;
+      const th = 9.2 * 32;
 
-        // 원형 의자 (상단 5개, 하단 5개)
-        for (let s = 0; s < 5; s++) {
-          const sx = tx + 18 + s * 40;
-          // 상단 의자
-          ctx.fillStyle = '#475569';
-          ctx.beginPath();
-          ctx.arc(sx, ty - 6, 8, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = '#94a3b8';
-          ctx.lineWidth = 1;
-          ctx.stroke();
+      // 세로 식탁 양옆 부착형 원형 의자 (좌우 각 6개 = 12인석)
+      for (let s = 0; s < 6; s++) {
+        const sy = ty + 18 + s * 45;
 
-          // 하단 의자
-          ctx.fillStyle = '#475569';
-          ctx.beginPath();
-          ctx.arc(sx, ty + th + 6, 8, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = '#94a3b8';
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-
-        // 스테인리스 식탁 본체 (칸막이 없는 깨끗한 평면!)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-        ctx.fillRect(tx + 2, ty + 4, tw, th);
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(tx, ty, tw, th);
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(tx + 2, ty + 2, tw - 4, th - 4);
+        // 좌측 부착형 원형 의자
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(tx - 12, sy - 2, 12, 4); // 연결 파이프
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.arc(tx - 12, sy, 7.5, 0, Math.PI * 2);
+        ctx.fill();
         ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(tx, ty, tw, th);
+        ctx.lineWidth = 1;
+        ctx.stroke();
 
-        // 일부 좌석에 사실적인 식판과 우유팩 장식
-        if ((colIdx + rowIdx) % 2 === 0) {
-          const trayX = tx + 24;
-          const trayY = ty + 6;
-          ctx.fillStyle = '#cbd5e1';
-          ctx.fillRect(trayX, trayY, 26, 16);
-          ctx.strokeStyle = '#64748b';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(trayX, trayY, 26, 16);
-          // 우유팩
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillRect(trayX + 32, trayY + 4, 8, 10);
-        }
-      });
+        // 우측 부착형 원형 의자
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(tx + tw, sy - 2, 12, 4); // 연결 파이프
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.arc(tx + tw + 12, sy, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // 세로로 긴 스테인리스 식탁 본체 (칸막이 없는 깨끗한 평면!)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.fillRect(tx + 2, ty + 4, tw, th);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(tx, ty, tw, th);
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(tx + 2, ty + 2, tw - 4, th - 4);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(tx, ty, tw, th);
+
+      // 식탁 위 사실적인 식판과 우유팩 장식
+      for (let s = 0; s < 6; s += 2) {
+        const trayY = ty + 14 + s * 45;
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(tx + 8, trayY, 32, 18);
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tx + 8, trayY, 32, 18);
+
+        // 우유팩
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(tx + 12, trayY + 22, 8, 10);
+      }
     });
 
-    // 🚰 급식실 대용량 정수기 (tx: 30, ty: 12)
-    const wx = 30 * 32;
-    const wy = 12 * 32;
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(wx + 2, wy + 2, 28, 48);
-    ctx.fillStyle = '#e2e8f0';
-    ctx.fillRect(wx + 4, wy + 4, 24, 24);
-    ctx.fillStyle = '#0284c7'; // 냉수 코크
-    ctx.fillRect(wx + 8, wy + 18, 4, 6);
-    ctx.fillStyle = '#dc2626'; // 온수 코크
-    ctx.fillRect(wx + 20, wy + 18, 4, 6);
-    ctx.fillStyle = '#64748b'; // 컵 받침대
-    ctx.fillRect(wx + 4, wy + 32, 24, 16);
-
-    this.drawSharpLabel(wx + 16, wy - 10, '🚰 정수기', {
-      bgColor: '#0f172a',
-      borderColor: '#38bdf8',
-      textColor: '#ffffff',
-      fontSize: 9.5,
-      paddingX: 5,
-      height: 17
-    });
-
-    // 학생 식당 안내 명판
-    this.drawSharpLabel(16.5 * 32, 11 * 32 - 12, '🍽️ 학생 급식좌석 (Dining Hall)', {
+    // 학생 식당 안내 명판 (중앙 상단)
+    this.drawSharpLabel(21 * 32, 4.2 * 32, '🍽️ 학생 급식좌석 (Dining Hall)', {
       bgColor: '#1e3a8a',
       borderColor: '#60a5fa',
       textColor: '#ffffff',
@@ -16380,96 +16434,28 @@ class GameEngine {
     });
   }
 
-  // 4. 퇴식구 & 잔반버리는 곳 렌더링
-  drawCafeteriaTrayReturn() {
-    const ctx = this.ctx;
-    const rx = 2 * 32;
-    const ry = 19 * 32;
-
-    // 안전 경고 구역 빗금 바닥 (노랑/검정)
-    ctx.fillStyle = '#eab308';
-    ctx.fillRect(rx - 4, ry - 4, 4 * 32 + 8, 2.5 * 32 + 8);
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(rx - 4, ry - 4, 4 * 32 + 8, 2.5 * 32 + 8);
-
-    // 퇴식 롤러 컨베이어 선반 (tx: 2..5, ty: 19)
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(rx, ry, 3.8 * 32, 22);
-    ctx.fillStyle = '#94a3b8';
-    for (let lx = 6; lx < 3.8 * 32 - 6; lx += 10) {
-      ctx.fillRect(rx + lx, ry + 2, 4, 18);
-    }
-
-    // 잔반 수거통 (초록 음식물통, 파랑 국물 버리는 통)
-    // 1. 잔반 수거통 (Green)
-    const gbx = rx + 6;
-    const gby = ry + 28;
-    ctx.fillStyle = '#166534';
-    ctx.fillRect(gbx, gby, 26, 32);
-    ctx.fillStyle = '#22c55e';
-    ctx.fillRect(gbx + 2, gby + 2, 22, 6); // 뚜껑
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 8.5px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('잔반', gbx + 13, gby + 22);
-
-    // 2. 국물 분리통 (Blue)
-    const bbx = rx + 38;
-    const bby = ry + 28;
-    ctx.fillStyle = '#1e40af';
-    ctx.fillRect(bbx, bby, 26, 32);
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(bbx + 2, bby + 2, 22, 6); // 뚜껑
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 8.5px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('국물', bbx + 13, bby + 22);
-
-    // 3. 수저 침적통 (Gray)
-    const sbx = rx + 72;
-    const sby = ry + 32;
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(sbx, sby, 28, 28);
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(sbx + 2, sby + 2, 24, 4);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 8.5px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('수저', sbx + 14, sby + 18);
-
-    // 퇴식구 명판
-    this.drawSharpLabel(rx + 2 * 32, ry - 14, '🥣 퇴식구 & 잔반 버리는 곳', {
-      bgColor: '#713f12',
-      borderColor: '#facc15',
-      textColor: '#ffffff',
-      fontSize: 10,
-      paddingX: 7,
-      height: 19
-    });
-  }
-
   // 5. 교사 급식실 렌더링 (커피머신 제거, 원목테이블 대신 학생과 똑같은 식탁 적용!)
   drawCafeteriaTeacherDining() {
     const ctx = this.ctx;
 
-    // 분리벽 (tx: 32, ty: 3..21) - 출입문(ty: 11..13) 개방
+    // 서쪽 분리벽 (tx: 31, ty: 3..13 / 출입문 ty: 8..9)
     ctx.fillStyle = '#475569';
-    ctx.fillRect(32 * 32 + 10, 3 * 32, 12, 8 * 32);
-    ctx.fillRect(32 * 32 + 10, 14 * 32, 12, 8 * 32);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(32 * 32 + 8, 3 * 32, 2, 8 * 32);
-    ctx.fillRect(32 * 32 + 8, 14 * 32, 2, 8 * 32);
+    ctx.fillRect(31 * 32 + 20, 3 * 32, 12, 5 * 32); // ty: 3..8
+    ctx.fillRect(31 * 32 + 20, 10 * 32, 12, 4 * 32); // ty: 10..14
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(31 * 32 + 18, 3 * 32, 2, 5 * 32);
+    ctx.fillRect(31 * 32 + 18, 10 * 32, 2, 4 * 32);
 
-    // 출입문 문틀 (ty: 11..13)
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(32 * 32 + 6, 11 * 32, 20, 4);
-    ctx.fillRect(32 * 32 + 6, 14 * 32 - 4, 20, 4);
+    // 남쪽 분리벽 (교사식당과 퇴식구 사이: ty: 14, tx: 31..40)
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(31 * 32 + 20, 14 * 32, 9 * 32 + 12, 10);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(31 * 32 + 20, 14 * 32 + 10, 9 * 32 + 12, 2);
 
     // 교사 식탁 2개 (원목 대신 학생 식탁과 완전히 동일한 규격의 스테인리스 식탁!)
-    const teacherRows = [6.5, 16];
-    teacherRows.forEach((tyRow, idx) => {
-      const tx = 34.5 * 32;
+    const teacherRows = [5.4, 9.8];
+    teacherRows.forEach((tyRow) => {
+      const tx = 33.5 * 32;
       const ty = tyRow * 32;
       const tw = 5.5 * 32;
       const th = 1.35 * 32;
@@ -16496,7 +16482,7 @@ class GameEngine {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.fillRect(tx + 2, ty + 4, tw, th);
       ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(tx, ty, tw, tw > 0 ? th : 0);
+      ctx.fillRect(tx, ty, tw, th);
       ctx.fillStyle = '#f8fafc';
       ctx.fillRect(tx + 2, ty + 2, tw - 4, th - 4);
       ctx.strokeStyle = '#94a3b8';
@@ -16504,8 +16490,8 @@ class GameEngine {
       ctx.strokeRect(tx, ty, tw, th);
     });
 
-    // 교사 급식실 명판 (출입구 위)
-    this.drawSharpLabel(32 * 32 + 16, 11 * 32 - 14, '📋 교사 급식실', {
+    // 교사 급식실 명판
+    this.drawSharpLabel(36.2 * 32, 3.8 * 32, '📋 교사 급식실', {
       bgColor: '#1e3a8a',
       borderColor: '#fbbf24',
       textColor: '#fef08a',
@@ -16515,10 +16501,84 @@ class GameEngine {
     });
   }
 
-  // 6. 출입구 및 안내 배너
+  // 6. 퇴식구 & 잔반버리는 곳 렌더링 (우측 하단 tx: 31..40, ty: 15..21)
+  drawCafeteriaTrayReturn() {
+    const ctx = this.ctx;
+    const rx = 33 * 32;
+    const ry = 16 * 32;
+
+    // 서쪽 분리벽 (tx: 31, ty: 15..21 / 출입구 ty: 17..19)
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(31 * 32 + 20, 14 * 32 + 10, 12, 3 * 32 - 10); // ty: 14..17
+    ctx.fillRect(31 * 32 + 20, 20 * 32, 12, 2 * 32); // ty: 20..22
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(31 * 32 + 18, 14 * 32 + 10, 2, 3 * 32 - 10);
+    ctx.fillRect(31 * 32 + 18, 20 * 32, 2, 2 * 32);
+
+    // 안전 경고 구역 빗금 테두리 (노랑/검정)
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(rx - 6, ry - 6, 6.5 * 32, 4.5 * 32);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(rx - 2, ry - 2, 6.5 * 32 - 8, 4.5 * 32 - 8);
+
+    // 퇴식 롤러 컨베이어 선반 (tx: 33..38, ty: 16)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(rx, ry, 5.8 * 32, 24);
+    ctx.fillStyle = '#94a3b8';
+    for (let lx = 6; lx < 5.8 * 32 - 6; lx += 12) {
+      ctx.fillRect(rx + lx, ry + 3, 5, 18);
+    }
+
+    // 잔반 수거통 (초록 음식물통, 파랑 국물 버리는 통, 회색 수저 침적통)
+    const by = ry + 42;
+    // 1. 잔반 수거통 (Green)
+    const gbx = rx + 10;
+    ctx.fillStyle = '#166534';
+    ctx.fillRect(gbx, by, 38, 44);
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(gbx + 2, by + 2, 34, 8); // 뚜껑
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('잔반', gbx + 19, by + 30);
+
+    // 2. 국물 분리통 (Blue)
+    const bbx = rx + 62;
+    ctx.fillStyle = '#1e40af';
+    ctx.fillRect(bbx, by, 38, 44);
+    ctx.fillStyle = '#3b82f6';
+    ctx.fillRect(bbx + 2, by + 2, 34, 8); // 뚜껑
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('국물', bbx + 19, by + 30);
+
+    // 3. 수저 침적통 (Gray)
+    const sbx = rx + 114;
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(sbx, by + 6, 42, 38);
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(sbx + 2, by + 8, 38, 6);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('수저', sbx + 21, by + 28);
+
+    // 퇴식구 명판
+    this.drawSharpLabel(rx + 2.8 * 32, ry - 14, '🥣 퇴식구 & 잔반 버리는 곳', {
+      bgColor: '#713f12',
+      borderColor: '#facc15',
+      textColor: '#ffffff',
+      fontSize: 10,
+      paddingX: 7,
+      height: 19
+    });
+  }
+
+  // 7. 출입문 및 안내 배너 (하단 중앙우측 tx: 23..25, ty: 22)
   drawCafeteriaEntranceDoor() {
     const ctx = this.ctx;
-    const dx = 21 * 32;
+    const dx = 24 * 32;
     const dy = 22 * 32;
 
     // 출입구 유리문 바닥 프레임

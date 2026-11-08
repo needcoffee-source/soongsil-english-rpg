@@ -1749,6 +1749,14 @@ class MainApp {
       const msg = `🍱 [급식 배부대]\n\n"위생적인 스테인리스 온장 배식대에서 김이 모락모락 피어오릅니다.\n따끈따끈한 쌀밥과 얼큰한 국, 노릇노릇하게 갓 튀겨진 돈까스와 신선한 샐러드가 식욕을 돋웁니다."`;
       if (window.RPGDialog) window.RPGDialog.show('🍱 급식 배부대', msg, '🍱');
       else alert(msg);
+    } else if (target.type === 'cafeteria_teacher_desk') {
+      const msg = `📋 [급식 지도석 & 영양사실 책상]\n\n"학생들의 질서 있는 배식과 식사 지도를 위한 교직원 및 영양사 선생님의 안내 책상입니다.\n오늘의 식단표와 위생 점검 일지, 알레르기 유발 물질 안내문이 정갈하게 놓여 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('📋 급식 지도석', msg, '📋');
+      else alert(msg);
+    } else if (target.type === 'cafeteria_student_table') {
+      const msg = `🍽️ [학생 식당 좌석]\n\n"칸막이 없이 넓고 쾌적하게 정돈된 세로형 대형 식탁입니다.\n친구들과 둘러앉아 따뜻하고 즐거운 점심 식사를 나눌 수 있도록 깨끗하게 소독되어 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('🍽️ 학생 식당 좌석', msg, '🍽️');
+      else alert(msg);
     } else if (target.type === 'cafeteria_tray_return') {
       const msg = `🥣 [퇴식구 & 잔반 버리는 곳]\n\n"식사를 마친 식판과 수저를 분리하여 반납하는 퇴식구입니다.\n잔반 수거통과 수저 분리함이 청결하게 정돈되어 있습니다."`;
       if (window.RPGDialog) window.RPGDialog.show('🥣 퇴식구 & 잔반 버리는 곳', msg, '🥣');
@@ -2230,10 +2238,10 @@ class MainApp {
     if (this.engine) {
       if (typeof this.engine.triggerFadeWarp === 'function') {
         this.engine.triggerFadeWarp(() => {
-          this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 21 * 32, 20 * 32);
+          this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 24 * 32, 20 * 32);
         });
       } else {
-        this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 21 * 32, 20 * 32);
+        this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 24 * 32, 20 * 32);
       }
     }
   }

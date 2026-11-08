@@ -274,16 +274,23 @@ assert(!window.RPGDialog.lastMsg.includes('대규모 급식 콘텐츠가 곧 오
 
 // Verify warp into cafeteria room
 assert.strictEqual(engine.player.room, 'room_cafeteria', 'Opening cafeteria door should warp to room_cafeteria');
-assert.strictEqual(engine.player.x, 21 * 32, 'X coord in cafeteria should be 21 * 32');
+assert.strictEqual(engine.player.x, 24 * 32, 'X coord in cafeteria should be 24 * 32');
 assert.strictEqual(engine.player.y, 20 * 32, 'Y coord in cafeteria should be 20 * 32');
 assert.strictEqual(engine.getMapWidth(), 42, 'Cafeteria width should be 42');
 assert.strictEqual(engine.getMapHeight(), 24, 'Cafeteria height should be 24');
 
 // Verify collision in cafeteria
-assert.strictEqual(engine.checkCafeteriaCollision(5, 12), true, 'Student dining table should block');
-assert.strictEqual(engine.checkCafeteriaCollision(11, 12), false, 'Aisle between columns should be passable');
-assert.strictEqual(engine.checkCafeteriaCollision(32, 12), false, 'Doorway to teacher dining should be passable');
-assert.strictEqual(engine.checkCafeteriaCollision(32, 8), true, 'Wall to teacher dining should block');
+assert.strictEqual(engine.checkCafeteriaCollision(14, 8), true, 'Student vertical table column 1 should block');
+assert.strictEqual(engine.checkCafeteriaCollision(18, 8), false, 'Aisle between table column 1 & 2 should be passable');
+assert.strictEqual(engine.checkCafeteriaCollision(20, 8), true, 'Student vertical table column 2 should block');
+assert.strictEqual(engine.checkCafeteriaCollision(26, 8), true, 'Student vertical table column 3 should block');
+assert.strictEqual(engine.checkCafeteriaCollision(31, 9), false, 'Doorway to teacher dining should be passable');
+assert.strictEqual(engine.checkCafeteriaCollision(31, 5), true, 'West wall of teacher dining should block');
+assert.strictEqual(engine.checkCafeteriaCollision(35, 14), true, 'Divider wall between teacher dining and tray return should block');
+assert.strictEqual(engine.checkCafeteriaCollision(14, 18), true, 'Nutritionist guidance desk should block');
+assert.strictEqual(engine.checkCafeteriaCollision(6, 16), true, 'Serving counter should block');
+assert.strictEqual(engine.checkCafeteriaCollision(11, 5), true, 'Kitchen east wall should block');
+assert.strictEqual(engine.checkCafeteriaCollision(11, 8), false, 'Kitchen east doorway should be passable');
 
 // Verify exit door in cafeteria
 engine.exitClassroom();
