@@ -5627,11 +5627,24 @@ class MainApp {
       }
     }
 
+    let useWeaknessScroll = false;
+    if (isLeatherGolemRaid) {
+      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
+      if (hasWeaknessScroll) {
+        // 소지한 채 1:1 레이드 시작 시 사용 확인 팝업
+        const confirmUse = confirm(
+          "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘의 체력을 50% 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 체력 50% 반감 ➔ HP 1,000)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 유지)"
+        );
+        if (confirmUse) {
+          useWeaknessScroll = true;
+        }
+      }
+    }
+
     if (isSoloRaid) {
       if (isLeatherGolemRaid) {
-        const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
         const baseHp = (bossData && bossData.maxHp) || 2000;
-        const finalHp = hasWeaknessScroll ? Math.round(baseHp * 0.5) : baseHp;
+        const finalHp = useWeaknessScroll ? Math.round(baseHp * 0.5) : baseHp;
 
         window.BOSS_CONFIG = {
           ...window.BOSS_CONFIG,
@@ -5645,7 +5658,7 @@ class MainApp {
           def: (bossData && bossData.def) || 14,
           rewardGold: 100,
           rewardExp: 200,
-          isWeakened: hasWeaknessScroll,
+          isWeakened: useWeaknessScroll,
           expiresAt: Date.now() + 180 * 1000
         };
       } else if (isDragonRaid) {
@@ -5667,11 +5680,12 @@ class MainApp {
         };
       }
     } else if (isLeatherGolemRaid) {
-      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
-      if (hasWeaknessScroll && window.BOSS_CONFIG.mode === 'solo') {
+      if (useWeaknessScroll && window.BOSS_CONFIG.mode === 'solo') {
         window.BOSS_CONFIG.maxHp = Math.round((window.BOSS_CONFIG.maxHp || 2000) * 0.5);
         window.BOSS_CONFIG.currentHp = window.BOSS_CONFIG.maxHp;
         window.BOSS_CONFIG.isWeakened = true;
+      } else {
+        window.BOSS_CONFIG.isWeakened = false;
       }
     }
 
@@ -5686,8 +5700,21 @@ class MainApp {
     document.getElementById('boss-raid-title').innerText = `${window.BOSS_CONFIG.name} [${modeTag}]`;
     document.getElementById('boss-name-label').innerText = window.BOSS_CONFIG.name;
 
+    // 전투창 상단 비책 발동 점등 알림
+    const weaknessBanner = document.getElementById('raid-weakness-alert-banner');
+    if (weaknessBanner) {
+      if (window.BOSS_CONFIG.isWeakened) {
+        weaknessBanner.style.display = 'block';
+        weaknessBanner.classList.remove('hidden');
+        weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)';
+      } else {
+        weaknessBanner.style.display = 'none';
+        weaknessBanner.classList.add('hidden');
+      }
+    }
+
     if (window.BOSS_CONFIG.isWeakened) {
-      document.getElementById('raid-battle-log').innerHTML = `<span style="color:#22c55e; font-weight:bold;">✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP ${this.bossState.maxHp.toLocaleString()})</span><br>⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+      document.getElementById('raid-battle-log').innerHTML = `<span style="color:#22c55e; font-weight:bold;">✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)</span><br>⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
     } else {
       document.getElementById('raid-battle-log').innerHTML = `⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
     }
@@ -6063,7 +6090,19 @@ class MainApp {
     this.recalcCombatStats();
     const bossPct = Math.max(0, Math.min(100, Math.floor((this.bossState.currentHp / this.bossState.maxHp) * 100)));
     const bossHpText = document.getElementById('boss-hp-text');
-    if (bossHpText) bossHpText.innerText = `HP ${this.bossState.currentHp} / ${this.bossState.maxHp}`;
+    if (bossHpText) bossHpText.innerText = `HP ${this.bossState.currentHp.toLocaleString()} / ${this.bossState.maxHp.toLocaleString()}`;
+
+    const weaknessBanner = document.getElementById('raid-weakness-alert-banner');
+    if (weaknessBanner) {
+      if (window.BOSS_CONFIG && window.BOSS_CONFIG.isWeakened) {
+        weaknessBanner.style.display = 'block';
+        weaknessBanner.classList.remove('hidden');
+        weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)';
+      } else {
+        weaknessBanner.style.display = 'none';
+        weaknessBanner.classList.add('hidden');
+      }
+    }
     const bossHpFill = document.getElementById('boss-hp-fill');
     if (bossHpFill) bossHpFill.style.width = `${bossPct}%`;
 

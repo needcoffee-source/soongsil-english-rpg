@@ -7,7 +7,7 @@ const vm = require('vm');
 const assert = require('assert');
 
 console.log('======================================================================');
-console.log('🧪 TESTING FLOOR 3: 12-TILE CORRIDOR & 20x20 INDEPENDENT ROOMS (v=232)');
+console.log('🧪 TESTING FLOOR 3: 12-TILE CORRIDOR & 20x20 INDEPENDENT ROOMS (v=233)');
 console.log('======================================================================\n');
 
 let passedTests = 0;
@@ -269,10 +269,10 @@ test('10. index.html contains 3F elevator, teleport, and GM warp entries', () =>
   assert(indexHtml.includes('value="3_room_wee"'), 'GM warp 3_room_wee option must exist');
 });
 
-test('11. All scripts in index.html are bumped to v=232', () => {
-  const v231Matches = (indexHtml.match(/v=232/g) || []).length;
+test('11. All scripts in index.html are bumped to v=233', () => {
+  const v231Matches = (indexHtml.match(/v=233/g) || []).length;
   const v230Matches = (indexHtml.match(/v=230/g) || []).length;
-  assert(v231Matches >= 8, `Expected at least 8 v=232 tags, got ${v231Matches}`);
+  assert(v231Matches >= 8, `Expected at least 8 v=233 tags, got ${v231Matches}`);
   assert.strictEqual(v230Matches, 0, `Expected 0 stale v=230 tags, got ${v230Matches}`);
 });
 

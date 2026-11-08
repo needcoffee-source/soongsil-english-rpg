@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=232">
+  <link rel="manifest" href="/manifest.json?v=233">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=232">
+  <link rel="stylesheet" href="css/style.css?v=233">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -1291,6 +1291,10 @@
         <button class="btn-modal-close" id="btn-close-boss-x">✕</button>
       </div>
       <div class="modal-body">
+        <!-- Golem Weakness Scroll Alert Banner (전투창 상단 점등 알림) -->
+        <div id="raid-weakness-alert-banner" class="raid-weakness-alert-banner hidden" style="display:none; background: linear-gradient(135deg, rgba(22, 101, 52, 0.95), rgba(21, 128, 61, 0.95)); border: 2px solid #eab308; box-shadow: 0 0 16px rgba(234, 179, 8, 0.45); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-weight: 800; font-size: 13.5px; color: #fef08a; text-align: center; animation: pulseGimmick 1.5s infinite alternate;">
+          ✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)
+        </div>
         <!-- Boss HP Bar -->
         <div class="boss-status-box">
           <div class="boss-hp-header">
@@ -2321,19 +2325,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=232"></script>
-  <script src="js/dialog.js?v=232"></script>
+  <script src="js/audio.js?v=233"></script>
+  <script src="js/dialog.js?v=233"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=232"></script>
-  <script src="js/engine.js?v=232"></script>
-  <script src="js/quiz.js?v=232"></script>
-  <script src="js/crafting.js?v=232"></script>
-  <script src="js/network.js?v=232"></script>
-  <script src="js/acid_rain.js?v=232"></script>
-  <script src="js/brawl_ball.js?v=232"></script>
-  <script src="js/uphill_rush.js?v=232"></script>
-  <script src="js/main.js?v=232"></script>
+  <script src="js/world.js?v=233"></script>
+  <script src="js/engine.js?v=233"></script>
+  <script src="js/quiz.js?v=233"></script>
+  <script src="js/crafting.js?v=233"></script>
+  <script src="js/network.js?v=233"></script>
+  <script src="js/acid_rain.js?v=233"></script>
+  <script src="js/brawl_ball.js?v=233"></script>
+  <script src="js/uphill_rush.js?v=233"></script>
+  <script src="js/main.js?v=233"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

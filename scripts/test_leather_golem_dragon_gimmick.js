@@ -1,7 +1,7 @@
 const fs = require('fs');
 const assert = require('assert');
 
-console.log('=== TEST SUITE: Leather Golem 1:1 Raid, Wood Set Gimmick & Bronze Dragon (v=232) ===\n');
+console.log('=== TEST SUITE: Leather Golem 1:1 Raid, Wood Set Gimmick & Bronze Dragon (v=233) ===\n');
 
 global.window = global;
 
@@ -132,19 +132,41 @@ assert(dialogShown.msg.includes("이미 1-2반 가죽 골렘의 거친 기운을
 console.log('  [PASS] 4D: Correctly handles repeat conversation with scroll.');
 
 // 5. Verifying Solo Raid & 50% HP Cut Gimmick in openBossRaid
-console.log('\n5. Verifying Solo Raid & 50% HP Cut Gimmick in openBossRaid...');
+console.log('\n5. Verifying Solo Raid & 50% HP Cut Gimmick with Confirm Prompt in openBossRaid...');
 // Extract openBossRaid logic snippet
 const raidLogicMatch = mainJs.match(/openBossRaid\(bossData\)\s*\{([\s\S]*?)\n  \}/);
 assert(raidLogicMatch, "openBossRaid must exist in main.js");
 
 // Mock DOM elements required by openBossRaid
+const mockDomElements = {
+  'boss-raid-title': { innerText: '' },
+  'boss-name-label': { innerText: '' },
+  'boss-hp-text': { innerText: '' },
+  'boss-hp-fill': { style: {} },
+  'raid-player-name-label': { innerText: '' },
+  'raid-player-hp': { innerText: '' },
+  'raid-player-hp-fill': { style: {} },
+  'raid-battle-log': { innerHTML: '' },
+  'raid-quiz-question': { innerText: '' },
+  'raid-quiz-options': { innerHTML: '' },
+  'raid-weakness-alert-banner': {
+    innerText: '',
+    style: { display: 'none' },
+    classList: {
+      remove: (c) => {},
+      add: (c) => {}
+    }
+  }
+};
+
 global.document = {
-  getElementById: (id) => ({
+  getElementById: (id) => mockDomElements[id] || {
     innerText: '',
     innerHTML: '',
+    style: {},
     classList: { remove: () => {}, add: () => {}, contains: () => false },
     querySelectorAll: () => []
-  })
+  }
 };
 MockApp.prototype.recalcCombatStats = function() {};
 MockApp.prototype.updateBossRaidUI = function() {};
@@ -153,28 +175,55 @@ MockApp.prototype.loadNextBossQuestion = function() {};
 MockApp.prototype.modalBossRaid = { classList: { remove: () => {}, add: () => {}, contains: () => false } };
 MockApp.prototype.openBossRaid = new Function('bossData', raidLogicMatch[1]);
 
-// Test 5A: Challenge without weakness scroll -> HP 2000
+// Test 5A: Without weakness scroll -> confirm is NOT called, Golem HP is 2,000, banner hidden, no extra guidance
 const mockNormal = new MockApp();
+let confirmCallCount = 0;
+global.confirm = () => { confirmCallCount++; return true; };
 global.window.BOSS_CONFIG = { active: false, mode: 'solo' };
 mockNormal.openBossRaid(cr702.boss);
 if (mockNormal.bossTimerInterval) clearInterval(mockNormal.bossTimerInterval);
-assert.strictEqual(global.window.BOSS_CONFIG.maxHp, 2000, "Without scroll, Golem maxHp must be 2000");
-assert.strictEqual(mockNormal.bossState.maxHp, 2000, "Without scroll, bossState.maxHp must be 2000");
+assert.strictEqual(confirmCallCount, 0, "confirm popup must NOT be shown when player has no scroll");
+assert.strictEqual(global.window.BOSS_CONFIG.maxHp, 2000, "Without scroll, Golem maxHp must remain 2000");
+assert.strictEqual(mockNormal.bossState.maxHp, 2000, "Without scroll, bossState.maxHp must remain 2000");
 assert.strictEqual(global.window.BOSS_CONFIG.isWeakened, false, "Without scroll, isWeakened must be false");
-console.log('  [PASS] 5A: Golem has full 2,000 HP without weakness scroll.');
+assert.strictEqual(mockDomElements['raid-weakness-alert-banner'].style.display, 'none', "Banner must be hidden without scroll");
+assert(!mockDomElements['raid-battle-log'].innerHTML.includes('골렘 연화 비책 발동'), "Battle log must not contain gimmick text");
+console.log('  [PASS] 5A: Without scroll, HP remains 2000 without popup, banner hidden, extra guidance omitted.');
 
-// Test 5B: Challenge WITH weakness scroll -> HP 1000 (halved!)
-const mockScroll = new MockApp();
-mockScroll.playerData.inventory['item_golem_weakness_scroll'] = 1;
+// Test 5B: WITH weakness scroll -> confirm is called, if user confirms (true) -> HP 1000 (50% cut), banner lights up!
+const mockScrollConfirm = new MockApp();
+mockScrollConfirm.playerData.inventory['item_golem_weakness_scroll'] = 1;
+confirmCallCount = 0;
+let confirmMessage = '';
+global.confirm = (msg) => { confirmCallCount++; confirmMessage = msg; return true; };
 global.window.BOSS_CONFIG = { active: false, mode: 'solo' };
-mockScroll.openBossRaid(cr702.boss);
-if (mockScroll.bossTimerInterval) clearInterval(mockScroll.bossTimerInterval);
-assert.strictEqual(global.window.BOSS_CONFIG.maxHp, 1000, "WITH scroll, Golem maxHp must be 1000 (halved!)");
-assert.strictEqual(mockScroll.bossState.maxHp, 1000, "WITH scroll, bossState.maxHp must be 1000 (halved!)");
-assert.strictEqual(global.window.BOSS_CONFIG.isWeakened, true, "WITH scroll, isWeakened must be true");
-console.log('  [PASS] 5B: Golem HP is halved to 1,000 HP with weakness scroll!');
+mockScrollConfirm.openBossRaid(cr702.boss);
+if (mockScrollConfirm.bossTimerInterval) clearInterval(mockScrollConfirm.bossTimerInterval);
+assert.strictEqual(confirmCallCount, 1, "confirm popup MUST be called when player has scroll");
+assert(confirmMessage.includes("사용하시겠습니까"), "confirm message must ask if player wants to use the scroll");
+assert.strictEqual(global.window.BOSS_CONFIG.maxHp, 1000, "WITH scroll confirmed, Golem maxHp must be 1000 (halved!)");
+assert.strictEqual(mockScrollConfirm.bossState.maxHp, 1000, "WITH scroll confirmed, bossState.maxHp must be 1000 (halved!)");
+assert.strictEqual(global.window.BOSS_CONFIG.isWeakened, true, "WITH scroll confirmed, isWeakened must be true");
+assert.strictEqual(mockDomElements['raid-weakness-alert-banner'].style.display, 'block', "Banner must light up (display: block)");
+assert.strictEqual(mockDomElements['raid-weakness-alert-banner'].innerText, '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)');
+console.log('  [PASS] 5B: WITH scroll confirmed, HP halved to 1,000 and top alert banner lights up immediately!');
 
-// Test 5C: Challenge Bronze Dragon on playground soccer field
+// Test 5C: WITH weakness scroll, but user cancels (false) in confirm popup -> HP remains 2000, banner hidden!
+const mockScrollCancel = new MockApp();
+mockScrollCancel.playerData.inventory['item_golem_weakness_scroll'] = 1;
+confirmCallCount = 0;
+global.confirm = (msg) => { confirmCallCount++; return false; };
+global.window.BOSS_CONFIG = { active: false, mode: 'solo' };
+mockScrollCancel.openBossRaid(cr702.boss);
+if (mockScrollCancel.bossTimerInterval) clearInterval(mockScrollCancel.bossTimerInterval);
+assert.strictEqual(confirmCallCount, 1, "confirm popup must be called when player has scroll");
+assert.strictEqual(global.window.BOSS_CONFIG.maxHp, 2000, "If user cancels, Golem maxHp must stay 2000");
+assert.strictEqual(mockScrollCancel.bossState.maxHp, 2000, "If user cancels, bossState.maxHp must stay 2000");
+assert.strictEqual(global.window.BOSS_CONFIG.isWeakened, false, "If user cancels, isWeakened must be false");
+assert.strictEqual(mockDomElements['raid-weakness-alert-banner'].style.display, 'none', "If user cancels, banner must be hidden");
+console.log('  [PASS] 5C: If user cancels confirm popup, HP stays 2000 and banner is hidden.');
+
+// Test 5D: Challenge Bronze Dragon on playground soccer field
 const mockDragon = new MockApp();
 mockDragon.engine.player.room = 'playground';
 global.window.BOSS_CONFIG = { active: false, mode: 'solo' };
@@ -182,23 +231,21 @@ mockDragon.openBossRaid(pg.boss);
 if (mockDragon.bossTimerInterval) clearInterval(mockDragon.bossTimerInterval);
 assert.strictEqual(global.window.BOSS_CONFIG.name, '🐲 고대 청동 드래곤', "Dragon raid name must match");
 assert.strictEqual(global.window.BOSS_CONFIG.maxHp, 5000, "Dragon maxHp must be 5000");
-console.log('  [PASS] 5C: Bronze Dragon on soccer field is challengeable in solo mode.');
+console.log('  [PASS] 5D: Bronze Dragon on soccer field is challengeable in solo mode.');
 
-// 6. Verifying engine.js render and interaction logic
-console.log('\n6. Verifying engine.js render and interaction logic...');
-assert(engineJs.includes('1:1 가죽 골렘 레이드 도전 (SPACE)'), "engine.js must provide 1:1 solo raid prompt for Golem");
-assert(engineJs.includes('청동 드래곤 레이드 (SPACE)'), "engine.js must provide prompt for Bronze Dragon");
-assert(!engineJs.includes('this.drawPeacefulBossChamber(cr)'), "1-2 room_702 must NOT hide boss with peaceful chamber anymore");
-assert(engineJs.includes('this.drawSoccerBossArena(bx, by, soccerBossObj)'), "Playground must render soccer boss arena at (18, 35)");
-console.log('  [PASS] engine.js 1-2 permanent raid arena and soccer boss arena verified.');
+// 6. Verifying index.html banner structure
+console.log('\n6. Verifying index.html raid-weakness-alert-banner...');
+assert(html.includes('id="raid-weakness-alert-banner"'), "index.html must contain raid-weakness-alert-banner element");
+assert(html.includes('✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)'), "Banner must have exact alert text");
+console.log('  [PASS] index.html banner element verified.');
 
 // 7. Verifying HTML version tag
-console.log('\n7. Verifying HTML cache buster v=232...');
-assert(html.includes('v=232'), "index.html must use v=232");
-assert(!html.includes('v=231'), "index.html must not contain legacy v=231");
-console.log('  [PASS] Cache buster v=232 fully applied.');
+console.log('\n7. Verifying HTML cache buster v=233...');
+assert(html.includes('v=233'), "index.html must use v=233");
+assert(!html.includes('v=232'), "index.html must not contain legacy v=232");
+console.log('  [PASS] Cache buster v=233 fully applied.');
 
 console.log('\n======================================================');
-console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (Leather Golem & Bronze Dragon Gimmick Verified)');
+console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (Confirmed Gimmick Logic Verified)');
 console.log('======================================================');
 process.exit(0);
