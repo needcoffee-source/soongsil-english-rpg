@@ -574,8 +574,8 @@ class GameEngine {
       }
 
       if (this.player.room === 'room_cafeteria') {
-        // Exit Door area (tx: 20..22, ty >= 21) is ALWAYS passable
-        if (tileX >= 20 && tileX <= 22 && tileY >= 21) {
+        // Exit Door area (tx: 23..25, ty >= 21) is ALWAYS passable
+        if (tileX >= 23 && tileX <= 25 && tileY >= 21) {
           return false;
         }
         if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
@@ -1694,7 +1694,9 @@ class GameEngine {
       // Exit Door Proximity
       const exitDist = Math.hypot(cr.exitDoor.x * 32 - this.player.x, cr.exitDoor.y * 32 - this.player.y);
       if (exitDist < 48 && exitDist < minDist) {
-        closest = { type: 'exit', name: '복도 출구', prompt: '복도로 나가기 (SPACE)' };
+        const exitPrompt = (this.player.room === 'room_cafeteria') ? '운동장으로 나가기 (SPACE)' : '복도로 나가기 (SPACE)';
+        const exitName = (this.player.room === 'room_cafeteria') ? '운동장 출구' : '복도 출구';
+        closest = { type: 'exit', name: exitName, prompt: exitPrompt };
         minDist = exitDist;
       }
     }
@@ -6201,7 +6203,8 @@ class GameEngine {
       this.ctx.lineWidth = 1.5;
       this.ctx.strokeRect(ex - 42, ey + 4, 116, 24);
 
-      this.drawSharpLabel(ex + 16, ey + 16, '🚪 ▼ 복도로 나가기 (EXIT)', {
+      const exitText = (this.player.room === 'room_cafeteria') ? '🚪 ▼ 운동장으로 나가기 (EXIT)' : '🚪 ▼ 복도로 나가기 (EXIT)';
+      this.drawSharpLabel(ex + 16, ey + 16, exitText, {
         bgColor: '#7f1d1d',
         borderColor: '#fef08a',
         textColor: '#ffffff',
@@ -16467,10 +16470,12 @@ class GameEngine {
   // 3. 급식 지도석 / 영양사 책상 렌더링 (하단 중앙좌측 tx: 13..15, ty: 18..19)
   drawCafeteriaNutritionistDesk() {
     const ctx = this.ctx;
-    const dx = 13.2 * 32;
-    const dy = 18.2 * 32;
-    const dw = 2.5 * 32;
-    const dh = 1.4 * 32;
+    // 중심축을 선생님 스프라이트 중심(px + 16 = 14 * 32 + 16 = 464)에 정확히 일치
+    const centerX = 464;
+    const dw = 80; // 2.5 타일 너비
+    const dh = 40; // 1.25 타일 높이
+    const dx = centerX - dw / 2; // 424
+    const dy = 18.0 * 32; // 576 ~ 616
 
     // 책상 본체
     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
@@ -16483,35 +16488,41 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.strokeRect(dx, dy, dw, dh);
 
-    // PC 모니터
+    // PC 모니터 (좌측)
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(dx + 8, dy + 6, 22, 16);
+    ctx.fillRect(dx + 8, dy + 5, 22, 16);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(dx + 10, dy + 8, 18, 12);
+    ctx.fillRect(dx + 10, dy + 7, 18, 12);
     ctx.fillStyle = '#64748b';
-    ctx.fillRect(dx + 17, dy + 22, 4, 6); // 받침대
-    ctx.fillRect(dx + 13, dy + 27, 12, 2);
+    ctx.fillRect(dx + 17, dy + 21, 4, 6); // 받침대
+    ctx.fillRect(dx + 13, dy + 26, 12, 2);
 
-    // 급식 점검 일지 & 식단표 클립보드
+    // 급식 점검 일지 & 식단표 클립보드 (우측)
     ctx.fillStyle = '#78350f';
-    ctx.fillRect(dx + 42, dy + 7, 20, 24);
+    ctx.fillRect(dx + 48, dy + 6, 20, 24);
     ctx.fillStyle = '#fef3c7';
-    ctx.fillRect(dx + 44, dy + 9, 16, 20);
+    ctx.fillRect(dx + 50, dy + 8, 16, 20);
     ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(dx + 46, dy + 12, 12, 2);
-    ctx.fillRect(dx + 46, dy + 16, 12, 2);
-    ctx.fillRect(dx + 46, dy + 20, 10, 2);
+    ctx.fillRect(dx + 52, dy + 11, 12, 2);
+    ctx.fillRect(dx + 52, dy + 15, 12, 2);
+    ctx.fillRect(dx + 52, dy + 19, 10, 2);
 
-    // 교직원 회전 의자
-    ctx.fillStyle = '#1e293b';
+    // 교직원 회전 의자 (선생님 y: 19.3 의 몸통 중심 464, 638에 완벽 밀착)
+    const chairY = 19.3 * 32 + 20; // 637.6
+    ctx.fillStyle = '#334155'; // 5발 휠 베이스
     ctx.beginPath();
-    ctx.arc(dx + dw / 2, dy + dh + 10, 9, 0, Math.PI * 2);
+    ctx.arc(centerX, chairY, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1e293b'; // 회전 시트 쿠션
+    ctx.beginPath();
+    ctx.arc(centerX, chairY, 9, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
-    // 지도석 명판
-    this.drawSharpLabel(dx + dw / 2, dy - 12, '📋 급식 지도석', {
+    // 지도석 명판 (책상 상단 여백)
+    this.drawSharpLabel(centerX, dy - 12, '📋 급식 지도석', {
       bgColor: '#0f766e',
       borderColor: '#2dd4bf',
       textColor: '#ffffff',
@@ -16737,7 +16748,7 @@ class GameEngine {
     });
   }
 
-  // 7. 출입문 및 안내 배너 (하단 중앙우측 tx: 23..25, ty: 22)
+  // 7. 출입문 바닥 프레임 (하단 중앙우측 tx: 23..25, ty: 22)
   drawCafeteriaEntranceDoor() {
     const ctx = this.ctx;
     const dx = 24 * 32;
@@ -16749,15 +16760,6 @@ class GameEngine {
     ctx.fillStyle = '#38bdf8';
     ctx.fillRect(dx - 28, dy + 2, 1.4 * 32, 10);
     ctx.fillRect(dx + 4, dy + 2, 1.4 * 32, 10);
-
-    this.drawSharpLabel(dx + 16, dy - 8, '🚪 운동장 출구 (SPACE)', {
-      bgColor: '#065f46',
-      borderColor: '#34d399',
-      textColor: '#ffffff',
-      fontSize: 10,
-      paddingX: 7,
-      height: 19
-    });
   }
 }
 

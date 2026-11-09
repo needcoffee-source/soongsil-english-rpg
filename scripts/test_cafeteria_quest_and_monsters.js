@@ -93,14 +93,14 @@ const noisyStudent = cafData.npcs.find(n => n.id === 'npc_noisy_student');
 
 assert(teacherNpc, '급식지도 선생님 NPC must exist');
 assert.strictEqual(teacherNpc.x, 14);
-assert.strictEqual(teacherNpc.y, 18);
+assert.strictEqual(teacherNpc.y, 19.3);
 assert(demandingStudent, '반찬 더 달라는 학생 NPC must exist');
 assert.strictEqual(demandingStudent.x, 6);
 assert.strictEqual(demandingStudent.y, 18);
 assert(noisyStudent, '식탁에서 떠드는 학생 NPC must exist');
-assert.strictEqual(noisyStudent.x, 20);
-assert.strictEqual(noisyStudent.y, 11);
-console.log('✔ [1/6] Cafeteria NPCs verified: 급식지도 선생님, 반찬 더 달라는 학생, 식탁에서 떠드는 학생');
+assert.strictEqual(noisyStudent.x, 28);
+assert.strictEqual(noisyStudent.y, 6);
+console.log('✔ [1/6] Cafeteria NPCs verified: 급식지도 선생님 (의자 위치 14, 19.3), 반찬 더 달라는 학생, 식탁에서 떠드는 학생 (구석 위치 28, 6)');
 
 // Check 5 Cafeteria Monsters in world.js
 assert(cafData.cafeteriaMonsters, 'cafeteriaMonsters array must exist');
@@ -115,6 +115,9 @@ assert(kitchenMob, 'Kitchen monster must exist');
 assert.strictEqual(kitchenMob.name, '눌어붙은 누룽지 슬라임');
 assert.strictEqual(kitchenMob.x, 6);
 assert.strictEqual(kitchenMob.y, 7);
+assert.strictEqual(kitchenMob.maxHp, 220, 'Kitchen mob maxHp should be 220 for Level 12+ zone');
+assert.strictEqual(kitchenMob.atk, 26, 'Kitchen mob atk should be 26');
+assert.strictEqual(kitchenMob.def, 10, 'Kitchen mob def should be 10');
 
 assert.strictEqual(tableMobs.length, 2, 'Must have 2 identical student seating monsters');
 assert.strictEqual(tableMobs[0].name, '바닥에 흘린 밥풀 골렘');
@@ -280,8 +283,8 @@ assert.strictEqual(app.playerData.quests['quest_cafeteria_manners'].status, 'don
 const postEssence = (app.playerData.inventory.find(i => i.item === 'item_nutrition_essence') || {}).count || 0;
 const postStainless = (app.playerData.inventory.find(i => i.item === 'item_stainless_shard') || {}).count || 0;
 
-assert(postEssence > preEssence, 'Teacher should grant 정제된 영양의 정수 on quest completion');
-assert(postStainless > preStainless, 'Teacher should grant 특수 강화 스텐 조각 on quest completion');
+assert.strictEqual(postEssence - preEssence, 2, 'Teacher should grant exactly 2 정제된 영양의 정수 on quest completion');
+assert.strictEqual(postStainless - preStainless, 1, 'Teacher should grant exactly 1 특수 강화 스텐 조각 on quest completion');
 
 console.log('✔ [6/6] Sequential 2-stage Cafeteria Quest chain verified end-to-end with Tier 5 rewards!');
 

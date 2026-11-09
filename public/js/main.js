@@ -1278,8 +1278,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 
 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어질 수 있거든요.
 
-중앙 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!`,
-    inProgressStory: `중앙 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!
+우측 구석 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!`,
+    inProgressStory: `우측 구석 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!
 어서 가서 1:1 영어 퀴즈 대결로 조용히 식사하도록 지도해 주세요!`,
     completeStory: `와! 정말 대단해요, 학생! 🎉
 
@@ -1295,10 +1295,10 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       }
     ],
     rewards: [
-      { type: 'gold', amount: 300, label: '🪙 300 G (골드)' },
-      { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 3, icon: '🍱', label: '🍱 정제된 영양의 정수 x3' },
-      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 2, icon: '✨', label: '✨ 특수 강화 스텐 조각 x2' }
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 2, icon: '🍱', label: '🍱 정제된 영양의 정수 x2' },
+      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨', label: '✨ 특수 강화 스텐 조각 x1' }
     ]
   }
 };
@@ -2410,7 +2410,7 @@ class MainApp {
         window.AudioManager.playFanfare();
       }
 
-      const completeMsg = "오! 학생 덕분에 배식대 앞이 다시 질서정연해졌어요! 👏\n규칙을 지키며 사이좋게 식판을 들고 가는 모습을 보니 정말 안심이네요.\n\n수고비로 [🪙 150 G]와 [🌟 200 EXP]를 지급합니다!\n\n그런데... 이번엔 식당 좌석 쪽이 문제예요!\n\n학생 식당 좌석에서 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어지거든요.\n\n중앙 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 지도해 줄 수 있나요?";
+      const completeMsg = "오! 학생 덕분에 배식대 앞이 다시 질서정연해졌어요! 👏\n규칙을 지키며 사이좋게 식판을 들고 가는 모습을 보니 정말 안심이네요.\n\n수고비로 [🪙 150 G]와 [🌟 200 EXP]를 지급합니다!\n\n그런데... 이번엔 식당 좌석 쪽이 문제예요!\n\n학생 식당 좌석에서 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어지거든요.\n\n우측 구석 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 지도해 줄 수 있나요?";
 
       if (window.RPGDialog) {
         window.RPGDialog.confirm(
@@ -2434,7 +2434,7 @@ class MainApp {
 
     // Case 4: Quest 2 미시작 (Quest 1만 완료된 상태)
     if (!q2) {
-      const offerMsg = "배식대는 정돈되었는데 이번엔 식당 좌석 쪽이 문제예요!\n\n학생 식당 좌석에서 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어지거든요.\n\n중앙 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!";
+      const offerMsg = "배식대는 정돈되었는데 이번엔 식당 좌석 쪽이 문제예요!\n\n학생 식당 좌석에서 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어지거든요.\n\n우측 구석 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!";
       if (window.RPGDialog) {
         window.RPGDialog.confirm(
           '🍱 급식지도 선생님',
@@ -2457,7 +2457,7 @@ class MainApp {
 
     // Case 5: Quest 2 진행 중 (학생 진정 전)
     if (q2.status === 'in_progress' && !q2.targetCalmed) {
-      const msg = '"중앙 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!\n\n어서 가서 1:1 영어 퀴즈 대결로 조용히 식사하도록 지도해 주세요!"';
+      const msg = '"우측 구석 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!\n\n어서 가서 1:1 영어 퀴즈 대결로 조용히 식사하도록 지도해 주세요!"';
       if (window.RPGDialog) window.RPGDialog.show('🍱 급식지도 선생님', msg, '👨‍🏫');
       else alert(msg);
       return;
@@ -2466,13 +2466,13 @@ class MainApp {
     // Case 6: Quest 2 목표 달성 -> 최종 완료 및 5티어 재료 보상 지급!
     if (q2.status === 'in_progress' && q2.targetCalmed) {
       q2.status = 'done';
-      this.addGold(300);
-      this.addExp(350);
-      this.addItem('item_nutrition_essence', '정제된 영양의 정수', 3, '🍱', {
+      this.addGold(100);
+      this.addExp(200);
+      this.addItem('item_nutrition_essence', '정제된 영양의 정수', 2, '🍱', {
         type: 'material',
         effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료'
       });
-      this.addItem('item_stainless_shard', '특수 강화 스텐 조각', 2, '✨', {
+      this.addItem('item_stainless_shard', '특수 강화 스텐 조각', 1, '✨', {
         type: 'material',
         effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료'
       });
@@ -2480,7 +2480,7 @@ class MainApp {
         window.AudioManager.playFanfare();
       }
 
-      const finalMsg = "와! 정말 대단해요, 학생! 🎉\n\n학생들이 자리에 조용히 앉아 친구들과 배려하며 맛있게 식사하고 있어요!\n우리 숭실 급식실의 평화와 질서를 되찾아 준 훌륭한 학생에게, 영양교사가 특별히 준비한 최고급 5티어 제작 재료와 보상을 선물할게요!\n\n🎁 [보상 지급 완료]\n• 🪙 300 골드 & 🌟 350 경험치\n• 🍱 정제된 영양의 정수 x3개\n• ✨ 특수 강화 스텐 조각 x2개\n\n앞으로도 급식실에서 맛있게 식사하고, 바닥에 나타난 잔반 몬스터들도 틈틈이 정화해 주세요!";
+      const finalMsg = "와! 정말 대단해요, 학생! 🎉\n\n학생들이 자리에 조용히 앉아 친구들과 배려하며 맛있게 식사하고 있어요!\n우리 숭실 급식실의 평화와 질서를 되찾아 준 훌륭한 학생에게, 영양교사가 특별히 준비한 최고급 5티어 제작 재료와 보상을 선물할게요!\n\n🎁 [보상 지급 완료]\n• 🪙 100 골드 & 🌟 200 경험치\n• 🍱 정제된 영양의 정수 x2개\n• ✨ 특수 강화 스텐 조각 x1개\n\n앞으로도 급식실에서 맛있게 식사하고, 바닥에 나타난 잔반 몬스터들도 틈틈이 정화해 주세요!";
       if (window.RPGDialog) window.RPGDialog.show('🎉 급식실 퀘스트 최종 완료!', finalMsg, '🏆');
       else alert(finalMsg);
       this.showToast('🏆 [급식실 퀘스트 완료] 급식실 질서 확립 완료! 5티어 재료 보상 획득!', 'success');
