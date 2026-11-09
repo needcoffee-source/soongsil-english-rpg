@@ -375,6 +375,9 @@ class GameEngine {
       if (this.player.floor === 2) {
         return WORLD_DATA.LIBRARY_WIDTH || 20;
       }
+      if (this.player.floor === 3) {
+        return WORLD_DATA.HALLWAY_FLOOR_3_WIDTH || 30;
+      }
 
       return WORLD_DATA.HALLWAY_WIDTH || 60;
     }
@@ -522,7 +525,7 @@ class GameEngine {
       if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || (tileX >= 14 && tileX <= 18))) {
         return true;
       }
-      if (this.player.floor === 3 && tileY === 6 && tileX === 48) {
+      if (this.player.floor === 3 && tileY === 6 && tileX === 21) {
         return true;
       }
     } else {
@@ -946,7 +949,7 @@ class GameEngine {
           this.player.y = 5 * 32;
           this.player.roomName = WORLD_DATA.floors[2] ? WORLD_DATA.floors[2].name : '2층 도서관 (독립 전용층)';
         } else if (this.player.floor === 3) {
-          this.player.x = 56 * 32;
+          this.player.x = 25 * 32;
           this.player.y = 6 * 32;
           this.player.roomName = WORLD_DATA.floors[3] ? WORLD_DATA.floors[3].name : '3층 복도 (보건실 & Wee클래스)';
         } else {
@@ -971,7 +974,7 @@ class GameEngine {
         this.player.room = 'room_career';
         this.player.x = 30 * 32;
         this.player.y = 13 * 32;
-        this.player.roomName = '🌟 진로실 (Career Center)';
+        this.player.roomName = '🌟 진로상담실';
       } else if (room === 'room_staff_office') {
         this.player.floor = 6;
         this.player.room = 'room_staff_office';
@@ -5894,7 +5897,7 @@ class GameEngine {
     }
 
     // 2. Sunny Windows along Top Wall (between classroom doors & across expanded corridor)
-    const windowCols = [3, 6, 14, 16, 24, 27, 33, 36, 42, 45, 50, 52];
+    const windowCols = [3, 4, 6, 12, 14, 16, 24, 27, 33, 36, 42, 45, 50, 52];
     windowCols.forEach(col => {
       // Don't draw window if there is a classroom door or elevator at this position
       const hasDoor = fData && fData.rooms && fData.rooms.some(r => Math.abs(r.doorX - col) <= 2);
@@ -8957,7 +8960,7 @@ class GameEngine {
     });
 
     // 3. Central Library Crest & Official Motto Plaque (cx: 10 * 32, cy: 26)
-    this.drawSharpLabel(10 * 32, 26, '📖 숭실 도서관 (Soongsil Library) — 지혜와 진리의 샘', {
+    this.drawSharpLabel(10 * 32, 26, '📖 숭실 도서관 — 지혜와 진리의 샘', {
       bgColor: '#0f172a',
       borderColor: '#38bdf8',
       textColor: '#bae6fd',

@@ -15,6 +15,7 @@ const WORLD_DATA = {
   SECRET_HISTORY_HEIGHT: 20,
   LIBRARY_WIDTH: 20, // 2층 도서관 (독립 전용층, 7층 복도의 1/3인 20 x 20 타일)
   LIBRARY_HEIGHT: 20,
+  HALLWAY_FLOOR_3_WIDTH: 30, // 3층 복도 가로폭 절반 축소 (30 x 20 타일)
   HEALTH_WEE_WIDTH: 20, // 3층 보건실 & Wee클래스 독립공간 (도서관 규격과 동일한 20 x 20 타일)
   HEALTH_WEE_HEIGHT: 20,
   STAFF_OFFICE_WIDTH: 106, // 교실 3.5개 사이즈 대형 본관 교무실 (106 x 26 타일)
@@ -60,16 +61,16 @@ const WORLD_DATA = {
       ]
     },
 
-    // 3층: 보건실 & Wee클래스 (가로형 복도, 독립 힐링 구역)
+    // 3층: 보건실 & Wee클래스 (가로형 복도, 기존 60타일의 절반인 30타일로 최적화)
     3: {
       name: "3층 복도 (보건실 & Wee클래스)",
       rooms: [
-        { id: "room_health", name: "🏥 보건실", doorX: 18, doorY: 5, targetX: 10, targetY: 15, locked: false },
-        { id: "room_wee", name: "🕊️ Wee클래스", doorX: 36, doorY: 5, targetX: 10, targetY: 15, locked: false }
+        { id: "room_health", name: "🏥 보건실", doorX: 8, doorY: 5, targetX: 10, targetY: 15, locked: false },
+        { id: "room_wee", name: "🕊️ Wee클래스", doorX: 16, doorY: 5, targetX: 10, targetY: 15, locked: false }
       ],
-      elevator: { x: 56, y: 3 },
+      elevator: { x: 25, y: 3 },
       interactive: [
-        { id: "water_purifier_hallway_3", type: "water_purifier", x: 48, y: 6, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+        { id: "water_purifier_hallway_3", type: "water_purifier", x: 21, y: 6, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
       npcs: []
     },

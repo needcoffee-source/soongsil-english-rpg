@@ -159,7 +159,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '정제된 영양의 정수',
     icon: '🍱',
     category: 'material',
-    tierBadge: '5티어 재료',
+    tierBadge: '야외 전리품',
     tierColor: '#059669',
     effect: '급식실 음식물 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료',
     source: '학생 급식실 바닥 음식물 몬스터 처치 시 획득',
@@ -170,7 +170,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '특수 강화 스텐 조각',
     icon: '✨',
     category: 'material',
-    tierBadge: '5티어 재료',
+    tierBadge: '야외 전리품',
     tierColor: '#0284c7',
     effect: '급식실 특수 위생 스테인리스 합금 파편 · 5티어 최고급 장비 제작 핵심 재료',
     source: '학생 급식실 바닥 음식물 몬스터 처치 시 40% 행운 드랍',
@@ -656,6 +656,84 @@ const ITEM_SELL_PRICES = {
   'equip_vintage_armband': 0, // 2004년 유물 장신구 (매각 불가)
     'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
 };
+
+// =========================================================================
+// 🏪 매점 완제품 구매 목록 (골드 소모처 - 편의성 즉시 구매)
+// =========================================================================
+const STORE_BUY_ITEMS = [
+  {
+    id: 'item_red_potion',
+    name: '빨간 물약',
+    icon: '🧪',
+    price: 30,
+    desc: '사용 시 체력(HP) +10 즉시 회복',
+    badge: '회복 물약',
+    badgeColor: '#e11d48',
+    meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' }
+  },
+  {
+    id: 'item_orange_potion',
+    name: '주홍 물약',
+    icon: '🧪',
+    price: 75,
+    desc: '사용 시 체력(HP) +25 대폭 회복',
+    badge: '고급 회복',
+    badgeColor: '#ea580c',
+    meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' }
+  },
+  {
+    id: 'item_green_potion',
+    name: '초록 물약',
+    icon: '🧪',
+    price: 75,
+    desc: '사용 시 1분간 질주(대시) 이동속도 +10% 증가',
+    badge: '신속 비약',
+    badgeColor: '#16a34a',
+    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' }
+  },
+  {
+    id: 'item_courage_potion',
+    name: '용기의 물약',
+    icon: '🧪',
+    price: 75,
+    desc: '사용 시 3분간 공격력(ATK) +5 증가',
+    badge: '공격 비약',
+    badgeColor: '#9333ea',
+    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' }
+  },
+  {
+    id: 'item_revive_scroll',
+    name: '부활 주문서',
+    icon: '📜',
+    price: 100,
+    desc: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
+    badge: '성스러운 비전',
+    badgeColor: '#7c3aed',
+    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' }
+  },
+  {
+    id: 'item_return_scroll',
+    name: '귀환 주문서',
+    icon: '📜',
+    price: 100,
+    desc: '사용 시 모든 장소에서 안전한 7층 복도로 즉시 공간 이동',
+    badge: '귀환 비전',
+    badgeColor: '#0284c7',
+    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' }
+  },
+  {
+    id: 'item_teleport_scroll',
+    name: '순간이동 주문서',
+    icon: '📜',
+    price: 300,
+    desc: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
+    badge: '차원 도약',
+    badgeColor: '#c084fc',
+    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' }
+  }
+];
+window.STORE_BUY_ITEMS = STORE_BUY_ITEMS;
+
 
 // 호칭 교환소 4대 명예 호칭 정의 (목재 30개 -> 벌목왕, 허브 30개 -> 치유사, 골드 50 -> 숭실 부자, 백점만점 시험지 -> 시험의 제왕)
 // =========================================================================
@@ -4106,7 +4184,7 @@ class MainApp {
       if (window.AudioManager) window.AudioManager.playSelect();
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 3;
-        this.engine.warpToRoom('hallway', '3층 복도 (보건실 & Wee클래스)', 56 * 32, 6 * 32);
+        this.engine.warpToRoom('hallway', '3층 복도 (보건실 & Wee클래스)', 25 * 32, 6 * 32);
         this.saveProgress();
       });
     } else if (target === 'floor_2') {
@@ -7705,7 +7783,7 @@ class MainApp {
       targetName = '🏥 3층 복도';
       this.engine.triggerFadeWarp(() => {
         this.engine.player.floor = 3;
-        this.engine.warpToRoom('hallway', '3층 복도 (보건실 & Wee클래스)', 56 * 32, 6 * 32);
+        this.engine.warpToRoom('hallway', '3층 복도 (보건실 & Wee클래스)', 25 * 32, 6 * 32);
       });
     } else if (target === 'floor_2') {
       targetName = '📚 2층 도서관';
@@ -9877,19 +9955,58 @@ class MainApp {
   }
 
   // =========================================================================
+
   // 🏪 매점 (CANTEEN STORE) - 아이템 및 장비 매각 시스템
   // =========================================================================
   openStoreModal() {
     const modal = document.getElementById('modal-store');
     if (!modal) return;
 
+    this.storeMode = this.storeMode || 'buy';
     this.currentStoreTab = this.currentStoreTab || 'all';
+
+    const btnBuy = document.getElementById('btn-store-mode-buy');
+    const btnSell = document.getElementById('btn-store-mode-sell');
+    const tabContainer = document.getElementById('store-tab-container');
+    const tipText = document.getElementById('store-mode-tip');
+
+    const updateModeUI = () => {
+      if (this.storeMode === 'buy') {
+        if (btnBuy) btnBuy.classList.add('active');
+        if (btnSell) btnSell.classList.remove('active');
+        if (tabContainer) tabContainer.style.display = 'none';
+        if (tipText) tipText.innerText = '💡 골드로 즉시 완제품 소비품을 구매합니다. (고급 편의성 골드 소모처)';
+      } else {
+        if (btnBuy) btnBuy.classList.remove('active');
+        if (btnSell) btnSell.classList.add('active');
+        if (tabContainer) tabContainer.style.display = 'flex';
+        if (tipText) tipText.innerText = '💡 착용 중인 장비 및 소비품(물약/주문서)은 매각할 수 없습니다.';
+      }
+    };
+
+    updateModeUI();
     this.renderStoreModal();
     modal.classList.remove('hidden');
 
     if (!this._storeTabsInitialized) {
       this._storeTabsInitialized = true;
-      const tabContainer = document.getElementById('store-tab-container');
+
+      if (btnBuy) {
+        btnBuy.addEventListener('click', () => {
+          this.storeMode = 'buy';
+          updateModeUI();
+          this.renderStoreModal();
+        });
+      }
+
+      if (btnSell) {
+        btnSell.addEventListener('click', () => {
+          this.storeMode = 'sell';
+          updateModeUI();
+          this.renderStoreModal();
+        });
+      }
+
       if (tabContainer) {
         tabContainer.querySelectorAll('.inv-tab-btn').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -9904,6 +10021,37 @@ class MainApp {
       if (btnCloseX) btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
       const btnClose = document.getElementById('btn-close-store');
       if (btnClose) btnClose.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+  }
+
+  buyStoreItem(itemDef, quantity = 1) {
+    const totalCost = itemDef.price * quantity;
+    const currentGold = this.playerData.gold || 0;
+
+    if (currentGold < totalCost) {
+      this.showToast(`골드가 부족합니다! (필요: ${totalCost} G / 보유: ${currentGold} G)`, 'warning');
+      return;
+    }
+
+    this.playerData.gold -= totalCost;
+    const catalogItem = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[itemDef.id]) || {};
+    const meta = { ...(catalogItem.meta || {}), ...(itemDef.meta || {}) };
+
+    this.addItem(itemDef.id, itemDef.name, quantity, itemDef.icon, meta);
+
+    if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
+    const goldDisplay = document.getElementById('store-gold-display');
+    if (goldDisplay) goldDisplay.innerText = `${this.playerData.gold} G`;
+    const invGoldDisplay = document.getElementById('inv-gold-display');
+    if (invGoldDisplay) invGoldDisplay.innerText = `${this.playerData.gold} G`;
+
+    this.showToast(`🛍️ [매점 구매 완료] ${itemDef.name} x${quantity}개 획득! (-${totalCost} G)`, 'success');
+    this.saveProgress();
+    this.renderStoreModal();
+
+    const modalInv = document.getElementById('modal-inventory');
+    if (modalInv && !modalInv.classList.contains('hidden')) {
+      this.openInventory();
     }
   }
 
@@ -9927,6 +10075,77 @@ class MainApp {
     if (!listContainer) return;
     listContainer.innerHTML = '';
 
+    // =========================================================
+    // 1. 매점 구매 모드 (BUY)
+    // =========================================================
+    if (this.storeMode === 'buy') {
+      const currentGold = this.playerData.gold || 0;
+      const inv = this.playerData.inventory || [];
+
+      STORE_BUY_ITEMS.forEach(item => {
+        const ownedItem = inv.find(i => i.item === item.id);
+        const ownedCount = ownedItem ? ownedItem.count : 0;
+        const canBuy1 = currentGold >= item.price;
+        const canBuy5 = currentGold >= (item.price * 5);
+
+        const card = document.createElement('div');
+        card.style.cssText = `
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #1e293b;
+          border: 1.5px solid #334155;
+          border-radius: 8px;
+          padding: 10px 14px;
+          transition: border-color 0.15s;
+        `;
+
+        card.innerHTML = `
+          <div style="display:flex; align-items:center; gap: 12px;">
+            <div style="font-size: 28px; line-height: 1;">${item.icon}</div>
+            <div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-weight: 800; font-size: 14px; color: #f8fafc;">${item.name}</span>
+                <span style="font-size:10.5px; font-weight:700; background:${item.badgeColor}; color:#fff; padding:2px 6px; border-radius:4px;">${item.badge}</span>
+                <span style="font-size: 11.5px; color: #94a3b8; font-weight: 600;">(보유: <b style="color:#38bdf8;">${ownedCount}</b>개)</span>
+              </div>
+              <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">${item.desc}</div>
+              <div style="font-size: 12px; color: #fbbf24; font-weight: 700; margin-top: 3px;">
+                개당 구매가: <b>${item.price} G</b>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap: 6px;">
+            <button class="btn-buy-1 btn-primary" ${!canBuy1 ? 'disabled style="padding: 6px 11px; font-size: 11.5px; font-weight: 700; background: #334155; border-color: #475569; color: #64748b; cursor: not-allowed;"' : 'style="padding: 6px 11px; font-size: 11.5px; font-weight: 800; background: #059669; border-color: #10b981; color: #fff; cursor: pointer;"'}>
+              1개 구매 (${item.price}G)
+            </button>
+            <button class="btn-buy-5 btn-secondary" ${!canBuy5 ? 'disabled style="padding: 6px 11px; font-size: 11.5px; font-weight: 700; background: #1e293b; border-color: #334155; color: #475569; cursor: not-allowed;"' : 'style="padding: 6px 11px; font-size: 11.5px; font-weight: 800; border-color: #f59e0b; color: #fbbf24; cursor: pointer;"'}>
+              5개 구매 (${item.price * 5}G)
+            </button>
+          </div>
+        `;
+
+        const btn1 = card.querySelector('.btn-buy-1');
+        if (btn1 && canBuy1) {
+          btn1.addEventListener('click', () => {
+            this.buyStoreItem(item, 1);
+          });
+        }
+        const btn5 = card.querySelector('.btn-buy-5');
+        if (btn5 && canBuy5) {
+          btn5.addEventListener('click', () => {
+            this.buyStoreItem(item, 5);
+          });
+        }
+
+        listContainer.appendChild(card);
+      });
+      return;
+    }
+
+    // =========================================================
+    // 2. 매점 매각 모드 (SELL)
+    // =========================================================
     const inv = this.playerData.inventory || [];
     const equippedItemIds = new Set(
       Object.values(this.playerData.equipment || {})

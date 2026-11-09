@@ -190,7 +190,7 @@ assert.strictEqual(engine.player.y, 35 * 32, 'Soccer y coordinate must be 35 * 3
 app.executeTeleport('floor_3');
 assert.strictEqual(engine.player.room, 'hallway', 'Floor 3 teleport must warp to room hallway');
 assert.strictEqual(engine.player.floor, 3, 'Floor 3 teleport must set floor to 3');
-assert.strictEqual(engine.player.x, 56 * 32, 'Floor 3 x coordinate must be 56 * 32 (elevator)');
+assert.strictEqual(engine.player.x, 25 * 32, 'Floor 3 x coordinate must be 25 * 32 (elevator in 30-tile hallway)');
 assert.strictEqual(engine.player.y, 6 * 32, 'Floor 3 y coordinate must be 6 * 32');
 assert(engine.player.roomName.includes('보건실 & Wee클래스'), 'Floor 3 roomName must include 보건실 & Wee클래스');
 
