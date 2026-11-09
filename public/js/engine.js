@@ -13401,6 +13401,7 @@ class GameEngine {
     const isSangdaeDesk = (label === '30');
     const isKyungsukDesk = (label === '23');
     const isHunihuniDesk = (label === '27');
+    const isOyesookDesk = (label === '28');
     const isVicePrincipalDesk = (label === '14');
     const isHangangwooDesk = (label === '29');
     const isJoshuaDesk = (label === '3');
@@ -13430,6 +13431,9 @@ class GameEngine {
         this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left', '#1e1b4b', '#fbbf24');
       } else if (isKyungsukDesk) {
         this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left', '#064e3b', '#34d399');
+      } else if (isOyesookDesk) {
+        // 오예슉 가정선생님: 우아한 로즈우드 원목 의자 (#881337) & 따뜻한 코랄 로즈 패브릭 (#fb7185)
+        this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left', '#881337', '#fb7185');
       } else {
         this.drawStaffOfficeChair(px + w + 10, py + h / 2, 'left');
       }
@@ -13801,6 +13805,86 @@ class GameEngine {
           ctx.fillRect(px + w - 17, py + 32, 4, 12);
           ctx.fillStyle = '#94a3b8';
           ctx.fillRect(px + w - 19, py + 30, 8, 4);
+        } else if (isOyesookDesk) {
+          // [28번 1학년 3반 오예슉 가정선생님 전용 데스크 소품]
+          // 1. 모니터 (좌측 파티션) - 따뜻한 피치 화면 & 영양 식단표 차트
+          ctx.fillRect(px + 4, py + h / 2 - 12, 8, 24);
+          ctx.fillStyle = '#fff1f2';
+          ctx.fillRect(px + 12, py + h / 2 - 10, 2, 20);
+          // 영양 그래프 (초록 비타민, 노랑 탄수화물, 빨강 단백질 영양소 바)
+          ctx.fillStyle = '#22c55e'; ctx.fillRect(px + 12, py + h / 2 - 8, 2, 4);
+          ctx.fillStyle = '#eab308'; ctx.fillRect(px + 12, py + h / 2 - 2, 2, 5);
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(px + 12, py + h / 2 + 5, 2, 4);
+
+          // 2. 🧵 알록달록 실패 꽂이 & 토마토 바늘꽂이 (중앙 상단)
+          // 실패 받침대
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(px + 20, py + 8, 18, 4);
+          // 3색 실패 (빨강, 노랑, 민트)
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(px + 21, py + 12, 4, 7);
+          ctx.fillStyle = '#facc15'; ctx.fillRect(px + 27, py + 12, 4, 7);
+          ctx.fillStyle = '#34d399'; ctx.fillRect(px + 33, py + 12, 4, 7);
+          // 🍅 앙증맞은 토마토 바늘꽂이
+          ctx.fillStyle = '#dc2626';
+          ctx.beginPath();
+          ctx.arc(px + 28, py + 24, 5, 0, Math.PI * 2);
+          ctx.fill();
+          // 초록 꼭지 & 핀
+          ctx.fillStyle = '#16a34a';
+          ctx.fillRect(px + 27, py + 19, 2, 2);
+          ctx.fillStyle = '#fef08a';
+          ctx.fillRect(px + 25, py + 22, 1.5, 1.5);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(px + 30, py + 25, 1.5, 1.5);
+
+          // 3. 🧁 체크 냅킨 위의 수제 홈베이킹 컵케이크 & 달콤한 김 (중앙 하단)
+          // 핑크 & 아이보리 체크 키친클로스
+          ctx.fillStyle = '#ffe4e6';
+          ctx.fillRect(px + 18, py + 36, 18, 16);
+          ctx.strokeStyle = '#f43f5e';
+          ctx.lineWidth = 0.6;
+          ctx.strokeRect(px + 18, py + 36, 18, 16);
+          ctx.fillStyle = '#fda4af';
+          ctx.fillRect(px + 20, py + 38, 6, 5);
+          ctx.fillRect(px + 28, py + 45, 6, 5);
+          // 미니 머핀 컵 & 딸기 크림
+          ctx.fillStyle = '#b45309';
+          ctx.fillRect(px + 23, py + 42, 8, 6);
+          ctx.fillStyle = '#fb7185';
+          ctx.beginPath();
+          ctx.arc(px + 27, py + 42, 5, Math.PI, 0);
+          ctx.fill();
+          // 꼭대기 레드 체리
+          ctx.fillStyle = '#e11d48';
+          ctx.beginPath();
+          ctx.arc(px + 27, py + 37, 2, 0, Math.PI * 2);
+          ctx.fill();
+          // 달콤한 온기
+          const steam = (Date.now() / 260) % 5;
+          ctx.fillStyle = 'rgba(251, 113, 133, 0.6)';
+          ctx.fillRect(px + 26, py + 33 - steam, 1.5, 1.5);
+
+          // 4. 📖 두꺼운 분홍색 [가정과 기술] 교재 & 레시피북 (우측 상단)
+          ctx.fillStyle = '#9f1239';
+          ctx.fillRect(px + w - 22, py + 8, 14, 16);
+          ctx.fillStyle = '#fb7185';
+          ctx.fillRect(px + w - 20, py + 10, 12, 14);
+          ctx.fillStyle = '#fef08a';
+          ctx.fillRect(px + w - 19, py + 12, 10, 2);
+          // 노란 리본 가름끈
+          ctx.fillStyle = '#facc15';
+          ctx.fillRect(px + w - 15, py + 22, 2, 5);
+
+          // 5. 🪡 아기자기한 미니 오븐장갑 & 파스텔 줄자 (우측 하단)
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath();
+          ctx.arc(px + w - 16, py + 40, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(px + w - 18, py + 43, 6, 3);
+          ctx.strokeStyle = '#eab308';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
         } else {
           ctx.fillRect(px + 6, py + h / 2 - 12, 8, 24);
           ctx.fillStyle = '#38bdf8';
@@ -13988,6 +14072,21 @@ class GameEngine {
         ctx.lineWidth = 1.5;
         ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
         ctx.fillStyle = '#fef08a';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(displayLabel, cx, cy + 0.5);
+      } else if (isOyesookDesk) {
+        // 🧵 오예슉 전용 명패 (1학년 3반 담임 / 가정)
+        ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
+        const displayLabel = '🧵 오예슉';
+        const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);
+        const th = 18;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.strokeStyle = '#f43f5e';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(cx - tw / 2, cy - th / 2, tw, th);
+        ctx.fillStyle = '#fecdd3';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);

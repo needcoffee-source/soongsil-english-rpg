@@ -2156,6 +2156,8 @@ class MainApp {
       this.handleKyungsukDeskInteraction();
     } else if (target.type === 'desk_hunihuni') {
       this.handleHunihuniDeskInteraction();
+    } else if (target.type === 'desk_oyesook') {
+      this.handleOyesookDeskInteraction();
     } else if (target.type === 'wisdom_book') {
       this.handleWisdomBookInteraction();
     } else if (target.type === 'library_reading_desk') {
@@ -10218,7 +10220,7 @@ class MainApp {
         if (btnBuy) btnBuy.classList.add('active');
         if (btnSell) btnSell.classList.remove('active');
         if (tabContainer) tabContainer.style.display = 'none';
-        if (tipText) tipText.innerText = '💡 골드로 즉시 완제품 소비품을 구매합니다.';
+        if (tipText) tipText.innerText = '';
       } else {
         if (btnBuy) btnBuy.classList.remove('active');
         if (btnSell) btnSell.classList.add('active');
@@ -11561,6 +11563,24 @@ class MainApp {
       );
     } else {
       alert('🥁 [후니후니 선생님 연구석]\n\n1학년 4반 담임 후니후니 도덕선생님의 자리입니다.\n책상 위에 드럼스틱과 도덕 교재, 메트로놈이 놓여 있습니다.');
+    }
+  }
+
+  // 🧵 6층 교무실 28번 좌석 1학년 3반 담임 오예슉 가정선생님 연구석 인터랙션
+  handleOyesookDeskInteraction() {
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+    if (window.RPGDialog) {
+      window.RPGDialog.show(
+        '🧵 오예슉 선생님 연구석',
+        '1학년 3반 담임이자 가정을 가르치시는 오예슉 선생님의 자리입니다.\n\n' +
+        '책상 위에 알록달록 고운 색상의 실타래와 토마토 바늘꽂이, 갓 구워낸 듯 향긋한 수제 컵케이크, 그리고 두꺼운 [가정과 기술] 교재가 아기자기하게 정돈되어 있습니다.\n\n' +
+        '📝 [모니터 포스트잇]\n"정성껏 지은 따뜻한 한 끼와 바른 생활 습관이 행복한 삶의 가장 단단한 밑바탕이란다! (1-3 학생들 오늘도 밥 꼭 챙겨먹기! 🍱💖)"',
+        '👩‍🏫'
+      );
+    } else {
+      alert('🧵 [오예슉 선생님 연구석]\n\n1학년 3반 담임 오예슉 가정선생님의 자리입니다.\n책상 위에 알록달록 실타래와 바늘꽂이, 맛있는 수제 디저트와 가정 교재가 아기자기하게 놓여 있습니다.');
     }
   }
 
