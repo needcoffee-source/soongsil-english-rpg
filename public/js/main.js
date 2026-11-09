@@ -216,10 +216,10 @@ window.ITEM_CODEX_DATABASE = [
     name: '용기의 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '특수 물약',
+    tierBadge: '1티어 소비품',
     tierColor: '#9333ea',
-    effect: '사용 시 3분간 공격력(ATK) +5 증가',
-    source: '소비품 제작대(C)에서 제작',
+    effect: '사용 시 1분간 공격력(ATK) +5 증가',
+    source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
   {
@@ -271,11 +271,11 @@ window.ITEM_CODEX_DATABASE = [
     name: '수호의 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '방어 버프 물약',
+    tierBadge: '1티어 소비품',
     tierColor: '#0284c7',
-    effect: '마시면 3분간 방어력(DEF) +3 증가 (Lv.10+ 전용)',
-    source: '소비품 제작대(C)에서 조제 (10레벨 이상) [매점 구매 불가]',
-    recipe: '약초 잎사귀 3개 + 단단한 목재 2개 + 30G'
+    effect: '사용 시 1분간 방어력(DEF) +3 증가',
+    source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
+    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
   {
     id: 'item_elixir',
@@ -595,12 +595,12 @@ const ALL_GAME_ITEMS = {
   'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
-  'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
+  'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
-  'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 방어력(DEF) +3 증가' } },
+  'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
   'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
@@ -726,16 +726,6 @@ const STORE_BUY_ITEMS = [
     badge: '신속 비약',
     badgeColor: '#16a34a',
     meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' }
-  },
-  {
-    id: 'item_courage_potion',
-    name: '용기의 물약',
-    icon: '🧪',
-    price: 75,
-    desc: '사용 시 3분간 공격력(ATK) +5 증가',
-    badge: '공격 비약',
-    badgeColor: '#9333ea',
-    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' }
   },
   {
     id: 'item_revive_scroll',
@@ -1283,7 +1273,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     ],
     rewards: [
       { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기 포션', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' }, label: '🧪 용기 포션 x2 (새로운 길을 나아갈 용기! 3분간 공격력 +5)' }
+      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기 포션', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' }, label: '🧪 용기 포션 x2 (새로운 길을 나아갈 용기! 1분간 공격력 +5)' }
     ]
   },
   'quest_library_missing_books': {
@@ -4144,13 +4134,13 @@ class MainApp {
 
     this.addGold(100);
     this.addExp(100);
-    this.addItem('item_courage_potion', '용기 포션', 1, '🧪', { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' });
+    this.addItem('item_courage_potion', '용기 포션', 1, '🧪', { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' });
     this.saveProgress(true);
 
     if (window.RPGDialog) {
       window.RPGDialog.show(
         '⚡ 100kW DC 초급속 충전기',
-        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (3분간 공격력 +5)`,
+        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (1분간 공격력 +5)`,
         '⚡'
       );
     } else {
@@ -6183,9 +6173,9 @@ class MainApp {
           } else if (isGreenPotion) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#4ade80;">⚡ 1분간 기본 이동속도 +10%</span>`;
           } else if (isCouragePotion) {
-            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;"><span class="icon-purple-potion">🧪</span> 3분간 공격력(ATK) +5</span>`;
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;"><span class="icon-purple-potion">🧪</span> 1분간 공격력(ATK) +5</span>`;
           } else if (isProtectionPotion) {
-            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;"><span class="icon-blue-potion">🧪</span> 3분간 방어력(DEF) +3</span>`;
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;"><span class="icon-blue-potion">🧪</span> 1분간 방어력(DEF) +3</span>`;
           } else {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
@@ -8166,7 +8156,7 @@ class MainApp {
       return false;
     }
     this.removeItem('item_courage_potion', 1);
-    this.applyBuff('courage_boost', 180000, '용기의 투지 (+5 ATK)', '🧪');
+    this.applyBuff('courage_boost', 60000, '용기의 투지 (+5 ATK)', '🧪');
     if (this.engine && typeof this.engine.addFloatingText === 'function') {
       const px = this.engine.player ? this.engine.player.x + 16 : undefined;
       const py = this.engine.player ? this.engine.player.y - 14 : undefined;
@@ -8192,7 +8182,7 @@ class MainApp {
       return false;
     }
     this.removeItem('item_protection_potion', 1);
-    this.applyBuff('protection_boost', 180000, '수호의 가호 (+3 DEF)', '🧪');
+    this.applyBuff('protection_boost', 60000, '수호의 가호 (+3 DEF)', '🧪');
     if (this.engine && typeof this.engine.addFloatingText === 'function') {
       const px = this.engine.player ? this.engine.player.x + 16 : undefined;
       const py = this.engine.player ? this.engine.player.y - 14 : undefined;

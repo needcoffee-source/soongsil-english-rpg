@@ -626,7 +626,7 @@
     "id": "recipe_courage_potion",
     "name": "용기의 물약",
     "category": "potion",
-    "description": "[소비품] 불타는 투지를 북돋워주는 비약입니다. 마시면 3분 동안 공격력(ATK)이 +5 증가합니다.",
+    "description": "[소비품] 불타는 투지를 북돋워주는 비약입니다. 마시면 1분간 공격력(ATK)이 +5 증가합니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 20,
@@ -660,7 +660,7 @@
       "type": "consumable",
       "slot": "consumable",
       "heal": 0,
-      "effect": "3분간 공격력(ATK) +5 증가"
+      "effect": "1분간 공격력(ATK) +5 증가"
     }
   },
   {
@@ -836,21 +836,20 @@
     "id": "recipe_protection_potion",
     "name": "수호의 물약 (Protection Potion)",
     "category": "potion",
-    "description": "[상위 물약] 몸 주위에 든든한 푸른빛 보호막을 감싸는 영약입니다. 마시면 3분간 방어력(DEF)이 +3 증가합니다. (Lv.10 이상 전용)",
+    "description": "[소비품] 몸 주위에 든든한 푸른빛 보호막을 감싸는 비약입니다. 마시면 1분간 방어력(DEF)이 +3 증가합니다.",
     "icon": "🧪",
-    "gradeLevel": 2,
-    "requiredLevel": 10,
-    "requiredGold": 30,
+    "gradeLevel": 1,
+    "requiredGold": 20,
     "requiredItems": [
       {
         "item": "item_herb",
-        "name": "약초 잎사귀",
-        "count": 3
+        "name": "향긋한 허브",
+        "count": 2
       },
       {
         "item": "item_wood",
         "name": "단단한 목재",
-        "count": 2
+        "count": 1
       }
     ],
     "unscramble": {
@@ -875,7 +874,7 @@
       "type": "consumable",
       "slot": "consumable",
       "heal": 0,
-      "effect": "3분간 방어력(DEF) +3 증가"
+      "effect": "1분간 방어력(DEF) +3 증가"
     }
   },
   {

@@ -658,12 +658,12 @@ const ALL_GAME_ITEMS = {
   'item_red_potion': { name: '빨간 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
-  'item_courage_potion': { name: '용기의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 공격력(ATK) +5 증가' } },
+  'item_courage_potion': { name: '용기의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도(7·6·5층) 및 운동장(농구·풋살·축구장)으로 즉시 순간이동' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)' } },
-  'item_protection_potion': { name: '수호의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 방어력(DEF) +3 증가' } },
+  'item_protection_potion': { name: '수호의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
   'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. Equipment

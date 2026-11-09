@@ -206,14 +206,21 @@ assert.strictEqual(res2, true);
 assert.strictEqual(closedModalId, 'modal-inventory (via closeBtn)');
 console.log('✅ Test 3 Passed: closeTopModal cleanly prioritized RPGDialog and closed open modal.');
 
-// 4. Test Protection Potion (Lv.10 lock, 3 min +3 DEF, no store sale)
-console.log('--- Test 4: Protection Potion Implementation ---');
+// 4. Test Courage Potion & Protection Potion (1 min duration, 1-tier crafting, no store sale)
+console.log('--- Test 4: Courage & Protection Potion Implementation ---');
 const craftRecipes = JSON.parse(fs.readFileSync('data/craft_recipes.json', 'utf8'));
+const courageRecipe = craftRecipes.find(r => r.id === 'recipe_courage_potion');
+assert.ok(courageRecipe, 'recipe_courage_potion must exist');
+assert.strictEqual(courageRecipe.result.effect, '1분간 공격력(ATK) +5 증가');
+assert.strictEqual(courageRecipe.requiredGold, 20);
+
 const protRecipe = craftRecipes.find(r => r.id === 'recipe_protection_potion');
 assert.ok(protRecipe, 'recipe_protection_potion must exist in craft_recipes.json');
-assert.strictEqual(protRecipe.requiredLevel, 10, 'Protection potion must require level 10');
-assert.strictEqual(protRecipe.result.effect, '3분간 방어력(DEF) +3 증가');
+assert.strictEqual(protRecipe.gradeLevel, 1, 'Protection potion must be tier 1');
+assert.strictEqual(protRecipe.result.effect, '1분간 방어력(DEF) +3 증가');
 assert.strictEqual(protRecipe.result.item, 'item_protection_potion');
+assert.strictEqual(protRecipe.requiredGold, 20, 'Protection potion craft gold should match courage potion (20G)');
+assert.deepStrictEqual(protRecipe.requiredItems, courageRecipe.requiredItems, 'Protection potion materials should match courage potion');
 
 const serverCode = fs.readFileSync('server.js', 'utf8');
 assert.ok(serverCode.includes("'item_protection_potion'"), 'server.js must define item_protection_potion');
@@ -222,6 +229,7 @@ assert.ok(mainJsCode.includes("'item_protection_potion'"), 'main.js must define 
 assert.ok(mainJsCode.includes("isBuffActive('protection_boost')"), 'main.js must check protection_boost');
 assert.ok(mainJsCode.includes("bonusDef += 3;"), 'protection_boost must add +3 DEF');
 assert.ok(!mainJsCode.includes("id: 'item_protection_potion', price:"), 'Protection potion must NOT be sold in store');
-console.log('✅ Test 4 Passed: Protection Potion verified with Lv.10 lock, +3 DEF buff, and no store sale.');
+assert.ok(!mainJsCode.includes("id: 'item_courage_potion', price:"), 'Courage potion must NOT be sold in store');
+console.log('✅ Test 4 Passed: Courage & Protection Potions verified with 1 min duration, identical 1-tier recipes, and no store sale.');
 
-console.log('\n🎉 ALL FLOATING TEXT, ESC, SORT & PROTECTION POTION TESTS PASSED PERFECTLY!');
+console.log('\n🎉 ALL FLOATING TEXT, ESC, SORT & POTION TESTS PASSED PERFECTLY!');

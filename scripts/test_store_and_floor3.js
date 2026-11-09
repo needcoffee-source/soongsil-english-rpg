@@ -44,13 +44,14 @@ assert(essenceMatch && essenceMatch[1] === '야외 전리품', `item_nutrition_e
 const shardMatch = mainJs.match(/id:\s*'item_stainless_shard'[\s\S]*?tierBadge:\s*'([^']+)'/);
 assert(shardMatch && shardMatch[1] === '야외 전리품', `item_stainless_shard tierBadge should be '야외 전리품', got ${shardMatch?.[1]}`);
 
-// Verify STORE_BUY_ITEMS prices
+// Verify STORE_BUY_ITEMS prices (courage potion deleted by request)
 const storeBuyBlock = mainJs.slice(mainJs.indexOf('const STORE_BUY_ITEMS = ['), mainJs.indexOf('window.STORE_BUY_ITEMS = STORE_BUY_ITEMS;'));
+assert(!storeBuyBlock.includes("'item_courage_potion'"), 'item_courage_potion must NOT be in STORE_BUY_ITEMS');
+
 const expectedPrices = {
   item_red_potion: 30,
   item_orange_potion: 75,
   item_green_potion: 75,
-  item_courage_potion: 75,
   item_revive_scroll: 100,
   item_return_scroll: 100,
   item_teleport_scroll: 300
