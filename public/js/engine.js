@@ -525,7 +525,7 @@ class GameEngine {
       if (this.player.floor === 6 && tileY === 16 && (tileX === 8 || (tileX >= 14 && tileX <= 18))) {
         return true;
       }
-      if (this.player.floor === 3 && tileY === 6 && tileX === 21) {
+      if (this.player.floor === 3 && tileY === 12 && tileX === 21) {
         return true;
       }
     } else {

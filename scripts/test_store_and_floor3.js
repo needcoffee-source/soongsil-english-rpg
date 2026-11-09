@@ -28,6 +28,7 @@ assert.strictEqual(f3.rooms[0].doorX, 8, 'room_health doorX should be 8');
 assert.strictEqual(f3.rooms[1].doorX, 16, 'room_wee doorX should be 16');
 assert.strictEqual(f3.elevator.x, 25, 'elevator x should be 25');
 assert.strictEqual(f3.interactive[0].x, 21, 'water purifier x should be 21');
+assert.strictEqual(f3.interactive[0].y, 12, 'water purifier y should be 12');
 console.log('✅ Test 2: world.js Floor 3 width (30 tiles) & coordinates verified.');
 
 // 3. Test main.js

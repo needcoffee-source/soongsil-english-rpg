@@ -70,7 +70,7 @@ const WORLD_DATA = {
       ],
       elevator: { x: 25, y: 3 },
       interactive: [
-        { id: "water_purifier_hallway_3", type: "water_purifier", x: 21, y: 6, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+        { id: "water_purifier_hallway_3", type: "water_purifier", x: 21, y: 12, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
       ],
       npcs: []
     },
