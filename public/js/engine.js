@@ -400,8 +400,14 @@ class GameEngine {
   }
 
   getMapHeight() {
-    if (this.player && this.player.room === 'hallway' && this.player.floor === 2) {
-      return WORLD_DATA.LIBRARY_HEIGHT || 20;
+    if (this.player && this.player.room === 'hallway') {
+      if (this.player.floor === 2) {
+        return WORLD_DATA.LIBRARY_HEIGHT || 20;
+      }
+      if (this.player.floor === 3) {
+        return WORLD_DATA.HALLWAY_FLOOR_3_HEIGHT || 15;
+      }
+      return WORLD_DATA.MAP_HEIGHT || 20;
     }
     if (this.player && this.player.room === 'playground') {
       return WORLD_DATA.PLAYGROUND_HEIGHT || 54;

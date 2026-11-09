@@ -2415,6 +2415,16 @@ body, html {
   filter: hue-rotate(155deg) saturate(1.8) brightness(1.05);
 }
 
+.icon-clear-potion {
+  display: inline-block;
+  filter: hue-rotate(85deg) saturate(2.5) brightness(1.35) drop-shadow(0 0 4px #38bdf8);
+}
+
+.icon-elixir {
+  display: inline-block;
+  filter: drop-shadow(0 0 6px #c084fc) brightness(1.2);
+}
+
 .inv-material-tag {
   font-size: 11.5px;
   font-weight: 700;

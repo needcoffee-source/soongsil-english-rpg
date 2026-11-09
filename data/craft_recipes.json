@@ -541,7 +541,7 @@
     "id": "recipe_orange_potion",
     "name": "주홍 물약",
     "category": "potion",
-    "description": "[포션] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다.",
+    "description": "[고급 포션] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다. (Lv.5 이상 제작 가능)",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 10,
@@ -576,7 +576,8 @@
       "slot": "consumable",
       "heal": 25,
       "effect": "사용 시 체력(HP) +25 즉시 회복"
-    }
+    },
+    "requiredLevel": 5
   },
   {
     "id": "recipe_green_potion",
@@ -784,6 +785,104 @@
       "slot": "consumable",
       "heal": 0,
       "effect": "사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동"
+    }
+  },
+  {
+    "id": "recipe_clear_potion",
+    "name": "맑은 물약 (Clear Potion)",
+    "category": "potion",
+    "description": "[희귀 포션] 맑고 순수한 약초의 정기만을 정제해 추출한 고농축 회복 물약입니다. (Lv.10 이상 제작 가능)",
+    "icon": "🧪",
+    "gradeLevel": 2,
+    "requiredLevel": 10,
+    "requiredGold": 30,
+    "requiredItems": [
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 4
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "이 맑은 물약은 지친 모험가의 활력을 되찾아 준다.",
+      "words": [
+        "This",
+        "clear",
+        "potion",
+        "restores",
+        "the",
+        "tired",
+        "adventurer's",
+        "vitality."
+      ],
+      "correct": "This clear potion restores the tired adventurer's vitality."
+    },
+    "result": {
+      "item": "item_clear_potion",
+      "name": "맑은 물약",
+      "icon": "🧪",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 60,
+      "effect": "사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)"
+    }
+  },
+  {
+    "id": "recipe_elixir",
+    "name": "신비한 엘릭서 (Mystic Elixir)",
+    "category": "potion",
+    "description": "[전설의 비약] 급식실 영양의 정수와 자연의 생명력이 응축된 신비의 명약입니다. (Lv.15 이상 제작 가능)",
+    "icon": "⚗️",
+    "gradeLevel": 3,
+    "requiredLevel": 15,
+    "requiredGold": 50,
+    "requiredItems": [
+      {
+        "item": "item_nutrition_essence",
+        "name": "정제된 영양의 정수",
+        "count": 1
+      },
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 4
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "신비한 엘릭서는 모든 상처를 치유하는 전설의 비약이다.",
+      "words": [
+        "The",
+        "mystic",
+        "elixir",
+        "is",
+        "a",
+        "legendary",
+        "potion",
+        "that",
+        "heals",
+        "all",
+        "wounds."
+      ],
+      "correct": "The mystic elixir is a legendary potion that heals all wounds."
+    },
+    "result": {
+      "item": "item_elixir",
+      "name": "신비한 엘릭서",
+      "icon": "⚗️",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 100,
+      "effect": "사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)"
     }
   },
   {

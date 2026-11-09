@@ -22,6 +22,7 @@ require('../public/js/world.js');
 const WORLD_DATA = global.window.WORLD_DATA;
 
 assert.strictEqual(WORLD_DATA.HALLWAY_FLOOR_3_WIDTH, 30, 'HALLWAY_FLOOR_3_WIDTH should be 30');
+assert.strictEqual(WORLD_DATA.HALLWAY_FLOOR_3_HEIGHT, 15, 'HALLWAY_FLOOR_3_HEIGHT should be 15');
 const f3 = WORLD_DATA.floors[3];
 assert(f3, 'floor 3 data exists');
 assert.strictEqual(f3.rooms[0].doorX, 8, 'room_health doorX should be 8');
@@ -29,7 +30,7 @@ assert.strictEqual(f3.rooms[1].doorX, 16, 'room_wee doorX should be 16');
 assert.strictEqual(f3.elevator.x, 25, 'elevator x should be 25');
 assert.strictEqual(f3.interactive[0].x, 21, 'water purifier x should be 21');
 assert.strictEqual(f3.interactive[0].y, 12, 'water purifier y should be 12');
-console.log('✅ Test 2: world.js Floor 3 width (30 tiles) & coordinates verified.');
+console.log('✅ Test 2: world.js Floor 3 width (30 tiles) & height (15 tiles) verified.');
 
 // 3. Test main.js
 const mainJs = fs.readFileSync('public/js/main.js', 'utf8');
@@ -67,4 +68,29 @@ assert(mainJs.includes("this.engine.warpToRoom('hallway', '3층 복도 (보건�
 assert(!mainJs.includes("'3층 복도 (보건실 & Wee클래스)', 56 * 32"), 'Floor 3 old warp 56*32 should be removed');
 console.log('✅ Test 4: Floor 3 warps updated to tile (25, 6).');
 
-console.log('\n🎉 ALL STORE & FLOOR 3 TESTS PASSED PERFECTLY!\n');
+// 5. Test craft_recipes.json for Lv.5, Lv.10, Lv.15 potions
+const recipes = JSON.parse(fs.readFileSync('data/craft_recipes.json', 'utf8'));
+
+const orange = recipes.find(r => r.id === 'recipe_orange_potion');
+assert(orange && orange.requiredLevel === 5, 'recipe_orange_potion must have requiredLevel === 5');
+
+const clear = recipes.find(r => r.id === 'recipe_clear_potion');
+assert(clear, 'recipe_clear_potion must exist');
+assert.strictEqual(clear.requiredLevel, 10, 'recipe_clear_potion requiredLevel === 10');
+assert.strictEqual(clear.requiredGold, 30, 'recipe_clear_potion requiredGold === 30');
+assert.strictEqual(clear.result.heal, 60, 'recipe_clear_potion heal === 60');
+
+const elixir = recipes.find(r => r.id === 'recipe_elixir');
+assert(elixir, 'recipe_elixir must exist');
+assert.strictEqual(elixir.requiredLevel, 15, 'recipe_elixir requiredLevel === 15');
+assert.strictEqual(elixir.requiredGold, 50, 'recipe_elixir requiredGold === 50');
+assert.strictEqual(elixir.result.heal, 100, 'recipe_elixir heal === 100');
+assert.strictEqual(elixir.icon, '⚗️', 'recipe_elixir icon === ⚗️');
+
+// Verify neither is sold in canteen store
+assert(!storeBuyBlock.includes('item_clear_potion'), 'item_clear_potion must NOT be sold in store');
+assert(!storeBuyBlock.includes('item_elixir'), 'item_elixir must NOT be sold in store');
+
+console.log('✅ Test 5: Potion Level locks (Orange Lv.5, Clear Lv.10, Elixir Lv.15) & No-store-sale verified.');
+
+console.log('\n🎉 ALL STORE, FLOOR 3 & POTION TESTS PASSED PERFECTLY!\n');

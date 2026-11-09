@@ -79,6 +79,8 @@ class CraftingManager {
     if (id === 'recipe_orange_potion' || id === 'item_orange_potion') return 'icon-orange-potion';
     if (id === 'recipe_green_potion' || id === 'item_green_potion') return 'icon-green-potion';
     if (id === 'recipe_courage_potion' || id === 'item_courage_potion') return 'icon-purple-potion';
+    if (id === 'recipe_clear_potion' || id === 'item_clear_potion') return 'icon-clear-potion';
+    if (id === 'recipe_elixir' || id === 'item_elixir') return 'icon-elixir';
     return '';
   }
 
@@ -92,8 +94,12 @@ class CraftingManager {
       const item = document.createElement('div');
       item.className = 'recipe-item' + (this.selectedRecipe && this.selectedRecipe.id === r.id ? ' active' : '');
 
+      // Check level lock
+      const pLevel = (window.MainApp && window.MainApp.playerData) ? (window.MainApp.playerData.level || 1) : 1;
+      const isLevelLocked = Boolean(r.requiredLevel && pLevel < r.requiredLevel);
+
       // Check if player has all materials & gold to craft this recipe
-      let canCraft = (playerGold >= (r.requiredGold || 0));
+      let canCraft = !isLevelLocked && (playerGold >= (r.requiredGold || 0));
       if (canCraft) {
         for (const req of r.requiredItems) {
           const cur = inv.find(i => i.item === req.item);
@@ -117,10 +123,13 @@ class CraftingManager {
       item.innerHTML = `
         <span class="recipe-item-icon ${potionClass}">${r.icon}</span>
         <div class="recipe-item-info">
-          <div class="recipe-name-ko">${nameKo}</div>
+          <div class="recipe-name-ko" style="display:flex; align-items:center; gap:4px;">
+            <span>${nameKo}</span>
+            ${r.requiredLevel ? `<span class="recipe-level-req-badge" style="font-size:10px; font-weight:700; padding:1px 5px; border-radius:4px; ${isLevelLocked ? 'background:#7f1d1d; color:#fca5a5;' : 'background:#065f46; color:#6ee7b7;'}">Lv.${r.requiredLevel}</span>` : ''}
+          </div>
           ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
         </div>
-        ${canCraft ? '<span class="recipe-can-craft-icon" title="지금 제작 가능">🔨</span>' : ''}
+        ${isLevelLocked ? '<span class="recipe-lock-icon" title="레벨 제한 (Lv.' + r.requiredLevel + ' 필요)" style="font-size:13px;">🔒</span>' : (canCraft ? '<span class="recipe-can-craft-icon" title="지금 제작 가능">🔨</span>' : '')}
       `;
       item.addEventListener('click', () => {
         this.selectRecipe(r);
@@ -173,6 +182,21 @@ class CraftingManager {
         <span class="mat-status-tag">${isGoldEnough ? '충족 ✔️' : '부족 ❌'}</span>
       `;
       this.materialsEl.appendChild(goldBadge);
+    }
+
+    // Check level requirement
+    if (recipe.requiredLevel) {
+      const pLevel = (window.MainApp && window.MainApp.playerData) ? (window.MainApp.playerData.level || 1) : 1;
+      const isLevelEnough = pLevel >= recipe.requiredLevel;
+      const levelBadge = document.createElement('div');
+      levelBadge.className = `mat-status-badge level ${isLevelEnough ? 'enough' : 'lack'}`;
+      levelBadge.style.cssText = `border: 1px solid ${isLevelEnough ? '#10b981' : '#ef4444'};`;
+      levelBadge.innerHTML = `
+        <span class="mat-status-name">🎓 필요 레벨</span>
+        <span class="mat-status-count">Lv.${pLevel} / Lv.${recipe.requiredLevel}</span>
+        <span class="mat-status-tag">${isLevelEnough ? '해금 완료 ✔️' : '레벨 부족 🔒'}</span>
+      `;
+      this.materialsEl.appendChild(levelBadge);
     }
 
     // Setup Unscramble Puzzle
@@ -228,6 +252,14 @@ class CraftingManager {
 
   attemptCraft() {
     if (!this.selectedRecipe) return;
+
+    // Check level requirement
+    const pLevel = (window.MainApp && window.MainApp.playerData) ? (window.MainApp.playerData.level || 1) : 1;
+    if (this.selectedRecipe.requiredLevel && pLevel < this.selectedRecipe.requiredLevel) {
+      if (window.AudioManager) window.AudioManager.playWrong();
+      alert(`레벨이 부족하여 아직 제작할 수 없습니다!\n\n이 비전 레시피는 [Lv.${this.selectedRecipe.requiredLevel}] 이상부터 제작 가능합니다.\n(현재 나의 레벨: Lv.${pLevel})\n\n교실 퀴즈와 몬스터 사냥으로 경험치를 쌓아 레벨을 올려보세요!`);
+      return;
+    }
 
     // Check sentence order
     const assembled = this.placedWords.map(w => w.text).join(' ');

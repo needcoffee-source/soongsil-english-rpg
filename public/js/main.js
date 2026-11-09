@@ -256,6 +256,28 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
   },
   {
+    id: 'item_clear_potion',
+    name: '맑은 물약',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '희귀 회복 물약',
+    tierColor: '#06b6d4',
+    effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)',
+    source: '소비품 제작대(C)에서 조제 (10레벨 이상)',
+    recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
+  },
+  {
+    id: 'item_elixir',
+    name: '신비한 엘릭서',
+    icon: '⚗️',
+    category: 'consumable',
+    tierBadge: '전설 비약',
+    tierColor: '#8b5cf6',
+    effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)',
+    source: '소비품 제작대(C)에서 조제 (15레벨 이상)',
+    recipe: '정제된 영양의 정수 1개 + 향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 50G'
+  },
+  {
     id: 'item_cafeteria_key',
     name: '급식실 열쇠',
     icon: '🔑',
@@ -566,6 +588,8 @@ const ALL_GAME_ITEMS = {
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' } },
+  'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
+  'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
@@ -5952,12 +5976,14 @@ class MainApp {
     } else {
       filteredItems.forEach(item => {
         const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
-        const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
+        const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'));
         const isScroll = (item.item === 'item_revive_scroll');
         const isReturnScroll = (item.item === 'item_return_scroll');
         const isTeleportScroll = (item.item === 'item_teleport_scroll');
         const isGreenPotion = (item.item === 'item_green_potion');
         const isCouragePotion = (item.item === 'item_courage_potion');
+        const isClearPotion = (item.item === 'item_clear_potion');
+        const isElixir = (item.item === 'item_elixir');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
 
         const card = document.createElement('div');
@@ -6002,7 +6028,11 @@ class MainApp {
 
         const iconHtml = isCouragePotion
           ? `<span class="icon-purple-potion">${item.icon || '🧪'}</span>`
-          : `<span>${item.icon || '📦'}</span>`;
+          : (isClearPotion
+            ? `<span class="icon-clear-potion">${item.icon || '🧪'}</span>`
+            : (isElixir
+              ? `<span class="icon-elixir">${item.icon || '⚗️'}</span>`
+              : `<span>${item.icon || '📦'}</span>`));
 
         card.innerHTML = `
           <div class="inv-item-icon-box">
@@ -10158,7 +10188,7 @@ class MainApp {
       const type = (def.meta && def.meta.type) || (invItem.item.startsWith('equip_') ? 'equipment' : 'material');
 
       // 소비품(물약, 주문서 등) 및 작동권/퀘스트 아이템은 매점 매각 금지
-      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item === 'equip_elevator_pass' || invItem.item === 'equip_vintage_armband' || def.meta?.isQuestItem || this.getItemSellPrice(invItem.item) <= 0) {
+      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item.includes('elixir') || invItem.item === 'equip_elevator_pass' || invItem.item === 'equip_vintage_armband' || def.meta?.isQuestItem || this.getItemSellPrice(invItem.item) <= 0) {
         return false;
       }
 
@@ -10262,7 +10292,7 @@ class MainApp {
       this.showToast('이 유물/특수 아이템은 매점에서 매각할 수 없습니다!', 'warning');
       return;
     }
-    if (type === 'consumable' || itemId.includes('potion') || itemId.includes('scroll')) {
+    if (type === 'consumable' || itemId.includes('potion') || itemId.includes('scroll') || itemId.includes('elixir')) {
       this.showToast('소비품(물약 및 주문서)은 매점에서 매각할 수 없습니다!', 'warning');
       return;
     }
