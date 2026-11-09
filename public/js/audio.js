@@ -383,6 +383,43 @@ class AudioManager {
   /**
    * Referee Whistle Sound for Brawl Ball (Double Trill: ~2650Hz & 2950Hz)
    */
+  /**
+   * Spatial Warp / Teleport Sound Effect (Ascending high-speed shimmer)
+   */
+  playWarp() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      const warpTones = [
+        { f: 380, t: 0.00, d: 0.09 },
+        { f: 560, t: 0.06, d: 0.10 },
+        { f: 820, t: 0.12, d: 0.12 },
+        { f: 1200, t: 0.18, d: 0.20 }
+      ];
+
+      warpTones.forEach(n => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(n.f, now + n.t);
+        osc.frequency.exponentialRampToValueAtTime(n.f * 1.3, now + n.t + n.d);
+
+        gain.gain.setValueAtTime(0.16, now + n.t);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + n.t);
+        osc.stop(now + n.t + n.d);
+      });
+    } catch (e) {}
+  }
+
   playWhistle() {
     if (this.muted) return;
     this.init();
