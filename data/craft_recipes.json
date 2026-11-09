@@ -321,7 +321,8 @@
         "hp": 0
       },
       "effect": "공격력(ATK) +30"
-    }
+    },
+    "requiredLevel": 5
   },
   {
     "id": "recipe_bronze_helmet",
@@ -368,7 +369,8 @@
         "hp": 35
       },
       "effect": "방어력(DEF) +14, 최대체력(HP) +35"
-    }
+    },
+    "requiredLevel": 5
   },
   {
     "id": "recipe_bronze_armor",
@@ -415,7 +417,8 @@
         "hp": 25
       },
       "effect": "방어력(DEF) +22, 최대체력(HP) +25"
-    }
+    },
+    "requiredLevel": 5
   },
   {
     "id": "recipe_forsythia_ring",
@@ -499,7 +502,8 @@
         "hp": 30
       },
       "effect": "공격력(ATK) +15, 방어력(DEF) +10, 최대체력 +30"
-    }
+    },
+    "requiredLevel": 5
   },
   {
     "id": "recipe_red_potion",
@@ -661,6 +665,51 @@
       "slot": "consumable",
       "heal": 0,
       "effect": "1분간 공격력(ATK) +5 증가"
+    }
+  },
+  {
+    "id": "recipe_protection_potion",
+    "name": "수호의 물약",
+    "category": "potion",
+    "description": "[소비품] 몸 주위에 든든한 푸른빛 보호막을 감싸는 비약입니다. 마시면 1분간 방어력(DEF)이 +3 증가합니다.",
+    "icon": "🧪",
+    "gradeLevel": 1,
+    "requiredGold": 20,
+    "requiredItems": [
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 2
+      },
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 1
+      }
+    ],
+    "unscramble": {
+      "korean": "든든한 수호의 방패가 모든 위험으로부터 우리를 보호한다.",
+      "words": [
+        "A",
+        "strong",
+        "guardian",
+        "shield",
+        "protects",
+        "us",
+        "from",
+        "all",
+        "danger."
+      ],
+      "correct": "A strong guardian shield protects us from all danger."
+    },
+    "result": {
+      "item": "item_protection_potion",
+      "name": "수호의 물약",
+      "icon": "🧪",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 0,
+      "effect": "1분간 방어력(DEF) +3 증가"
     }
   },
   {
@@ -833,51 +882,6 @@
     }
   },
   {
-    "id": "recipe_protection_potion",
-    "name": "수호의 물약 (Protection Potion)",
-    "category": "potion",
-    "description": "[소비품] 몸 주위에 든든한 푸른빛 보호막을 감싸는 비약입니다. 마시면 1분간 방어력(DEF)이 +3 증가합니다.",
-    "icon": "🧪",
-    "gradeLevel": 1,
-    "requiredGold": 20,
-    "requiredItems": [
-      {
-        "item": "item_herb",
-        "name": "향긋한 허브",
-        "count": 2
-      },
-      {
-        "item": "item_wood",
-        "name": "단단한 목재",
-        "count": 1
-      }
-    ],
-    "unscramble": {
-      "korean": "든든한 수호의 방패가 모든 위험으로부터 우리를 보호한다.",
-      "words": [
-        "A",
-        "strong",
-        "guardian",
-        "shield",
-        "protects",
-        "us",
-        "from",
-        "all",
-        "danger."
-      ],
-      "correct": "A strong guardian shield protects us from all danger."
-    },
-    "result": {
-      "item": "item_protection_potion",
-      "name": "수호의 물약",
-      "icon": "🧪",
-      "type": "consumable",
-      "slot": "consumable",
-      "heal": 0,
-      "effect": "1분간 방어력(DEF) +3 증가"
-    }
-  },
-  {
     "id": "recipe_elixir",
     "name": "신비한 엘릭서 (Mystic Elixir)",
     "category": "potion",
@@ -977,7 +981,8 @@
         "hp": 35
       },
       "effect": "4티어 무기 · 공격력 +45, 체력 +35"
-    }
+    },
+    "requiredLevel": 10
   },
   {
     "id": "recipe_heritage_helmet",
@@ -1025,7 +1030,8 @@
         "hp": 35
       },
       "effect": "4티어 투구 · 방어력 +20, 체력 +35"
-    }
+    },
+    "requiredLevel": 10
   },
   {
     "id": "recipe_heritage_armor",
@@ -1075,6 +1081,7 @@
         "hp": 45
       },
       "effect": "4티어 갑옷 · 방어력 +30, 체력 +45"
-    }
+    },
+    "requiredLevel": 10
   }
 ]
