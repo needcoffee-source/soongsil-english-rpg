@@ -4423,5 +4423,455 @@
     ],
     "answer": "마티스는 70세에 병에 걸리자 미술을 완전히 포기했다.",
     "explanation": "본문에서 'However, he never gave up art.(하지만 그는 결코 미술을 포기하지 않았다)'라고 했습니다."
+  },
+  {
+    "id": "q7_1",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 '맛있는'을 뜻하는 형용사는?\n'This homemade stew smells so _______!'",
+    "options": [
+      "delicious",
+      "dangerous",
+      "terrible",
+      "sleepy"
+    ],
+    "answer": "delicious",
+    "explanation": "delicious는 '맛있는, 아주 맛 좋은'이라는 뜻의 형용사입니다."
+  },
+  {
+    "id": "q7_2",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "'요리의 재료, 식재료'를 뜻하는 단어로 알맞은 것은?\n'Eggs are the main _______ of an omelet.'",
+    "options": [
+      "ingredient",
+      "uniform",
+      "gallery",
+      "station"
+    ],
+    "answer": "ingredient",
+    "explanation": "ingredient는 요리의 '재료, 구성 성분'을 의미합니다."
+  },
+  {
+    "id": "q7_3",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 알맞은 '조리법, 요리법'을 뜻하는 단어는?\n'Follow this simple _______ to bake a cake.'",
+    "options": [
+      "recipe",
+      "schedule",
+      "mirror",
+      "statue"
+    ],
+    "answer": "recipe",
+    "explanation": "recipe는 '요리법, 조리법'이라는 뜻입니다."
+  },
+  {
+    "id": "q7_4",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "학교나 회사의 '구내식당, 급식실'을 뜻하는 단어로 알맞은 것은?",
+    "options": [
+      "cafeteria",
+      "library",
+      "gymnasium",
+      "laboratory"
+    ],
+    "answer": "cafeteria",
+    "explanation": "cafeteria는 '학생 식당, 급식실, 구내식당'을 의미합니다."
+  },
+  {
+    "id": "q7_5",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "식사 후 '남은 음식, 잔반'을 뜻하는 표현으로 가장 알맞은 것은?",
+    "options": [
+      "leftovers",
+      "snacks",
+      "vitamins",
+      "desserts"
+    ],
+    "answer": "leftovers",
+    "explanation": "leftovers(주로 복수형)는 '식사 후 남은 음식, 잔반'을 뜻합니다."
+  },
+  {
+    "id": "q7_6",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 들어갈 '음식 쓰레기'를 뜻하는 단어는?\n'We must reduce food _______ in our cafeteria.'",
+    "options": [
+      "waste",
+      "energy",
+      "flavor",
+      "beauty"
+    ],
+    "answer": "waste",
+    "explanation": "food waste는 '음식물 쓰레기'를 뜻합니다."
+  },
+  {
+    "id": "q7_7",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 감각동사의 보어로 알맞은 형태는?\n'The freshly baked cookies smell _______.'",
+    "options": [
+      "sweet",
+      "sweetly",
+      "sweetness",
+      "more sweetly"
+    ],
+    "answer": "sweet",
+    "explanation": "감각동사(smell, taste, look, feel, sound) 뒤에는 형용사 보어가 와야 하므로 sweet가 알맞습니다."
+  },
+  {
+    "id": "q7_8",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 문장의 어법상 알맞은 표현을 고르시오.\n'The warm tomato soup tastes _______.'",
+    "options": [
+      "delicious",
+      "deliciously",
+      "in delicious",
+      "very deliciously"
+    ],
+    "answer": "delicious",
+    "explanation": "taste는 감각동사이므로 부사가 아닌 형용사 delicious가 보어로 쓰입니다."
+  },
+  {
+    "id": "q7_9",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 들어갈 알맞은 말은?\n'The French omelet looks very _______ and soft.'",
+    "options": [
+      "fluffy",
+      "fluffily",
+      "fluffiness",
+      "more fluffily"
+    ],
+    "answer": "fluffy",
+    "explanation": "look + 형용사 구문으로 '폭신폭신하고 부드러워 보인다'는 형용사 fluffy가 적절합니다."
+  },
+  {
+    "id": "q7_10",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "상태 변화를 나타내는 동사 get을 사용한 문장으로 알맞은 것은?\n'I always _______ hungry after physical education class.'",
+    "options": [
+      "get",
+      "look",
+      "taste",
+      "smell"
+    ],
+    "answer": "get",
+    "explanation": "'get + 형용사'는 '~한 상태가 되다'라는 상태 변화를 나타내며, get hungry는 '배고파지다'입니다."
+  },
+  {
+    "id": "q7_11",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 중 '음식이 상하다'를 영어로 바르게 표현한 것은?",
+    "options": [
+      "go bad",
+      "go good",
+      "taste bad",
+      "get fresh"
+    ],
+    "answer": "go bad",
+    "explanation": "'go + 형용사'에서 go bad는 음식이 '상하다, 부패하다'를 의미하는 관용적 표현입니다."
+  },
+  {
+    "id": "q7_12",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "형용사 sweet의 올바른 비교급 형태는?",
+    "options": [
+      "sweeter",
+      "more sweet",
+      "sweetest",
+      "most sweet"
+    ],
+    "answer": "sweeter",
+    "explanation": "단음절 형용사 sweet는 뒤에 -er를 붙여 sweeter로 비교급을 만듭니다."
+  },
+  {
+    "id": "q7_13",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "형용사 tasty의 올바른 비교급 형태는?",
+    "options": [
+      "tastier",
+      "more tasty",
+      "tastiest",
+      "tastyier"
+    ],
+    "answer": "tastier",
+    "explanation": "'자음 + y'로 끝나는 형용사는 y를 i로 고치고 -er를 붙여 tastier가 됩니다."
+  },
+  {
+    "id": "q7_14",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "단모음 + 단자음으로 끝나는 형용사 big의 비교급 형태는?",
+    "options": [
+      "bigger",
+      "biger",
+      "more big",
+      "biggest"
+    ],
+    "answer": "bigger",
+    "explanation": "단모음 + 단자음(b-i-g)으로 끝나는 단어는 마지막 자음을 한 번 더 쓰고 -er를 붙여 bigger가 됩니다."
+  },
+  {
+    "id": "q7_15",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "3음절 이상의 긴 형용사 delicious의 비교급 형태는?",
+    "options": [
+      "more delicious",
+      "deliciouser",
+      "most delicious",
+      "deliciousest"
+    ],
+    "answer": "more delicious",
+    "explanation": "음절이 긴 형용사는 앞에 more를 붙여 'more delicious'로 비교급을 만듭니다."
+  },
+  {
+    "id": "q7_16",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "형용사 good의 올바른 불규칙 비교급 형태는?",
+    "options": [
+      "better",
+      "gooder",
+      "best",
+      "more good"
+    ],
+    "answer": "better",
+    "explanation": "good의 비교급은 불규칙 변화로 better입니다."
+  },
+  {
+    "id": "q7_17",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "형용사 bad의 올바른 불규칙 비교급 형태는?",
+    "options": [
+      "worse",
+      "badder",
+      "worst",
+      "more bad"
+    ],
+    "answer": "worse",
+    "explanation": "bad의 비교급은 불규칙 변화로 worse입니다."
+  },
+  {
+    "id": "q7_18",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 두 음식을 비교하는 문장의 빈칸에 알맞은 비교 표현은?\n'Pizza is _______ popular _______ salad among students.'",
+    "options": [
+      "more / than",
+      "most / than",
+      "as / as",
+      "better / to"
+    ],
+    "answer": "more / than",
+    "explanation": "'more + 형용사 + than'은 '~보다 더 ...한'이라는 뜻의 비교급 문장입니다."
+  },
+  {
+    "id": "q7_19",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "두 오믈렛의 두께를 비교할 때 빈칸에 알맞은 것은?\n'The Spanish omelet is _______ than the French one.'",
+    "options": [
+      "thicker",
+      "thick",
+      "thickest",
+      "more thick"
+    ],
+    "answer": "thicker",
+    "explanation": "thick(두꺼운)의 비교급은 thicker입니다."
+  },
+  {
+    "id": "q7_20",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "7단원 본문 'Omelets Around the World'에서 전 세계 오믈렛의 공통적인 기본 재료는?",
+    "options": [
+      "Eggs",
+      "Flour",
+      "Rice",
+      "Noodles"
+    ],
+    "answer": "Eggs",
+    "explanation": "오믈렛의 가장 기본이 되는 핵심 식재료는 달걀(Eggs)입니다."
+  },
+  {
+    "id": "q7_21",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "스페인식 전통 오믈렛인 'Tortilla de Patatas'의 주요 재료 두 가지는?",
+    "options": [
+      "potatoes and onions",
+      "carrots and beef",
+      "cheese and apples",
+      "tomatoes and rice"
+    ],
+    "answer": "potatoes and onions",
+    "explanation": "스페인식 오믈렛(토르티야 데 파타타스)은 달걀에 감자(potatoes)와 양파(onions)를 듬뿍 넣어 만듭니다."
+  },
+  {
+    "id": "q7_22",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "프랑스식 전통 오믈렛의 일반적인 식감 특징으로 알맞은 것은?",
+    "options": [
+      "soft and tender",
+      "hard and crunchy",
+      "very dry",
+      "sour and bitter"
+    ],
+    "answer": "soft and tender",
+    "explanation": "프랑스식 오믈렛은 겉과 속이 매우 부드럽고 촉촉한 것(soft and tender)이 특징입니다."
+  },
+  {
+    "id": "q7_23",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "프랑스 베시에르(Bessières) 오믈렛 축제의 유래와 관련된 역사적 인물은?",
+    "options": [
+      "Napoleon",
+      "Shakespeare",
+      "Einstein",
+      "Picasso"
+    ],
+    "answer": "Napoleon",
+    "explanation": "나폴레옹(Napoleon)이 마을의 오믈렛 맛에 반해 다음 날 전 군대를 위해 마을의 모든 달걀로 거대한 오믈렛을 만들게 했다는 유래가 있습니다."
+  },
+  {
+    "id": "q7_24",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 들어갈 '전 세계에, 세계 곳곳에'라는 뜻의 숙어는?\n'People enjoy different dishes _______ the world.'",
+    "options": [
+      "around",
+      "under",
+      "behind",
+      "into"
+    ],
+    "answer": "around",
+    "explanation": "around the world는 '전 세계에, 세계 도처에'라는 뜻의 숙어입니다."
+  },
+  {
+    "id": "q7_25",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "급식실에서 '균형 잡힌 식단'을 의미하는 올바른 영어 표현은?",
+    "options": [
+      "a balanced diet",
+      "a heavy meal",
+      "a fast snack",
+      "a sweet dessert"
+    ],
+    "answer": "a balanced diet",
+    "explanation": "a balanced diet는 영양소가 고루 갖춰진 '균형 잡힌 식단'을 뜻합니다."
+  },
+  {
+    "id": "q7_26",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "급식실에서 더 먹고 싶을 때 공손하게 물어보는 표현으로 알맞은 것은?",
+    "options": [
+      "Can I have some more, please?",
+      "Give me all the food!",
+      "I don't like this menu.",
+      "Throw away the food."
+    ],
+    "answer": "Can I have some more, please?",
+    "explanation": "'Can I have some more, please?'는 '조금 더 주실 수 있나요?'라는 정중한 요청 표현입니다."
+  },
+  {
+    "id": "q7_27",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 들어갈 단어로 알맞은 것은?\n'Eating together with friends is _______ than eating alone.'",
+    "options": [
+      "better",
+      "good",
+      "well",
+      "best"
+    ],
+    "answer": "better",
+    "explanation": "than 앞에는 비교급이 와야 하므로 good의 비교급인 better가 알맞습니다."
+  },
+  {
+    "id": "q7_28",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "음식을 남기지 않고 다 먹었을 때 쓰는 표현으로 알맞은 것은?",
+    "options": [
+      "I cleaned my plate.",
+      "I lost my spoon.",
+      "I skipped my lunch.",
+      "I ordered pizza."
+    ],
+    "answer": "I cleaned my plate.",
+    "explanation": "'clean one's plate'는 '접시(식판)를 깨끗이 비우다, 음식을 남기지 않고 다 먹다'라는 표현입니다."
+  },
+  {
+    "id": "q7_29",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "식사 예절 중 '음식을 입에 넣고 말하지 마라'를 올바르게 영작한 것은?",
+    "options": [
+      "Don't talk with your mouth full.",
+      "Always shout while eating.",
+      "Run around the cafeteria tables.",
+      "Leave your trash on the floor."
+    ],
+    "answer": "Don't talk with your mouth full.",
+    "explanation": "'Don't talk with your mouth full.'은 '입안에 음식을 가득 물고 말하지 마라'는 대표적인 식사 예절 격언입니다."
+  },
+  {
+    "id": "q7_30",
+    "grade": 1,
+    "unit": "7단원 (L7. Tasty World)",
+    "category": "curriculum",
+    "question": "다음 문맥상 빈칸에 알맞은 연결어는?\n'Spanish omelet is thicker than French omelet, _______ both are very popular.'",
+    "options": [
+      "but",
+      "so",
+      "because",
+      "if"
+    ],
+    "answer": "but",
+    "explanation": "두 오믈렛의 생김새는 다르지만 둘 다 매우 인기 있다는 대조의 의미이므로 역접 접속사 but이 알맞습니다."
   }
 ]

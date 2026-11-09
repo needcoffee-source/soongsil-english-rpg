@@ -154,6 +154,28 @@ window.ITEM_CODEX_DATABASE = [
     source: '운동장 축구장 수행평가 3두마수 케르베로스 보스 격파 시 획득',
     recipe: '케르베로스 보스 처치 전리품'
   },
+  {
+    id: 'item_nutrition_essence',
+    name: '정제된 영양의 정수',
+    icon: '🍱',
+    category: 'material',
+    tierBadge: '5티어 재료',
+    tierColor: '#059669',
+    effect: '급식실 음식물 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료',
+    source: '학생 급식실 바닥 음식물 몬스터 처치 시 획득',
+    recipe: '급식실 몬스터 처치 전리품'
+  },
+  {
+    id: 'item_stainless_shard',
+    name: '특수 강화 스텐 조각',
+    icon: '✨',
+    category: 'material',
+    tierBadge: '5티어 재료',
+    tierColor: '#0284c7',
+    effect: '급식실 특수 위생 스테인리스 합금 파편 · 5티어 최고급 장비 제작 핵심 재료',
+    source: '학생 급식실 바닥 음식물 몬스터 처치 시 40% 행운 드랍',
+    recipe: '급식실 몬스터 처치 전리품'
+  },
 
   // 2. Consumables (소비품 6종 - craft_recipes.json 공식 레시피)
   {
@@ -533,6 +555,8 @@ const ALL_GAME_ITEMS = {
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
   'item_unyielding_stone': { name: '💎 꺾이지 않는 사명석', icon: '💎', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료' } },
+  'item_nutrition_essence': { name: '정제된 영양의 정수', icon: '🍱', count: 9999, meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료' } },
+  'item_stainless_shard': { name: '특수 강화 스텐 조각', icon: '✨', count: 9999, meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
@@ -1205,6 +1229,77 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' }
     ]
+  },
+  'quest_cafeteria_order': {
+    id: 'quest_cafeteria_order',
+    minLevel: 12,
+    teacherId: 'npc_cafeteria_teacher',
+    teacherName: '급식지도 선생님',
+    teacherRole: '영양 및 급식지도',
+    teacherSeat: '급식지도석',
+    teacherAvatar: '👨‍🏫',
+    category: '🍱 급식실 질서 퀘스트 (1단계)',
+    title: '[급식실] 반찬 더 달라고 조르는 학생 진정시키기',
+    story: `반가워요, 학생! 마침 도움이 절실하던 참이었어요. 🍱
+
+배식대 쪽을 좀 보세요. 정량 배식이 급식실 규칙인데, 몇몇 학생들이 맛있는 소시지와 고기반찬만 잔뜩 더 달라고 떼를 쓰며 배식 줄을 멈춰 세우고 있어요!
+
+배식대 앞에 서 있는 [🍖 반찬 더 달라는 학생]에게 가서, 1:1 영어 퀴즈 대결로 정량 배식과 양보의 미덕을 일깨워주고 진정시켜 줄 수 있나요?`,
+    inProgressStory: `아직 [🍖 반찬 더 달라는 학생]이 배식대 앞에서 떼를 쓰고 있어요!
+배부대 앞으로 가서 1:1 영어 퀴즈 대결을 펼쳐 학생을 진정시켜 주세요!`,
+    completeStory: `오! 학생 덕분에 배식대 앞이 다시 질서정연해졌어요! 👏
+규칙을 지키며 사이좋게 식판을 들고 가는 모습을 보니 정말 안심이네요.
+수고비로 골드와 경험치를 지급할게요!`,
+    doneStory: `배식대 앞이 아주 평화로워졌어요. 규칙을 지켜준 학생이 자랑스럽네요! 👍`,
+    objectives: [
+      {
+        id: 'calm_demanding',
+        text: '급식배부대의 [반찬 더 달라는 학생] 1:1 퀴즈로 진정시키기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.targetCalmed ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 150, label: '🪙 150 G (골드)' },
+      { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' }
+    ]
+  },
+  'quest_cafeteria_manners': {
+    id: 'quest_cafeteria_manners',
+    minLevel: 12,
+    teacherId: 'npc_cafeteria_teacher',
+    teacherName: '급식지도 선생님',
+    teacherRole: '영양 및 급식지도',
+    teacherSeat: '급식지도석',
+    teacherAvatar: '👨‍🏫',
+    category: '🍽️ 급식실 예절 퀘스트 (2단계)',
+    title: '[급식실] 식탁에서 떠들며 먹는 학생들 진정시키기',
+    story: `배식대는 정돈되었는데 이번엔 학생 식당 좌석 쪽이 문제예요!
+
+밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어질 수 있거든요.
+
+중앙 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!`,
+    inProgressStory: `중앙 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!
+어서 가서 1:1 영어 퀴즈 대결로 조용히 식사하도록 지도해 주세요!`,
+    completeStory: `와! 정말 대단해요, 학생! 🎉
+
+학생들이 자리에 조용히 앉아 친구들과 배려하며 맛있게 식사하고 있어요!
+우리 숭실 급식실의 평화와 질서를 되찾아 준 훌륭한 학생에게, 영양교사가 특별히 준비한 최고급 5티어 제작 재료와 보상을 선물할게요!`,
+    doneStory: `학생 덕분에 우리 숭실 급식실이 전교에서 가장 질서 있고 모범적인 식당이 되었답니다! 👍`,
+    objectives: [
+      {
+        id: 'calm_noisy',
+        text: '학생 식탁 좌석의 [식탁에서 떠드는 학생] 1:1 퀴즈로 진정시키기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.targetCalmed ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 300, label: '🪙 300 G (골드)' },
+      { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 3, icon: '🍱', label: '🍱 정제된 영양의 정수 x3' },
+      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 2, icon: '✨', label: '✨ 특수 강화 스텐 조각 x2' }
+    ]
   }
 };
 window.QUEST_DEFINITIONS = QUEST_DEFINITIONS;
@@ -1609,6 +1704,20 @@ class MainApp {
     if (target.type === 'npc') {
       const npc = target.data;
       if (!npc) return;
+
+      // 학생 급식실 급식지도 선생님 & 학생들
+      if (npc.id === 'npc_cafeteria_teacher' || (npc.name && npc.name.includes('급식지도'))) {
+        this.handleCafeteriaTeacherInteraction(npc);
+        return;
+      }
+      if (npc.id === 'npc_demanding_student' || (npc.name && npc.name.includes('반찬 더 달라는'))) {
+        this.handleDemandingStudentInteraction(npc);
+        return;
+      }
+      if (npc.id === 'npc_noisy_student' || (npc.name && npc.name.includes('떠드는 학생'))) {
+        this.handleNoisyStudentInteraction(npc);
+        return;
+      }
 
       // 3층 보건실 보건 선생님
       // 1학년 2반 담임 한강우 선생님 (가죽 골렘 1:1 레이드 & 나무 세트 3종 연화 비책 기믹)
@@ -2243,6 +2352,253 @@ class MainApp {
       } else {
         this.engine.warpToRoom('room_cafeteria', '🍱 학생 급식실 (Cafeteria)', 24 * 32, 20 * 32);
       }
+    }
+  }
+
+  // ========================================================
+  // 🍱 학생 급식실 퀘스트 & 상호작용 시스템
+  // 1단계: 반찬 더 달라고 조르는 학생 1:1 퀴즈 대결로 진정시키기
+  // 2단계: 식탁에서 떠들며 먹는 학생 1:1 퀴즈 대결로 진정시키기
+  // ========================================================
+  handleCafeteriaTeacherInteraction(npc) {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    if (!this.playerData.quests) this.playerData.quests = {};
+
+    const q1 = this.playerData.quests['quest_cafeteria_order'];
+    const q2 = this.playerData.quests['quest_cafeteria_manners'];
+
+    // Case 1: Quest 1 미시작
+    if (!q1) {
+      const msg = "반가워요, 학생! 마침 도움이 절실하던 참이었어요. 🍱\n\n배식대 쪽을 좀 보세요. 정량 배식이 급식실 규칙인데, 몇몇 학생들이 맛있는 소시지와 고기반찬만 잔뜩 더 달라고 떼를 쓰며 배식 줄을 멈춰 세우고 있어요!\n\n배식대 앞에 서 있는 [🍖 반찬 더 달라는 학생]에게 가서, 1:1 영어 퀴즈 대결로 정량 배식과 양보의 미덕을 일깨워주고 진정시켜 줄 수 있나요?";
+      if (window.RPGDialog) {
+        window.RPGDialog.confirm(
+          '🍱 급식지도 선생님',
+          msg,
+          '👨‍🏫',
+          () => {
+            this.playerData.quests['quest_cafeteria_order'] = { status: 'in_progress', targetCalmed: false };
+            this.showToast('🍱 [급식실 퀘스트 시작] 배부대의 반찬 조르는 학생을 1:1 퀴즈로 진정시키세요!', 'info');
+            this.saveProgress();
+          },
+          () => {},
+          '선생님, 제가 설득해 볼게요! (수락)',
+          '나중에 하기'
+        );
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    // Case 2: Quest 1 진행 중 (학생 진정 전)
+    if (q1.status === 'in_progress' && !q1.targetCalmed) {
+      const msg = '"아직 [🍖 반찬 더 달라는 학생]이 배식대 앞에서 떼를 쓰고 있어요!\n\n배부대 앞으로 가서 1:1 영어 퀴즈 대결을 펼쳐 학생을 진정시켜 주세요!"';
+      if (window.RPGDialog) window.RPGDialog.show('🍱 급식지도 선생님', msg, '👨‍🏫');
+      else alert(msg);
+      return;
+    }
+
+    // Case 3: Quest 1 목표 달성 -> 완료 및 Quest 2 연계 수주
+    if (q1.status === 'in_progress' && q1.targetCalmed) {
+      q1.status = 'done';
+      this.addGold(150);
+      this.addExp(200);
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+
+      const completeMsg = "오! 학생 덕분에 배식대 앞이 다시 질서정연해졌어요! 👏\n규칙을 지키며 사이좋게 식판을 들고 가는 모습을 보니 정말 안심이네요.\n\n수고비로 [🪙 150 G]와 [🌟 200 EXP]를 지급합니다!\n\n그런데... 이번엔 식당 좌석 쪽이 문제예요!\n\n학생 식당 좌석에서 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어지거든요.\n\n중앙 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 지도해 줄 수 있나요?";
+
+      if (window.RPGDialog) {
+        window.RPGDialog.confirm(
+          '🍱 급식지도 선생님 (1단계 완료!)',
+          completeMsg,
+          '🎉',
+          () => {
+            this.playerData.quests['quest_cafeteria_manners'] = { status: 'in_progress', targetCalmed: false };
+            this.showToast('🍽️ [연계 퀘스트 시작] 식탁에서 떠드는 학생을 1:1 퀴즈로 진정시키세요!', 'info');
+            this.saveProgress();
+          },
+          () => {},
+          '네, 식사 예절도 지도할게요! (수락)',
+          '잠시 쉬었다가 하기'
+        );
+      } else {
+        alert(completeMsg);
+      }
+      return;
+    }
+
+    // Case 4: Quest 2 미시작 (Quest 1만 완료된 상태)
+    if (!q2) {
+      const offerMsg = "배식대는 정돈되었는데 이번엔 식당 좌석 쪽이 문제예요!\n\n학생 식당 좌석에서 밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어지거든요.\n\n중앙 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!";
+      if (window.RPGDialog) {
+        window.RPGDialog.confirm(
+          '🍱 급식지도 선생님',
+          offerMsg,
+          '👨‍🏫',
+          () => {
+            this.playerData.quests['quest_cafeteria_manners'] = { status: 'in_progress', targetCalmed: false };
+            this.showToast('🍽️ [연계 퀘스트 시작] 식탁에서 떠드는 학생을 1:1 퀴즈로 진정시키세요!', 'info');
+            this.saveProgress();
+          },
+          () => {},
+          '제가 진정시킬게요! (수락)',
+          '나중에 하기'
+        );
+      } else {
+        alert(offerMsg);
+      }
+      return;
+    }
+
+    // Case 5: Quest 2 진행 중 (학생 진정 전)
+    if (q2.status === 'in_progress' && !q2.targetCalmed) {
+      const msg = '"중앙 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!\n\n어서 가서 1:1 영어 퀴즈 대결로 조용히 식사하도록 지도해 주세요!"';
+      if (window.RPGDialog) window.RPGDialog.show('🍱 급식지도 선생님', msg, '👨‍🏫');
+      else alert(msg);
+      return;
+    }
+
+    // Case 6: Quest 2 목표 달성 -> 최종 완료 및 5티어 재료 보상 지급!
+    if (q2.status === 'in_progress' && q2.targetCalmed) {
+      q2.status = 'done';
+      this.addGold(300);
+      this.addExp(350);
+      this.addItem('item_nutrition_essence', '정제된 영양의 정수', 3, '🍱', {
+        type: 'material',
+        effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료'
+      });
+      this.addItem('item_stainless_shard', '특수 강화 스텐 조각', 2, '✨', {
+        type: 'material',
+        effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료'
+      });
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+
+      const finalMsg = "와! 정말 대단해요, 학생! 🎉\n\n학생들이 자리에 조용히 앉아 친구들과 배려하며 맛있게 식사하고 있어요!\n우리 숭실 급식실의 평화와 질서를 되찾아 준 훌륭한 학생에게, 영양교사가 특별히 준비한 최고급 5티어 제작 재료와 보상을 선물할게요!\n\n🎁 [보상 지급 완료]\n• 🪙 300 골드 & 🌟 350 경험치\n• 🍱 정제된 영양의 정수 x3개\n• ✨ 특수 강화 스텐 조각 x2개\n\n앞으로도 급식실에서 맛있게 식사하고, 바닥에 나타난 잔반 몬스터들도 틈틈이 정화해 주세요!";
+      if (window.RPGDialog) window.RPGDialog.show('🎉 급식실 퀘스트 최종 완료!', finalMsg, '🏆');
+      else alert(finalMsg);
+      this.showToast('🏆 [급식실 퀘스트 완료] 급식실 질서 확립 완료! 5티어 재료 보상 획득!', 'success');
+      this.saveProgress();
+      return;
+    }
+
+    // Case 7: 모든 퀘스트 완료 후 일반 대화
+    const doneMsg = '"안녕하세요! 학생 덕분에 우리 숭실 급식실이 전교에서 가장 질서 있고 모범적인 식당이 되었답니다.\n\n언제나 든든하게 점심 챙겨 먹고, 바닥에 떨어진 잔반 몬스터들도 계속 정화해 주세요! 👍"';
+    if (window.RPGDialog) window.RPGDialog.show('🍱 급식지도 선생님', doneMsg, '👨‍🏫');
+    else alert(doneMsg);
+  }
+
+  handleDemandingStudentInteraction(npc) {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const q1 = this.playerData && this.playerData.quests && this.playerData.quests['quest_cafeteria_order'];
+
+    if (!q1) {
+      const msg = '"고기반찬 더 줘요! 햄 더 달라고요! 떼쓰면 더 주겠지?!"\n\n(※ 급식지도석의 급식지도 선생님과 먼저 대화하여 퀘스트를 받아보세요.)';
+      if (window.RPGDialog) window.RPGDialog.show('🍖 반찬 더 달라는 학생', msg, '🍖');
+      else alert(msg);
+      return;
+    }
+
+    if (q1.status === 'done' || q1.targetCalmed) {
+      const msg = '"욕심부리지 않고 정량 배식 받아서 골고루 맛있게 먹는 중이에요.\n1:1 영어 퀴즈에서 지고 나니 반찬 투정 안 하기로 결심했어요!"';
+      if (window.RPGDialog) window.RPGDialog.show('🍖 반찬 더 달라는 학생', msg, '🍖');
+      else alert(msg);
+      return;
+    }
+
+    // Quest in progress and not calmed -> Start 1:1 Quiz Battle!
+    const challengeMsg = '"고기반찬 더 줘요! 소시지 세 개 더 달란 말이에요! 정량 배식이 어디 있어요?!\n\n뭐라고요? 규칙을 지키라고요?\n그럼 저랑 [1:1 영어 퀴즈 대결]을 해서 날 이겨보시든가요!"';
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '🍖 반찬 더 달라는 학생',
+        challengeMsg,
+        '🍖',
+        () => {
+          const studentMob = {
+            id: 'battle_demanding_student',
+            name: '반찬 더 달라는 학생',
+            icon: '🍖',
+            court: 'cafeteria',
+            isStudent: true,
+            questId: 'quest_cafeteria_order',
+            hp: 100,
+            maxHp: 100,
+            atk: 14,
+            def: 4,
+            counterDmg: 20,
+            goldReward: 25,
+            expReward: 50
+          };
+          this.startFieldMonsterBattle(studentMob);
+        },
+        () => {},
+        '⚔️ 1:1 식사 예절 퀴즈 대결 시작!',
+        '물러서기'
+      );
+    } else {
+      alert(challengeMsg);
+    }
+  }
+
+  handleNoisyStudentInteraction(npc) {
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    const q2 = this.playerData && this.playerData.quests && this.playerData.quests['quest_cafeteria_manners'];
+
+    if (!q2) {
+      const msg = '"와하하! 숟가락으로 젓가락 치는 마술 보여줄까? 밥 먹으면서 떠드는 게 제일 신나!"\n\n(※ 급식실 질서 퀘스트 1단계를 완료한 뒤 급식지도 선생님에게 2단계를 의뢰받으세요.)';
+      if (window.RPGDialog) window.RPGDialog.show('🗣️ 식탁에서 떠드는 학생', msg, '🗣️');
+      else alert(msg);
+      return;
+    }
+
+    if (q2.status === 'done' || q2.targetCalmed) {
+      const msg = '"쉿! 밥 먹을 땐 음식물 안 튀게 조용히 꼭꼭 씹어 먹어야죠.\n식사 예절을 지키니까 밥이 훨씬 맛있어요!"';
+      if (window.RPGDialog) window.RPGDialog.show('🗣️ 식탁에서 떠드는 학생', msg, '🗣️');
+      else alert(msg);
+      return;
+    }
+
+    // Quest in progress and not calmed -> Start 1:1 Quiz Battle!
+    const challengeMsg = '"우하하! 야 너 이거 봤어? 밥 먹으면서 떠드는 게 왜 민폐라는 거야?!\n\n조용히 먹으라고요? 내가 왜 그래야 하는데요?\n억울하면 저랑 [1:1 영어 퀴즈 대결]로 승부해요!"';
+    if (window.RPGDialog) {
+      window.RPGDialog.confirm(
+        '🗣️ 식탁에서 떠드는 학생',
+        challengeMsg,
+        '🗣️',
+        () => {
+          const studentMob = {
+            id: 'battle_noisy_student',
+            name: '식탁에서 떠드는 학생',
+            icon: '🗣️',
+            court: 'cafeteria',
+            isStudent: true,
+            questId: 'quest_cafeteria_manners',
+            hp: 110,
+            maxHp: 110,
+            atk: 15,
+            def: 5,
+            counterDmg: 20,
+            goldReward: 30,
+            expReward: 60
+          };
+          this.startFieldMonsterBattle(studentMob);
+        },
+        () => {},
+        '⚔️ 1:1 식사 예절 퀴즈 대결 시작!',
+        '물러서기'
+      );
+    } else {
+      alert(challengeMsg);
     }
   }
 
@@ -6642,14 +6998,18 @@ class MainApp {
 
     const isHistory = !!(mob && (mob.court === 'history' || (mob.id && mob.id.startsWith('hist_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_history')));
     const isFutsal = !!(mob && mob.court === 'futsal');
-    const unitName = (isHistory || isFutsal) ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)';
+    const isCafeteria = !!(mob && (mob.court === 'cafeteria' || (mob.id && (mob.id.startsWith('caf_') || mob.id.startsWith('battle_'))) || (this.engine && this.engine.player && this.engine.player.room === 'room_cafeteria')));
+    const unitName = isCafeteria ? '7단원 (L7. Tasty World)' : ((isHistory || isFutsal) ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)');
 
     const badgeEl = document.getElementById('battle-quiz-unit-badge');
     const headerEl = document.getElementById('battle-modal-header');
     const cardEl = document.getElementById('battle-modal-card');
 
     if (badgeEl) {
-      if (isHistory) {
+      if (isCafeteria) {
+        badgeEl.innerText = mob.isStudent ? '🍱 식사 예절 1:1 지도 배틀 · 7단원 (L7. Tasty World)' : '🍱 학생 급식실 1:1 배틀 · 7단원 (L7. Tasty World)';
+        badgeEl.style.background = '#059669';
+      } else if (isHistory) {
         badgeEl.innerText = '🏛️ 숭실 역사관 1:1 배틀 · 6단원 (L6. The Beauty of Art)';
         badgeEl.style.background = '#7e22ce';
       } else if (isFutsal) {
@@ -6662,7 +7022,10 @@ class MainApp {
     }
 
     if (headerEl) {
-      if (isHistory) {
+      if (isCafeteria) {
+        headerEl.style.background = 'linear-gradient(135deg, #065f46, #047857)';
+        headerEl.style.borderBottom = '2px solid #34d399';
+      } else if (isHistory) {
         headerEl.style.background = 'linear-gradient(135deg, #4c1d95, #6b21a8)';
         headerEl.style.borderBottom = '2px solid #a855f7';
       } else if (isFutsal) {
@@ -6675,7 +7038,9 @@ class MainApp {
     }
 
     if (cardEl) {
-      if (isHistory) {
+      if (isCafeteria) {
+        cardEl.style.border = '2.5px solid #10b981';
+      } else if (isHistory) {
         cardEl.style.border = '2.5px solid #a855f7';
       } else if (isFutsal) {
         cardEl.style.border = '2.5px solid #10b981';
@@ -6694,7 +7059,8 @@ class MainApp {
     const mob = this.currentFieldMob;
     const isHistory = !!(mob && (mob.court === 'history' || (mob.id && mob.id.startsWith('hist_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_history')));
     const isFutsal = !!(mob && mob.court === 'futsal');
-    const unitFilter = (isHistory || isFutsal) ? '6단원' : '5단원';
+    const isCafeteria = !!(mob && (mob.court === 'cafeteria' || (mob.id && (mob.id.startsWith('caf_') || mob.id.startsWith('battle_'))) || (this.engine && this.engine.player && this.engine.player.room === 'room_cafeteria')));
+    const unitFilter = isCafeteria ? '7단원' : ((isHistory || isFutsal) ? '6단원' : '5단원');
 
     const q = this.quizManager.getRandomQuestion(unitFilter);
     if (!q) {
@@ -6852,7 +7218,48 @@ class MainApp {
     const dropsList = [];
 
     // 2. Drops based on field court
-    if (mob.court === 'history') {
+    if (mob.court === 'cafeteria') {
+      if (!mob.isStudent) {
+        const essenceCount = Math.floor(Math.random() * 2) + 1; // 1~2개
+        this.addItem('item_nutrition_essence', '정제된 영양의 정수', essenceCount, '🍱', {
+          type: 'material',
+          effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료'
+        });
+        dropsList.push(`🍱 정제된 영양의 정수 x${essenceCount}개`);
+
+        // 40% chance for stainless shard (+20%p for Scout)
+        if (Math.random() * 100 < (40 + scoutDropBonus)) {
+          this.addItem('item_stainless_shard', '특수 강화 스텐 조각', 1, '✨', {
+            type: 'material',
+            effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료'
+          });
+          dropsList.push('✨ 특수 강화 스텐 조각 1개 (40% 행운 드랍!)');
+        }
+      } else {
+        // Quest students calm down
+        if (mob.questId === 'quest_cafeteria_order') {
+          if (!this.playerData.quests) this.playerData.quests = {};
+          if (!this.playerData.quests['quest_cafeteria_order']) {
+            this.playerData.quests['quest_cafeteria_order'] = { status: 'in_progress', targetCalmed: false };
+          }
+          this.playerData.quests['quest_cafeteria_order'].targetCalmed = true;
+          this.showToast('✅ [반찬 조르는 학생 진정 완료!] 급식지도 선생님에게 돌아가 보고하세요!', 'success');
+          if (window.RPGDialog) {
+            window.RPGDialog.show('🍖 반찬 더 달라는 학생', '"으윽... 영어 퀴즈에서 완패했어... 알겠어, 욕심부리지 않고 정량 배식 받아서 맛있게 먹을게!"', '🍖');
+          }
+        } else if (mob.questId === 'quest_cafeteria_manners') {
+          if (!this.playerData.quests) this.playerData.quests = {};
+          if (!this.playerData.quests['quest_cafeteria_manners']) {
+            this.playerData.quests['quest_cafeteria_manners'] = { status: 'in_progress', targetCalmed: false };
+          }
+          this.playerData.quests['quest_cafeteria_manners'].targetCalmed = true;
+          this.showToast('✅ [식탁에서 떠드는 학생 진정 완료!] 급식지도 선생님에게 돌아가 보고하세요!', 'success');
+          if (window.RPGDialog) {
+            window.RPGDialog.show('🗣️ 식탁에서 떠드는 학생', '"아야야... 말문이 막히네... 밥 먹을 땐 음식물 안 튀게 조용히 꼭꼭 씹어 먹어야지. 조용히 식사할게!"', '🗣️');
+          }
+        }
+      }
+    } else if (mob.court === 'history') {
       const essenceCount = Math.floor(Math.random() * 2) + 1; // 1~2개
       this.addItem('item_history_essence', '🏛️ 숭실 역사의 정수', essenceCount, '🏛️', {
         type: 'material',
@@ -11442,6 +11849,14 @@ class MainApp {
   // =========================================================================
   getTeacherQuestStatus(id) {
     let questId = id;
+    if (id === 'npc_cafeteria_teacher') {
+      const q1 = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_cafeteria_order'] : null;
+      if (!q1 || q1.status !== 'done') {
+        questId = 'quest_cafeteria_order';
+      } else {
+        questId = 'quest_cafeteria_manners';
+      }
+    }
     if (id === 'npc_teacher_joshua') questId = 'quest_joshua_intro';
     if (id === 'npc_teacher_okchohan') questId = 'quest_okchohan_social';
     if (id === 'npc_teacher_kimmijin') questId = 'quest_kimmijin_art';

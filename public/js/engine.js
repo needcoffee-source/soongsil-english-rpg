@@ -347,6 +347,7 @@ class GameEngine {
     this.updateBasketballMonsters();
     this.updateFutsalMonsters();
     this.updateHistoryMonsters();
+    this.updateCafeteriaMonsters();
 
     // 3v3 Brawl Ball Logic Update
     if (window.BrawlBall) {
@@ -1517,6 +1518,23 @@ class GameEngine {
           }
         }
       }
+      if (this.player.room === 'room_cafeteria') {
+        if (cr.cafeteriaMonsters) {
+          for (const mob of cr.cafeteriaMonsters) {
+            if (mob.defeated) continue;
+            const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
+            if (mDist < 48 && mDist < minDist) {
+              closest = {
+                type: 'field_monster',
+                data: mob,
+                name: `${mob.icon} ${mob.name}`,
+                prompt: '1:1 퀴즈 배틀'
+              };
+              minDist = mDist;
+            }
+          }
+        }
+      }
       if (this.player.room === 'room_history') {
         if (cr.historyMonsters) {
           for (const mob of cr.historyMonsters) {
@@ -1924,6 +1942,16 @@ class GameEngine {
               data: { ...d, seatIndex: i + 1 },
               name: `🪑 학생 의자 (${i + 1}번석)`
             };
+          }
+        }
+      }
+      if (this.player.room === 'room_cafeteria') {
+        if (cr.cafeteriaMonsters) {
+          for (const mob of cr.cafeteriaMonsters) {
+            if (mob.defeated) continue;
+            if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
+              return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
+            }
           }
         }
       }
@@ -6072,6 +6100,7 @@ class GameEngine {
       this.renderStaffOffice(cr);
     } else if (this.player.room === 'room_cafeteria') {
       this.renderCafeteria(cr);
+      this.renderCafeteriaMonsters();
     } else if (this.player.floor === 5) {
       // 5층 잠긴 교실들: 깨끗한 빈 공간 연출
     } else {
@@ -6130,7 +6159,7 @@ class GameEngine {
           this.ctx.fillRect(px + 8, py + 18, 16, 14);
         }
 
-        const labelText = `${isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : '💬')} ${npc.name}`;
+        const labelText = `${isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : (npc.icon || '💬'))} ${npc.name}`;
         this.drawSharpLabel(px + 16, py + 38, labelText, {
           bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)'),
           borderColor: isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399'),
@@ -11290,6 +11319,139 @@ class GameEngine {
     });
 
     this.ctx.restore();
+  }
+
+  // Roaming & Respawn Logic for Cafeteria Monsters (5마리 음식물 & 잔반 몬스터)
+  updateCafeteriaMonsters() {
+    if (!this.player || this.player.room !== 'room_cafeteria') return;
+    const cr = this.getCurrentClassroomData();
+    if (!cr || !cr.cafeteriaMonsters) return;
+
+    const now = Date.now();
+    for (const mob of cr.cafeteriaMonsters) {
+      if (mob.defeated) {
+        if (mob.respawnAt && now >= mob.respawnAt) {
+          mob.defeated = false;
+          mob.hp = mob.maxHp;
+          if (mob.zone === 'kitchen') {
+            mob.x = 6; mob.y = 7;
+          } else if (mob.zone === 'tray_return') {
+            mob.x = 36; mob.y = 18;
+          } else if (mob.zone === 'teacher_room') {
+            mob.x = 36; mob.y = 8;
+          } else if (mob.id === 'caf_mob_table_1') {
+            mob.x = 18; mob.y = 8;
+          } else {
+            mob.x = 24; mob.y = 11;
+          }
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+        }
+        continue;
+      }
+
+      if (mob.inBattle) continue;
+
+      if (mob.roam) {
+        if (mob.targetX === undefined || mob.targetY === undefined) {
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+          mob.nextMoveTime = now + 1000 + Math.random() * 2000;
+        }
+
+        const dx = mob.targetX - mob.x;
+        const dy = mob.targetY - mob.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 0.1) {
+          mob.x = mob.targetX;
+          mob.y = mob.targetY;
+          if (now >= (mob.nextMoveTime || 0)) {
+            if (mob.zone === 'kitchen') {
+              mob.targetX = Math.round((4 + Math.random() * 4.5) * 10) / 10;
+              mob.targetY = Math.round((6 + Math.random() * 3.5) * 10) / 10;
+            } else if (mob.zone === 'tray_return') {
+              mob.targetX = Math.round((34 + Math.random() * 4) * 10) / 10;
+              mob.targetY = Math.round((17 + Math.random() * 3) * 10) / 10;
+            } else if (mob.zone === 'teacher_room') {
+              mob.targetX = Math.round((34 + Math.random() * 4) * 10) / 10;
+              mob.targetY = Math.round((7 + Math.random() * 4) * 10) / 10;
+            } else if (mob.id === 'caf_mob_table_1') {
+              mob.targetX = 18;
+              mob.targetY = Math.round((6 + Math.random() * 7) * 10) / 10;
+            } else {
+              mob.targetX = 24;
+              mob.targetY = Math.round((6 + Math.random() * 7) * 10) / 10;
+            }
+            mob.nextMoveTime = now + 2500 + Math.random() * 3500;
+          }
+        } else {
+          const step = 0.015;
+          mob.x += (dx / dist) * Math.min(step, dist);
+          mob.y += (dy / dist) * Math.min(step, dist);
+        }
+      }
+    }
+  }
+
+  renderCafeteriaMonsters() {
+    const cr = this.getCurrentClassroomData();
+    if (!cr || !cr.cafeteriaMonsters) return;
+
+    const now = Date.now();
+    for (const mob of cr.cafeteriaMonsters) {
+      if (mob.defeated) continue;
+
+      const floatY = Math.sin((now + mob.x * 200) / 200) * 3;
+      const px = mob.x * 32;
+      const py = mob.y * 32 + floatY;
+
+      // Drop shadow on floor
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 16, mob.y * 32 + 28, 14, 6, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Monster Sprite with Food/Waste Aura
+      this.ctx.save();
+      this.ctx.fillStyle = mob.zone === 'kitchen' ? 'rgba(234, 88, 12, 0.25)' :
+                           (mob.zone === 'tray_return' ? 'rgba(161, 98, 7, 0.25)' :
+                           (mob.zone === 'teacher_room' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(56, 189, 248, 0.25)'));
+      this.ctx.beginPath();
+      this.ctx.arc(px + 16, py + 12, 18, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Main Icon
+      this.ctx.font = '22px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(mob.icon, px + 16, py + 12);
+      this.ctx.restore();
+
+      // HP Bar
+      const hpW = 42;
+      const hpH = 6;
+      const hpX = px + 16 - hpW / 2;
+      const hpY = py - 14;
+      const hpPct = Math.max(0, Math.min(1, mob.hp / mob.maxHp));
+
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      this.ctx.fillRect(hpX - 1, hpY - 1, hpW + 2, hpH + 2);
+      this.ctx.fillStyle = '#dc2626';
+      this.ctx.fillRect(hpX, hpY, hpW, hpH);
+      this.ctx.fillStyle = hpPct > 0.5 ? '#16a34a' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      this.ctx.fillRect(hpX, hpY, hpW * hpPct, hpH);
+
+      // Name & Icon Label below
+      this.drawSharpLabel(px + 16, py + 38, `${mob.icon} ${mob.name}`, {
+        bgColor: 'rgba(15, 23, 42, 0.95)',
+        borderColor: '#10b981',
+        textColor: '#a7f3d0',
+        fontSize: 11,
+        paddingX: 8,
+        height: 20
+      });
+    }
   }
 
   // Roaming & Respawn Logic for History Museum Monsters
