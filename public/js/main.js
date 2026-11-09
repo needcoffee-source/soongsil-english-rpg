@@ -817,7 +817,7 @@ const TITLE_DEFINITIONS = [
   {
     id: 'title_history_bearer',
     name: '🏛️ 역사를 기억하는 자',
-    desc: '숭실역사관 4대 전시관을 모두 탐방하고 127년의 역사와 사명을 마음에 새긴 숭실의 후예! (공격력 +10, 체력 +30, 파멸신 피해 +15%)',
+    desc: '숭실역사관 4대 전시관을 모두 탐방하고 127년의 역사와 사명을 마음에 새긴 숭실의 후예!',
     costType: 'quest',
     costAmount: 0
   },
@@ -5584,12 +5584,6 @@ class MainApp {
 
         // 🌟 진로 직업 패시브 스킬 스탯 보너스 (각 직업은 고유 특수 기능만 적용)
 
-    // 🏛️ 역사관 특별 칭호 보너스
-    if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자') {
-      bonusAtk += 10;
-      bonusHp += 30;
-    }
-
     // 🔥 용기의 물약 버프 (공격력 +5 증가)
     if (this.isBuffActive && this.isBuffActive('courage_boost')) {
       bonusAtk += 5;
@@ -6789,10 +6783,6 @@ class MainApp {
       btnEl.classList.add('correct');
       if (window.AudioManager) window.AudioManager.playCorrect();
       let myDmg = Math.max(5, this.playerData.atk - bossDef);
-      const bNameCheck = window.BOSS_CONFIG.name || '';
-      if (this.playerData.equippedTitle === '🏛️ 역사를 기억하는 자' && (bNameCheck.includes('파멸신') || bNameCheck.includes('기말고사'))) {
-        myDmg = Math.round(myDmg * 1.15);
-      }
       // 🥊 파이터 직업: 보스 레이드 공격 데미지 +10% 상승
       if (this.playerData && (this.playerData.job === 'fighter' || this.playerData.job === 'wrestler')) {
         myDmg = Math.round(myDmg * 1.10);
