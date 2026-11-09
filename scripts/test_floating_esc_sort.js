@@ -206,4 +206,22 @@ assert.strictEqual(res2, true);
 assert.strictEqual(closedModalId, 'modal-inventory (via closeBtn)');
 console.log('✅ Test 3 Passed: closeTopModal cleanly prioritized RPGDialog and closed open modal.');
 
-console.log('\n🎉 ALL FLOATING TEXT, ESC & SORT TESTS PASSED PERFECTLY!');
+// 4. Test Protection Potion (Lv.10 lock, 3 min +3 DEF, no store sale)
+console.log('--- Test 4: Protection Potion Implementation ---');
+const craftRecipes = JSON.parse(fs.readFileSync('data/craft_recipes.json', 'utf8'));
+const protRecipe = craftRecipes.find(r => r.id === 'recipe_protection_potion');
+assert.ok(protRecipe, 'recipe_protection_potion must exist in craft_recipes.json');
+assert.strictEqual(protRecipe.requiredLevel, 10, 'Protection potion must require level 10');
+assert.strictEqual(protRecipe.result.effect, '3분간 방어력(DEF) +3 증가');
+assert.strictEqual(protRecipe.result.item, 'item_protection_potion');
+
+const serverCode = fs.readFileSync('server.js', 'utf8');
+assert.ok(serverCode.includes("'item_protection_potion'"), 'server.js must define item_protection_potion');
+
+assert.ok(mainJsCode.includes("'item_protection_potion'"), 'main.js must define item_protection_potion');
+assert.ok(mainJsCode.includes("isBuffActive('protection_boost')"), 'main.js must check protection_boost');
+assert.ok(mainJsCode.includes("bonusDef += 3;"), 'protection_boost must add +3 DEF');
+assert.ok(!mainJsCode.includes("id: 'item_protection_potion', price:"), 'Protection potion must NOT be sold in store');
+console.log('✅ Test 4 Passed: Protection Potion verified with Lv.10 lock, +3 DEF buff, and no store sale.');
+
+console.log('\n🎉 ALL FLOATING TEXT, ESC, SORT & PROTECTION POTION TESTS PASSED PERFECTLY!');

@@ -2395,6 +2395,14 @@ body, html {
   background: #6d28d9;
 }
 
+.btn-inv-protection {
+  background: #0284c7;
+  color: #ffffff;
+}
+.btn-inv-protection:hover {
+  background: #0369a1;
+}
+
 .icon-red-potion {
   display: inline-block;
   filter: hue-rotate(220deg) saturate(3.2) brightness(1.08);
@@ -2413,6 +2421,11 @@ body, html {
 .icon-purple-potion {
   display: inline-block;
   filter: hue-rotate(155deg) saturate(1.8) brightness(1.05);
+}
+
+.icon-blue-potion {
+  display: inline-block;
+  filter: hue-rotate(95deg) saturate(2.4) brightness(1.2) drop-shadow(0 0 4px #0284c7);
 }
 
 .icon-clear-potion {

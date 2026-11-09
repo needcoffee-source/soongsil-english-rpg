@@ -79,6 +79,7 @@ class CraftingManager {
     if (id === 'recipe_orange_potion' || id === 'item_orange_potion') return 'icon-orange-potion';
     if (id === 'recipe_green_potion' || id === 'item_green_potion') return 'icon-green-potion';
     if (id === 'recipe_courage_potion' || id === 'item_courage_potion') return 'icon-purple-potion';
+    if (id === 'recipe_protection_potion' || id === 'item_protection_potion') return 'icon-blue-potion';
     if (id === 'recipe_clear_potion' || id === 'item_clear_potion') return 'icon-clear-potion';
     if (id === 'recipe_elixir' || id === 'item_elixir') return 'icon-elixir';
     return '';

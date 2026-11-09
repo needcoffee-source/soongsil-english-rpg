@@ -267,6 +267,17 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
   },
   {
+    id: 'item_protection_potion',
+    name: '수호의 물약',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '방어 버프 물약',
+    tierColor: '#0284c7',
+    effect: '마시면 3분간 방어력(DEF) +3 증가 (Lv.10+ 전용)',
+    source: '소비품 제작대(C)에서 조제 (10레벨 이상) [매점 구매 불가]',
+    recipe: '약초 잎사귀 3개 + 단단한 목재 2개 + 30G'
+  },
+  {
     id: 'item_elixir',
     name: '신비한 엘릭서',
     icon: '⚗️',
@@ -589,6 +600,7 @@ const ALL_GAME_ITEMS = {
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
+  'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '3분간 방어력(DEF) +3 증가' } },
   'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
@@ -5763,6 +5775,11 @@ class MainApp {
       bonusAtk += 5;
     }
 
+    // 🛡️ 수호의 물약 버프 (방어력 +3 증가)
+    if (this.isBuffActive && this.isBuffActive('protection_boost')) {
+      bonusDef += 3;
+    }
+
     this.playerData.atk = this.playerData.baseAtk + lvBonus + bonusAtk;
     this.playerData.def = this.playerData.baseDef + lvBonus + bonusDef;
     this.playerData.maxHp = this.playerData.baseHp + bonusHp;
@@ -6049,9 +6066,11 @@ class MainApp {
       if (itemId === 'item_clear_potion') return 2;
       if (itemId === 'item_orange_potion') return 3;
       if (itemId === 'item_red_potion') return 4;
-      if (itemId.includes('potion')) return 5;
-      if (itemId.includes('scroll')) return 6;
-      return 7;
+      if (itemId === 'item_courage_potion') return 5;
+      if (itemId === 'item_protection_potion') return 6;
+      if (itemId.includes('potion')) return 7;
+      if (itemId.includes('scroll')) return 8;
+      return 9;
     };
 
     this.playerData.inventory.sort((a, b) => {
@@ -6130,6 +6149,7 @@ class MainApp {
         const isTeleportScroll = (item.item === 'item_teleport_scroll');
         const isGreenPotion = (item.item === 'item_green_potion');
         const isCouragePotion = (item.item === 'item_courage_potion');
+        const isProtectionPotion = (item.item === 'item_protection_potion');
         const isClearPotion = (item.item === 'item_clear_potion');
         const isElixir = (item.item === 'item_elixir');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
@@ -6164,6 +6184,8 @@ class MainApp {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#4ade80;">⚡ 1분간 기본 이동속도 +10%</span>`;
           } else if (isCouragePotion) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;"><span class="icon-purple-potion">🧪</span> 3분간 공격력(ATK) +5</span>`;
+          } else if (isProtectionPotion) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;"><span class="icon-blue-potion">🧪</span> 3분간 방어력(DEF) +3</span>`;
           } else {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
@@ -6176,11 +6198,13 @@ class MainApp {
 
         const iconHtml = isCouragePotion
           ? `<span class="icon-purple-potion">${item.icon || '🧪'}</span>`
-          : (isClearPotion
-            ? `<span class="icon-clear-potion">${item.icon || '🧪'}</span>`
-            : (isElixir
-              ? `<span class="icon-elixir">${item.icon || '⚗️'}</span>`
-              : `<span>${item.icon || '📦'}</span>`));
+          : (isProtectionPotion
+            ? `<span class="icon-blue-potion">${item.icon || '🧪'}</span>`
+            : (isClearPotion
+              ? `<span class="icon-clear-potion">${item.icon || '🧪'}</span>`
+              : (isElixir
+                ? `<span class="icon-elixir">${item.icon || '⚗️'}</span>`
+                : `<span>${item.icon || '📦'}</span>`)));
 
         card.innerHTML = `
           <div class="inv-item-icon-box">
@@ -6231,6 +6255,9 @@ class MainApp {
           } else if (isCouragePotion) {
             btnClass = 'btn-inv-courage';
             btnText = '마시기';
+          } else if (isProtectionPotion) {
+            btnClass = 'btn-inv-protection';
+            btnText = '마시기';
           }
 
           btn.className = 'btn-inv-action ' + btnClass;
@@ -6242,6 +6269,7 @@ class MainApp {
             else if (isScroll) this.attemptUseReviveScroll();
             else if (isGreenPotion) this.useGreenPotion();
             else if (isCouragePotion) this.useCouragePotion();
+            else if (isProtectionPotion) this.useProtectionPotion();
             else this.usePotion(item.item);
           };
 
@@ -8094,10 +8122,15 @@ class MainApp {
       } else if (k === 'courage_boost') {
         badge.style.borderColor = '#c084fc';
         badge.style.color = '#c084fc';
+      } else if (k === 'protection_boost') {
+        badge.style.borderColor = '#38bdf8';
+        badge.style.color = '#38bdf8';
       }
       const iconHtml = (k === 'courage_boost')
         ? `<span class="icon-purple-potion">🧪</span>`
-        : b.icon;
+        : (k === 'protection_boost')
+          ? `<span class="icon-blue-potion">🧪</span>`
+          : b.icon;
       badge.innerHTML = `${iconHtml} ${b.name} ${remSec}s`;
       el.appendChild(badge);
     });
@@ -8134,6 +8167,37 @@ class MainApp {
     }
     this.removeItem('item_courage_potion', 1);
     this.applyBuff('courage_boost', 180000, '용기의 투지 (+5 ATK)', '🧪');
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      const px = this.engine.player ? this.engine.player.x + 16 : undefined;
+      const py = this.engine.player ? this.engine.player.y - 14 : undefined;
+      this.engine.addFloatingText('+5 ATK ⚔️', px, py, '#c084fc', 18);
+    }
+    this.saveProgress();
+    if (!this.modalInventory.classList.contains('hidden')) {
+      this.openInventory();
+    }
+    this.updateBossRaidUI();
+    this.updateFieldBattleUI();
+    return true;
+  }
+
+  useProtectionPotion() {
+    if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
+      alert('💀 기절한 상태에서는 물약을 마실 수 없습니다!');
+      return false;
+    }
+    const pot = this.playerData.inventory.find(i => i.item === 'item_protection_potion');
+    if (!pot || pot.count <= 0) {
+      alert('보유 중인 수호의 물약이 없습니다.');
+      return false;
+    }
+    this.removeItem('item_protection_potion', 1);
+    this.applyBuff('protection_boost', 180000, '수호의 가호 (+3 DEF)', '🧪');
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      const px = this.engine.player ? this.engine.player.x + 16 : undefined;
+      const py = this.engine.player ? this.engine.player.y - 14 : undefined;
+      this.engine.addFloatingText('+3 DEF 🛡️', px, py, '#38bdf8', 18);
+    }
     this.saveProgress();
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();
@@ -12025,12 +12089,15 @@ class MainApp {
       `;
 
       const isCourage = (item.id === 'item_courage_potion');
+      const isProtection = (item.id === 'item_protection_potion');
       const isOrange = (item.id === 'item_orange_potion');
       const isRed = (item.id === 'item_red_potion');
       const isGreen = (item.id === 'item_green_potion');
       let iconDisplay = item.icon;
       if (isCourage) {
         iconDisplay = `<span class="icon-purple-potion">${item.icon}</span>`;
+      } else if (isProtection) {
+        iconDisplay = `<span class="icon-blue-potion">${item.icon}</span>`;
       } else if (isOrange) {
         iconDisplay = `<span class="icon-orange-potion">${item.icon}</span>`;
       } else if (isRed) {

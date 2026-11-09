@@ -833,6 +833,52 @@
     }
   },
   {
+    "id": "recipe_protection_potion",
+    "name": "수호의 물약 (Protection Potion)",
+    "category": "potion",
+    "description": "[상위 물약] 몸 주위에 든든한 푸른빛 보호막을 감싸는 영약입니다. 마시면 3분간 방어력(DEF)이 +3 증가합니다. (Lv.10 이상 전용)",
+    "icon": "🧪",
+    "gradeLevel": 2,
+    "requiredLevel": 10,
+    "requiredGold": 30,
+    "requiredItems": [
+      {
+        "item": "item_herb",
+        "name": "약초 잎사귀",
+        "count": 3
+      },
+      {
+        "item": "item_wood",
+        "name": "단단한 목재",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "든든한 수호의 방패가 모든 위험으로부터 우리를 보호한다.",
+      "words": [
+        "A",
+        "strong",
+        "guardian",
+        "shield",
+        "protects",
+        "us",
+        "from",
+        "all",
+        "danger."
+      ],
+      "correct": "A strong guardian shield protects us from all danger."
+    },
+    "result": {
+      "item": "item_protection_potion",
+      "name": "수호의 물약",
+      "icon": "🧪",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 0,
+      "effect": "3분간 방어력(DEF) +3 증가"
+    }
+  },
+  {
     "id": "recipe_elixir",
     "name": "신비한 엘릭서 (Mystic Elixir)",
     "category": "potion",
