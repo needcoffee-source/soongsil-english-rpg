@@ -1943,8 +1943,13 @@ class MainApp {
         return;
       }
 
-      if (!npc.dialogue) return; // 대사 없는 NPC (오예숙 선생님 등)
-      alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
+      if (!npc.dialogue) return;
+      if (window.RPGDialog) {
+        const icon = (npc.name && (npc.name.includes('오예슉') || npc.name.includes('오예숙'))) ? '👩‍🏫' : '💬';
+        window.RPGDialog.show(`💬 ${npc.name}`, npc.dialogue, icon);
+      } else {
+        alert(`💬 [${npc.name}]\n\n"${npc.dialogue}"`);
+      }
     } else if (target.type === 'mascot') {
       this.handleMascotInteraction();
     } else if (
@@ -1957,12 +1962,29 @@ class MainApp {
       target.type === 'forsythia'
     ) {
       if (target.name && target.name.includes('전광판')) {
-        alert('🖥️ [컴퓨터실 전광판]\n\n"1학년 3반 영어 타자 훈련실!\n중앙의 산성비 타자 컴퓨터 앞에서 SPACE를 누르면 하늘에서 떨어지는 영단어 방어전이 시작됩니다.\n\n정확한 타이핑으로 방화벽을 지키고 골드와 경험치를 획득하세요!"');
+        const boardMsg = '🖥️ [1학년 3반 학급 알림 & 영어 타자 훈련실]\n\n' +
+          '• 담임교사: 오예슉 선생님 (가정) 👩‍🏫\n' +
+          '• 학급 급훈: "따뜻한 밥심으로 바르게 배우고 행복하게 성장하자! 🍱✨"\n\n' +
+          '🎮 [산성비 영어 타자 방어전 이용 안내]\n' +
+          '중앙의 산성비 타자 컴퓨터 앞에서 SPACE를 누르면 하늘에서 떨어지는 영단어 방어전이 시작됩니다.\n' +
+          '정확한 타이핑으로 방화벽을 지키고 골드와 경험치를 획득하세요!';
+        if (window.RPGDialog) {
+          window.RPGDialog.show('🖥️ 1학년 3반 전광판', boardMsg, '🖥️');
+        } else {
+          alert(boardMsg);
+        }
         return;
       }
       if (target.name && target.name.includes('서버')) {
         this.onComputerServerInspected();
-        alert('🎛️ [컴퓨터실 메인 서버]\n\n"숭실 인트라넷 전산망 및 정보 실습 시스템이 정상 가동 중입니다. (PING 1ms / 상태: 최적)"');
+        const serverMsg = '🎛️ [1학년 3반 컴퓨터실 메인 서버]\n\n' +
+          '"오예슉 선생님 교탁 옆 전산망 관리 시스템입니다.\n' +
+          '숭실 인트라넷 전산망 및 정보 실습 시스템이 정상 가동 중입니다. (PING 1ms / 상태: 최적)"';
+        if (window.RPGDialog) {
+          window.RPGDialog.show('🎛️ 컴퓨터실 메인 서버', serverMsg, '🎛️');
+        } else {
+          alert(serverMsg);
+        }
         return;
       }
       this.quizManager.triggerQuiz(target.name, target.type, target.data);

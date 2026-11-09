@@ -6189,7 +6189,7 @@ class GameEngine {
       }
     }
 
-    // 8-C. Classroom NPCs (e.g. 1학년 3반 김영훈 선생님, 1학년 5반 졍경슉 선생님)
+    // 8-C. Classroom NPCs (e.g. 1학년 3반 오예슉 선생님, 1학년 5반 졍경슉 선생님)
     if (cr.npcs && cr.npcs.length > 0) {
       for (const npc of cr.npcs) {
         const px = npc.x * 32;
@@ -6201,6 +6201,7 @@ class GameEngine {
         this.ctx.fill();
 
         const isKyungsook = (npc.id === 'npc_teacher_kyungsook' || (npc.name && (npc.name.includes('졍경슉') || npc.name.includes('정경숙'))));
+        const isOyesook = (npc.id === 'npc_teacher_computer' || (npc.name && (npc.name.includes('오예슉') || npc.name.includes('오예숙'))));
         const isTeacherNpc = (npc.avatar === 'teacher' || npc.avatar === 'teacher_joshua' || npc.name.includes('선생님'));
 
         if (isKyungsook) {
@@ -6213,6 +6214,19 @@ class GameEngine {
           // 연금술사 졍경슉 선생님 전용 신비한 룬 장식 펜던트
           this.ctx.fillStyle = '#f59e0b';
           this.ctx.fillRect(px + 14, py + 22, 4, 4);
+        } else if (isOyesook) {
+          // 🧵 가정 오예슉 선생님 전용 코랄 로즈 & 에이프런 스프라이트
+          this.ctx.fillStyle = '#be123c';
+          this.ctx.beginPath();
+          this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.fillRect(px + 8, py + 18, 16, 14);
+
+          // 화사한 아이보리 에이프런 & 로즈 단추
+          this.ctx.fillStyle = '#fff1f2';
+          this.ctx.fillRect(px + 11, py + 20, 10, 10);
+          this.ctx.fillStyle = '#f43f5e';
+          this.ctx.fillRect(px + 15, py + 23, 2, 2);
         } else {
           // 교사 NPC (조슈아, 옥촣한, 김진믜 등) - 단정한 딥블루 교사 스프라이트
           this.ctx.fillStyle = isTeacherNpc ? '#1e3a8a' : '#047857';
@@ -6222,10 +6236,10 @@ class GameEngine {
           this.ctx.fillRect(px + 8, py + 18, 16, 14);
         }
 
-        const labelText = `${isKyungsook ? '⚗️' : (isTeacherNpc ? '👨‍🏫' : (npc.icon || '💬'))} ${npc.name}`;
+        const labelText = `${isKyungsook ? '⚗️' : (isOyesook ? '👩‍🏫' : (isTeacherNpc ? '👨‍🏫' : (npc.icon || '💬')))} ${npc.name}`;
         this.drawSharpLabel(px + 16, py + 38, labelText, {
-          bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)'),
-          borderColor: isKyungsook ? '#c084fc' : (isTeacherNpc ? '#60a5fa' : '#34d399'),
+          bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isOyesook ? 'rgba(159, 18, 57, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)')),
+          borderColor: isKyungsook ? '#c084fc' : (isOyesook ? '#fb7185' : (isTeacherNpc ? '#60a5fa' : '#34d399')),
           textColor: '#fef08a',
           fontSize: 12,
           paddingX: 8,
