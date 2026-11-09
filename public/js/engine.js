@@ -11336,12 +11336,19 @@ class GameEngine {
         if (mob.respawnAt && now >= mob.respawnAt) {
           mob.defeated = false;
           mob.hp = mob.maxHp;
-          if (mob.zone === 'kitchen') {
-            mob.x = 6; mob.y = 7;
+          if (mob.spawnX !== undefined && mob.spawnY !== undefined) {
+            mob.x = mob.spawnX;
+            mob.y = mob.spawnY;
+          } else if (mob.id === 'caf_mob_kitchen_1') {
+            mob.x = 5; mob.y = 6;
+          } else if (mob.id === 'caf_mob_kitchen_2') {
+            mob.x = 8; mob.y = 11;
+          } else if (mob.id === 'caf_mob_teacher_1') {
+            mob.x = 36; mob.y = 4;
+          } else if (mob.id === 'caf_mob_teacher_2') {
+            mob.x = 36; mob.y = 12;
           } else if (mob.zone === 'tray_return') {
             mob.x = 36; mob.y = 18;
-          } else if (mob.zone === 'teacher_room') {
-            mob.x = 36; mob.y = 8;
           } else if (mob.id === 'caf_mob_table_1') {
             mob.x = 18; mob.y = 8;
           } else {
@@ -11370,15 +11377,21 @@ class GameEngine {
           mob.x = mob.targetX;
           mob.y = mob.targetY;
           if (now >= (mob.nextMoveTime || 0)) {
-            if (mob.zone === 'kitchen') {
-              mob.targetX = Math.round((4 + Math.random() * 4.5) * 10) / 10;
-              mob.targetY = Math.round((6 + Math.random() * 3.5) * 10) / 10;
+            if (mob.id === 'caf_mob_kitchen_1') {
+              mob.targetX = Math.round((4 + Math.random() * 3) * 10) / 10;
+              mob.targetY = Math.round((5 + Math.random() * 2) * 10) / 10;
+            } else if (mob.id === 'caf_mob_kitchen_2') {
+              mob.targetX = Math.round((6 + Math.random() * 3) * 10) / 10;
+              mob.targetY = Math.round((10 + Math.random() * 2) * 10) / 10;
+            } else if (mob.id === 'caf_mob_teacher_1') {
+              mob.targetX = Math.round((34 + Math.random() * 4) * 10) / 10;
+              mob.targetY = Math.round((3.5 + Math.random() * 1.5) * 10) / 10;
+            } else if (mob.id === 'caf_mob_teacher_2') {
+              mob.targetX = Math.round((34 + Math.random() * 4) * 10) / 10;
+              mob.targetY = Math.round((11.5 + Math.random() * 1.5) * 10) / 10;
             } else if (mob.zone === 'tray_return') {
               mob.targetX = Math.round((34 + Math.random() * 4) * 10) / 10;
               mob.targetY = Math.round((17 + Math.random() * 3) * 10) / 10;
-            } else if (mob.zone === 'teacher_room') {
-              mob.targetX = Math.round((34 + Math.random() * 4) * 10) / 10;
-              mob.targetY = Math.round((7 + Math.random() * 4) * 10) / 10;
             } else if (mob.id === 'caf_mob_table_1') {
               mob.targetX = 18;
               mob.targetY = Math.round((6 + Math.random() * 7) * 10) / 10;
