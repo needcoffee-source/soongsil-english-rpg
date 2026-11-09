@@ -115,29 +115,34 @@ assert.strictEqual(kitchenMobs.length, 2, 'Kitchen must have 2 눌어붙은 누�
 assert.strictEqual(kitchenMobs[0].name, '눌어붙은 누룽지 슬라임');
 assert.strictEqual(kitchenMobs[1].name, '눌어붙은 누룽지 슬라임');
 assert.strictEqual(kitchenMobs[0].maxHp, 220, 'Kitchen mob maxHp should be 220 for Level 12+ zone');
-assert.strictEqual(kitchenMobs[0].atk, 31, 'Kitchen mob atk should be 31 (+5 boosted)');
-assert.strictEqual(kitchenMobs[0].counterDmg, 37, 'Kitchen mob counterDmg should be 37');
+assert.strictEqual(kitchenMobs[0].atk, 45, 'Kitchen mob atk should be 45 (boosted to ~45)');
+assert.strictEqual(kitchenMobs[0].def, 13, 'Kitchen mob def should be 13 (+3 boosted)');
+assert.strictEqual(kitchenMobs[0].counterDmg, 45, 'Kitchen mob counterDmg should be 45');
 
 assert.strictEqual(tableMobs.length, 2, 'Must have 2 identical student seating monsters');
 assert.strictEqual(tableMobs[0].name, '바닥에 흘린 밥풀 골렘');
 assert.strictEqual(tableMobs[1].name, '바닥에 흘린 밥풀 골렘');
-assert.strictEqual(tableMobs[0].atk, 31, 'Table mob atk should be 31 (+5 boosted)');
-assert.strictEqual(tableMobs[0].counterDmg, 37, 'Table mob counterDmg should be 37');
+assert.strictEqual(tableMobs[0].atk, 45, 'Table mob atk should be 45 (boosted to ~45)');
+assert.strictEqual(tableMobs[0].def, 13, 'Table mob def should be 13 (+3 boosted)');
+assert.strictEqual(tableMobs[0].counterDmg, 45, 'Table mob counterDmg should be 45');
 
 assert(trayMob, 'Tray return monster must exist');
 assert.strictEqual(trayMob.name, '쏟아진 잔반 괴물');
-assert.strictEqual(trayMob.atk, 34, 'Tray monster atk should be 34 (+5 boosted)');
-assert.strictEqual(trayMob.counterDmg, 40, 'Tray monster counterDmg should be 40');
+assert.strictEqual(trayMob.maxHp, 270, 'Tray monster maxHp should be 270 (+10 boosted)');
+assert.strictEqual(trayMob.atk, 48, 'Tray monster atk should be 48');
+assert.strictEqual(trayMob.def, 14, 'Tray monster def should be 14 (+3 boosted)');
+assert.strictEqual(trayMob.counterDmg, 50, 'Tray monster counterDmg should be 50');
 
 assert.strictEqual(facultyMobs.length, 2, 'Teacher dining must have 2 남겨진 샐러드 골렘');
 assert.strictEqual(facultyMobs[0].name, '남겨진 샐러드 골렘');
 assert.strictEqual(facultyMobs[1].name, '남겨진 샐러드 골렘');
-assert.strictEqual(facultyMobs[0].atk, 32, 'Faculty mob atk should be 32 (+5 boosted)');
-assert.strictEqual(facultyMobs[0].counterDmg, 37, 'Faculty mob counterDmg should be 37');
+assert.strictEqual(facultyMobs[0].atk, 46, 'Faculty mob atk should be 46');
+assert.strictEqual(facultyMobs[0].def, 13, 'Faculty mob def should be 13 (+3 boosted)');
+assert.strictEqual(facultyMobs[0].counterDmg, 46, 'Faculty mob counterDmg should be 46');
 
 const kitchenMob = kitchenMobs[0];
 
-console.log('✔ [2/6] 7 Food waste monsters verified: 조리실 2 (ATK 31), 급식좌석 동종 2 (ATK 31), 퇴식구 1 (ATK 34), 교사용 급식실 2 (ATK 32)');
+console.log('✔ [2/6] 7 Food waste monsters verified: 조리실 2 (ATK 45, DEF 13), 급식좌석 2 (ATK 45, DEF 13), 퇴식구 1 (HP 270, ATK 48, DEF 14), 교사용 급식실 2 (ATK 46, DEF 13)');
 
 // 2. Load engine.js & verify engine update & respawn logic
 vm.runInThisContext(fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8'));
