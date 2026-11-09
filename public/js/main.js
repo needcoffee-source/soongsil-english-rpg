@@ -1728,6 +1728,18 @@ class MainApp {
     }
 
     window.addEventListener('keydown', (e) => {
+      // [ESC] 키로 모든 활성 모달 / 팝업 즉시 닫기
+      if (e.key === 'Escape') {
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+          document.activeElement.blur();
+        }
+        if (this.closeTopModal()) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+      }
+
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
       const arModal = document.getElementById('modal-acid-rain');
       if (arModal && !arModal.classList.contains('hidden')) return;
@@ -1792,6 +1804,51 @@ class MainApp {
     };
 
     window.addEventListener('resize', () => this.engine.resize());
+  }
+
+  // [ESC] 키로 모든 활성 모달 / 다이얼로그 즉시 닫기
+  closeTopModal() {
+    // 1. RPGDialog if open
+    if (window.RPGDialog && window.RPGDialog.isOpen) {
+      if (window.RPGDialog.isConfirmMode) {
+        window.RPGDialog.resolveChoice(false);
+      } else {
+        window.RPGDialog.close();
+      }
+      return true;
+    }
+
+    // 2. Find all open modals (excluding login modal)
+    const openModals = Array.from(document.querySelectorAll('.modal-overlay:not(.hidden)'))
+      .filter(m => m.id !== 'modal-login');
+
+    if (openModals.length === 0) return false;
+
+    // Pick topmost modal (highest computed/inline z-index, or last opened in DOM)
+    openModals.sort((a, b) => {
+      const za = parseInt(window.getComputedStyle ? window.getComputedStyle(a).zIndex : a.style.zIndex) || 100;
+      const zb = parseInt(window.getComputedStyle ? window.getComputedStyle(b).zIndex : b.style.zIndex) || 100;
+      return zb - za;
+    });
+
+    const topModal = openModals[0];
+
+    // Check for standard close button
+    const closeBtn = topModal.querySelector('.btn-modal-close, [id^="btn-close-"], .btn-close, #btn-recycle-quiz-close, #btn-close-rpg-dialog');
+    if (closeBtn) {
+      closeBtn.click();
+    } else {
+      topModal.classList.add('hidden');
+    }
+
+    if (topModal.id === 'modal-crafting' && window.CraftingManager) {
+      try { window.CraftingManager.close(); } catch (e) {}
+    }
+
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+    return true;
   }
 
   handleInteraction(target) {
@@ -2892,6 +2949,12 @@ class MainApp {
 
     this.updateHpBar();
     this.saveProgress();
+
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      const px = this.engine.player ? this.engine.player.x + 16 : undefined;
+      const py = this.engine.player ? this.engine.player.y - 14 : undefined;
+      this.engine.addFloatingText(`+${actualHealed} HP 💚`, px, py, '#4ade80', 18);
+    }
 
     if (window.AudioManager) {
       window.AudioManager.playRevive();
@@ -5352,14 +5415,23 @@ class MainApp {
     // Inventory Category Filter Tabs
     const invTabContainer = document.getElementById('inv-tab-container');
     if (invTabContainer) {
-      invTabContainer.querySelectorAll('.inv-tab-btn').forEach(btn => {
+      invTabContainer.querySelectorAll('.inv-tab-btn[data-tab]').forEach(btn => {
         btn.addEventListener('click', () => {
           if (window.AudioManager) window.AudioManager.playSelect();
-          invTabContainer.querySelectorAll('.inv-tab-btn').forEach(b => b.classList.remove('active'));
+          invTabContainer.querySelectorAll('.inv-tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           this.currentInvTab = btn.getAttribute('data-tab') || 'all';
           this.openInventory();
         });
+      });
+    }
+
+    // Inventory Auto-Sort Button
+    const btnSortInv = document.getElementById('btn-sort-inventory');
+    if (btnSortInv) {
+      btnSortInv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.sortInventory();
       });
     }
 
@@ -5931,12 +6003,88 @@ class MainApp {
     this.updateHpBar();
     this.saveProgress();
 
+    if (this.engine && typeof this.engine.addFloatingText === 'function') {
+      const px = this.engine.player ? this.engine.player.x + 16 : undefined;
+      const py = this.engine.player ? this.engine.player.y - 14 : undefined;
+      this.engine.addFloatingText(`+${actualHealed} HP 💚`, px, py, '#4ade80', 18);
+    }
+
     alert(`🧪 [${pot.name}]을(를) 꿀꺽 마셨습니다!\n체력이 +${actualHealed} 회복되었습니다. (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})`);
 
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();
     }
     return true;
+  }
+
+  // 가방 아이템 자동 정렬 (장비 -> 소비/물약 -> 재료 순, 세부 티어/이름순)
+  sortInventory() {
+    if (!this.playerData || !this.playerData.inventory) return;
+
+    if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
+      window.AudioManager.playSelect();
+    }
+
+    const getCategoryRank = (item) => {
+      const isEquip = (item.type === 'equipment' || (item.item && item.item.startsWith('equip_')));
+      const isConsumable = (item.type === 'consumable' || (item.item && (item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'))));
+      if (isEquip) return 1;
+      if (isConsumable) return 2;
+      return 3; // Materials & other
+    };
+
+    const getEquipSlotRank = (slot) => {
+      switch (slot) {
+        case 'weapon': return 1;
+        case 'armor': return 2;
+        case 'head': case 'helmet': return 3;
+        case 'boots': return 4;
+        case 'accessory': return 5;
+        default: return 6;
+      }
+    };
+
+    const getConsumableRank = (itemId) => {
+      if (itemId === 'item_elixir' || itemId.includes('elixir')) return 1;
+      if (itemId === 'item_clear_potion') return 2;
+      if (itemId === 'item_orange_potion') return 3;
+      if (itemId === 'item_red_potion') return 4;
+      if (itemId.includes('potion')) return 5;
+      if (itemId.includes('scroll')) return 6;
+      return 7;
+    };
+
+    this.playerData.inventory.sort((a, b) => {
+      const catA = getCategoryRank(a);
+      const catB = getCategoryRank(b);
+      if (catA !== catB) return catA - catB;
+
+      // Same category: Equipment
+      if (catA === 1) {
+        const slotA = getEquipSlotRank(a.slot);
+        const slotB = getEquipSlotRank(b.slot);
+        if (slotA !== slotB) return slotA - slotB;
+        const tierA = a.tier || 0;
+        const tierB = b.tier || 0;
+        if (tierA !== tierB) return tierB - tierA; // Higher tier first
+      }
+
+      // Same category: Consumables
+      if (catA === 2) {
+        const rankA = getConsumableRank(a.item || '');
+        const rankB = getConsumableRank(b.item || '');
+        if (rankA !== rankB) return rankA - rankB;
+      }
+
+      // Fallback: Name locale compare
+      const nameA = a.name || a.item || '';
+      const nameB = b.name || b.item || '';
+      return nameA.localeCompare(nameB, 'ko');
+    });
+
+    this.saveProgress();
+    this.openInventory();
+    this.showToast('🎒 가방 아이템을 깔끔하게 자동 정렬했습니다!', 'info');
   }
 
   openInventory() {
@@ -8851,6 +8999,11 @@ class MainApp {
   addGold(amount) {
     this.playerData.gold += amount;
     this.hudGold.innerText = this.playerData.gold;
+    if (amount > 0 && this.engine && typeof this.engine.addFloatingText === 'function') {
+      const px = this.engine.player ? this.engine.player.x + 16 : undefined;
+      const py = this.engine.player ? this.engine.player.y - 28 : undefined;
+      this.engine.addFloatingText(`+${amount} G 🪙`, px, py, '#fbbf24', 16);
+    }
     this.saveProgress();
     if (this.networkManager && this.networkManager.socket) {
       this.networkManager.socket.emit('player_stats_sync', {
@@ -8892,6 +9045,12 @@ class MainApp {
 
     this.playerData.exp += finalAmount;
     let leveledUp = false;
+
+    if (finalAmount > 0 && this.engine && typeof this.engine.addFloatingText === 'function') {
+      const px = this.engine.player ? this.engine.player.x + 16 : undefined;
+      const py = this.engine.player ? this.engine.player.y - 42 : undefined;
+      this.engine.addFloatingText(`+${finalAmount} EXP ⭐`, px, py, '#38bdf8', 16);
+    }
 
     while (this.playerData.level < MAX_LEVEL && this.playerData.exp >= this.playerData.level * 100) {
       this.playerData.exp -= this.playerData.level * 100;

@@ -83,6 +83,7 @@ class GameEngine {
 
     // Nearby interactive target
     this.activeInteractable = null;
+    this.floatingTexts = [];
 
     // Movement callbacks
     this.onMoveCallback = null;
@@ -428,6 +429,22 @@ class GameEngine {
       return WORLD_DATA.CAFETERIA_HEIGHT || 24;
     }
     return WORLD_DATA.MAP_HEIGHT || 20;
+  }
+
+  addFloatingText(text, x, y, color = '#4ade80', fontSize = 16) {
+    if (!this.floatingTexts) this.floatingTexts = [];
+    const px = x !== undefined ? x : (this.player ? this.player.x + 16 : 0);
+    const py = y !== undefined ? y : (this.player ? this.player.y - 12 : 0);
+    this.floatingTexts.push({
+      text,
+      x: px,
+      y: py,
+      startY: py,
+      color,
+      fontSize,
+      startTime: Date.now(),
+      duration: 1200
+    });
   }
 
   setPlantWaterCount(count) {
@@ -2192,6 +2209,41 @@ class GameEngine {
         this._renderSharpLabelDirect(activeItem.cx, activeItem.cy, activeItem.text, opts);
       }
       this.deferredWorldLabels.length = 0;
+    }
+
+    // Render and update floating texts (Heal, Gold, Exp) in world space
+    if (this.floatingTexts && this.floatingTexts.length > 0) {
+      const now = Date.now();
+      const aliveTexts = [];
+      for (let i = 0; i < this.floatingTexts.length; i++) {
+        const ft = this.floatingTexts[i];
+        const elapsed = now - ft.startTime;
+        if (elapsed < ft.duration) {
+          const progress = elapsed / ft.duration; // 0 to 1
+          const currentY = ft.startY - Math.sin(progress * Math.PI * 0.5) * 45;
+          const alpha = progress < 0.7 ? 1 : (1 - (progress - 0.7) / 0.3);
+          const scale = progress < 0.2 ? (0.7 + (progress / 0.2) * 0.4) : (1.1 - (progress - 0.2) * 0.12);
+
+          this.ctx.save();
+          this.ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+          this.ctx.font = `900 ${Math.round(ft.fontSize * scale)}px "Pretendard", "Segoe UI", sans-serif`;
+          this.ctx.textAlign = 'center';
+          this.ctx.textBaseline = 'middle';
+
+          // Dark outline shadow
+          this.ctx.lineWidth = 4;
+          this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+          this.ctx.strokeText(ft.text, ft.x, currentY);
+
+          // Glowing text fill
+          this.ctx.fillStyle = ft.color;
+          this.ctx.fillText(ft.text, ft.x, currentY);
+          this.ctx.restore();
+
+          aliveTexts.push(ft);
+        }
+      }
+      this.floatingTexts = aliveTexts;
     }
 
     this.ctx.restore();
