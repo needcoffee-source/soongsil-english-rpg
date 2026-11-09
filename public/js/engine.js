@@ -1620,7 +1620,7 @@ class GameEngine {
             }
           }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
-          const maxDist = (item.type === 'cafeteria_key_safe') ? 80 : 64;
+          const maxDist = (item.type === 'cafeteria_key_safe' || item.type === 'quest_library_book_of') ? 80 : 64;
           if (dist < maxDist && dist < minDist) {
             let promptText = item.prompt || '조사하기 (SPACE)';
             if (item.type === 'door_secret_history') {

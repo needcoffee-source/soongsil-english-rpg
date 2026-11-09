@@ -251,7 +251,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'consumable',
     tierBadge: '주문서',
     tierColor: '#9333ea',
-    effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
+    effect: '사용 시 각 층 복도 및 운동장으로 즉시 순간이동',
     source: '소비품 제작대(C)에서 제작',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
   },
@@ -598,7 +598,7 @@ const ALL_GAME_ITEMS = {
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
-  'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' } },
+  'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 공간 이동' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
   'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
   'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
@@ -752,10 +752,10 @@ const STORE_BUY_ITEMS = [
     name: '순간이동 주문서',
     icon: '📜',
     price: 300,
-    desc: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 순간이동',
+    desc: '사용 시 각 층 복도 및 운동장으로 즉시 순간이동',
     badge: '차원 도약',
     badgeColor: '#c084fc',
-    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동' }
+    meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 공간 이동' }
   }
 ];
 window.STORE_BUY_ITEMS = STORE_BUY_ITEMS;
@@ -1291,7 +1291,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 하지만 지금 정말 큰일이란다... 며칠 전 대출되었던 소중한 학교 도서 3권이 제때 반납되지 않고 학교 곳곳에 흩어져 버렸어!
 
 1. 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치에 누군가 두고 갔다는 제보가 있어.
-2. 📗 [최신 과학 잡지]: 6층 교무실 과학 졍경슉 선생님 연구석 주변에 꽂혀 있단다.
+2. 📗 [최신 과학 잡지]: 6층 교무실 17번 연구석 책상 위에 놓여 있단다.
 3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
 
 학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
@@ -1299,7 +1299,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     inProgressStory: `어서 오렴! 아직 분실된 도서 3권을 모두 찾지 못했더구나!
 
 1. 📘 운동장 관람석 스탠드 (소설책)
-2. 📗 6층 교무실 과학 연구석 (과학 잡지)
+2. 📗 6층 교무실 17번 연구석 (과학 잡지)
 3. 📕 숭실역사관 전시실 (역사 고문서 도록)
 
 모두 찾아오면 풍성한 보상을 지급하마!`,
@@ -1318,7 +1318,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       },
       {
         id: 'book_of',
-        text: '6층 교무실 과학 연구석에서 [과학 잡지] 회수하기',
+        text: '6층 교무실 17번 연구석에서 [과학 잡지] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.bookOfCollected ? 1 : 0)
       },
@@ -9593,8 +9593,8 @@ class MainApp {
         itemKey: 'item_lib_book_of',
         itemName: '과학 잡지 (최신 뉴턴 매거진)',
         icon: '📗',
-        desc: '6층 교무실 과학 선생님 연구석 주변에 꽂혀 있던 도서관 대출도서',
-        placeName: '6층 교무실 과학 연구석'
+        desc: '6층 교무실 17번 연구석 책상 위에 놓여 있던 도서관 대출도서',
+        placeName: '6층 교무실 17번 연구석'
       },
       hi: {
         flag: 'bookHiCollected',
@@ -10218,7 +10218,7 @@ class MainApp {
         if (btnBuy) btnBuy.classList.add('active');
         if (btnSell) btnSell.classList.remove('active');
         if (tabContainer) tabContainer.style.display = 'none';
-        if (tipText) tipText.innerText = '💡 골드로 즉시 완제품 소비품을 구매합니다. (고급 편의성 골드 소모처)';
+        if (tipText) tipText.innerText = '💡 골드로 즉시 완제품 소비품을 구매합니다.';
       } else {
         if (btnBuy) btnBuy.classList.remove('active');
         if (btnSell) btnSell.classList.add('active');

@@ -784,7 +784,7 @@
       "type": "consumable",
       "slot": "consumable",
       "heal": 0,
-      "effect": "사용 시 각 층 복도 및 운동장(농구/풋살/축구장)으로 즉시 공간 이동"
+      "effect": "사용 시 각 층 복도 및 운동장으로 즉시 공간 이동"
     }
   },
   {
