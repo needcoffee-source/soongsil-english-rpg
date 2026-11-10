@@ -328,8 +328,8 @@ const WORLD_DATA = {
         atk: 18,
         def: 5,
         counterDmg: 25,
-        goldReward: 16,
-        expReward: 35,
+        goldReward: 25,
+        expReward: 50,
         respawnSec: 15
       },
       {
@@ -347,8 +347,8 @@ const WORLD_DATA = {
         atk: 18,
         def: 5,
         counterDmg: 25,
-        goldReward: 16,
-        expReward: 35,
+        goldReward: 25,
+        expReward: 50,
         respawnSec: 15
       },
       {
@@ -366,8 +366,8 @@ const WORLD_DATA = {
         atk: 19,
         def: 6,
         counterDmg: 26,
-        goldReward: 18,
-        expReward: 40,
+        goldReward: 28,
+        expReward: 55,
         respawnSec: 15
       },
       {
@@ -385,8 +385,8 @@ const WORLD_DATA = {
         atk: 19,
         def: 6,
         counterDmg: 26,
-        goldReward: 18,
-        expReward: 40,
+        goldReward: 28,
+        expReward: 55,
         respawnSec: 15
       }
     ]
