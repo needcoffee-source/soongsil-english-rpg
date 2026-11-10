@@ -1720,8 +1720,15 @@ class GameEngine {
       // Exit Door Proximity
       const exitDist = Math.hypot(cr.exitDoor.x * 32 - this.player.x, cr.exitDoor.y * 32 - this.player.y);
       if (exitDist < 48 && exitDist < minDist) {
-        const exitPrompt = (this.player.room === 'room_cafeteria') ? '운동장으로 나가기 (SPACE)' : '복도로 나가기 (SPACE)';
-        const exitName = (this.player.room === 'room_cafeteria') ? '운동장 출구' : '복도 출구';
+        let exitPrompt = '복도로 나가기 (SPACE)';
+        let exitName = '복도 출구';
+        if (this.player.room === 'room_cafeteria' || this.player.room === 'room_history') {
+          exitPrompt = '운동장으로 나가기 (SPACE)';
+          exitName = '운동장 출구';
+        } else if (this.player.room === 'room_secret_history') {
+          exitPrompt = '숭실역사관으로 나가기 (SPACE)';
+          exitName = '숭실역사관 출구';
+        }
         closest = { type: 'exit', name: exitName, prompt: exitPrompt };
         minDist = exitDist;
       }
@@ -6278,7 +6285,12 @@ class GameEngine {
       this.ctx.lineWidth = 1.5;
       this.ctx.strokeRect(ex - 42, ey + 4, 116, 24);
 
-      const exitText = (this.player.room === 'room_cafeteria') ? '🚪 ▼ 운동장으로 나가기 (EXIT)' : '🚪 ▼ 복도로 나가기 (EXIT)';
+      let exitText = '🚪 ▼ 복도로 나가기 (EXIT)';
+      if (this.player.room === 'room_cafeteria' || this.player.room === 'room_history') {
+        exitText = '🚪 ▼ 운동장으로 나가기 (EXIT)';
+      } else if (this.player.room === 'room_secret_history') {
+        exitText = '🚪 ▼ 숭실역사관 (EXIT)';
+      }
       this.drawSharpLabel(ex + 16, ey + 16, exitText, {
         bgColor: '#7f1d1d',
         borderColor: '#fef08a',
@@ -11265,16 +11277,6 @@ class GameEngine {
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 2;
     ctx.stroke();
-
-    this.drawSharpLabel(x + 16, y - 10, '🏛️ 숭실역사관으로 나가기', {
-      bgColor: 'rgba(15, 23, 42, 0.95)',
-      borderColor: '#38bdf8',
-      borderWidth: 1.5,
-      textColor: '#fef08a',
-      fontSize: 11,
-      paddingX: 10,
-      height: 20
-    });
     ctx.restore();
   }
 

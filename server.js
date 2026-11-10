@@ -664,7 +664,7 @@ const ALL_GAME_ITEMS = {
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 순간이동' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)' } },
   'item_protection_potion': { name: '수호의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
-  'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
+  'item_elixir': { name: '엘릭서', icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },

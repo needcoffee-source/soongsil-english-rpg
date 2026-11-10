@@ -119,18 +119,20 @@ class CraftingManager {
         nameKo = match[1].trim();
         nameEn = match[2].trim();
       }
+      // Remove redundant leading emoji in nameKo if present
+      nameKo = nameKo.replace(/^[\uD800-\uDBFF][\uDC00-\uDFFF]\s*/, '').replace(/^[^\w\s\uAC00-\uD7A3]+\s*/, '');
 
       const potionClass = this.getPotionClass(r);
       item.innerHTML = `
         <span class="recipe-item-icon ${potionClass}">${r.icon}</span>
         <div class="recipe-item-info">
-          <div class="recipe-name-ko" style="display:flex; align-items:center; gap:4px;">
-            <span>${nameKo}</span>
-            ${r.requiredLevel ? `<span class="recipe-level-req-badge" style="font-size:10px; font-weight:700; padding:1px 5px; border-radius:4px; ${isLevelLocked ? 'background:#7f1d1d; color:#fca5a5;' : 'background:#065f46; color:#6ee7b7;'}">Lv.${r.requiredLevel}</span>` : ''}
+          <div class="recipe-name-ko" style="display:flex; align-items:center; gap:4px; min-width:0;">
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${nameKo}</span>
+            ${r.requiredLevel ? `<span class="recipe-level-req-badge" style="font-size:10px; font-weight:800; padding:1px 5px; border-radius:4px; flex-shrink:0; ${isLevelLocked ? 'background:#7f1d1d; color:#fca5a5;' : 'background:#065f46; color:#6ee7b7;'}">Lv.${r.requiredLevel}</span>` : ''}
           </div>
           ${nameEn ? `<div class="recipe-name-en">${nameEn}</div>` : ''}
         </div>
-        ${isLevelLocked ? '<span class="recipe-lock-icon" title="레벨 제한 (Lv.' + r.requiredLevel + ' 필요)" style="font-size:13px;">🔒</span>' : (canCraft ? '<span class="recipe-can-craft-icon" title="지금 제작 가능">🔨</span>' : '')}
+        ${isLevelLocked ? '<span class="recipe-lock-icon" title="레벨 제한 (Lv.' + r.requiredLevel + ' 필요)" style="font-size:13px; flex-shrink:0;">🔒</span>' : (canCraft ? '<span class="recipe-can-craft-icon" title="지금 제작 가능" style="flex-shrink:0;">🔨</span>' : '')}
       `;
       item.addEventListener('click', () => {
         this.selectRecipe(r);

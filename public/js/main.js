@@ -194,11 +194,33 @@ window.ITEM_CODEX_DATABASE = [
     name: '주홍 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '고급 회복 물약',
+    tierBadge: '중급 회복 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
     source: '소비품 제작대(C)에서 조제 / 보스 레이드 전리품',
     recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
+  },
+  {
+    id: 'item_clear_potion',
+    name: '맑은 물약',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '고급 회복 물약',
+    tierColor: '#06b6d4',
+    effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)',
+    source: '소비품 제작대(C)에서 조제 (10레벨 이상)',
+    recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
+  },
+  {
+    id: 'item_elixir',
+    name: '엘릭서',
+    icon: '⚗️',
+    category: 'consumable',
+    tierBadge: '최고급 회복 물약',
+    tierColor: '#8b5cf6',
+    effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)',
+    source: '소비품 제작대(C)에서 조제 (15레벨 이상)',
+    recipe: '정제된 영양의 정수 1개 + 향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 50G'
   },
   {
     id: 'item_green_potion',
@@ -216,9 +238,20 @@ window.ITEM_CODEX_DATABASE = [
     name: '용기의 물약',
     icon: '🧪',
     category: 'consumable',
-    tierBadge: '1티어 소비품',
+    tierBadge: '특수 물약',
     tierColor: '#9333ea',
     effect: '사용 시 1분간 공격력(ATK) +5 증가',
+    source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
+    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
+  },
+  {
+    id: 'item_protection_potion',
+    name: '수호의 물약',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '특수 물약',
+    tierColor: '#0284c7',
+    effect: '사용 시 1분간 방어력(DEF) +3 증가',
     source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
@@ -254,39 +287,6 @@ window.ITEM_CODEX_DATABASE = [
     effect: '사용 시 각 층 복도 및 운동장으로 즉시 순간이동',
     source: '소비품 제작대(C)에서 제작',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
-  },
-  {
-    id: 'item_clear_potion',
-    name: '맑은 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '희귀 회복 물약',
-    tierColor: '#06b6d4',
-    effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)',
-    source: '소비품 제작대(C)에서 조제 (10레벨 이상)',
-    recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
-  },
-  {
-    id: 'item_protection_potion',
-    name: '수호의 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '1티어 소비품',
-    tierColor: '#0284c7',
-    effect: '사용 시 1분간 방어력(DEF) +3 증가',
-    source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
-    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
-  },
-  {
-    id: 'item_elixir',
-    name: '신비한 엘릭서',
-    icon: '⚗️',
-    category: 'consumable',
-    tierBadge: '전설 비약',
-    tierColor: '#8b5cf6',
-    effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)',
-    source: '소비품 제작대(C)에서 조제 (15레벨 이상)',
-    recipe: '정제된 영양의 정수 1개 + 향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 50G'
   },
   {
     id: 'item_cafeteria_key',
@@ -601,7 +601,7 @@ const ALL_GAME_ITEMS = {
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 공간 이동' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
   'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
-  'item_elixir': { name: '신비한 엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
+  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
@@ -7339,7 +7339,8 @@ class MainApp {
 
     const logEl = document.getElementById('battle-action-log');
     if (logEl) {
-      logEl.innerHTML = `⚔️ <b>${unitName}</b> 영어 문제를 맞히면 공격하고, 틀리면 <b>풀HP의 20% 피해</b>를 입습니다!`;
+      logEl.style.display = 'none';
+      logEl.innerHTML = '';
     }
   }
 
@@ -7349,6 +7350,12 @@ class MainApp {
     const isFutsal = !!(mob && mob.court === 'futsal');
     const isCafeteria = !!(mob && (mob.court === 'cafeteria' || (mob.id && (mob.id.startsWith('caf_') || mob.id.startsWith('battle_'))) || (this.engine && this.engine.player && this.engine.player.room === 'room_cafeteria')));
     const unitFilter = isCafeteria ? '7단원' : ((isHistory || isFutsal) ? '6단원' : '5단원');
+
+    const logEl = document.getElementById('battle-action-log');
+    if (logEl) {
+      logEl.style.display = 'none';
+      logEl.innerHTML = '';
+    }
 
     const q = this.quizManager.getRandomQuestion(unitFilter);
     if (!q) {
@@ -7400,12 +7407,18 @@ class MainApp {
       this.updateFieldBattleUI();
 
       if (mob.hp <= 0) {
-        if (logEl) logEl.innerHTML = `⚔️ 정답! <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 결정타를 날려 승리했습니다!`;
+        if (logEl) {
+          logEl.style.display = 'block';
+          logEl.innerHTML = `⚔️ 정답! <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 결정타를 날려 승리했습니다!`;
+        }
         setTimeout(() => this.handleFieldBattleVictory(mob), 400);
         return;
       }
 
-      if (logEl) logEl.innerHTML = `⚔️ <b>정답!</b> <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 피해를 입혔습니다! (남은 HP: ${mob.hp})`;
+      if (logEl) {
+        logEl.style.display = 'block';
+        logEl.innerHTML = `⚔️ <b>정답!</b> <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 피해를 입혔습니다! (남은 HP: ${mob.hp})`;
+      }
       const btnNext = document.getElementById('btn-battle-next-turn');
       if (btnNext) btnNext.classList.remove('hidden');
     } else {
@@ -7423,6 +7436,7 @@ class MainApp {
       this.saveProgress(true);
 
       if (logEl) {
+        logEl.style.display = 'block';
         logEl.innerHTML = `💥 <b>오답!</b> 정답은 [<b>${q.answer}</b>]입니다.<br>🚨 <b>${mob.name}</b>의 반격으로 <b>-${counterDmg} HP (풀피의 20% 피해)</b>를 입었습니다!`;
       }
 

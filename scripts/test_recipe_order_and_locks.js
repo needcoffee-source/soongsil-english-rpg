@@ -38,4 +38,13 @@ heritageIds.forEach(id => {
 });
 console.log('✅ Check 4 Passed: 1897 Heritage set requiredLevel 10 verified.');
 
+// 5. Leather Set requiredLevel = 3
+const leatherIds = ['recipe_leather_armor', 'recipe_leather_helmet', 'recipe_leather_sword'];
+leatherIds.forEach(id => {
+  const r = recipes.find(x => x.id === id);
+  assert.ok(r, 'Recipe ' + id + ' must exist');
+  assert.strictEqual(r.requiredLevel, 3, id + ' must have requiredLevel = 3');
+});
+console.log('✅ Check 5 Passed: Leather set requiredLevel 3 verified.');
+
 console.log('\n🎉 ALL RECIPE ORDER & LEVEL LOCK TESTS PASSED!');

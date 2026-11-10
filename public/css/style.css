@@ -956,8 +956,8 @@ body, html {
   max-height: calc(90vh - 120px);
 }
 .recipe-list-col {
-  width: 290px;
-  min-width: 280px;
+  width: 310px;
+  min-width: 300px;
   flex-shrink: 0;
   overflow-y: auto;
   overflow-x: hidden;

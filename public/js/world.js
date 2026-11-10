@@ -292,7 +292,7 @@ const WORLD_DATA = {
   // 🏛️ 숭실역사관 (Soongsil History Museum - 1-1반 크기: 30 x 20)
   classroom_history: {
     name: "🏛️ 숭실역사관 (History Hall)",
-    exitDoor: { x: 15, y: 17 },
+    exitDoor: { x: 15, y: 17, name: "🚪 운동장 출구", prompt: "운동장으로 나가기 (SPACE)" },
     blackboard: {
       x: 15,
       y: 2,
@@ -395,7 +395,7 @@ const WORLD_DATA = {
   // 🗝️ 숭실역사관 서쪽 비밀의 방 (이스터에그 - 역사관 절반 사이즈: 16 x 20)
   classroom_secret_history: {
     name: "🗝️ 숭실 비밀의 서고 (Secret Archive)",
-    exitDoor: { x: 8, y: 17 },
+    exitDoor: { x: 8, y: 17, name: "🚪 숭실역사관 출구", prompt: "숭실역사관으로 나가기 (SPACE)" },
     blackboard: null,
     teacherDesk: null,
     gatherSpots: [],

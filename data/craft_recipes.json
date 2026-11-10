@@ -171,7 +171,8 @@
         "hp": 20
       },
       "effect": "방어력(DEF) +17, 최대체력(HP) +20"
-    }
+    },
+    "requiredLevel": 3
   },
   {
     "id": "recipe_leather_helmet",
@@ -220,7 +221,8 @@
         "hp": 28
       },
       "effect": "방어력(DEF) +12, 최대체력(HP) +28"
-    }
+    },
+    "requiredLevel": 3
   },
   {
     "id": "recipe_leather_sword",
@@ -273,7 +275,8 @@
         "hp": 0
       },
       "effect": "공격력(ATK) +22"
-    }
+    },
+    "requiredLevel": 3
   },
   {
     "id": "recipe_bronze_sword",
@@ -883,9 +886,9 @@
   },
   {
     "id": "recipe_elixir",
-    "name": "신비한 엘릭서 (Mystic Elixir)",
+    "name": "엘릭서 (Elixir)",
     "category": "potion",
-    "description": "[전설의 비약] 급식실 영양의 정수와 자연의 생명력이 응축된 신비의 명약입니다. (Lv.15 이상 제작 가능)",
+    "description": "[최고급 회복 물약] 급식실 영양의 정수와 자연의 생명력이 응축된 신비의 명약입니다. (Lv.15 이상 제작 가능)",
     "icon": "⚗️",
     "gradeLevel": 3,
     "requiredLevel": 15,
@@ -926,7 +929,7 @@
     },
     "result": {
       "item": "item_elixir",
-      "name": "신비한 엘릭서",
+      "name": "엘릭서",
       "icon": "⚗️",
       "type": "consumable",
       "slot": "consumable",
@@ -936,7 +939,7 @@
   },
   {
     "id": "recipe_heritage_sword",
-    "name": "⚔️ 1897 숭실 헤리티지 소드",
+    "name": "1897 숭실 헤리티지 소드 (1897 Heritage Sword)",
     "category": "equipment",
     "description": "[4티어 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
     "icon": "⚔️",
@@ -971,7 +974,7 @@
     },
     "result": {
       "item": "equip_heritage_blade",
-      "name": "⚔️ 1897 숭실 헤리티지 소드",
+      "name": "1897 숭실 헤리티지 소드",
       "icon": "⚔️",
       "type": "equipment",
       "slot": "weapon",
@@ -986,7 +989,7 @@
   },
   {
     "id": "recipe_heritage_helmet",
-    "name": "👑 1897 숭실 헤리티지 투구",
+    "name": "1897 숭실 헤리티지 투구 (1897 Heritage Helmet)",
     "category": "equipment",
     "description": "[4티어 투구] 숭실 120년의 유구한 민족정신과 신앙의 가호가 깃든 성스러운 투구입니다.",
     "icon": "👑",
@@ -1020,7 +1023,7 @@
     },
     "result": {
       "item": "equip_heritage_helmet",
-      "name": "👑 1897 숭실 헤리티지 투구",
+      "name": "1897 숭실 헤리티지 투구",
       "icon": "👑",
       "type": "equipment",
       "slot": "helmet",
@@ -1035,7 +1038,7 @@
   },
   {
     "id": "recipe_heritage_armor",
-    "name": "🛡️ 1897 숭실 헤리티지 갑옷",
+    "name": "1897 숭실 헤리티지 갑옷 (1897 Heritage Armor)",
     "category": "equipment",
     "description": "[4티어 갑옷] 어떠한 탄압과 시련에도 굴하지 않는 불굴의 숭실 혼이 깃든 전설의 갑옷입니다.",
     "icon": "🛡️",
@@ -1071,7 +1074,7 @@
     },
     "result": {
       "item": "equip_heritage_armor",
-      "name": "🛡️ 1897 숭실 헤리티지 갑옷",
+      "name": "1897 숭실 헤리티지 갑옷",
       "icon": "🛡️",
       "type": "equipment",
       "slot": "armor",
