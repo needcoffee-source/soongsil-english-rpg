@@ -1063,7 +1063,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_joshua',
     teacherName: 'Joshua 선생님',
     teacherRole: '3학년 영어',
-    teacherSeat: '3번',
+    teacherSeat: '교무실',
     teacherAvatar: '👨‍🏫',
     category: '⭐ 입문 퀘스트 (Introductory Quest)',
     title: '[3학년 영어] Joshua 선생님의 특별 지령: 흩어진 단어장',
@@ -1113,7 +1113,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_okchohan',
     teacherName: '옥촣한 선생님',
     teacherRole: '사회',
-    teacherSeat: '10번',
+    teacherSeat: '교무실',
     teacherAvatar: '👨‍🏫',
     category: '🏛️ 사회 탐구 퀘스트 (Social Studies Quest)',
     title: '[사회] 옥촣한 선생님의 특별 과제: 숭실 사회 탐구',
@@ -1137,7 +1137,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 약속했던 특별 보상으로 [청동 드래곤의 심장]을 수여하마! 앞으로도 숭실의 모범 시민으로 성장해주길 바란다!`,
     doneStory: `자네 덕분에 이번 사회 수업 준비가 아주 순조롭단다.
 
-언제나 성실하게 활약하는 자네가 자랑스럽구나! 사회에 대해 궁금한 점이 있다면 언제든 10번 자리로 찾아오렴! 👍`,
+언제나 성실하게 활약하는 자네가 자랑스럽구나! 사회에 대해 궁금한 점이 있다면 언제든 편하게 찾아오렴! 👍`,
     objectives: [
       {
         id: 'acid_rain',
@@ -1165,7 +1165,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_kimmijin',
     teacherName: '김진믜 선생님',
     teacherRole: '미술',
-    teacherSeat: '15번',
+    teacherSeat: '교무실',
     teacherAvatar: '🎨',
     category: '🎨 숭실 예술 프로젝트 (Fine Arts Quest)',
     title: '[미술] 김진믜 선생님의 예술 프로젝트: 숭실의 색채',
@@ -1191,7 +1191,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 약속했던 보상으로 싱싱한 [노란 개나리 꽃잎 3개]와 경험치를 선물로 줄게! 너의 따뜻한 예술적 감성을 응원한다!`,
     doneStory: `너 덕분에 이번 숭실 미술전 작품이 멋지게 완성될 것 같구나!
 
-언제든 미술에 대해 이야기를 나누고 싶거나 영감을 얻고 싶다면 15번 자리로 편하게 찾아오렴! 🎨✨`,
+언제든 미술에 대해 이야기를 나누고 싶거나 영감을 얻고 싶다면 언제든 편하게 찾아오렴! 🎨✨`,
     objectives: [
       {
         id: 'forsythia',
@@ -1221,7 +1221,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_yosunyu',
     teacherName: '요션유 선생님',
     teacherRole: '정보',
-    teacherSeat: '17번',
+    teacherSeat: '교무실',
     teacherAvatar: '💻',
     category: '💻 숭실 정보·알고리즘 프로젝트 (Informatics Quest)',
     title: '[정보] 요션유 선생님의 알고리즘 과제: 디지털 숭실',
@@ -1247,7 +1247,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 약속했던 보상으로 [보스의 가죽 1장]과 200 경험치를 선물로 줄게! 너의 뛰어난 디지털 정보 감각과 논리적 사고력을 응원한다!`,
     doneStory: `너 덕분에 이번 숭실 정보 알고리즘 실습이 완벽하게 진행될 수 있겠구나!
 
-언제든 코딩이나 컴퓨터, 알고리즘에 대해 궁금한 점이 있다면 17번 자리로 편하게 찾아오렴! 💻✨`,
+언제든 코딩이나 컴퓨터, 알고리즘에 대해 궁금한 점이 있다면 언제든 편하게 찾아오렴! 💻✨`,
     objectives: [
       {
         id: 'server',
@@ -1274,7 +1274,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_kwimjinsyong',
     teacherName: '귐즨숑 선생님',
     teacherRole: '진로',
-    teacherSeat: '24번',
+    teacherSeat: '교무실',
     teacherAvatar: '🌟',
     category: '🌟 숭실 진로·적성 멘토링 프로젝트 (Career Quest)',
     title: '[진로] 귐즨숑 선생님의 진로 격려: 빛나는 재능의 씨앗',
@@ -1292,7 +1292,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 약속했던 경험치와 앞으로의 여정에 큰 힘이 되어줄 용기 포션을 선물로 줄게! 너의 빛나는 앞날을 언제나 축복한단다!`,
     doneStory: `그 친구가 진로상담실을 찾아와서 함께 즐겁게 상담을 나누었단다. 너의 따뜻한 관심이 한 친구의 미래를 활짝 열어주었어!
 
-언제든 꿈과 진로가 고민된다면 24번 자리로 찾아오렴! 🌟✨`,
+언제든 꿈과 진로가 고민된다면 언제든 편하게 찾아오렴! 🌟✨`,
     objectives: [
       {
         id: 'guidebook',
@@ -1329,7 +1329,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 하지만 지금 정말 큰일이란다... 며칠 전 대출되었던 소중한 학교 도서 3권이 제때 반납되지 않고 학교 곳곳에 흩어져 버렸어!
 
 1. 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치에 누군가 두고 갔다는 제보가 있어.
-2. 📗 [최신 과학 잡지]: 6층 교무실 21번 연구석 책상 위에 놓여 있단다.
+2. 📗 [최신 과학 잡지]: 6층 교무실 연구석 책상 위에 놓여 있단다.
 3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
 
 학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
@@ -1337,7 +1337,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     inProgressStory: `어서 오렴! 아직 분실된 도서 3권을 모두 찾지 못했더구나!
 
 1. 📘 운동장 관람석 스탠드 (소설책)
-2. 📗 6층 교무실 21번 연구석 (과학 잡지)
+2. 📗 6층 교무실 연구석 (과학 잡지)
 3. 📕 숭실역사관 전시실 (역사 고문서 도록)
 
 모두 찾아오면 풍성한 보상을 지급하마!`,
@@ -1356,7 +1356,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       },
       {
         id: 'book_of',
-        text: '6층 교무실 21번 연구석에서 [과학 잡지] 회수하기',
+        text: '6층 교무실 연구석에서 [과학 잡지] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.bookOfCollected ? 1 : 0)
       },
@@ -9518,7 +9518,7 @@ class MainApp {
       window.AudioManager.playSelect();
     }
 
-    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 디지털 학습존(디벗 단말기 옆) 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (세계 명화 도록, 스포츠 교본)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 21번 연구석 책상 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
+    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 디지털 학습존(디벗 단말기 옆) 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (세계 명화 도록, 스포츠 교본)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 연구석 책상 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
 
     if (window.RPGDialog) {
       window.RPGDialog.show('🖥️ 도서 검색용 컴퓨터', story, '🖥️');
@@ -9733,8 +9733,8 @@ class MainApp {
         itemKey: 'item_lib_book_of',
         itemName: '과학 잡지 (최신 뉴턴 매거진)',
         icon: '📗',
-        desc: '6층 교무실 21번 연구석 책상 위에 놓여 있던 도서관 대출도서',
-        placeName: '6층 교무실 21번 연구석'
+        desc: '6층 교무실 연구석 책상 위에 놓여 있던 도서관 대출도서',
+        placeName: '6층 교무실 연구석'
       },
       hi: {
         flag: 'bookHiCollected',
@@ -12529,7 +12529,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '"24번 좌석 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n먼저 5층 귐즨숑 선생님을 찾아가 의뢰를 수락하세요!"';
+      const msg = '"진로 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n먼저 5층 귐즨숑 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
         window.RPGDialog.show('진로 적성 검사 안내서', msg, '📘');
       } else {
@@ -12546,7 +12546,7 @@ class MainApp {
     quest.guidebookCollected = true;
     this.addItem('item_career_guidebook', '진로 적성 검사 안내서', 1, '📘', {
       type: 'quest',
-      effect: '24번 좌석 진로 귐즨숑 선생님의 진로 적성 검사 안내서'
+      effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서'
     });
     this.saveProgress();
     this.updateQuestTracker();
@@ -12723,7 +12723,12 @@ class MainApp {
     const seatEl = document.getElementById('quest-teacher-seat');
     if (seatEl) {
       const seat = qDef.teacherSeat || '';
-      seatEl.innerText = seat ? (seat.endsWith('번') ? `${seat} 좌석` : `${seat}번 좌석`) : '';
+      if (seat && !seat.includes('번')) {
+        seatEl.style.display = 'inline-block';
+        seatEl.innerText = seat;
+      } else {
+        seatEl.style.display = 'none';
+      }
     }
 
     const nameEl = document.getElementById('quest-teacher-name');
@@ -13018,7 +13023,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_okchohan_social'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '"10번 좌석 옥촣한 선생님의 핵심 사회 탐구 수업 교재 같습니다.\n먼저 옥촣한 선생님을 찾아가 의뢰를 수락하세요!"';
+      const msg = '"사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재 같습니다.\n먼저 옥촣한 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
         window.RPGDialog.show('옥촣한의 사회 탐구 교재', msg, '📘');
       } else {
@@ -13103,7 +13108,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_joshua_intro'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '"3번 좌석 Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n먼저 Joshua 선생님을 찾아가 의뢰를 수락하세요!"';
+      const msg = '"Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n먼저 Joshua 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
         window.RPGDialog.show('Joshua의 영단어 메모', msg, '📝');
       } else {
@@ -13278,10 +13283,10 @@ class MainApp {
     const nameEl = document.getElementById('quest-tracker-quest-name');
     if (nameEl) nameEl.innerText = def.title;
 
-    // Meta (Teacher Role & Seat)
+    // Meta (Teacher Role & Location)
     const metaEl = document.getElementById('quest-tracker-meta');
     if (metaEl) {
-      const seatText = def.teacherSeat ? (def.teacherSeat.endsWith('번') ? `${def.teacherSeat} 좌석` : `${def.teacherSeat}번 좌석`) : '';
+      const seatText = (def.teacherSeat && !def.teacherSeat.includes('번')) ? def.teacherSeat : '';
       metaEl.innerText = `의뢰인: ${def.teacherName}${seatText ? ` (${seatText})` : ''}`;
     }
 

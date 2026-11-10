@@ -524,7 +524,7 @@ const WORLD_DATA = {
       { id: "desk_teacher_kyungsuk", type: "desk_kyungsuk", x: 75, y: 17.5, name: "🧪 졍경슉 선생님 연구석", prompt: "과학 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_hunihuni", type: "desk_hunihuni", x: 88, y: 17.5, name: "🥁 후니후니 선생님 연구석", prompt: "도덕 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_oyesook", type: "desk_oyesook", x: 91, y: 17.5, name: "🧵 오예슉 선생님 연구석", prompt: "가정 연구석 살펴보기 (SPACE)" },
-      { id: "quest_library_book_office", type: "quest_library_book_of", x: 76, y: 15.5, name: "📗 [대출도서] 교무실 21번 연구석에 놓인 과학 잡지", prompt: "과학 잡지 회수하기 (SPACE)" }
+      { id: "quest_library_book_office", type: "quest_library_book_of", x: 76, y: 15.5, name: "📗 [대출도서] 교무실 연구석에 놓인 과학 잡지", prompt: "과학 잡지 회수하기 (SPACE)" }
     ],
     // 1 ~ 33번 좌석 정의 (교사 NPC 배치용 - 좌측 1번부터 우측 33번까지 순차 정리)
     seats: [
