@@ -6,7 +6,7 @@
     "description": "[무기] 단단한 목재를 깎아 만든 기본 검입니다.",
     "icon": "🗡️",
     "gradeLevel": 1,
-    "requiredGold": 15,
+    "requiredGold": 20,
     "requiredItems": [
       {
         "item": "item_wood",
@@ -130,7 +130,7 @@
     "description": "[2티어 무기] 질긴 보스의 가죽과 농구공·풋살공 가죽을 배합해 튼튼하게 감아쥔 2티어 가죽손잡이 세이버입니다.",
     "icon": "🗡️",
     "gradeLevel": 1,
-    "requiredGold": 35,
+    "requiredGold": 50,
     "requiredItems": [
       {
         "item": "item_boss_leather",
@@ -184,7 +184,7 @@
     "description": "[2티어 투구] 질긴 보스의 가죽과 풋살공 가죽으로 제작하여 머리를 안전하게 감싸는 2티어 가죽 헤드기어입니다.",
     "icon": "⛑️",
     "gradeLevel": 1,
-    "requiredGold": 40,
+    "requiredGold": 50,
     "requiredItems": [
       {
         "item": "item_boss_leather",
@@ -285,7 +285,7 @@
     "description": "[무기] 청동 드래곤의 심장과 노란 개나리 꽃잎으로 벼려낸 최상급 청동검입니다.",
     "icon": "⚔️",
     "gradeLevel": 1,
-    "requiredGold": 50,
+    "requiredGold": 500,
     "requiredItems": [
       {
         "item": "item_bronze_heart",
@@ -334,7 +334,7 @@
     "description": "[3티어 투구] 청동 드래곤의 심장과 노란 개나리 꽃잎의 생명력을 담아 벼려낸 단단한 3티어 청동 투구입니다.",
     "icon": "🪖",
     "gradeLevel": 1,
-    "requiredGold": 50,
+    "requiredGold": 300,
     "requiredItems": [
       {
         "item": "item_bronze_heart",
@@ -382,7 +382,7 @@
     "description": "[3티어 갑옷] 청동 드래곤의 심장과 노란 개나리 꽃잎을 엮어 만든 무적의 3티어 청동 갑옷입니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
-    "requiredGold": 70,
+    "requiredGold": 300,
     "requiredItems": [
       {
         "item": "item_bronze_heart",
@@ -430,7 +430,7 @@
     "description": "[4티어 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
     "icon": "⚔️",
     "gradeLevel": 1,
-    "requiredGold": 150,
+    "requiredGold": 800,
     "requiredItems": [
       {
         "item": "item_history_essence",
@@ -480,7 +480,7 @@
     "description": "[4티어 투구] 숭실 120년의 유구한 민족정신과 신앙의 가호가 깃든 성스러운 투구입니다.",
     "icon": "👑",
     "gradeLevel": 1,
-    "requiredGold": 120,
+    "requiredGold": 500,
     "requiredItems": [
       {
         "item": "item_history_essence",
@@ -529,7 +529,7 @@
     "description": "[4티어 갑옷] 어떠한 탄압과 시련에도 굴하지 않는 불굴의 숭실 혼이 깃든 전설의 갑옷입니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
-    "requiredGold": 140,
+    "requiredGold": 500,
     "requiredItems": [
       {
         "item": "item_history_essence",
@@ -580,7 +580,7 @@
     "description": "[장신구] (교화 개나리) 노란 개나리 꽃잎을 모아 빚은 반지입니다.",
     "icon": "🏵️",
     "gradeLevel": 1,
-    "requiredGold": 30,
+    "requiredGold": 100,
     "requiredItems": [
       {
         "item": "item_forsythia",
@@ -621,7 +621,7 @@
     "description": "[장신구] (교목 은행나무) 황금 은행잎을 모아 만든 고급 장신구입니다.",
     "icon": "🍂",
     "gradeLevel": 1,
-    "requiredGold": 50,
+    "requiredGold": 500,
     "requiredItems": [
       {
         "item": "item_ginkgo",

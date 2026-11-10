@@ -321,7 +321,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#854d0e',
     effect: '공격력(ATK) +15 증가',
     source: '장비 제작대(C)에서 제작',
-    recipe: '단단한 목재 10개 + 15G'
+    recipe: '단단한 목재 10개 + 20G'
   },
   {
     id: 'equip_wood_helmet',
@@ -354,7 +354,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#b45309',
     effect: '공격력(ATK) +22 증가',
     source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 35G'
+    recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 50G'
   },
   {
     id: 'equip_leather_helmet',
@@ -365,7 +365,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#b45309',
     effect: '방어력(DEF) +12, 체력(HP) +28 증가',
     source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 풋살공 가죽 20개 + 40G'
+    recipe: '보스의 가죽 1개 + 풋살공 가죽 20개 + 50G'
   },
   {
     id: 'equip_leather_armor',
@@ -387,7 +387,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#047857',
     effect: '공격력(ATK) +30 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G'
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 500G'
   },
   {
     id: 'equip_bronze_helmet',
@@ -398,7 +398,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#047857',
     effect: '방어력(DEF) +14, 체력(HP) +35 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G'
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 300G'
   },
   {
     id: 'equip_bronze_armor',
@@ -409,7 +409,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#047857',
     effect: '방어력(DEF) +20, 체력(HP) +25 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G'
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 300G'
   },
   {
     id: 'equip_heritage_blade',
@@ -420,7 +420,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#6366f1',
     effect: '공격력 +45, 체력 +35',
     source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
-    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 150G'
+    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 800G'
   },
   {
     id: 'equip_heritage_helmet',
@@ -431,7 +431,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#6366f1',
     effect: '방어력 +20, 체력 +35',
     source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
-    recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 120G'
+    recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 500G'
   },
   {
     id: 'equip_heritage_armor',
@@ -442,7 +442,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#6366f1',
     effect: '방어력 +25, 체력 +35',
     source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
-    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
+    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 500G'
   },
   {
     id: 'equip_omr_wand',
@@ -547,7 +547,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#ca8a04',
     effect: '공격력 +10, 방어력 +5, 체력 +20 증가',
     source: '복도 식물존 옆 악세서리 세공대에서 제작',
-    recipe: '노란 개나리 꽃잎 20개 + 30G'
+    recipe: '노란 개나리 꽃잎 20개 + 100G'
   },
   {
     id: 'equip_ginkgo_talisman',
@@ -558,7 +558,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#d97706',
     effect: '공격력 +15, 방어력 +5, 체력 +30 증가',
     source: '복도 식물존 옆 악세서리 세공대에서 제작 (5레벨 이상)',
-    recipe: '황금 은행잎 10개 + 50G',
+    recipe: '황금 은행잎 10개 + 500G',
     stats: { atk: 15, def: 5, hp: 30 }
   },
   {
@@ -698,30 +698,30 @@ const ITEM_SELL_PRICES = {
     'item_perfect_exam': 50, // 💯 백점만점 시험지 (매점 매각 시 50G)
   'item_eval_paper': 25, // A+ 만점 수행평가지
 
-  // 3. 1티어 나무 장비 (제작비 15G의 20% = 3G 환급)
-  'equip_wood_sword': 3,
+  // 3. 1티어 나무 장비 (제작비 20G/15G의 20% 환급)
+  'equip_wood_sword': 4, // 제작비 20G -> 20% = 4G
   'equip_wood_helmet': 3,
   'equip_wood_armor': 3,
 
   // 4. 2티어 가죽 / 개나리 장비 (제작비의 20% 환급)
-  'equip_leather_sword': 7, // 제작비 35G -> 20% = 7G
-  'equip_leather_helmet': 8, // 제작비 40G -> 20% = 8G
+  'equip_leather_sword': 10, // 제작비 50G -> 20% = 10G
+  'equip_leather_helmet': 10, // 제작비 50G -> 20% = 10G
   'equip_leather_armor': 10, // 제작비 50G -> 20% = 10G
-  'equip_leather_shoes': 8, // 제작비 40G -> 20% = 8G
-  'equip_forsythia_ring': 6, // 제작비 30G -> 20% = 6G
+  'equip_leather_shoes': 10, // 2티어 신발 매각가 10G
+  'equip_forsythia_ring': 20, // 제작비 100G -> 20% = 20G
 
   // 5. 3티어 청동 / 은행잎 장비 (제작비의 20% 환급)
-  'equip_bronze_sword': 10, // 제작비 50G -> 20% = 10G
-  'equip_bronze_helmet': 10, // 제작비 50G -> 20% = 10G
-  'equip_bronze_armor': 14, // 제작비 70G -> 20% = 14G
-  'equip_ginkgo_talisman': 10, // 제작비 50G -> 20% = 10G
+  'equip_bronze_sword': 100, // 제작비 500G -> 20% = 100G
+  'equip_bronze_helmet': 60, // 제작비 300G -> 20% = 60G
+  'equip_bronze_armor': 60, // 제작비 300G -> 20% = 60G
+  'equip_ginkgo_talisman': 100, // 제작비 500G -> 20% = 100G
 
   // 6. 4티어 헤리티지 장비 및 역사관 재료 (제작비의 20% 환급)
   'item_history_essence': 5,
   'item_unyielding_stone': 10,
-  'equip_heritage_blade': 30, // 제작비 150G -> 20% = 30G
-  'equip_heritage_helmet': 24, // 제작비 120G -> 20% = 24G
-  'equip_heritage_armor': 28, // 제작비 140G -> 20% = 28G
+  'equip_heritage_blade': 160, // 제작비 800G -> 20% = 160G
+  'equip_heritage_helmet': 100, // 제작비 500G -> 20% = 100G
+  'equip_heritage_armor': 100, // 제작비 500G -> 20% = 100G
   'equip_bronze_shoes': 16, // 3티어 청동 신발 매각가
   'equip_heritage_boots': 30, // 4티어 헤리티지 신발 매각가
 
@@ -6840,6 +6840,20 @@ class MainApp {
         this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
         rewardItemsList.push(`🟫 질긴 보스의 가죽 x${bossLeatherCount}`);
 
+        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (아주 낮은 확률 3%)
+        const shoesRoll = Math.random() * 100;
+        if (shoesRoll < 3) {
+          this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
+            type: 'equipment', slot: 'shoes', stats: { atk: 0, def: 3, hp: 5 }, effect: '방어력 +3, 체력 +5 · 2티어 신발 · Shift 질주 배속 4.5'
+          });
+          rewardItemsList.push('👟 날렵한 가죽 운동화 (대박 득템! [아주 낮은 확률 3%])');
+        } else if (shoesRoll < 18) {
+          this.addItem('equip_shoes_samdidas', '삼디다스 실내화', 1, '👟', {
+            type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
+          });
+          rewardItemsList.push('👟 삼디다스 실내화 (신발 득템! [낮은 확률 15%])');
+        }
+
         const roll = Math.random() * 100;
         if (roll < 25) {
           const woodGears = [
@@ -6865,6 +6879,20 @@ class MainApp {
         // 확정 재료 드랍 (3티어 청동 장비 제작 핵심)
         this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' });
         rewardItemsList.push('🥉 청동 드래곤의 심장');
+
+        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (낮은 확률 15%)
+        const dragonShoesRoll = Math.random() * 100;
+        if (dragonShoesRoll < 15) {
+          this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
+            type: 'equipment', slot: 'shoes', stats: { atk: 0, def: 3, hp: 5 }, effect: '방어력 +3, 체력 +5 · 2티어 신발 · Shift 질주 배속 4.5'
+          });
+          rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [15%])');
+        } else if (dragonShoesRoll < 30) {
+          this.addItem('equip_shoes_samdidas', '삼디다스 실내화', 1, '👟', {
+            type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
+          });
+          rewardItemsList.push('👟 삼디다스 실내화 (신발 득템! [15%])');
+        }
 
         // 2티어 가죽 장비 완제품 드랍 (20% 확률)
         const roll = Math.random() * 100;
@@ -6904,8 +6932,8 @@ class MainApp {
         }
       }
 
-      // 6. 케르베로스 전용 드랍 & 다음 구역 해금
-      if (bName.includes('케르베로스') || bName.includes('cerberus')) {
+      // 6. 케르베로스 (3두마수) 전용 드랍 & 다음 구역 해금
+      if (bName.includes('케르베로스') || bName.includes('cerberus') || bName.includes('3두마수') || bName.includes('삼두마수')) {
         this.playerData.hasClearedCerberusRaid = true;
         const studentId = this.playerData.studentId || '';
         if (studentId) {
@@ -6916,6 +6944,20 @@ class MainApp {
 
         this.addItem('item_eval_paper', 'A+ 만점 수행평가지', 1, '📜', { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' });
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
+
+        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (낮은 확률 15%)
+        const beastShoesRoll = Math.random() * 100;
+        if (beastShoesRoll < 15) {
+          this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
+            type: 'equipment', slot: 'shoes', stats: { atk: 0, def: 3, hp: 5 }, effect: '방어력 +3, 체력 +5 · 2티어 신발 · Shift 질주 배속 4.5'
+          });
+          rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [15%])');
+        } else if (beastShoesRoll < 30) {
+          this.addItem('equip_shoes_samdidas', '삼디다스 실내화', 1, '👟', {
+            type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
+          });
+          rewardItemsList.push('👟 삼디다스 실내화 (신발 득템! [15%])');
+        }
       }
 
       // 7. 기말고사 파멸신 전용 드랍 테이블:
