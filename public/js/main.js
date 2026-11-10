@@ -615,7 +615,7 @@ const ALL_GAME_ITEMS = {
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
-  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 1,700 감소 (2,000 HP ➔ 300 HP)' } },
+  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)' } },
   'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
@@ -2389,23 +2389,23 @@ class MainApp {
       if (!hasScroll) {
         this.addItem('item_golem_weakness_scroll', '📜 한강우의 골렘 연화 비책', 1, '📜', {
           type: 'quest',
-          effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 1,700 감소 (2,000 HP ➔ 300 HP)'
+          effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)'
         });
         this.saveProgress(true);
 
         const title = '👨‍🏫 한강우 선생님';
-        const msg = `오! 자네는 1-1반에서 직접 목재를 수집해 목검, 목제 투구, 목제 흉갑까지 [나무 세트 3종]을 완벽하게 착용했군! 👏\n\n기본기를 충실히 닦은 자만이 거목의 영혼과 공명할 수 있는 법이지. 옛 고서에서 전해 내려오는 이 [📜 골렘 연화 비책]을 자네에게 전수하겠네!\n\n✨ [비책 효과]\n이 비책을 품고 1-2반으로 들어가 [🪵 가죽 골렘]과 1:1 결투를 치르면, 골렘의 거친 외피가 부드럽게 연화되어 체력이 무려 1,700이나 깎여 (2,000 HP ➔ 300 HP)으로 대폭 줄어든단다!\n\n어서 2반 문을 열고 들어가 1:1 레이드에서 승리를 쟁취해보렴!`;
+        const msg = `오! 자네는 1-1반에서 직접 목재를 수집해 목검, 목제 투구, 목제 흉갑까지 [나무 세트 3종]을 완벽하게 착용했군! 👏\n\n기본기를 충실히 닦은 자만이 거목의 영혼과 공명할 수 있는 법이지. 옛 고서에서 전해 내려오는 이 [📜 골렘 연화 비책]을 자네에게 전수하겠네!\n\n✨ [비책 효과]\n이 비책을 품고 1-2반으로 들어가 [🪵 가죽 골렘]과 1:1 결투를 치르면, 골렘의 거친 외피가 부드럽게 연화되어 체력이 200으로 줄어들고 방어력도 5로 대폭 약화된단다! (HP 2,000 ➔ 200 / DEF 14 ➔ 5)\n\n어서 2반 문을 열고 들어가 1:1 레이드에서 승리를 쟁취해보렴!`;
         if (window.RPGDialog) {
           window.RPGDialog.show(title, msg, '👨‍🏫');
         } else {
           alert(`💬 [${title}]\n\n${msg}`);
         }
         if (typeof this.showItemToast === 'function') {
-          this.showItemToast('📜 [한강우의 골렘 연화 비책] 획득! (가죽 골렘 체력 1,700 감소 ➔ 300 HP)');
+          this.showItemToast('📜 [한강우의 골렘 연화 비책] 획득! (가죽 골렘 HP 200 / DEF 5 약화)');
         }
       } else {
         const title = '👨‍🏫 한강우 선생님';
-        const msg = `자네가 품고 있는 [📜 한강우의 골렘 연화 비책]이 이미 1-2반 가죽 골렘의 거친 기운을 1,700 감소시켜 체력 300 HP로 약화시키고 있단다!\n\n나무 세트 3종을 갖춘 자네의 실력이라면 충분히 승리할 수 있을 걸세. 1-2반 교실로 들어가 당당하게 1:1 레이드에 도전해보렴!`;
+        const msg = `자네가 품고 있는 [📜 한강우의 골렘 연화 비책]이 이미 1-2반 가죽 골렘의 거친 기운을 약화시켜 체력 200, 방어력 5로 낮추고 있단다!\n\n나무 세트 3종을 갖춘 자네의 실력이라면 10문제 내외로 충분히 승리할 수 있을 걸세. 1-2반 교실로 들어가 당당하게 1:1 레이드에 도전해보렴!`;
         if (window.RPGDialog) {
           window.RPGDialog.show(title, msg, '👨‍🏫');
         } else {
@@ -2425,9 +2425,9 @@ class MainApp {
     let msg = `안녕! 1학년 2반 담임 한강우 선생님이란다. 👨‍🏫\n\n🪵 [1-2반 1:1 가죽 골렘 레이드 상시 개방]\n이 2반 문으로 들어가면 1차 관문 보스 '가죽 골렘'과 언제든 1:1 단판 승부를 겨룰 수 있단다!\n\n`;
 
     if (ownsAllThree) {
-      msg += `💡 [선생님의 조언: 장비 착용 필요!]\n가방을 보니 나무검, 나무투구, 나무갑옷을 모두 제작해 두었구나!\n하지만 아직 직접 몸에 [착용]하지 않았단다.\n\n우측 가방(🎒)을 열어 3개 장비를 모두 착용한 상태로 나에게 다시 말을 걸면, 골렘의 체력을 1,700 깎아주는(HP 300) 특수 비책을 전수해주마!`;
+      msg += `💡 [선생님의 조언: 장비 착용 필요!]\n가방을 보니 나무검, 나무투구, 나무갑옷을 모두 제작해 두었구나!\n하지만 아직 직접 몸에 [착용]하지 않았단다.\n\n우측 가방(🎒)을 열어 3개 장비를 모두 착용한 상태로 나에게 다시 말을 걸면, 골렘의 체력을 200, 방어력을 5로 대폭 약화시키는(HP 200 · DEF 5) 특수 비책을 전수해주마!`;
     } else {
-      msg += `⚔️ [특별 공략 기믹: 골렘 연화 비책]\n가죽 골렘의 체력(2,000 HP)이 너무 단단해 버겁다면... 1-1반 교실 화단과 복도에서 목재를 모아 [나무검], [나무투구], [나무갑옷] (나무 세트 3종)을 모두 제작하여 직접 [착용]한 뒤 나를 찾아오렴!\n골렘의 체력을 1,700 줄여주는(HP 300) [📜 골렘 연화 비책]을 전수해 주겠네!\n\n🐲 [청동 드래곤 출현]\n참고로 2차 보스인 '고대 청동 드래곤'은 운동장 넓은 천연잔디 축구장으로 이동했단다! 골렘을 쓰러뜨리고 엘리베이터를 개방해 축구장으로 진출해보렴!`;
+      msg += `⚔️ [특별 공략 기믹: 골렘 연화 비책]\n가죽 골렘의 체력(2,000 HP)과 방어력(14 DEF)이 너무 단단해 버겁다면... 1-1반 교실 화단과 복도에서 목재를 모아 [나무검], [나무투구], [나무갑옷] (나무 세트 3종)을 모두 제작하여 직접 [착용]한 뒤 나를 찾아오렴!\n골렘의 체력을 200, 방어력을 5로 약화시키는 [📜 골렘 연화 비책]을 전수해 주겠네!\n\n🐲 [청동 드래곤 출현]\n참고로 2차 보스인 '고대 청동 드래곤'은 운동장 넓은 천연잔디 축구장으로 이동했단다! 골렘을 쓰러뜨리고 엘리베이터를 개방해 축구장으로 진출해보렴!`;
     }
 
     if (window.RPGDialog) {
@@ -6490,14 +6490,15 @@ class MainApp {
       const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
       if (hasWeaknessScroll) {
         const confirmUse = confirm(
-          "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘의 체력을 1,700 감소시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 체력 1,700 감소 ➔ HP 300)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 유지)"
+          "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘을 대폭 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 HP 2,000 ➔ 200 / DEF 14 ➔ 5)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 / DEF 14 유지)"
         );
         if (confirmUse) {
           useWeaknessScroll = true;
         }
       }
 
-      const finalHp = useWeaknessScroll ? 300 : 2000;
+      const finalHp = useWeaknessScroll ? 200 : 2000;
+      const finalDef = useWeaknessScroll ? 5 : 14;
       window.BOSS_CONFIG = {
         ...window.BOSS_CONFIG,
         name: '🪵 가죽 골렘',
@@ -6508,7 +6509,7 @@ class MainApp {
         maxHp: finalHp,
         currentHp: finalHp,
         atk: 35,
-        def: 14,
+        def: finalDef,
         rewardGold: 100,
         rewardExp: 200,
         isWeakened: useWeaknessScroll,
@@ -6528,7 +6529,7 @@ class MainApp {
         if (useWeaknessScroll) {
           weaknessBanner.style.display = 'block';
           weaknessBanner.classList.remove('hidden');
-          weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 1,700 약화되었습니다! (HP 300)';
+          weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘이 대폭 약화되었습니다! (HP 200 · 방어력 5)';
         } else {
           weaknessBanner.style.display = 'none';
           weaknessBanner.classList.add('hidden');
