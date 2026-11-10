@@ -127,10 +127,39 @@ class RPGDialogManager {
   }
 
   /**
+   * Helper to clean body text: remove duplicated bracket header lines and extra quotes
+   */
+  cleanBodyText(speaker, text, avatar) {
+    let clean = (text || '').trim();
+
+    // 1. Remove bracketed header line at the start (e.g. "📗 [바닥에 놓인 대출도서: 과학 잡지]\n\n..." or "💬 [이상대 선생님]\n\n...")
+    const firstLineMatch = clean.match(/^([^\n]+)\n+([\s\S]*)$/);
+    if (firstLineMatch) {
+      const firstLine = firstLineMatch[1].trim();
+      const rest = firstLineMatch[2].trim();
+      const isBracketHeader = /^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])?\s*\[[^\]]+\]$/u.test(firstLine);
+      if (isBracketHeader && rest.length > 0) {
+        clean = rest;
+      }
+    }
+
+    // 2. Strip surrounding quotes if the entire body is quoted
+    if (clean.startsWith('"') && clean.endsWith('"') && clean.length > 2) {
+      clean = clean.slice(1, -1).trim();
+    }
+
+    return clean;
+  }
+
+  /**
    * Main Dialogue Display
    */
   show(speaker = '안내', text = '', avatar = '💬', callback = null) {
-    const cleanText = (text || '').trim();
+    let cleanSpeaker = (speaker || '안내').trim();
+    if (avatar && cleanSpeaker.startsWith(avatar)) {
+      cleanSpeaker = cleanSpeaker.slice(avatar.length).trim();
+    }
+    const cleanText = this.cleanBodyText(cleanSpeaker, text, avatar);
 
     // 1. Debounce rapid duplicate messages (e.g., player standing on trigger or rapid tap)
     const now = Date.now();
@@ -152,23 +181,19 @@ class RPGDialogManager {
         return;
       }
       // Queue next message
-      this.queue.push({ speaker, text, avatar, callback, isConfirm: false });
+      this.queue.push({ speaker: cleanSpeaker, text: cleanText, avatar, callback, isConfirm: false });
       return;
     }
 
     this.isOpen = true;
     this.isConfirmMode = false;
     this.currentCallback = callback;
-    this.fullText = text || '';
+    this.fullText = cleanText;
     this.lastShownText = cleanText;
     this.lastShownTime = now;
 
     if (this.choicesEl) this.choicesEl.classList.add('hidden');
     if (this.avatarEl) this.avatarEl.innerText = avatar || '💬';
-    let cleanSpeaker = (speaker || '안내').trim();
-    if (avatar && cleanSpeaker.startsWith(avatar)) {
-      cleanSpeaker = cleanSpeaker.slice(avatar.length).trim();
-    }
     if (this.speakerEl) this.speakerEl.innerText = cleanSpeaker || '안내';
     if (this.textEl) this.textEl.innerText = '';
     if (this.indicatorEl) this.indicatorEl.classList.add('hidden');
@@ -207,7 +232,11 @@ class RPGDialogManager {
   }
 
   confirm(speaker = '안내', text = '', avatar = '❓', onConfirm = null, onCancel = null, confirmText = '확인', cancelText = '취소') {
-    const cleanText = (text || '').trim();
+    let cleanSpeaker = (speaker || '안내').trim();
+    if (avatar && cleanSpeaker.startsWith(avatar)) {
+      cleanSpeaker = cleanSpeaker.slice(avatar.length).trim();
+    }
+    const cleanText = this.cleanBodyText(cleanSpeaker, text, avatar);
     const now = Date.now();
 
     if (this.lastShownText === cleanText && (now - this.lastShownTime) < 1000) {
@@ -220,8 +249,8 @@ class RPGDialogManager {
       }
       if (this.queue.length >= 2) return;
       this.queue.push({
-        speaker,
-        text,
+        speaker: cleanSpeaker,
+        text: cleanText,
         avatar,
         onConfirm,
         onCancel,
@@ -237,12 +266,12 @@ class RPGDialogManager {
     this.onConfirmCallback = onConfirm;
     this.onCancelCallback = onCancel;
     this.currentCallback = null;
-    this.fullText = text || '';
+    this.fullText = cleanText;
     this.lastShownText = cleanText;
     this.lastShownTime = now;
 
     if (this.avatarEl) this.avatarEl.innerText = avatar || '❓';
-    if (this.speakerEl) this.speakerEl.innerText = speaker || '안내';
+    if (this.speakerEl) this.speakerEl.innerText = cleanSpeaker || '안내';
     if (this.textEl) this.textEl.innerText = '';
     if (this.indicatorEl) this.indicatorEl.classList.add('hidden');
 
@@ -392,11 +421,30 @@ class RPGDialogManager {
     let avatar = '🏫';
     let body = msg;
 
-    const matchWithSpeaker = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\uFE0F?\s*\[([^\]]{1,25})\]\s*\n*([\s\S]*)$/u);
+    // 1. Emoji + [Bracket Speaker] e.g. "📖 [한강우 선생님 연구석]\n\n..."
+    const matchWithSpeaker = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\uFE0F?\s*\[([^\]]{1,60})\]\s*\n*([\s\S]*)$/u);
+    // 2. Bracket only e.g. "[복도 게시판]\n\n..."
+    const matchBracketOnly = !matchWithSpeaker && msg.match(/^\[([^\]]{1,60})\]\s*\n*([\s\S]*)$/);
+
     if (matchWithSpeaker) {
       if (matchWithSpeaker[1]) avatar = matchWithSpeaker[1].trim();
-      if (matchWithSpeaker[2]) speaker = matchWithSpeaker[2].trim();
+      if (matchWithSpeaker[2]) {
+        let rawSpeaker = matchWithSpeaker[2].trim();
+        if (rawSpeaker.includes(':')) {
+          rawSpeaker = rawSpeaker.split(':').pop().trim();
+        }
+        speaker = rawSpeaker;
+      }
       if (matchWithSpeaker[3] !== undefined) body = matchWithSpeaker[3].trim();
+    } else if (matchBracketOnly) {
+      if (matchBracketOnly[1]) {
+        let rawSpeaker = matchBracketOnly[1].trim();
+        if (rawSpeaker.includes(':')) {
+          rawSpeaker = rawSpeaker.split(':').pop().trim();
+        }
+        speaker = rawSpeaker;
+      }
+      if (matchBracketOnly[2] !== undefined) body = matchBracketOnly[2].trim();
     } else {
       const matchLeadingEmoji = msg.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF]|[\uD83C-\uD83E][\uDF00-\uDFFF]|[\u{1F300}-\u{1F9FF}])\uFE0F?\s*([\s\S]+)$/u);
       if (matchLeadingEmoji) {
@@ -424,9 +472,7 @@ class RPGDialogManager {
       }
     }
 
-    if (body.startsWith('"') && body.endsWith('"') && body.length > 2) {
-      body = body.slice(1, -1);
-    }
+    body = this.cleanBodyText(speaker, body, avatar);
 
     return { speaker, body, avatar };
   }

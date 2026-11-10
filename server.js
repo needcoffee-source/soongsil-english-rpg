@@ -645,7 +645,7 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 보물' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
-  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 50% 반감 (2,000 HP ➔ 1,000 HP)' } },
+  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 체력 1,700 감소 (2,000 HP ➔ 300 HP)' } },
   'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', meta: { type: 'quest', effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },

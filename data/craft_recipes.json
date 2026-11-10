@@ -698,7 +698,7 @@
     "id": "recipe_orange_potion",
     "name": "주홍 물약",
     "category": "potion",
-    "description": "[중급 회복 물약] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다. (Lv.5 이상 제작 가능)",
+    "description": "[중급 회복 물약] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 10,

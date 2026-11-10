@@ -853,7 +853,7 @@ const WORLD_DATA = {
       prompt: "1:1 가죽 골렘 레이드 도전 (SPACE)",
       level: 10,
       maxHp: 2000,
-      atk: 30,
+      atk: 35,
       def: 14
     },
     desks: [],
@@ -1086,7 +1086,7 @@ const WORLD_DATA = {
       prompt: "청동 드래곤 레이드 (SPACE)",
       level: 15,
       maxHp: 5000,
-      atk: 45,
+      atk: 60,
       def: 20
     },
     elevator: { x: 80, y: 3 },

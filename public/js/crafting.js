@@ -21,10 +21,16 @@ class CraftingManager {
     this.slotsContainer = document.getElementById('unscramble-slots');
     this.wordBank = document.getElementById('unscramble-word-bank');
     this.btnCheckCraft = document.getElementById('btn-check-craft');
+    this.btnCheckCraftBulk = document.getElementById('btn-check-craft-bulk');
     this.btnClose = document.getElementById('btn-close-craft-x');
 
     this.btnClose.addEventListener('click', () => this.close());
-    this.btnCheckCraft.addEventListener('click', () => this.attemptCraft());
+    if (this.btnCheckCraft) {
+      this.btnCheckCraft.addEventListener('click', () => this.attemptCraft(1));
+    }
+    if (this.btnCheckCraftBulk) {
+      this.btnCheckCraftBulk.addEventListener('click', () => this.attemptCraft(5));
+    }
   }
 
   async loadRecipes(grade) {
@@ -212,6 +218,16 @@ class CraftingManager {
       this.materialsEl.appendChild(levelBadge);
     }
 
+    // Toggle 5x bulk craft button for consumables/potions
+    if (this.btnCheckCraftBulk) {
+      const isConsumable = recipe.category === 'potion' || (recipe.result && recipe.result.type === 'consumable');
+      if (isConsumable) {
+        this.btnCheckCraftBulk.classList.remove('hidden');
+      } else {
+        this.btnCheckCraftBulk.classList.add('hidden');
+      }
+    }
+
     // Setup Unscramble Puzzle
     this.koreanTargetEl.innerText = `"${recipe.unscramble.korean}"`;
     this.placedWords = [];
@@ -263,7 +279,7 @@ class CraftingManager {
     });
   }
 
-  attemptCraft() {
+  attemptCraft(multiplier = 1) {
     if (!this.selectedRecipe) return;
 
     // Check level requirement
@@ -284,28 +300,31 @@ class CraftingManager {
       return;
     }
 
-    // Check materials
+    // Check materials (scaled by multiplier)
     const inv = window.MainApp ? window.MainApp.getInventory() : [];
     for (const req of this.selectedRecipe.requiredItems) {
       const current = inv.find(i => i.item === req.item);
       const count = current ? current.count : 0;
-      if (count < req.count) {
-        alert(`재료가 부족합니다!\n필요한 '${req.name}'이(가) 부족합니다. (필요: ${req.count}개, 보유: ${count}개)\n교실과 복도에서 퀴즈를 풀어 재료를 모아보세요.`);
+      const needCount = req.count * multiplier;
+      if (count < needCount) {
+        const prefix = multiplier > 1 ? `[${multiplier}개 일괄 제작] ` : '';
+        alert(`재료가 부족합니다!\n${prefix}필요한 '${req.name}'이(가) 부족합니다. (필요: ${needCount}개, 보유: ${count}개)\n교실과 복도에서 퀴즈를 풀어 재료를 모아보세요.`);
         return;
       }
     }
 
-    // Check gold
-    const requiredGold = this.selectedRecipe.requiredGold || 0;
+    // Check gold (scaled by multiplier)
+    const requiredGold = (this.selectedRecipe.requiredGold || 0) * multiplier;
     const currentGold = (window.MainApp && window.MainApp.playerData) ? window.MainApp.playerData.gold : 0;
     if (currentGold < requiredGold) {
-      alert(`골드가 부족합니다!\n제작 비용으로 ${requiredGold} G가 필요합니다. (현재 보유: ${currentGold} G)\n교실에서 영어 퀴즈를 풀거나 몬스터를 잡아 골드를 모아보세요!`);
+      const prefix = multiplier > 1 ? `[${multiplier}개 일괄 제작] ` : '';
+      alert(`골드가 부족합니다!\n${prefix}제작 비용으로 ${requiredGold} G가 필요합니다. (현재 보유: ${currentGold} G)\n교실에서 영어 퀴즈를 풀거나 몬스터를 잡아 골드를 모아보세요!`);
       return;
     }
 
     // Deduct materials & gold & Grant item
     this.selectedRecipe.requiredItems.forEach(req => {
-      window.MainApp.removeItem(req.item, req.count);
+      window.MainApp.removeItem(req.item, req.count * multiplier);
     });
 
     if (requiredGold > 0 && window.MainApp && window.MainApp.playerData) {
@@ -317,16 +336,20 @@ class CraftingManager {
     }
 
     const res = this.selectedRecipe.result;
-    window.MainApp.addItem(res.item, res.name, 1, res.icon || this.selectedRecipe.icon, {
+    window.MainApp.addItem(res.item, res.name, multiplier, res.icon || this.selectedRecipe.icon, {
       type: res.type || 'equipment',
       slot: res.slot || 'accessory',
       stats: res.stats || { atk: 0, def: 0, hp: 0 },
       heal: res.heal || 0,
       effect: res.effect || ''
     });
-    window.MainApp.addExp(50);
+    window.MainApp.addExp(50 * multiplier);
 
-    alert(`🎉 [${res.name}] 제작 완료!`);
+    if (multiplier > 1) {
+      alert(`🎉 [${res.name}] ${multiplier}개 일괄 제작 완료! (+${50 * multiplier} EXP)`);
+    } else {
+      alert(`🎉 [${res.name}] 제작 완료! (+50 EXP)`);
+    }
     this.close();
   }
 }
