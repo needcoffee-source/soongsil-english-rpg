@@ -85,6 +85,9 @@ class GameEngine {
     this.activeInteractable = null;
     this.floatingTexts = [];
 
+    // Teacher Exclusive Dash Particle System (질주 ✨ 황금빛 별가루 이펙트)
+    this.teacherDashParticles = [];
+
     // Movement callbacks
     this.onMoveCallback = null;
     this.onLocationChangeCallback = null;
@@ -354,6 +357,9 @@ class GameEngine {
     if (window.BrawlBall) {
       window.BrawlBall.update(0.016);
     }
+
+    // Update Teacher Exclusive Golden Stardust Dash Effect (교사 전용 질주 황금빛 별가루 이펙트)
+    this.updateTeacherDashParticles();
 
     // Check nearby interactable
     this.checkNearbyInteractable();
@@ -2192,6 +2198,9 @@ class GameEngine {
     for (const id in this.otherPlayers) {
       this.renderOtherPlayer(this.otherPlayers[id]);
     }
+
+    // Render Teacher Exclusive Golden Stardust Dash Particles (교사 전용 질주 황금빛 별가루)
+    this.renderTeacherDashParticles();
 
     // Render Local Player
     this.renderPlayer(this.player, true);
@@ -7897,6 +7906,150 @@ class GameEngine {
   }
 
   // ========================================================
+  // ✨ 교사 전용 질주 황금빛 별가루 이펙트 시스템
+  // (오직 교사 계정이 Shift 질주할 때만 발밑에 반짝이는 황금빛 십자별 파티클 발생)
+  // ========================================================
+  updateTeacherDashParticles() {
+    // 1. 내 캐릭터가 교사 계정이고 질주 중이며 이동 중일 때 파티클 방출
+    if (this.player && this.player.isTeacher && this.player.isDashing && this.player.isMoving) {
+      const pColors = ['#fef08a', '#fde047', '#fbbf24', '#f59e0b', '#ffffff'];
+      const spawnCount = Math.random() < 0.7 ? 2 : 1;
+      for (let i = 0; i < spawnCount; i++) {
+        const spawnX = this.player.x + 12 + (Math.random() * 14 - 7);
+        const spawnY = this.player.y + 27 + (Math.random() * 6 - 3);
+
+        let oppX = 0;
+        let oppY = 0;
+        if (this.player.direction === 'left') oppX = 1.0;
+        else if (this.player.direction === 'right') oppX = -1.0;
+        if (this.player.direction === 'up') oppY = 1.0;
+        else if (this.player.direction === 'down') oppY = -1.0;
+
+        const vx = oppX * (Math.random() * 1.3 + 0.4) + (Math.random() - 0.5) * 1.0;
+        const vy = oppY * (Math.random() * 1.3 + 0.4) - (Math.random() * 0.9 + 0.3);
+
+        const maxLife = Math.floor(Math.random() * 10) + 18;
+        this.teacherDashParticles.push({
+          x: spawnX,
+          y: spawnY,
+          vx: vx,
+          vy: vy,
+          size: Math.random() * 3.5 + 2.5,
+          color: pColors[Math.floor(Math.random() * pColors.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.28,
+          life: maxLife,
+          maxLife: maxLife
+        });
+      }
+    }
+
+    // 2. 다른 플레이어 중 교사 계정이 질주 중일 때도 동기화 연출
+    const now = Date.now();
+    for (const id in this.otherPlayers) {
+      const op = this.otherPlayers[id];
+      if (op && op.isTeacher && op.isDashing && (now - (op.lastMoveAt || 0) < 180)) {
+        const pColors = ['#fef08a', '#fde047', '#fbbf24', '#f59e0b', '#ffffff'];
+        const spawnX = op.x + 12 + (Math.random() * 14 - 7);
+        const spawnY = op.y + 27 + (Math.random() * 6 - 3);
+        const maxLife = 20;
+        this.teacherDashParticles.push({
+          x: spawnX,
+          y: spawnY,
+          vx: (Math.random() - 0.5) * 1.4,
+          vy: -Math.random() * 1.1 - 0.3,
+          size: Math.random() * 3.2 + 2.2,
+          color: pColors[Math.floor(Math.random() * pColors.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.25,
+          life: maxLife,
+          maxLife: maxLife
+        });
+      }
+    }
+
+    // 3. 물리 연산 및 수명 감소
+    for (let i = this.teacherDashParticles.length - 1; i >= 0; i--) {
+      const p = this.teacherDashParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.92;
+      p.vy *= 0.92;
+      p.rotation += p.rotSpeed;
+      p.life--;
+      if (p.life <= 0) {
+        this.teacherDashParticles.splice(i, 1);
+      }
+    }
+
+    // 최대 파티클 수 제한 (퍼포먼스 보호)
+    if (this.teacherDashParticles.length > 120) {
+      this.teacherDashParticles.splice(0, this.teacherDashParticles.length - 120);
+    }
+  }
+
+  // ========================================================
+  // ✨ 교사 전용 질주 황금빛 별가루 이펙트 렌더러
+  // ========================================================
+  renderTeacherDashParticles() {
+    if (!this.teacherDashParticles || this.teacherDashParticles.length === 0) return;
+    const ctx = this.ctx;
+    ctx.save();
+    for (let i = 0; i < this.teacherDashParticles.length; i++) {
+      const p = this.teacherDashParticles[i];
+      const alpha = Math.max(0, p.life / p.maxLife);
+      const scale = (p.life > p.maxLife * 0.75)
+        ? ((p.maxLife - p.life) / (p.maxLife * 0.25)) // 팝인 스케일
+        : (p.life / (p.maxLife * 0.75)); // 페이드아웃 스케일
+      const currentSize = p.size * Math.max(0.2, scale);
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = alpha;
+
+      // 1. 은은한 황금빛 구체 글로우 후광 (Golden Halo)
+      const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, currentSize * 2.2);
+      glowGrad.addColorStop(0, 'rgba(254, 240, 138, 0.65)');
+      glowGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.3)');
+      glowGrad.addColorStop(1, 'rgba(217, 119, 6, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, currentSize * 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 2. 반짝반짝 4-Point 황금 십자별 (✦ Starburst)
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.moveTo(0, -currentSize);
+      ctx.quadraticCurveTo(0, 0, currentSize * 0.28, 0);
+      ctx.quadraticCurveTo(0, 0, 0, currentSize);
+      ctx.quadraticCurveTo(0, 0, -currentSize * 0.28, 0);
+      ctx.quadraticCurveTo(0, 0, 0, -currentSize);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(-currentSize, 0);
+      ctx.quadraticCurveTo(0, 0, 0, currentSize * 0.28);
+      ctx.quadraticCurveTo(0, 0, currentSize, 0);
+      ctx.quadraticCurveTo(0, 0, 0, -currentSize * 0.28);
+      ctx.quadraticCurveTo(0, 0, -currentSize, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // 3. 별 중심부 화이트 다이아몬드 코어 글린트
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(1, currentSize * 0.32), 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  // ========================================================
   // 👩‍🏫 선생님 전용 황금빛 반짝반짝 후광 아우라 렌더러
   // ========================================================
   renderTeacherGoldenAura(px, py, now) {
@@ -13423,7 +13576,7 @@ class GameEngine {
     const isJoshuaDesk = (label === '3');
     const isOkchohanDesk = (label === '10');
     const isKimmijinDesk = (label === '15');
-    const isYosunyuDesk = (label === '18');
+    const isYosunyuDesk = (label === '17');
     const isKwimjinsyongDesk = (label === '24');
     const now = Date.now();
 
@@ -13439,6 +13592,9 @@ class GameEngine {
       } else if (isHangangwooDesk) {
         // 한강우 국어선생님: 기품 있는 짙은 밤나무 원목 의자 (#291508) & 차분한 딥그린 패브릭 (#065f46)
         this.drawStaffOfficeChair(px - 10, py + h / 2, 'right', '#291508', '#065f46');
+      } else if (isYosunyuDesk) {
+        // 요션유 정보선생님: 세련된 다크인디고 원목 (#1e1b4b) & 네온 퍼플 패브릭 (#a855f7)
+        this.drawStaffOfficeChair(px - 10, py + h / 2, 'right', '#1e1b4b', '#a855f7');
       } else {
         this.drawStaffOfficeChair(px - 10, py + h / 2, 'right');
       }
@@ -13709,6 +13865,56 @@ class GameEngine {
           ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
           ctx.fillRect(px + 31, py + h - 20 - teaSteam, 1.5, 1.5);
           ctx.fillRect(px + 33, py + h - 22 - ((teaSteam + 2) % 5), 1.5, 1.5);
+        } else if (isYosunyuDesk) {
+          // [17번 요션유 정보선생님 전용 데스크 소품]
+          // 1. 모니터 (우측) - 파이썬 코딩 터미널 & 네온 시안/그린 알고리즘 코드 화면
+          ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(px + w - 16, py + h / 2 - 10, 2, 20);
+          // 코드 라인 (시안, 그린, 옐로우)
+          ctx.fillStyle = '#38bdf8'; ctx.fillRect(px + w - 16, py + h / 2 - 8, 2, 3);
+          ctx.fillStyle = '#4ade80'; ctx.fillRect(px + w - 16, py + h / 2 - 3, 2, 4);
+          ctx.fillStyle = '#fde047'; ctx.fillRect(px + w - 16, py + h / 2 + 3, 2, 4);
+          if (Math.floor(Date.now() / 350) % 2 === 0) {
+            ctx.fillStyle = '#38bdf8'; ctx.fillRect(px + w - 16, py + h / 2 + 8, 2, 2);
+          }
+
+          // 2. 💻 슬림 테크 노트북 & 마우스패드 (좌측 상단)
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(px + 8, py + 8, 16, 14);
+          ctx.fillStyle = '#0284c7';
+          ctx.fillRect(px + 10, py + 10, 12, 10);
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(px + 12, py + 12, 8, 6);
+
+          // 3. 💾 요션유의 고속 알고리즘 USB (중앙 상단)
+          ctx.fillStyle = '#3b82f6';
+          ctx.fillRect(px + 28, py + 10, 6, 10);
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillRect(px + 29, py + 8, 4, 2);
+          ctx.fillStyle = '#60a5fa';
+          ctx.fillRect(px + 29, py + 12, 4, 4);
+
+          // 4. 📚 두꺼운 파이썬 & 알고리즘 교재 더미 (좌측 하단)
+          ctx.fillStyle = '#1e3a8a';
+          ctx.fillRect(px + 8, py + h - 22, 16, 14);
+          ctx.fillStyle = '#2563eb';
+          ctx.fillRect(px + 10, py + h - 20, 12, 12);
+          ctx.fillStyle = '#fde047';
+          ctx.fillRect(px + 11, py + h - 18, 10, 2);
+
+          // 5. ☕ 스마트 온도유지 테크 머그컵 (중앙 하단)
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.arc(px + 32, py + h - 14, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath();
+          ctx.arc(px + 32, py + h - 14, 2, 0, Math.PI * 2);
+          ctx.fill();
         } else {
           ctx.fillRect(px + w - 14, py + h / 2 - 12, 8, 24);
           ctx.fillStyle = '#38bdf8';
@@ -14062,7 +14268,7 @@ class GameEngine {
         ctx.textBaseline = 'middle';
         ctx.fillText(displayLabel, cx, cy + 0.5);
       } else if (isYosunyuDesk) {
-        // 💻 요션유 전용 명패 (18번 번호 삭제)
+        // 💻 요션유 전용 명패 (17번 번호 삭제)
         ctx.font = 'bold 10.5px "Pretendard", "Noto Sans KR", sans-serif';
         const displayLabel = '💻 요션유';
         const tw = Math.max(48, ctx.measureText(displayLabel).width + 12);

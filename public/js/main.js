@@ -1221,7 +1221,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherId: 'npc_teacher_yosunyu',
     teacherName: '요션유 선생님',
     teacherRole: '정보',
-    teacherSeat: '18번',
+    teacherSeat: '17번',
     teacherAvatar: '💻',
     category: '💻 숭실 정보·알고리즘 프로젝트 (Informatics Quest)',
     title: '[정보] 요션유 선생님의 알고리즘 과제: 디지털 숭실',
@@ -1247,7 +1247,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 약속했던 보상으로 [보스의 가죽 1장]과 200 경험치를 선물로 줄게! 너의 뛰어난 디지털 정보 감각과 논리적 사고력을 응원한다!`,
     doneStory: `너 덕분에 이번 숭실 정보 알고리즘 실습이 완벽하게 진행될 수 있겠구나!
 
-언제든 코딩이나 컴퓨터, 알고리즘에 대해 궁금한 점이 있다면 18번 자리로 편하게 찾아오렴! 💻✨`,
+언제든 코딩이나 컴퓨터, 알고리즘에 대해 궁금한 점이 있다면 17번 자리로 편하게 찾아오렴! 💻✨`,
     objectives: [
       {
         id: 'server',

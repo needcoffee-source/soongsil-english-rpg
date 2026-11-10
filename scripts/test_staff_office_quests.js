@@ -44,13 +44,13 @@ console.log('✔ 3. Kim Jin-mui verified (Seat 15, name: "김진믜 선생님", 
 // Test Yo Sun-yu (요션유 - 정보)
 const yosunyu = office.npcs.find(n => n.id === 'npc_teacher_yosunyu');
 assert(yosunyu, 'Yo Sun-yu NPC must exist');
-assert.strictEqual(yosunyu.seatId, 18);
+assert.strictEqual(yosunyu.seatId, 17);
 assert.strictEqual(yosunyu.role, '정보', 'Yo Sun-yu role must be 정보');
 assert.strictEqual(yosunyu.avatar, 'teacher');
-assert.strictEqual(yosunyu.x, 61.3125);
+assert.strictEqual(yosunyu.x, 55.1875);
 assert.strictEqual(yosunyu.y, 17.5625);
 assert.strictEqual(yosunyu.questId, 'quest_yosunyu_info');
-console.log('✔ 4. Yo Sun-yu verified (Seat 18, role: "정보", coords: (61.3125, 17.5625), avatar: "teacher")');
+console.log('✔ 4. Yo Sun-yu verified (Seat 17, role: "정보", coords: (55.1875, 17.5625), avatar: "teacher")');
 
 // Test Kwim Jin-syong (귐즨숑 - 진로)
 const kwimjinsyong = office.npcs.find(n => n.id === 'npc_teacher_kwimjinsyong');
