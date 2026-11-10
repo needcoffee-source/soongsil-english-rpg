@@ -1214,7 +1214,7 @@ const WORLD_DATA = {
         def: 2,
         counterDmg: 20, // 오답 시 피해량 (~15%)
         goldReward: 8,
-        expReward: 15,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 2,
         respawnSec: 15
@@ -1234,7 +1234,7 @@ const WORLD_DATA = {
         def: 2,
         counterDmg: 20,
         goldReward: 8,
-        expReward: 15,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 2,
         respawnSec: 15
@@ -1254,7 +1254,7 @@ const WORLD_DATA = {
         def: 2,
         counterDmg: 20,
         goldReward: 8,
-        expReward: 15,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 2,
         respawnSec: 15
@@ -1274,7 +1274,7 @@ const WORLD_DATA = {
         def: 2,
         counterDmg: 20,
         goldReward: 8,
-        expReward: 15,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 2,
         respawnSec: 15
@@ -1294,7 +1294,7 @@ const WORLD_DATA = {
         def: 3,
         counterDmg: 27, // 오답 시 피해량 (풀피 135의 정확히 20%!)
         goldReward: 15,
-        expReward: 25,
+        expReward: 40,
         leatherMin: 1,
         leatherMax: 2,
         respawnSec: 20
@@ -1314,7 +1314,7 @@ const WORLD_DATA = {
         def: 3,
         counterDmg: 27,
         goldReward: 15,
-        expReward: 25,
+        expReward: 40,
         leatherMin: 1,
         leatherMax: 2,
         respawnSec: 20
@@ -1358,7 +1358,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 14,
-        expReward: 28,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1379,7 +1379,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 14,
-        expReward: 28,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1400,7 +1400,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 14,
-        expReward: 28,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1421,7 +1421,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 14,
-        expReward: 28,
+        expReward: 35,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15

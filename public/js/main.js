@@ -7607,7 +7607,7 @@ class MainApp {
 
     // 1. Gold & EXP (직업 패시브 보너스 반영)
     let finalGold = mob.goldReward || 10;
-    let finalExp = mob.expReward || 20;
+    let finalExp = mob.expReward || 35;
     if (this.playerData && (this.playerData.job === 'scholar' || this.playerData.job === 'researcher')) {
       finalExp += Math.round(finalExp * 0.15); // 스칼라: 경험치 +15%
     }
