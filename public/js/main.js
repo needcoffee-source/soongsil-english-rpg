@@ -6489,10 +6489,10 @@ class MainApp {
         }
       }
 
-      if (useWeaknessScroll) {
-        document.getElementById('raid-battle-log').innerHTML = `<span style="color:#22c55e; font-weight:bold;">✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)</span><br>⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
-      } else {
-        document.getElementById('raid-battle-log').innerHTML = `⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+      const logEl = document.getElementById('raid-battle-log');
+      if (logEl) {
+        logEl.style.display = 'none';
+        logEl.innerHTML = '';
       }
 
       this.updateBossRaidUI();
@@ -6579,10 +6579,10 @@ class MainApp {
       }
     }
 
-    if (window.BOSS_CONFIG.isWeakened) {
-      document.getElementById('raid-battle-log').innerHTML = `<span style="color:#22c55e; font-weight:bold;">✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)</span><br>⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
-    } else {
-      document.getElementById('raid-battle-log').innerHTML = `⚔️ 문제를 맞히면 내 공격력(${this.playerData.atk})으로 공격합니다.`;
+    const logEl = document.getElementById('raid-battle-log');
+    if (logEl) {
+      logEl.style.display = 'none';
+      logEl.innerHTML = '';
     }
 
     this.updateBossRaidUI();
@@ -6645,6 +6645,7 @@ class MainApp {
     this.updateBossRaidUI();
     const logEl = document.getElementById('raid-battle-log');
     if (logEl) {
+      logEl.style.display = 'block';
       logEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;">💀 [전원 기절 전멸] 보스가 체력을 100% 회복했습니다!</span>`;
     }
   }
@@ -7053,6 +7054,12 @@ class MainApp {
     }
     this.bossState.currentQuestion = q;
 
+    const logEl = document.getElementById('raid-battle-log');
+    if (logEl) {
+      logEl.style.display = 'none';
+      logEl.innerHTML = '';
+    }
+
     document.getElementById('raid-quiz-question').innerText = q.question;
     const optionsEl = document.getElementById('raid-quiz-options');
     optionsEl.innerHTML = '';
@@ -7114,10 +7121,13 @@ class MainApp {
       this.updateBossRaidUI();
       this.saveProgress(true);
 
-      if (incomingDmg > 0) {
-        logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
-      } else {
-        logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 결정타! / 🛡️ 방어력(${this.playerData.def})으로 보스 공격 완벽 방어 (피해 0)!`;
+      if (logEl) {
+        logEl.style.display = 'block';
+        if (incomingDmg > 0) {
+          logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
+        } else {
+          logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 결정타! / 🛡️ 방어력(${this.playerData.def})으로 보스 공격 완벽 방어 (피해 0)!`;
+        }
       }
     } else {
       btnEl.classList.add('wrong');
@@ -7128,7 +7138,10 @@ class MainApp {
       this.updateBossRaidUI();
       this.saveProgress(true);
 
-      logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (방어력 무시)`;
+      if (logEl) {
+        logEl.style.display = 'block';
+        logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (방어력 무시)`;
+      }
     }
 
     if (this.playerData.hp <= 0) {
@@ -7757,6 +7770,7 @@ class MainApp {
   showWaitingReviveState() {
     const logEl = document.getElementById('raid-battle-log');
     if (logEl) {
+      logEl.style.display = 'block';
       logEl.innerHTML = `<b style="color:#fbbf24; font-size:14px;">⏳ 친구의 부활 주문서를 기다리는 중...</b><br><span style="color:#cbd5e1; font-size:12px;">파티원이 부활 주문서를 사용하면 [부활 수락] 알림창이 나타납니다.</span>`;
     }
     const qEl = document.getElementById('raid-quiz-question');
