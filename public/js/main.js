@@ -155,6 +155,28 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '케르베로스 보스 처치 전리품'
   },
   {
+    id: 'item_history_essence',
+    name: '숭실 역사의 정수',
+    icon: '🏛️',
+    category: 'material',
+    tierBadge: '야외 전리품',
+    tierColor: '#4f46e5',
+    effect: '4대 역사관 탐구와 시련을 통해 정제된 영광의 숨결 (4티어 헤리티지 무기·방어구 필수 재료)',
+    source: '숭실역사관 몬스터(일제 순사 등) 토벌 시 드랍',
+    recipe: '역사관 몬스터 전투 드랍'
+  },
+  {
+    id: 'item_unyielding_stone',
+    name: '꺾이지 않는 사명석',
+    icon: '💎',
+    category: 'material',
+    tierBadge: '야외 전리품',
+    tierColor: '#0284c7',
+    effect: '1938 신사참배 거부와 폐교의 아픔을 견뎌낸 굳은 의지 (4티어 헤리티지 무기·방어구 핵심 재료)',
+    source: '숭실역사관 몬스터 토벌 시 드랍',
+    recipe: '역사관 몬스터 전투 드랍'
+  },
+  {
     id: 'item_nutrition_essence',
     name: '정제된 영양의 정수',
     icon: '🍱',
@@ -177,7 +199,7 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '급식실 몬스터 처치 전리품'
   },
 
-  // 2. Consumables (소비품 6종 - craft_recipes.json 공식 레시피)
+  // 2. Consumables (소비품 10종 - craft_recipes.json 공식 레시피)
   {
     id: 'item_red_potion',
     name: '빨간 물약',
@@ -197,7 +219,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '중급 회복 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '소비품 제작대(C)에서 조제 / 보스 레이드 전리품',
+    source: '소비품 제작대(C)에서 조제 (5레벨 이상) / 보스 레이드 전리품',
     recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
   },
   {
@@ -288,18 +310,8 @@ window.ITEM_CODEX_DATABASE = [
     source: '소비품 제작대(C)에서 제작',
     recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
   },
-  {
-    id: 'item_cafeteria_key',
-    name: '급식실 열쇠',
-    icon: '🔑',
-    category: 'quest',
-    tierBadge: '입장 열쇠',
-    tierColor: '#f59e0b',
-    effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠',
-    source: '6층 교무실 소회의실 보관함'
-  },
 
-  // 3. Tier 1 Wood Equipment (1티어 나무 장비 - craft_recipes.json 공식 레시피)
+  // 3. Tier 1~4 Weapons & Armor (무기·갑옷 - 티어 및 부위 순 정렬)
   {
     id: 'equip_wood_sword',
     name: '나무검 (Wooden Sword)',
@@ -333,8 +345,6 @@ window.ITEM_CODEX_DATABASE = [
     source: '장비 제작대(C)에서 제작',
     recipe: '단단한 목재 10개 + 15G'
   },
-
-  // 4. Tier 2 Leather Equipment (2티어 가죽 장비 - craft_recipes.json 공식 레시피)
   {
     id: 'equip_leather_sword',
     name: '가죽손잡이 세이버 (Leather-Grip Saber)',
@@ -343,7 +353,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 무기',
     tierColor: '#b45309',
     effect: '공격력(ATK) +22 증가',
-    source: '장비 제작대(C)에서 제작',
+    source: '장비 제작대(C)에서 제작 (3레벨 이상)',
     recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 35G'
   },
   {
@@ -354,7 +364,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 투구',
     tierColor: '#b45309',
     effect: '방어력(DEF) +12, 체력(HP) +28 증가',
-    source: '장비 제작대(C)에서 제작',
+    source: '장비 제작대(C)에서 제작 (3레벨 이상)',
     recipe: '보스의 가죽 1개 + 풋살공 가죽 20개 + 40G'
   },
   {
@@ -365,9 +375,88 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 갑옷',
     tierColor: '#b45309',
     effect: '방어력(DEF) +17, 체력(HP) +20 증가',
-    source: '장비 제작대(C)에서 제작',
+    source: '장비 제작대(C)에서 제작 (3레벨 이상)',
     recipe: '보스의 가죽 1개 + 농구공 가죽 30개 + 50G'
   },
+  {
+    id: 'equip_bronze_sword',
+    name: '청동검 (Bronze Sword)',
+    icon: '⚔️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '3티어 무기',
+    tierColor: '#047857',
+    effect: '공격력(ATK) +30 증가',
+    source: '장비 제작대(C)에서 제작 (5레벨 이상)',
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G'
+  },
+  {
+    id: 'equip_bronze_helmet',
+    name: '청동투구 (Bronze Helmet)',
+    icon: '🪖',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '3티어 투구',
+    tierColor: '#047857',
+    effect: '방어력(DEF) +14, 체력(HP) +35 증가',
+    source: '장비 제작대(C)에서 제작 (5레벨 이상)',
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G'
+  },
+  {
+    id: 'equip_bronze_armor',
+    name: '청동갑옷 (Bronze Armor)',
+    icon: '🛡️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '3티어 갑옷',
+    tierColor: '#047857',
+    effect: '방어력(DEF) +22, 체력(HP) +25 증가',
+    source: '장비 제작대(C)에서 제작 (5레벨 이상)',
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G'
+  },
+  {
+    id: 'equip_heritage_blade',
+    name: '1897 숭실 헤리티지 소드',
+    icon: '⚔️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '4티어 무기',
+    tierColor: '#6366f1',
+    effect: '공격력 +45, 체력 +35',
+    source: '장비 제작대(C)에서 제작 (10레벨 이상)',
+    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 150G'
+  },
+  {
+    id: 'equip_heritage_helmet',
+    name: '1897 숭실 헤리티지 투구',
+    icon: '👑',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '4티어 투구',
+    tierColor: '#6366f1',
+    effect: '방어력 +20, 체력 +35',
+    source: '장비 제작대(C)에서 제작 (10레벨 이상)',
+    recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 120G'
+  },
+  {
+    id: 'equip_heritage_armor',
+    name: '1897 숭실 헤리티지 갑옷',
+    icon: '🛡️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '4티어 갑옷',
+    tierColor: '#6366f1',
+    effect: '방어력 +30, 체력 +45',
+    source: '장비 제작대(C)에서 제작 (10레벨 이상)',
+    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
+  },
+  {
+    id: 'equip_omr_wand',
+    name: '컴싸 마법봉 (OMR Magic Wand)',
+    icon: '🖊️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '4티어 무기',
+    tierColor: '#7e22ce',
+    effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
+    source: '기말고사 파멸신 레이드 전리품 드랍',
+    recipe: '제작 불가'
+  },
+
+  // 4. Shoes (신발 1~4티어 순 정렬)
   {
     id: 'equip_shoes_samdidas',
     name: '삼디다스 실내화',
@@ -389,146 +478,6 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#b45309',
     effect: '공격력 +3, 방어력 +3, 체력 +10',
     source: '농구장/풋살장 엘리트 몬스터 토벌 시 드랍'
-  },
-
-  // 5. Tier 3 Bronze Equipment (3티어 청동 장비 - craft_recipes.json 공식 레시피)
-  {
-    id: 'equip_bronze_sword',
-    name: '청동검 (Bronze Sword)',
-    icon: '⚔️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '3티어 무기',
-    tierColor: '#047857',
-    effect: '공격력(ATK) +30 증가',
-    source: '장비 제작대(C)에서 제작',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 50G'
-  },
-  {
-    id: 'equip_bronze_helmet',
-    name: '청동투구 (Bronze Helmet)',
-    icon: '🪖',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '3티어 투구',
-    tierColor: '#047857',
-    effect: '방어력(DEF) +14, 체력(HP) +35 증가',
-    source: '장비 제작대(C)에서 제작',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 50G'
-  },
-  {
-    id: 'equip_bronze_armor',
-    name: '청동갑옷 (Bronze Armor)',
-    icon: '🛡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '3티어 갑옷',
-    tierColor: '#047857',
-    effect: '방어력(DEF) +22, 체력(HP) +25 증가',
-    source: '장비 제작대(C)에서 제작',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G'
-  },
-
-  // 6. Special School Accessories (교화/교목 장신구 - craft_recipes.json 공식 레시피)
-  {
-    id: 'equip_forsythia_ring',
-    name: '성실의 개나리 반지 (Forsythia Ring)',
-    icon: '🌼',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '교화 장신구',
-    tierColor: '#ca8a04',
-    effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작',
-    recipe: '노란 개나리 꽃잎 20개 + 30G'
-  },
-  {
-    id: 'equip_ginkgo_talisman',
-    name: '합심의 황금 은행잎 부적 (Ginkgo Talisman)',
-    icon: '🍂',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '교목 장신구',
-    tierColor: '#d97706',
-    effect: '공격력 +15, 방어력 +10, 체력 +30 증가',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작',
-    recipe: '황금 은행잎 10개 + 50G',
-    stats: { atk: 15, def: 10, hp: 30 }
-  },
-  {
-    id: 'equip_elevator_pass',
-    name: '엘리베이터 작동권',
-    icon: '🪪',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '퀘스트 인가증',
-    tierColor: '#2563eb',
-    effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
-    source: '1학년 2반 가죽 골렘 토벌 시 획득',
-    recipe: '가죽 골렘 토벌'
-  },
-  {
-    id: 'equip_vintage_armband',
-    name: '선배의 낡은 승리 완장',
-    icon: '🎗️',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '유물 장신구',
-    tierColor: '#f59e0b',
-    effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)',
-    source: '히든 퀘스트',
-    recipe: '히든 퀘스트 보상',
-    stats: { atk: 3, def: 3 }
-  },
-
-  // 7. Tier 4 Heritage Equipment & Materials (4티어 숭실 헤리티지 세트)
-  {
-    id: 'item_history_essence',
-    name: '숭실 역사의 정수',
-    icon: '🏛️',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#4f46e5',
-    effect: '4대 역사관 탐구와 시련을 통해 정제된 영광의 숨결 (4티어 헤리티지 무기·방어구 필수 재료)',
-    source: '숭실역사관 몬스터(일제 순사 등) 토벌 시 드랍',
-    recipe: '역사관 몬스터 전투 드랍'
-  },
-  {
-    id: 'item_unyielding_stone',
-    name: '꺾이지 않는 사명석',
-    icon: '💎',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#0284c7',
-    effect: '1938 신사참배 거부와 폐교의 아픔을 견뎌낸 굳은 의지 (4티어 헤리티지 무기·방어구 핵심 재료)',
-    source: '숭실역사관 몬스터 토벌 시 드랍',
-    recipe: '역사관 몬스터 전투 드랍'
-  },
-  {
-    id: 'equip_heritage_blade',
-    name: '1897 숭실 헤리티지 소드',
-    icon: '⚔️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 무기',
-    tierColor: '#6366f1',
-    effect: '공격력 +45, 체력 +35',
-    source: '숭실역사관 제단(C)에서 제작',
-    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 150G'
-  },
-  {
-    id: 'equip_heritage_helmet',
-    name: '1897 숭실 헤리티지 투구',
-    icon: '👑',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 투구',
-    tierColor: '#6366f1',
-    effect: '방어력 +20, 체력 +35',
-    source: '숭실역사관 제단(C)에서 제작',
-    recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 120G'
-  },
-  {
-    id: 'equip_heritage_armor',
-    name: '1897 숭실 헤리티지 갑옷',
-    icon: '🛡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 갑옷',
-    tierColor: '#6366f1',
-    effect: '방어력 +30, 체력 +45',
-    source: '숭실역사관 제단(C)에서 제작',
-    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
   {
     id: 'equip_bronze_shoes',
@@ -552,16 +501,65 @@ window.ITEM_CODEX_DATABASE = [
     effect: '공격력 +6, 방어력 +6, 체력 +15',
     source: '기말고사 파멸신 레이드 토벌 시 드랍'
   },
+
+  // 5. Special School Accessories (장신구)
   {
-    id: 'equip_omr_wand',
-    name: '컴싸 마법봉 (OMR Magic Wand)',
-    icon: '🖊️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 무기',
-    tierColor: '#7e22ce',
-    effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
-    source: '기말고사 파멸신 레이드 전리품 드랍',
-    recipe: '제작 불가'
+    id: 'equip_forsythia_ring',
+    name: '성실의 개나리 반지 (Forsythia Ring)',
+    icon: '🌼',
+    category: 'accessory', subCategory: 'accessory',
+    tierBadge: '교화 장신구',
+    tierColor: '#ca8a04',
+    effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작',
+    recipe: '노란 개나리 꽃잎 20개 + 30G'
+  },
+  {
+    id: 'equip_ginkgo_talisman',
+    name: '합심의 황금 은행잎 부적 (Ginkgo Talisman)',
+    icon: '🍂',
+    category: 'accessory', subCategory: 'accessory',
+    tierBadge: '교목 장신구',
+    tierColor: '#d97706',
+    effect: '공격력 +15, 방어력 +10, 체력 +30 증가',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작 (5레벨 이상)',
+    recipe: '황금 은행잎 10개 + 50G',
+    stats: { atk: 15, def: 10, hp: 30 }
+  },
+  {
+    id: 'equip_vintage_armband',
+    name: '선배의 낡은 승리 완장',
+    icon: '🎗️',
+    category: 'accessory', subCategory: 'accessory',
+    tierBadge: '유물 장신구',
+    tierColor: '#f59e0b',
+    effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)',
+    source: '히든 퀘스트',
+    recipe: '히든 퀘스트 보상',
+    stats: { atk: 3, def: 3 }
+  },
+  {
+    id: 'equip_elevator_pass',
+    name: '엘리베이터 작동권',
+    icon: '🪪',
+    category: 'accessory', subCategory: 'accessory',
+    tierBadge: '퀘스트 인가증',
+    tierColor: '#2563eb',
+    effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
+    source: '1학년 2반 가죽 골렘 토벌 시 획득',
+    recipe: '가죽 골렘 토벌'
+  },
+
+  // 6. Special Quest Key
+  {
+    id: 'item_cafeteria_key',
+    name: '급식실 열쇠',
+    icon: '🔑',
+    category: 'quest',
+    tierBadge: '입장 열쇠',
+    tierColor: '#f59e0b',
+    effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠',
+    source: '6층 교무실 소회의실 보관함'
   }
 ];
 
@@ -594,23 +592,23 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
+  'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
+  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
+  'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
   'item_revive_scroll': { name: '부활 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { name: '귀환 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
   'item_teleport_scroll': { name: '순간이동 주문서', icon: '📜', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 공간 이동' } },
-  'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
-  'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
-  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
 
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
   'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
-  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
-  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
+  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
+  'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
   'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 10, hp: 30 }, effect: '공격력 +15, 방어력 +10, 체력 +30' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
@@ -1291,7 +1289,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 하지만 지금 정말 큰일이란다... 며칠 전 대출되었던 소중한 학교 도서 3권이 제때 반납되지 않고 학교 곳곳에 흩어져 버렸어!
 
 1. 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치에 누군가 두고 갔다는 제보가 있어.
-2. 📗 [최신 과학 잡지]: 6층 교무실 17번 연구석 책상 위에 놓여 있단다.
+2. 📗 [최신 과학 잡지]: 6층 교무실 21번 연구석 책상 위에 놓여 있단다.
 3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
 
 학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
@@ -1299,7 +1297,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     inProgressStory: `어서 오렴! 아직 분실된 도서 3권을 모두 찾지 못했더구나!
 
 1. 📘 운동장 관람석 스탠드 (소설책)
-2. 📗 6층 교무실 17번 연구석 (과학 잡지)
+2. 📗 6층 교무실 21번 연구석 (과학 잡지)
 3. 📕 숭실역사관 전시실 (역사 고문서 도록)
 
 모두 찾아오면 풍성한 보상을 지급하마!`,
@@ -1318,7 +1316,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       },
       {
         id: 'book_of',
-        text: '6층 교무실 17번 연구석에서 [과학 잡지] 회수하기',
+        text: '6층 교무실 21번 연구석에서 [과학 잡지] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.bookOfCollected ? 1 : 0)
       },
@@ -5576,7 +5574,7 @@ class MainApp {
     const btnBattleFlee = document.getElementById('btn-battle-flee');
     if (btnBattleFlee && this.modalFieldBattle) {
       btnBattleFlee.addEventListener('click', () => {
-        const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 농구장 코트로 돌아가시겠습니까?');
+        const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 전투에서 물러나시겠습니까?');
         if (flee) this.closeFieldBattleModal();
       });
     }
@@ -6020,7 +6018,8 @@ class MainApp {
       return false;
     }
 
-    const healAmount = pot.heal || 10;
+    const catalogMeta = (ALL_GAME_ITEMS[itemId] && ALL_GAME_ITEMS[itemId].meta) || {};
+    const healAmount = pot.heal || (pot.meta && pot.meta.heal) || catalogMeta.heal || 10;
     this.removeItem(itemId, 1);
     const beforeHp = this.playerData.hp;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + healAmount);
@@ -6132,7 +6131,7 @@ class MainApp {
     // Filter items based on current category tab
     const filteredItems = this.playerData.inventory.filter(item => {
       const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
-      const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll'));
+      const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'));
       const isMaterial = !isEquip && !isPotion;
 
       if (currentTab === 'equipment') return isEquip;
@@ -6491,7 +6490,7 @@ class MainApp {
 
       const logEl = document.getElementById('raid-battle-log');
       if (logEl) {
-        logEl.style.display = 'none';
+        if (logEl.style) logEl.style.display = 'none';
         logEl.innerHTML = '';
       }
 
@@ -6581,7 +6580,7 @@ class MainApp {
 
     const logEl = document.getElementById('raid-battle-log');
     if (logEl) {
-      logEl.style.display = 'none';
+      if (logEl.style) logEl.style.display = 'none';
       logEl.innerHTML = '';
     }
 
@@ -6645,7 +6644,7 @@ class MainApp {
     this.updateBossRaidUI();
     const logEl = document.getElementById('raid-battle-log');
     if (logEl) {
-      logEl.style.display = 'block';
+      if (logEl.style) logEl.style.display = 'block';
       logEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;">💀 [전원 기절 전멸] 보스가 체력을 100% 회복했습니다!</span>`;
     }
   }
@@ -7056,7 +7055,7 @@ class MainApp {
 
     const logEl = document.getElementById('raid-battle-log');
     if (logEl) {
-      logEl.style.display = 'none';
+      if (logEl.style) logEl.style.display = 'none';
       logEl.innerHTML = '';
     }
 
@@ -7122,7 +7121,7 @@ class MainApp {
       this.saveProgress(true);
 
       if (logEl) {
-        logEl.style.display = 'block';
+        if (logEl.style) logEl.style.display = 'block';
         if (incomingDmg > 0) {
           logEl.innerHTML = `⚔️ 보스에게 <b>-${myDmg} HP</b> 데미지! / 💥 보스 반격 <b>-${incomingDmg} HP</b>`;
         } else {
@@ -7139,7 +7138,7 @@ class MainApp {
       this.saveProgress(true);
 
       if (logEl) {
-        logEl.style.display = 'block';
+        if (logEl.style) logEl.style.display = 'block';
         logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (방어력 무시)`;
       }
     }
@@ -7352,7 +7351,7 @@ class MainApp {
 
     const logEl = document.getElementById('battle-action-log');
     if (logEl) {
-      logEl.style.display = 'none';
+      if (logEl.style) logEl.style.display = 'none';
       logEl.innerHTML = '';
     }
   }
@@ -7366,7 +7365,7 @@ class MainApp {
 
     const logEl = document.getElementById('battle-action-log');
     if (logEl) {
-      logEl.style.display = 'none';
+      if (logEl.style) logEl.style.display = 'none';
       logEl.innerHTML = '';
     }
 
@@ -7421,7 +7420,7 @@ class MainApp {
 
       if (mob.hp <= 0) {
         if (logEl) {
-          logEl.style.display = 'block';
+          if (logEl.style) logEl.style.display = 'block';
           logEl.innerHTML = `⚔️ 정답! <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 결정타를 날려 승리했습니다!`;
         }
         setTimeout(() => this.handleFieldBattleVictory(mob), 400);
@@ -7429,7 +7428,7 @@ class MainApp {
       }
 
       if (logEl) {
-        logEl.style.display = 'block';
+        if (logEl.style) logEl.style.display = 'block';
         logEl.innerHTML = `⚔️ <b>정답!</b> <b>${mob.name}</b>에게 <b>-${myDmg} HP</b> 피해를 입혔습니다! (남은 HP: ${mob.hp})`;
       }
       const btnNext = document.getElementById('btn-battle-next-turn');
@@ -7449,7 +7448,7 @@ class MainApp {
       this.saveProgress(true);
 
       if (logEl) {
-        logEl.style.display = 'block';
+        if (logEl.style) logEl.style.display = 'block';
         logEl.innerHTML = `💥 <b>오답!</b> 정답은 [<b>${q.answer}</b>]입니다.<br>🚨 <b>${mob.name}</b>의 반격으로 <b>-${counterDmg} HP (풀피의 20% 피해)</b>를 입었습니다!`;
       }
 
@@ -7684,13 +7683,12 @@ class MainApp {
     this.saveProgress();
     this.closeFieldBattleModal();
 
-    const craftGuide = (mob.court === 'futsal')
-      ? '(탄력있는 풋살공 가죽과 보스가죽을 모아 복도 장비 제작대에서 ⛑️ 가죽투구와 🗡️ 가죽손잡이 세이버를 제작할 수 있습니다!)'
-      : '(농구공 가죽 조각과 보스가죽을 모아 복도 장비 제작대에서 🥋 가죽갑옷과 🗡️ 가죽손잡이 세이버를 제작할 수 있습니다!)';
-
-    alert(
-      `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${finalGold}G, 🌟 경험치 +${finalExp} EXP\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}\n\n${craftGuide}`
-    );
+    if (!mob.isStudent) {
+      const dropsSection = dropsList.length > 0 ? `\n\n🎁 획득 아이템:\n• ${dropsList.join('\n• ')}` : '';
+      alert(
+        `🏆 [${mob.name}] 1:1 대결 승리!\n\n🪙 골드 +${finalGold}G, 🌟 경험치 +${finalExp} EXP${dropsSection}`
+      );
+    }
   }
 
   onFieldMonstersState(state) {
@@ -7770,7 +7768,7 @@ class MainApp {
   showWaitingReviveState() {
     const logEl = document.getElementById('raid-battle-log');
     if (logEl) {
-      logEl.style.display = 'block';
+      if (logEl.style) logEl.style.display = 'block';
       logEl.innerHTML = `<b style="color:#fbbf24; font-size:14px;">⏳ 친구의 부활 주문서를 기다리는 중...</b><br><span style="color:#cbd5e1; font-size:12px;">파티원이 부활 주문서를 사용하면 [부활 수락] 알림창이 나타납니다.</span>`;
     }
     const qEl = document.getElementById('raid-quiz-question');
@@ -9430,7 +9428,7 @@ class MainApp {
       window.AudioManager.playSelect();
     }
 
-    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 디지털 학습존(디벗 단말기 옆) 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (세계 명화 도록, 스포츠 교본)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 과학 졍경슉 선생님 연구석 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
+    const story = `🖥️ 《숭실 도서관 종합 도서 검색 시스템 (OPAC)》\n\n"도서관 디지털 학습존(디벗 단말기 옆) 자료 검색 단말기가 부드러운 블루스크린 불빛을 비추고 있습니다."\n\n📊 [실시간 소장 도서 현황]:\n• 총 보유 도서: 25,480권 (대출 가능: 23,120권)\n\n📂 [주요 분류별 서가 위치 안내]:\n• 📚 문학·철학 (000/100): 북서쪽 서가 (윤동주 전집, 세계문학)\n• 🔬 자연과학·기술 (400/500): 북쪽 서가 (과학 비전서, 상대성이론)\n• 🇬🇧 외국어·어학 (700): 서쪽 통로 1열 (Joshua 영단어 비법전서)\n• 📜 역사·사회 (300/900): 서쪽 통로 2열 (1897 숭실 독립운동사)\n• 🎨 예술·체육 (600): 서남쪽 서가 (세계 명화 도록, 스포츠 교본)\n• 📰 정기간행물 (050): 동쪽 벽면 서가 (과학동아, 최신 시사 잡지)\n• 💬 교양 그래픽노블: 동남쪽 서가 (Why? 시리즈, 세계 역사 만화)\n\n🔍 [분실 도서 긴급 회수 수배 안내]:\n• 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치 제보\n• 📗 [최신 과학 잡지]: 6층 교무실 21번 연구석 책상 제보\n• 📕 [숭실 역사 고문서]: 1897 숭실역사관 안쪽 전시실 제보`;
 
     if (window.RPGDialog) {
       window.RPGDialog.show('🖥️ 도서 검색용 컴퓨터', story, '🖥️');
@@ -9645,8 +9643,8 @@ class MainApp {
         itemKey: 'item_lib_book_of',
         itemName: '과학 잡지 (최신 뉴턴 매거진)',
         icon: '📗',
-        desc: '6층 교무실 17번 연구석 책상 위에 놓여 있던 도서관 대출도서',
-        placeName: '6층 교무실 17번 연구석'
+        desc: '6층 교무실 21번 연구석 책상 위에 놓여 있던 도서관 대출도서',
+        placeName: '6층 교무실 21번 연구석'
       },
       hi: {
         flag: 'bookHiCollected',

@@ -124,13 +124,13 @@
     }
   },
   {
-    "id": "recipe_leather_armor",
-    "name": "가죽갑옷 (Leather Armor)",
+    "id": "recipe_leather_sword",
+    "name": "가죽손잡이 세이버 (Leather-Grip Saber)",
     "category": "equipment",
-    "description": "[2티어 갑옷] 질긴 보스의 가죽과 농구공 가죽을 엮어 만든 유연하고 튼튼한 2티어 가죽 갑옷입니다.",
-    "icon": "🥋",
+    "description": "[2티어 무기] 질긴 보스의 가죽과 농구공·풋살공 가죽을 배합해 튼튼하게 감아쥔 2티어 가죽손잡이 세이버입니다.",
+    "icon": "🗡️",
     "gradeLevel": 1,
-    "requiredGold": 50,
+    "requiredGold": 35,
     "requiredItems": [
       {
         "item": "item_boss_leather",
@@ -140,37 +140,40 @@
       {
         "item": "item_basketball_leather",
         "name": "농구공 가죽 조각",
-        "count": 30
+        "count": 10
+      },
+      {
+        "item": "item_futsal_leather",
+        "name": "탄력있는 풋살공 가죽",
+        "count": 10
       }
     ],
     "unscramble": {
-      "korean": "나는 이번 주말에 전주 한옥마을을 방문할 계획이다.",
+      "korean": "우리는 운동장에서 함께 축구를 즐긴다.",
       "words": [
-        "I",
-        "am",
-        "going",
-        "to",
-        "visit",
-        "Jeonju",
-        "Hanok",
-        "Village",
-        "this",
-        "weekend."
+        "We",
+        "enjoy",
+        "playing",
+        "soccer",
+        "together",
+        "on",
+        "the",
+        "playground."
       ],
-      "correct": "I am going to visit Jeonju Hanok Village this weekend."
+      "correct": "We enjoy playing soccer together on the playground."
     },
     "result": {
-      "item": "equip_leather_armor",
-      "name": "가죽갑옷",
-      "icon": "🥋",
+      "item": "equip_leather_sword",
+      "name": "가죽손잡이 세이버",
+      "icon": "🗡️",
       "type": "equipment",
-      "slot": "armor",
+      "slot": "weapon",
       "stats": {
-        "atk": 0,
-        "def": 17,
-        "hp": 20
+        "atk": 22,
+        "def": 0,
+        "hp": 0
       },
-      "effect": "방어력(DEF) +17, 최대체력(HP) +20"
+      "effect": "공격력(ATK) +22"
     },
     "requiredLevel": 3
   },
@@ -225,13 +228,13 @@
     "requiredLevel": 3
   },
   {
-    "id": "recipe_leather_sword",
-    "name": "가죽손잡이 세이버 (Leather-Grip Saber)",
+    "id": "recipe_leather_armor",
+    "name": "가죽갑옷 (Leather Armor)",
     "category": "equipment",
-    "description": "[2티어 무기] 질긴 보스의 가죽과 농구공·풋살공 가죽을 배합해 튼튼하게 감아쥔 2티어 가죽손잡이 세이버입니다.",
-    "icon": "🗡️",
+    "description": "[2티어 갑옷] 질긴 보스의 가죽과 농구공 가죽을 엮어 만든 유연하고 튼튼한 2티어 가죽 갑옷입니다.",
+    "icon": "🥋",
     "gradeLevel": 1,
-    "requiredGold": 35,
+    "requiredGold": 50,
     "requiredItems": [
       {
         "item": "item_boss_leather",
@@ -241,40 +244,37 @@
       {
         "item": "item_basketball_leather",
         "name": "농구공 가죽 조각",
-        "count": 10
-      },
-      {
-        "item": "item_futsal_leather",
-        "name": "탄력있는 풋살공 가죽",
-        "count": 10
+        "count": 30
       }
     ],
     "unscramble": {
-      "korean": "우리는 운동장에서 함께 축구를 즐긴다.",
+      "korean": "나는 이번 주말에 전주 한옥마을을 방문할 계획이다.",
       "words": [
-        "We",
-        "enjoy",
-        "playing",
-        "soccer",
-        "together",
-        "on",
-        "the",
-        "playground."
+        "I",
+        "am",
+        "going",
+        "to",
+        "visit",
+        "Jeonju",
+        "Hanok",
+        "Village",
+        "this",
+        "weekend."
       ],
-      "correct": "We enjoy playing soccer together on the playground."
+      "correct": "I am going to visit Jeonju Hanok Village this weekend."
     },
     "result": {
-      "item": "equip_leather_sword",
-      "name": "가죽손잡이 세이버",
-      "icon": "🗡️",
+      "item": "equip_leather_armor",
+      "name": "가죽갑옷",
+      "icon": "🥋",
       "type": "equipment",
-      "slot": "weapon",
+      "slot": "armor",
       "stats": {
-        "atk": 22,
-        "def": 0,
-        "hp": 0
+        "atk": 0,
+        "def": 17,
+        "hp": 20
       },
-      "effect": "공격력(ATK) +22"
+      "effect": "방어력(DEF) +17, 최대체력(HP) +20"
     },
     "requiredLevel": 3
   },
@@ -424,6 +424,156 @@
     "requiredLevel": 5
   },
   {
+    "id": "recipe_heritage_sword",
+    "name": "1897 숭실 헤리티지 소드 (1897 Heritage Sword)",
+    "category": "equipment",
+    "description": "[4티어 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
+    "icon": "⚔️",
+    "gradeLevel": 1,
+    "requiredGold": 150,
+    "requiredItems": [
+      {
+        "item": "item_history_essence",
+        "name": "🏛️ 숭실 역사의 정수",
+        "count": 5
+      },
+      {
+        "item": "item_unyielding_stone",
+        "name": "💎 꺾이지 않는 사명석",
+        "count": 3
+      }
+    ],
+    "unscramble": {
+      "korean": "역사를 기억하는 자가 더 밝은 미래를 만듭니다.",
+      "words": [
+        "Those",
+        "who",
+        "remember",
+        "history",
+        "will",
+        "build",
+        "a",
+        "brighter",
+        "future."
+      ],
+      "correct": "Those who remember history will build a brighter future."
+    },
+    "result": {
+      "item": "equip_heritage_blade",
+      "name": "1897 숭실 헤리티지 소드",
+      "icon": "⚔️",
+      "type": "equipment",
+      "slot": "weapon",
+      "stats": {
+        "atk": 45,
+        "def": 0,
+        "hp": 35
+      },
+      "effect": "4티어 무기 · 공격력 +45, 체력 +35"
+    },
+    "requiredLevel": 10
+  },
+  {
+    "id": "recipe_heritage_helmet",
+    "name": "1897 숭실 헤리티지 투구 (1897 Heritage Helmet)",
+    "category": "equipment",
+    "description": "[4티어 투구] 숭실 120년의 유구한 민족정신과 신앙의 가호가 깃든 성스러운 투구입니다.",
+    "icon": "👑",
+    "gradeLevel": 1,
+    "requiredGold": 120,
+    "requiredItems": [
+      {
+        "item": "item_history_essence",
+        "name": "🏛️ 숭실 역사의 정수",
+        "count": 4
+      },
+      {
+        "item": "item_unyielding_stone",
+        "name": "💎 꺾이지 않는 사명석",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "진정한 지혜는 우리의 뿌리를 존중하는 것에서 시작된다.",
+      "words": [
+        "True",
+        "wisdom",
+        "begins",
+        "with",
+        "respect",
+        "for",
+        "our",
+        "roots."
+      ],
+      "correct": "True wisdom begins with respect for our roots."
+    },
+    "result": {
+      "item": "equip_heritage_helmet",
+      "name": "1897 숭실 헤리티지 투구",
+      "icon": "👑",
+      "type": "equipment",
+      "slot": "helmet",
+      "stats": {
+        "atk": 0,
+        "def": 20,
+        "hp": 35
+      },
+      "effect": "4티어 투구 · 방어력 +20, 체력 +35"
+    },
+    "requiredLevel": 10
+  },
+  {
+    "id": "recipe_heritage_armor",
+    "name": "1897 숭실 헤리티지 갑옷 (1897 Heritage Armor)",
+    "category": "equipment",
+    "description": "[4티어 갑옷] 어떠한 탄압과 시련에도 굴하지 않는 불굴의 숭실 혼이 깃든 전설의 갑옷입니다.",
+    "icon": "🛡️",
+    "gradeLevel": 1,
+    "requiredGold": 140,
+    "requiredItems": [
+      {
+        "item": "item_history_essence",
+        "name": "🏛️ 숭실 역사의 정수",
+        "count": 5
+      },
+      {
+        "item": "item_unyielding_stone",
+        "name": "💎 꺾이지 않는 사명석",
+        "count": 3
+      }
+    ],
+    "unscramble": {
+      "korean": "우리는 믿음과 용기의 토대 위에서 굳건히 서 있습니다.",
+      "words": [
+        "We",
+        "stand",
+        "strong",
+        "on",
+        "the",
+        "foundation",
+        "of",
+        "faith",
+        "and",
+        "courage."
+      ],
+      "correct": "We stand strong on the foundation of faith and courage."
+    },
+    "result": {
+      "item": "equip_heritage_armor",
+      "name": "1897 숭실 헤리티지 갑옷",
+      "icon": "🛡️",
+      "type": "equipment",
+      "slot": "armor",
+      "stats": {
+        "atk": 0,
+        "def": 30,
+        "hp": 45
+      },
+      "effect": "4티어 갑옷 · 방어력 +30, 체력 +45"
+    },
+    "requiredLevel": 10
+  },
+  {
     "id": "recipe_forsythia_ring",
     "name": "성실의 개나리 반지 (Forsythia Ring)",
     "category": "accessory",
@@ -548,7 +698,7 @@
     "id": "recipe_orange_potion",
     "name": "주홍 물약",
     "category": "potion",
-    "description": "[고급 포션] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다. (Lv.5 이상 제작 가능)",
+    "description": "[중급 회복 물약] 향긋한 허브와 개나리 꽃잎을 배합해 만든 중급 회복 물약입니다. (Lv.5 이상 제작 가능)",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 10,
@@ -587,10 +737,108 @@
     "requiredLevel": 5
   },
   {
+    "id": "recipe_clear_potion",
+    "name": "맑은 물약",
+    "category": "potion",
+    "description": "[고급 회복 물약] 맑고 순수한 약초의 정기만을 정제해 추출한 고농축 회복 물약입니다. (Lv.10 이상 제작 가능)",
+    "icon": "🧪",
+    "gradeLevel": 1,
+    "requiredLevel": 10,
+    "requiredGold": 30,
+    "requiredItems": [
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 4
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "이 맑은 물약은 지친 모험가의 활력을 되찾아 준다.",
+      "words": [
+        "This",
+        "clear",
+        "potion",
+        "restores",
+        "the",
+        "tired",
+        "adventurer's",
+        "vitality."
+      ],
+      "correct": "This clear potion restores the tired adventurer's vitality."
+    },
+    "result": {
+      "item": "item_clear_potion",
+      "name": "맑은 물약",
+      "icon": "🧪",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 60,
+      "effect": "사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)"
+    }
+  },
+  {
+    "id": "recipe_elixir",
+    "name": "엘릭서",
+    "category": "potion",
+    "description": "[최고급 회복 물약] 급식실 영양의 정수와 자연의 생명력이 응축된 신비의 명약입니다. (Lv.15 이상 제작 가능)",
+    "icon": "⚗️",
+    "gradeLevel": 1,
+    "requiredLevel": 15,
+    "requiredGold": 50,
+    "requiredItems": [
+      {
+        "item": "item_nutrition_essence",
+        "name": "정제된 영양의 정수",
+        "count": 1
+      },
+      {
+        "item": "item_herb",
+        "name": "향긋한 허브",
+        "count": 4
+      },
+      {
+        "item": "item_forsythia",
+        "name": "노란 개나리 꽃잎",
+        "count": 2
+      }
+    ],
+    "unscramble": {
+      "korean": "신비한 엘릭서는 모든 상처를 치유하는 전설의 비약이다.",
+      "words": [
+        "The",
+        "mystic",
+        "elixir",
+        "is",
+        "a",
+        "legendary",
+        "potion",
+        "that",
+        "heals",
+        "all",
+        "wounds."
+      ],
+      "correct": "The mystic elixir is a legendary potion that heals all wounds."
+    },
+    "result": {
+      "item": "item_elixir",
+      "name": "엘릭서",
+      "icon": "⚗️",
+      "type": "consumable",
+      "slot": "consumable",
+      "heal": 100,
+      "effect": "사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)"
+    }
+  },
+  {
     "id": "recipe_green_potion",
     "name": "초록 물약",
     "category": "potion",
-    "description": "[소비품] 싱그러운 약초 진액으로 조제한 비전 물약입니다. 마시면 1분 동안 기본 이동속도가 10% 증가합니다.",
+    "description": "[특수 물약] 싱그러운 약초 진액으로 조제한 비전 물약입니다. 마시면 1분 동안 기본 이동속도가 10% 증가합니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 15,
@@ -633,7 +881,7 @@
     "id": "recipe_courage_potion",
     "name": "용기의 물약",
     "category": "potion",
-    "description": "[소비품] 불타는 투지를 북돋워주는 비약입니다. 마시면 1분간 공격력(ATK)이 +5 증가합니다.",
+    "description": "[특수 물약] 불타는 투지를 북돋워주는 비약입니다. 마시면 1분간 공격력(ATK)이 +5 증가합니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 20,
@@ -674,7 +922,7 @@
     "id": "recipe_protection_potion",
     "name": "수호의 물약",
     "category": "potion",
-    "description": "[소비품] 몸 주위에 든든한 푸른빛 보호막을 감싸는 비약입니다. 마시면 1분간 방어력(DEF)이 +3 증가합니다.",
+    "description": "[특수 물약] 몸 주위에 든든한 푸른빛 보호막을 감싸는 비약입니다. 마시면 1분간 방어력(DEF)이 +3 증가합니다.",
     "icon": "🧪",
     "gradeLevel": 1,
     "requiredGold": 20,
@@ -838,253 +1086,5 @@
       "heal": 0,
       "effect": "사용 시 각 층 복도 및 운동장으로 즉시 공간 이동"
     }
-  },
-  {
-    "id": "recipe_clear_potion",
-    "name": "맑은 물약 (Clear Potion)",
-    "category": "potion",
-    "description": "[희귀 포션] 맑고 순수한 약초의 정기만을 정제해 추출한 고농축 회복 물약입니다. (Lv.10 이상 제작 가능)",
-    "icon": "🧪",
-    "gradeLevel": 2,
-    "requiredLevel": 10,
-    "requiredGold": 30,
-    "requiredItems": [
-      {
-        "item": "item_herb",
-        "name": "향긋한 허브",
-        "count": 4
-      },
-      {
-        "item": "item_forsythia",
-        "name": "노란 개나리 꽃잎",
-        "count": 2
-      }
-    ],
-    "unscramble": {
-      "korean": "이 맑은 물약은 지친 모험가의 활력을 되찾아 준다.",
-      "words": [
-        "This",
-        "clear",
-        "potion",
-        "restores",
-        "the",
-        "tired",
-        "adventurer's",
-        "vitality."
-      ],
-      "correct": "This clear potion restores the tired adventurer's vitality."
-    },
-    "result": {
-      "item": "item_clear_potion",
-      "name": "맑은 물약",
-      "icon": "🧪",
-      "type": "consumable",
-      "slot": "consumable",
-      "heal": 60,
-      "effect": "사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)"
-    }
-  },
-  {
-    "id": "recipe_elixir",
-    "name": "엘릭서 (Elixir)",
-    "category": "potion",
-    "description": "[최고급 회복 물약] 급식실 영양의 정수와 자연의 생명력이 응축된 신비의 명약입니다. (Lv.15 이상 제작 가능)",
-    "icon": "⚗️",
-    "gradeLevel": 3,
-    "requiredLevel": 15,
-    "requiredGold": 50,
-    "requiredItems": [
-      {
-        "item": "item_nutrition_essence",
-        "name": "정제된 영양의 정수",
-        "count": 1
-      },
-      {
-        "item": "item_herb",
-        "name": "향긋한 허브",
-        "count": 4
-      },
-      {
-        "item": "item_forsythia",
-        "name": "노란 개나리 꽃잎",
-        "count": 2
-      }
-    ],
-    "unscramble": {
-      "korean": "신비한 엘릭서는 모든 상처를 치유하는 전설의 비약이다.",
-      "words": [
-        "The",
-        "mystic",
-        "elixir",
-        "is",
-        "a",
-        "legendary",
-        "potion",
-        "that",
-        "heals",
-        "all",
-        "wounds."
-      ],
-      "correct": "The mystic elixir is a legendary potion that heals all wounds."
-    },
-    "result": {
-      "item": "item_elixir",
-      "name": "엘릭서",
-      "icon": "⚗️",
-      "type": "consumable",
-      "slot": "consumable",
-      "heal": 100,
-      "effect": "사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)"
-    }
-  },
-  {
-    "id": "recipe_heritage_sword",
-    "name": "1897 숭실 헤리티지 소드 (1897 Heritage Sword)",
-    "category": "equipment",
-    "description": "[4티어 무기] 숭실 127년의 역사와 불멸의 사명이 깃든 최강의 성검입니다.",
-    "icon": "⚔️",
-    "gradeLevel": 1,
-    "requiredGold": 150,
-    "requiredItems": [
-      {
-        "item": "item_history_essence",
-        "name": "🏛️ 숭실 역사의 정수",
-        "count": 5
-      },
-      {
-        "item": "item_unyielding_stone",
-        "name": "💎 꺾이지 않는 사명석",
-        "count": 3
-      }
-    ],
-    "unscramble": {
-      "korean": "역사를 기억하는 자가 더 밝은 미래를 만듭니다.",
-      "words": [
-        "Those",
-        "who",
-        "remember",
-        "history",
-        "will",
-        "build",
-        "a",
-        "brighter",
-        "future."
-      ],
-      "correct": "Those who remember history will build a brighter future."
-    },
-    "result": {
-      "item": "equip_heritage_blade",
-      "name": "1897 숭실 헤리티지 소드",
-      "icon": "⚔️",
-      "type": "equipment",
-      "slot": "weapon",
-      "stats": {
-        "atk": 45,
-        "def": 0,
-        "hp": 35
-      },
-      "effect": "4티어 무기 · 공격력 +45, 체력 +35"
-    },
-    "requiredLevel": 10
-  },
-  {
-    "id": "recipe_heritage_helmet",
-    "name": "1897 숭실 헤리티지 투구 (1897 Heritage Helmet)",
-    "category": "equipment",
-    "description": "[4티어 투구] 숭실 120년의 유구한 민족정신과 신앙의 가호가 깃든 성스러운 투구입니다.",
-    "icon": "👑",
-    "gradeLevel": 1,
-    "requiredGold": 120,
-    "requiredItems": [
-      {
-        "item": "item_history_essence",
-        "name": "🏛️ 숭실 역사의 정수",
-        "count": 4
-      },
-      {
-        "item": "item_unyielding_stone",
-        "name": "💎 꺾이지 않는 사명석",
-        "count": 2
-      }
-    ],
-    "unscramble": {
-      "korean": "진정한 지혜는 우리의 뿌리를 존중하는 것에서 시작된다.",
-      "words": [
-        "True",
-        "wisdom",
-        "begins",
-        "with",
-        "respect",
-        "for",
-        "our",
-        "roots."
-      ],
-      "correct": "True wisdom begins with respect for our roots."
-    },
-    "result": {
-      "item": "equip_heritage_helmet",
-      "name": "1897 숭실 헤리티지 투구",
-      "icon": "👑",
-      "type": "equipment",
-      "slot": "helmet",
-      "stats": {
-        "atk": 0,
-        "def": 20,
-        "hp": 35
-      },
-      "effect": "4티어 투구 · 방어력 +20, 체력 +35"
-    },
-    "requiredLevel": 10
-  },
-  {
-    "id": "recipe_heritage_armor",
-    "name": "1897 숭실 헤리티지 갑옷 (1897 Heritage Armor)",
-    "category": "equipment",
-    "description": "[4티어 갑옷] 어떠한 탄압과 시련에도 굴하지 않는 불굴의 숭실 혼이 깃든 전설의 갑옷입니다.",
-    "icon": "🛡️",
-    "gradeLevel": 1,
-    "requiredGold": 140,
-    "requiredItems": [
-      {
-        "item": "item_history_essence",
-        "name": "🏛️ 숭실 역사의 정수",
-        "count": 5
-      },
-      {
-        "item": "item_unyielding_stone",
-        "name": "💎 꺾이지 않는 사명석",
-        "count": 3
-      }
-    ],
-    "unscramble": {
-      "korean": "우리는 믿음과 용기의 토대 위에서 굳건히 서 있습니다.",
-      "words": [
-        "We",
-        "stand",
-        "strong",
-        "on",
-        "the",
-        "foundation",
-        "of",
-        "faith",
-        "and",
-        "courage."
-      ],
-      "correct": "We stand strong on the foundation of faith and courage."
-    },
-    "result": {
-      "item": "equip_heritage_armor",
-      "name": "1897 숭실 헤리티지 갑옷",
-      "icon": "🛡️",
-      "type": "equipment",
-      "slot": "armor",
-      "stats": {
-        "atk": 0,
-        "def": 30,
-        "hp": 45
-      },
-      "effect": "4티어 갑옷 · 방어력 +30, 체력 +45"
-    },
-    "requiredLevel": 10
   }
 ]

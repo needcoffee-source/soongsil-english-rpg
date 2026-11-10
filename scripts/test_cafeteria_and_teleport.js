@@ -332,7 +332,7 @@ app.quizManager.questions = JSON.parse(fs.readFileSync(path.join(__dirname, '../
 app.startFieldMonsterBattle(historyMob);
 assert(badgeEl.innerText.includes('6단원'), 'History monster battle badge must indicate 6단원');
 assert(badgeEl.innerText.includes('숭실 역사관'), 'History monster battle badge must mention 숭실 역사관');
-assert(logEl.innerHTML.includes('6단원'), 'Action log must indicate 6단원');
+assert.strictEqual(logEl.innerHTML, '', 'Initial action log guide banner should be empty/hidden');
 assert(app.fieldBattleQuestion && app.fieldBattleQuestion.unit.includes('6단원'), 'Loaded question must be from 6단원 (The Beauty of Art)');
 console.log('✔ [6/6] Soongsil History Hall monsters verified to quiz 6단원 questions!');
 
