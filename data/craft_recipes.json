@@ -117,10 +117,10 @@
       "slot": "armor",
       "stats": {
         "atk": 0,
-        "def": 15,
+        "def": 12,
         "hp": 15
       },
-      "effect": "방어력(DEF) +15, 최대체력(HP) +15"
+      "effect": "방어력(DEF) +12, 최대체력(HP) +15"
     }
   },
   {
@@ -271,10 +271,10 @@
       "slot": "armor",
       "stats": {
         "atk": 0,
-        "def": 17,
+        "def": 15,
         "hp": 20
       },
-      "effect": "방어력(DEF) +17, 최대체력(HP) +20"
+      "effect": "방어력(DEF) +15, 최대체력(HP) +20"
     },
     "requiredLevel": 3
   },
@@ -416,10 +416,10 @@
       "slot": "armor",
       "stats": {
         "atk": 0,
-        "def": 22,
+        "def": 20,
         "hp": 25
       },
-      "effect": "방어력(DEF) +22, 최대체력(HP) +25"
+      "effect": "방어력(DEF) +20, 최대체력(HP) +25"
     },
     "requiredLevel": 5
   },
@@ -566,10 +566,10 @@
       "slot": "armor",
       "stats": {
         "atk": 0,
-        "def": 30,
-        "hp": 45
+        "def": 25,
+        "hp": 35
       },
-      "effect": "4티어 갑옷 · 방어력 +30, 체력 +45"
+      "effect": "4티어 갑옷 · 방어력 +25, 체력 +35"
     },
     "requiredLevel": 10
   },
@@ -608,10 +608,10 @@
       "slot": "accessory",
       "stats": {
         "atk": 10,
-        "def": 10,
+        "def": 5,
         "hp": 20
       },
-      "effect": "공격력(ATK) +10, 방어력(DEF) +10, 최대체력 +20"
+      "effect": "공격력(ATK) +10, 방어력(DEF) +5, 최대체력 +20"
     }
   },
   {
@@ -651,10 +651,10 @@
       "slot": "accessory",
       "stats": {
         "atk": 15,
-        "def": 10,
+        "def": 5,
         "hp": 30
       },
-      "effect": "공격력(ATK) +15, 방어력(DEF) +10, 최대체력 +30"
+      "effect": "공격력(ATK) +15, 방어력(DEF) +5, 최대체력 +30"
     },
     "requiredLevel": 5
   },

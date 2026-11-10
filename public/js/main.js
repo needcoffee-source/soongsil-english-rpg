@@ -341,7 +341,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '1티어 갑옷',
     tierColor: '#854d0e',
-    effect: '방어력(DEF) +15, 체력(HP) +15 증가',
+    effect: '방어력(DEF) +12, 체력(HP) +15 증가',
     source: '장비 제작대(C)에서 제작',
     recipe: '단단한 목재 10개 + 15G'
   },
@@ -374,7 +374,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '2티어 갑옷',
     tierColor: '#b45309',
-    effect: '방어력(DEF) +17, 체력(HP) +20 증가',
+    effect: '방어력(DEF) +15, 체력(HP) +20 증가',
     source: '장비 제작대(C)에서 제작 (3레벨 이상)',
     recipe: '보스의 가죽 1개 + 농구공 가죽 30개 + 50G'
   },
@@ -407,7 +407,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '3티어 갑옷',
     tierColor: '#047857',
-    effect: '방어력(DEF) +22, 체력(HP) +25 증가',
+    effect: '방어력(DEF) +20, 체력(HP) +25 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
     recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 70G'
   },
@@ -440,7 +440,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '4티어 갑옷',
     tierColor: '#6366f1',
-    effect: '방어력 +30, 체력 +45',
+    effect: '방어력 +25, 체력 +35',
     source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
@@ -486,7 +486,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '5티어 갑옷',
     tierColor: '#ef4444',
-    effect: '방어력 +35, 체력 +35 (Lv.13 이상)',
+    effect: '방어력 +30, 체력 +35 (Lv.13 이상)',
     source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
     recipe: '현재 제작 불가'
   },
@@ -545,7 +545,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'accessory', subCategory: 'accessory',
     tierBadge: '교화 장신구',
     tierColor: '#ca8a04',
-    effect: '공격력 +10, 방어력 +10, 체력 +20 증가',
+    effect: '공격력 +10, 방어력 +5, 체력 +20 증가',
     source: '복도 식물존 옆 악세서리 세공대에서 제작',
     recipe: '노란 개나리 꽃잎 20개 + 30G'
   },
@@ -556,10 +556,10 @@ window.ITEM_CODEX_DATABASE = [
     category: 'accessory', subCategory: 'accessory',
     tierBadge: '교목 장신구',
     tierColor: '#d97706',
-    effect: '공격력 +15, 방어력 +10, 체력 +30 증가',
+    effect: '공격력 +15, 방어력 +5, 체력 +30 증가',
     source: '복도 식물존 옆 악세서리 세공대에서 제작 (5레벨 이상)',
     recipe: '황금 은행잎 10개 + 50G',
-    stats: { atk: 15, def: 10, hp: 30 }
+    stats: { atk: 15, def: 5, hp: 30 }
   },
   {
     id: 'equip_vintage_armband',
@@ -639,24 +639,24 @@ const ALL_GAME_ITEMS = {
   // 3. 1st Grade Wooden & Leather Equipment
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
   'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
-  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' } },
+  'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 12, hp: 15 }, effect: '방어력 +12, 체력 +15' } },
   'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
   'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 20 }, effect: '방어력 +15, 체력 +20' } },
   'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
-  'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20' } },
-  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 10, hp: 30 }, effect: '공격력 +15, 방어력 +10, 체력 +30' } },
+  'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 5, hp: 20 }, effect: '공격력 +10, 방어력 +5, 체력 +20' } },
+  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 5, hp: 30 }, effect: '공격력 +15, 방어력 +5, 체력 +30' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
   'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' } },
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' } },
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25' } },
 
   // 5. Tier 4 Heritage Equipment
   'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
   'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
-  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 30, hp: 45 }, effect: '4티어 갑옷 · 방어력 +30, 체력 +45' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 25, hp: 35 }, effect: '4티어 갑옷 · 방어력 +25, 체력 +35' } },
   'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 보물' } },
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
@@ -664,7 +664,7 @@ const ALL_GAME_ITEMS = {
   // 6. Tier 5 Immortal Equipment (5티어 불멸세트 · 13레벨 락 · 현재 제작 잠김)
   'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 13, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.13 이상)' } },
   'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 13, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.13 이상)' } },
-  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 13, stats: { atk: 0, def: 35, hp: 35 }, effect: '5티어 갑옷 · 방어력 +35, 체력 +35 (Lv.13 이상)' } },
+  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 13, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.13 이상)' } },
 
   // 7. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
@@ -6808,7 +6808,7 @@ class MainApp {
       // 2. 개나리 반지 (5% 확률)
       if (Math.random() * 100 < 5) {
         this.addItem('equip_forsythia_ring', '성실의 개나리 반지', 1, '🌼', {
-          type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 10, hp: 20 }, effect: '공격력 +10, 방어력 +10, 체력 +20'
+          type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 5, hp: 20 }, effect: '공격력 +10, 방어력 +5, 체력 +20'
         });
         rewardItemsList.push('🌼 성실의 개나리 반지');
       }
@@ -6844,7 +6844,7 @@ class MainApp {
           const woodGears = [
             { item: 'equip_wood_sword', name: '나무검', icon: '🗡️', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' },
             { item: 'equip_wood_helmet', name: '나무투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' },
-            { item: 'equip_wood_armor', name: '나무갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 15, hp: 15 }, effect: '방어력 +15, 체력 +15' }
+            { item: 'equip_wood_armor', name: '나무갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 12, hp: 15 }, effect: '방어력 +12, 체력 +15' }
           ];
           const chosen = woodGears[Math.floor(Math.random() * woodGears.length)];
           this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
@@ -6871,7 +6871,7 @@ class MainApp {
           const leatherGears = [
             { item: 'equip_leather_sword', name: '가죽손잡이 세이버', icon: '🗡️', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' },
             { item: 'equip_leather_helmet', name: '가죽투구', icon: '⛑️', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' },
-            { item: 'equip_leather_armor', name: '가죽갑옷', icon: '🥋', slot: 'armor', stats: { atk: 0, def: 17, hp: 20 }, effect: '방어력 +17, 체력 +20' }
+            { item: 'equip_leather_armor', name: '가죽갑옷', icon: '🥋', slot: 'armor', stats: { atk: 0, def: 15, hp: 20 }, effect: '방어력 +15, 체력 +20' }
           ];
           const chosen = leatherGears[Math.floor(Math.random() * leatherGears.length)];
           this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
@@ -6893,7 +6893,7 @@ class MainApp {
           const bronzeGears = [
             { item: 'equip_bronze_sword', name: '청동검', icon: '⚔️', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' },
             { item: 'equip_bronze_helmet', name: '청동투구', icon: '🪖', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' },
-            { item: 'equip_bronze_armor', name: '청동갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 22, hp: 25 }, effect: '방어력 +22, 체력 +25' }
+            { item: 'equip_bronze_armor', name: '청동갑옷', icon: '🛡️', slot: 'armor', stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25' }
           ];
           const chosen = bronzeGears[Math.floor(Math.random() * bronzeGears.length)];
           this.addItem(chosen.item, chosen.name, 1, chosen.icon, { type: 'equipment', slot: chosen.slot, stats: chosen.stats, effect: chosen.effect });
@@ -6957,8 +6957,8 @@ class MainApp {
           this.addItem('equip_ginkgo_talisman', '합심의 황금 은행잎 부적', 1, '🍂', {
             type: 'equipment',
             slot: 'accessory',
-            stats: { atk: 15, def: 10, hp: 30 },
-            effect: '공격력 +15, 방어력 +10, 체력 +30'
+            stats: { atk: 15, def: 5, hp: 30 },
+            effect: '공격력 +15, 방어력 +5, 체력 +30'
           });
           rewardItemsList.push('🍂 합심의 황금 은행잎 부적 (1% 초특급 대박 장신구 득템!)');
         }
@@ -7718,8 +7718,8 @@ class MainApp {
         this.addItem('equip_leather_armor', '가죽갑옷', 1, '🥋', {
           type: 'equipment',
           slot: 'armor',
-          stats: { atk: 0, def: 17, hp: 20 },
-          effect: '방어력 +17, 체력 +20'
+          stats: { atk: 0, def: 15, hp: 20 },
+          effect: '방어력 +15, 체력 +20'
         });
         dropsList.push('🥋 가죽갑옷 (8% 대박 완제품 드랍!)');
       }

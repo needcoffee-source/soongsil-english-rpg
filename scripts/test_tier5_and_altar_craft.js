@@ -84,7 +84,7 @@ tier5Ids.forEach(id => {
 // Check exact stats
 assert.strictEqual(JSON.stringify(clientItems['equip_immortal_blade'].meta.stats), JSON.stringify({ atk: 60, def: 0, hp: 35 }));
 assert.strictEqual(JSON.stringify(clientItems['equip_immortal_helmet'].meta.stats), JSON.stringify({ atk: 0, def: 25, hp: 35 }));
-assert.strictEqual(JSON.stringify(clientItems['equip_immortal_armor'].meta.stats), JSON.stringify({ atk: 0, def: 35, hp: 35 }));
+assert.strictEqual(JSON.stringify(clientItems['equip_immortal_armor'].meta.stats), JSON.stringify({ atk: 0, def: 30, hp: 35 }));
 console.log('✅ Check 4 Passed: 5-tier Immortal Set stats (+60/35, +25/35, +35/35, Lv.13) verified.');
 
 // Check 5: Crafting of Tier 5 is currently disabled (not in craft_recipes.json)
