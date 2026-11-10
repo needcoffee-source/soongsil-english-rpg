@@ -309,7 +309,7 @@ const WORLD_DATA = {
       { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 민족신앙 수호관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_4", type: "history_vitrine", vitrineIndex: 4, x: 24, y: 13, name: "🌟 [제4전시관] 숭실의 위인관", prompt: "전시관 관람 (SPACE)" },
-      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "장비 제작 (SPACE)" },
+      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "1897 헤리티지 세트 제작 (SPACE)" },
       { id: "quest_library_book_history", type: "quest_library_book_hi", x: 10, y: 5, name: "📕 [대출도서] 숭실역사관에 놓인 고문서 도록", prompt: "고문서 도록 회수하기 (SPACE)" }
     ],
     historyMonsters: [

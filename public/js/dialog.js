@@ -165,7 +165,11 @@ class RPGDialogManager {
 
     if (this.choicesEl) this.choicesEl.classList.add('hidden');
     if (this.avatarEl) this.avatarEl.innerText = avatar || '💬';
-    if (this.speakerEl) this.speakerEl.innerText = speaker || '안내';
+    let cleanSpeaker = (speaker || '안내').trim();
+    if (avatar && cleanSpeaker.startsWith(avatar)) {
+      cleanSpeaker = cleanSpeaker.slice(avatar.length).trim();
+    }
+    if (this.speakerEl) this.speakerEl.innerText = cleanSpeaker || '안내';
     if (this.textEl) this.textEl.innerText = '';
     if (this.indicatorEl) this.indicatorEl.classList.add('hidden');
     if (this.hintEl) this.hintEl.innerText = '스페이스바 / Enter: 넘기기 ｜ ESC: 닫기';

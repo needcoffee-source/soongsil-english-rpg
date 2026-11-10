@@ -419,7 +419,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '4티어 무기',
     tierColor: '#6366f1',
     effect: '공격력 +45, 체력 +35',
-    source: '장비 제작대(C)에서 제작 (10레벨 이상)',
+    source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 150G'
   },
   {
@@ -430,7 +430,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '4티어 투구',
     tierColor: '#6366f1',
     effect: '방어력 +20, 체력 +35',
-    source: '장비 제작대(C)에서 제작 (10레벨 이상)',
+    source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
     recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 120G'
   },
   {
@@ -441,7 +441,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '4티어 갑옷',
     tierColor: '#6366f1',
     effect: '방어력 +30, 체력 +45',
-    source: '장비 제작대(C)에서 제작 (10레벨 이상)',
+    source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
     recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 140G'
   },
   {
@@ -454,6 +454,41 @@ window.ITEM_CODEX_DATABASE = [
     effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
     source: '기말고사 파멸신 레이드 전리품 드랍',
     recipe: '제작 불가'
+  },
+
+  // 5티어 불멸세트 (13레벨 락 · 현재 제작 잠김)
+  {
+    id: 'equip_immortal_blade',
+    name: '불멸의 열정 대검',
+    icon: '⚔️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '5티어 무기',
+    tierColor: '#ef4444',
+    effect: '공격력 +60, 체력 +35 (Lv.13 이상)',
+    source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
+    recipe: '현재 제작 불가'
+  },
+  {
+    id: 'equip_immortal_helmet',
+    name: '불멸의 열정 투구',
+    icon: '👑',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '5티어 투구',
+    tierColor: '#ef4444',
+    effect: '방어력 +25, 체력 +35 (Lv.13 이상)',
+    source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
+    recipe: '현재 제작 불가'
+  },
+  {
+    id: 'equip_immortal_armor',
+    name: '불멸의 열정 갑옷',
+    icon: '🛡️',
+    category: 'weapon_armor', subCategory: 'weapon_armor',
+    tierBadge: '5티어 갑옷',
+    tierColor: '#ef4444',
+    effect: '방어력 +35, 체력 +35 (Lv.13 이상)',
+    source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
+    recipe: '현재 제작 불가'
   },
 
   // 4. Shoes (신발 1~4티어 순 정렬)
@@ -626,7 +661,12 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
 
-  // 6. Legendary Season Boss Artifacts & Rewards
+  // 6. Tier 5 Immortal Equipment (5티어 불멸세트 · 13레벨 락 · 현재 제작 잠김)
+  'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 13, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.13 이상)' } },
+  'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 13, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.13 이상)' } },
+  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 13, stats: { atk: 0, def: 35, hp: 35 }, effect: '5티어 갑옷 · 방어력 +35, 체력 +35 (Lv.13 이상)' } },
+
+  // 7. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
@@ -2036,32 +2076,32 @@ class MainApp {
     } else if (target.type === 'cafeteria') {
       this.handleCafeteriaEntranceInteraction();
     } else if (target.type === 'cafeteria_serving') {
-      const msg = `🍱 [급식 배부대]\n\n"위생적인 스테인리스 온장 배식대에서 김이 모락모락 피어오릅니다.\n따끈따끈한 쌀밥과 얼큰한 국, 노릇노릇하게 갓 튀겨진 돈까스와 신선한 샐러드가 식욕을 돋웁니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('🍱 급식 배부대', msg, '🍱');
+      const msg = `"위생적인 스테인리스 온장 배식대에서 김이 모락모락 피어오릅니다.\n따끈따끈한 쌀밥과 얼큰한 국, 노릇노릇하게 갓 튀겨진 돈까스와 신선한 샐러드가 식욕을 돋웁니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('급식 배부대', msg, '🍱');
       else alert(msg);
     } else if (target.type === 'cafeteria_teacher_desk') {
-      const msg = `📋 [급식 지도석 & 영양사실 책상]\n\n"학생들의 질서 있는 배식과 식사 지도를 위한 교직원 및 영양사 선생님의 안내 책상입니다.\n오늘의 식단표와 위생 점검 일지, 알레르기 유발 물질 안내문이 정갈하게 놓여 있습니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('📋 급식 지도석', msg, '📋');
+      const msg = `"학생들의 질서 있는 배식과 식사 지도를 위한 안내 책상입니다.\n오늘의 식단표와 위생 점검 일지, 알레르기 유발 물질 안내문이 정갈하게 놓여 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('급식 지도석 & 영양사실 책상', msg, '📋');
       else alert(msg);
     } else if (target.type === 'cafeteria_student_table') {
-      const msg = `🍽️ [학생 식당 좌석]\n\n"칸막이 없이 넓고 쾌적하게 정돈된 세로형 대형 식탁입니다.\n친구들과 둘러앉아 따뜻하고 즐거운 점심 식사를 나눌 수 있도록 깨끗하게 소독되어 있습니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('🍽️ 학생 식당 좌석', msg, '🍽️');
+      const msg = `"칸막이 없이 넓고 쾌적하게 정돈된 세로형 대형 식탁입니다.\n친구들과 둘러앉아 따뜻하고 즐거운 점심 식사를 나눌 수 있도록 깨끗하게 소독되어 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('학생 식당 좌석', msg, '🍽️');
       else alert(msg);
     } else if (target.type === 'cafeteria_tray_return') {
-      const msg = `🥣 [퇴식구 & 잔반 버리는 곳]\n\n"식사를 마친 식판과 수저를 분리하여 반납하는 퇴식구입니다.\n잔반 수거통과 수저 분리함이 청결하게 정돈되어 있습니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('🥣 퇴식구 & 잔반 버리는 곳', msg, '🥣');
+      const msg = `"식사를 마친 식판과 수저를 분리하여 반납하는 퇴식구입니다.\n잔반 수거통과 수저 분리함이 청결하게 정돈되어 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('퇴식구 & 잔반 버리는 곳', msg, '🥣');
       else alert(msg);
     } else if (target.type === 'cafeteria_kitchen') {
-      const msg = `🍳 [조리실]\n\n"위생적인 조리 환경을 위해 대형 조리용 솥과 가스레인지가 청결하게 관리되고 있습니다.\n조리사 선생님들이 정성껏 학생들의 점심 식사를 준비하는 공간입니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('🍳 조리실', msg, '🍳');
+      const msg = `"위생적인 조리 환경을 위해 대형 조리용 솥과 가스레인지가 청결하게 관리되고 있습니다.\n조리사 선생님들이 정성껏 학생들의 점심 식사를 준비하는 공간입니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('조리실', msg, '🍳');
       else alert(msg);
     } else if (target.type === 'cafeteria_teacher_room') {
-      const msg = `📋 [교사 급식실]\n\n"학생 급식실과 분리된 교직원 전용 식사 공간입니다.\n학생 식당과 동일한 규격의 식탁이 정갈하게 놓여 있어 선생님들이 조용히 식사를 하실 수 있습니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('📋 교사 급식실', msg, '📋');
+      const msg = `"학생 급식실과 분리된 교직원 전용 식사 공간입니다.\n학생 식당과 동일한 규격의 식탁이 정갈하게 놓여 있어 선생님들이 조용히 식사를 하실 수 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('교사 급식실', msg, '📋');
       else alert(msg);
     } else if (target.type === 'cafeteria_water') {
-      const msg = `🚰 [급식실 음수대]\n\n"시원하고 깨끗한 물이 나오는 대용량 정수기입니다.\n식사 전후로 시원한 물을 마실 수 있습니다."`;
-      if (window.RPGDialog) window.RPGDialog.show('🚰 급식실 음수대', msg, '🚰');
+      const msg = `"시원하고 깨끗한 물이 나오는 대용량 정수기입니다.\n식사 전후로 시원한 물을 마실 수 있습니다."`;
+      if (window.RPGDialog) window.RPGDialog.show('급식실 음수대', msg, '🚰');
       else alert(msg);
     } else if (target.type === 'cafeteria_key_safe') {
       this.handleCafeteriaKeySafeInteraction();
@@ -4714,7 +4754,7 @@ class MainApp {
 
   handleHistoryAltarInteraction() {
     if (this.craftingManager) {
-      this.craftingManager.open('equipment');
+      this.craftingManager.open('heritage');
     }
   }
 
@@ -5927,6 +5967,13 @@ class MainApp {
   equipItem(itemId) {
     const invItem = this.playerData.inventory.find(i => i.item === itemId);
     if (!invItem) return;
+
+    const reqLevel = invItem.requiredLevel || invItem.meta?.requiredLevel || (ALL_GAME_ITEMS[itemId] && ALL_GAME_ITEMS[itemId].meta && ALL_GAME_ITEMS[itemId].meta.requiredLevel);
+    if (reqLevel && this.playerData.level < reqLevel && !this.playerData.isTeacher) {
+      if (window.AudioManager && window.AudioManager.playWrong) window.AudioManager.playWrong();
+      alert(`🔒 착용 불가 (레벨 부족)\n\n이 장비는 [Lv.${reqLevel}] 이상부터 착용할 수 있습니다!\n(현재 나의 레벨: Lv.${this.playerData.level})\n\n교실 퀴즈와 몬스터 사냥으로 레벨을 올려보세요!`);
+      return;
+    }
 
     let slot = invItem.slot || 'weapon';
     if (slot === 'accessory') {
@@ -8384,12 +8431,12 @@ class MainApp {
           goldEl.value = 400;
           expEl.value = 800;
         } else if (val === 'sloth_titan') {
-          nameEl.value = '🦥 방학 직전 나태의 거인';
-          hpEl.value = 99999;
-          atkEl.value = 9999;
-          defEl.value = 9999;
-          goldEl.value = 0;
-          expEl.value = 0;
+          nameEl.value = '🦥 방학 직전 나태신';
+          hpEl.value = 15000;
+          atkEl.value = 120;
+          defEl.value = 35;
+          goldEl.value = 500;
+          expEl.value = 1000;
         } else if (val === 'custom') {
           nameEl.value = '⚙️ 커스텀 보스';
         }
@@ -9660,9 +9707,9 @@ class MainApp {
     if (!cfg) return;
 
     if (!quest || quest.status !== 'in_progress') {
-      const msg = `${cfg.icon} [바닥에 놓인 대출도서: ${cfg.itemName}]\n\n"2층 도서관 사서 선생님이 애타게 찾으시던 분실도서 같습니다.\n2층 도서관 사서 선생님을 먼저 찾아가 의뢰를 수락하세요!"`;
+      const msg = `"2층 도서관 사서 선생님이 애타게 찾으시던 분실도서 같습니다.\n먼저 2층 도서관 사서 선생님을 찾아가 의뢰를 수락하세요!"`;
       if (window.RPGDialog) {
-        window.RPGDialog.show(`${cfg.icon} ${cfg.itemName}`, msg, cfg.icon);
+        window.RPGDialog.show(cfg.itemName, msg, cfg.icon);
       } else {
         alert(msg);
       }
@@ -12439,9 +12486,9 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📘 [진로상담실 책상에 놓인 진로 적성 검사 안내서]\n\n"귐즨숑 선생님의 진로 적성 검사 안내서 같습니다."';
+      const msg = '"24번 좌석 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n먼저 5층 귐즨숑 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
-        window.RPGDialog.show('📘 진로 적성 검사 안내서', msg, '📘');
+        window.RPGDialog.show('진로 적성 검사 안내서', msg, '📘');
       } else {
         alert(msg);
       }
@@ -12561,9 +12608,9 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_yosunyu_info'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '💾 [소회의실 대형 테이블에 놓인 고속 알고리즘 USB]\n\n"요션유 선생님의 파이썬 코딩 강의 자료가 담긴 USB 같습니다."';
+      const msg = '"정보 요션유 선생님의 파이썬 코딩 강의 자료가 담긴 고속 USB 같습니다.\n먼저 1-2교실 요션유 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
-        window.RPGDialog.show('💾 알고리즘 USB', msg, '💾');
+        window.RPGDialog.show('요션유의 알고리즘 USB', msg, '💾');
       } else {
         alert(msg);
       }
@@ -12928,9 +12975,9 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_okchohan_social'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📘 [바닥에 놓인 사회 탐구 교재]\n\n"옥촣한 선생님의 사회 탐구 교재 같습니다."';
+      const msg = '"10번 좌석 옥촣한 선생님의 핵심 사회 탐구 수업 교재 같습니다.\n먼저 옥촣한 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
-        window.RPGDialog.show('📘 사회 탐구 교재', msg, '📘');
+        window.RPGDialog.show('옥촣한의 사회 탐구 교재', msg, '📘');
       } else {
         alert(msg);
       }
@@ -12970,9 +13017,9 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kimmijin_art'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '🎨 [운동장 스탠드 파란색 벤치에 놓인 풍경화 스케치북]\n\n"김진믜 선생님의 풍경화 스케치북 같습니다."';
+      const msg = '"미술 김진믜 선생님의 섬세한 풍경화 스케치북 같습니다.\n먼저 미술 김진믜 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
-        window.RPGDialog.show('🎨 풍경화 스케치북', msg, '🎨');
+        window.RPGDialog.show('김진믜의 풍경화 스케치북', msg, '🎨');
       } else {
         alert(msg);
       }
@@ -13013,9 +13060,9 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_joshua_intro'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '📝 [바닥에 떨어진 영단어 메모]\n\n"Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다."';
+      const msg = '"3번 좌석 Joshua 선생님의 핵심 영단어 시험 필기 메모 같습니다.\n먼저 Joshua 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
-        window.RPGDialog.show('📝 영단어 메모', msg, '📝');
+        window.RPGDialog.show('Joshua의 영단어 메모', msg, '📝');
       } else {
         alert(msg);
       }
