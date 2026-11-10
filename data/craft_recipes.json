@@ -777,8 +777,8 @@
       "icon": "🧪",
       "type": "consumable",
       "slot": "consumable",
-      "heal": 60,
-      "effect": "사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)"
+      "heal": 40,
+      "effect": "사용 시 체력(HP) +40 대량 즉시 회복 (Lv.10+ 전용)"
     }
   },
   {
@@ -830,8 +830,8 @@
       "icon": "⚗️",
       "type": "consumable",
       "slot": "consumable",
-      "heal": 100,
-      "effect": "사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)"
+      "heal": 60,
+      "effect": "사용 시 체력(HP) +60 초대량 즉시 회복 (Lv.15+ 전용)"
     }
   },
   {

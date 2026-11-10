@@ -79,13 +79,13 @@ const clear = recipes.find(r => r.id === 'recipe_clear_potion');
 assert(clear, 'recipe_clear_potion must exist');
 assert.strictEqual(clear.requiredLevel, 10, 'recipe_clear_potion requiredLevel === 10');
 assert.strictEqual(clear.requiredGold, 30, 'recipe_clear_potion requiredGold === 30');
-assert.strictEqual(clear.result.heal, 60, 'recipe_clear_potion heal === 60');
+assert.strictEqual(clear.result.heal, 40, 'recipe_clear_potion heal === 40');
 
 const elixir = recipes.find(r => r.id === 'recipe_elixir');
 assert(elixir, 'recipe_elixir must exist');
 assert.strictEqual(elixir.requiredLevel, 15, 'recipe_elixir requiredLevel === 15');
 assert.strictEqual(elixir.requiredGold, 50, 'recipe_elixir requiredGold === 50');
-assert.strictEqual(elixir.result.heal, 100, 'recipe_elixir heal === 100');
+assert.strictEqual(elixir.result.heal, 60, 'recipe_elixir heal === 60');
 assert.strictEqual(elixir.icon, '⚗️', 'recipe_elixir icon === ⚗️');
 
 // Verify neither is sold in canteen store

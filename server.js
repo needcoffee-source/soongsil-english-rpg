@@ -657,8 +657,8 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
-  'item_clear_potion': { name: '맑은 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)' } },
-  'item_elixir': { name: '엘릭서', icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
+  'item_clear_potion': { name: '맑은 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 40, effect: '사용 시 체력(HP) +40 대량 즉시 회복 (Lv.10+ 전용)' } },
+  'item_elixir': { name: '엘릭서', icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '사용 시 체력(HP) +60 초대량 즉시 회복 (Lv.15+ 전용)' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
   'item_protection_potion': { name: '수호의 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },

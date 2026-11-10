@@ -229,7 +229,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'consumable',
     tierBadge: '고급 회복 물약',
     tierColor: '#06b6d4',
-    effect: '사용 시 체력(HP) +60 대량 즉시 회복 (Lv.10+ 전용)',
+    effect: '사용 시 체력(HP) +40 대량 즉시 회복 (Lv.10+ 전용)',
     source: '소비품 제작대(C)에서 조제 (10레벨 이상)',
     recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
   },
@@ -240,7 +240,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'consumable',
     tierBadge: '최고급 회복 물약',
     tierColor: '#8b5cf6',
-    effect: '사용 시 체력(HP) +100 초대량 즉시 회복 (Lv.15+ 전용)',
+    effect: '사용 시 체력(HP) +60 초대량 즉시 회복 (Lv.15+ 전용)',
     source: '소비품 제작대(C)에서 조제 (15레벨 이상)',
     recipe: '정제된 영양의 정수 1개 + 향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 50G'
   },
@@ -592,8 +592,8 @@ const ALL_GAME_ITEMS = {
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
-  'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 대량 즉시 회복 (Lv.10+ 전용)' } },
-  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 100, effect: '체력 +100 초대량 즉시 회복 (Lv.15+ 전용)' } },
+  'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 40, effect: '체력 +40 대량 즉시 회복 (Lv.10+ 전용)' } },
+  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 초대량 즉시 회복 (Lv.15+ 전용)' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
   'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
@@ -6019,7 +6019,7 @@ class MainApp {
     }
 
     const catalogMeta = (ALL_GAME_ITEMS[itemId] && ALL_GAME_ITEMS[itemId].meta) || {};
-    const healAmount = pot.heal || (pot.meta && pot.meta.heal) || catalogMeta.heal || 10;
+    const healAmount = catalogMeta.heal || pot.heal || (pot.meta && pot.meta.heal) || 10;
     this.removeItem(itemId, 1);
     const beforeHp = this.playerData.hp;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + healAmount);
@@ -6174,8 +6174,8 @@ class MainApp {
         let statBadgeHtml = '';
         const catalogMeta = ALL_GAME_ITEMS[item.item]?.meta || {};
         const stats = item.stats || item.meta?.stats || catalogMeta.stats;
-        const effect = item.effect || item.meta?.effect || catalogMeta.effect;
-        const heal = item.heal || item.meta?.heal || catalogMeta.heal;
+        const effect = catalogMeta.effect || item.effect || item.meta?.effect;
+        const heal = catalogMeta.heal || item.heal || item.meta?.heal;
 
         if (isEquip) {
           const parts = [];
