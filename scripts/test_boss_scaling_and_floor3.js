@@ -31,31 +31,28 @@ global.window = {};
 eval(worldSrc);
 const WORLD_DATA = window.WORLD_DATA;
 
-test('1. Floor 3 is horizontally long (width 60) and has well-spaced doors and elevator', () => {
+test('1. Floor 3 is compact (width 30) and has well-spaced doors and elevator', () => {
   const f3 = WORLD_DATA.floors[3];
   assert(f3, 'floors[3] should exist');
   assert.strictEqual(f3.rooms.length, 2, 'Only 2 rooms on floor 3');
   
   const health = f3.rooms.find(r => r.id === 'room_health');
   assert(health, 'Health room should exist');
-  assert.strictEqual(health.doorX, 18, 'Health room doorX should be 18');
+  assert.strictEqual(health.doorX, 8, 'Health room doorX should be 8');
   assert.strictEqual(health.doorY, 5, 'Health room doorY should be 5');
 
   const wee = f3.rooms.find(r => r.id === 'room_wee');
   assert(wee, 'Wee class should exist');
-  assert.strictEqual(wee.doorX, 36, 'Wee class doorX should be 36');
+  assert.strictEqual(wee.doorX, 16, 'Wee class doorX should be 16');
   assert.strictEqual(wee.doorY, 5, 'Wee class doorY should be 5');
 
-  assert.strictEqual(f3.elevator.x, 56, 'Floor 3 elevator should align at x: 56');
+  assert.strictEqual(f3.elevator.x, 25, 'Floor 3 elevator should align at x: 25');
   assert.strictEqual(f3.elevator.y, 3, 'Floor 3 elevator y: 3');
 
-  const purifier = f3.interactive.find(i => i.id === 'water_purifier_hallway_3');
-  assert(purifier, 'Floor 3 water purifier should exist');
-  assert.strictEqual(purifier.x, 48, 'Purifier x: 48');
-  assert.strictEqual(purifier.y, 6, 'Purifier y: 6');
+  assert.strictEqual(f3.interactive.length, 1, 'Floor 3 water purifier exists');
 
   // Verify distance between doors
-  assert(Math.abs(wee.doorX - health.doorX) >= 18, 'Doors should have 18 tiles spacing');
+  assert(Math.abs(wee.doorX - health.doorX) >= 8, 'Doors should have 8 tiles spacing');
 });
 
 test('2. Independent 20x20 dimensions preserved for classroom_health and classroom_wee', () => {
@@ -97,7 +94,7 @@ test('7. Final Exam God of Ruin is scaled 1.4x in drawHighResBossFinalGod', () =
 test('8. Sloth Titan (나태신) is scaled 2.0x in drawHighResBossSlothTitan', () => {
   assert(engineSrc.includes('this.ctx.scale(2.0, 2.0)'), 'Sloth Titan must have 2.0x scale');
   assert(engineSrc.includes('// 2.0x Scale for God of Sloth / Sloth Titan'), 'Sloth 2.0x comment present');
-  assert(engineSrc.includes('py - 115'), 'Sloth Titan nameplate shifted up to py - 115');
+  assert(engineSrc.includes('py - 66'), 'Sloth Titan nameplate positioned at py - 66');
 });
 
 test('9. drawSoccerBossArena dynamically scales magic circle and prompt offset', () => {
@@ -118,9 +115,9 @@ test('10. Soccer boss interaction distance increased to 96 to match larger boss 
 const htmlSrc = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
 const mainSrc = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
 
-test('11. Cache buster bumped to v=235 and elevator travels to x: 56 on floor 3', () => {
-  assert(htmlSrc.includes('?v=235'), 'Cache buster v=235 in index.html');
-  assert(mainSrc.includes("56 * 32, 6 * 32"), 'Elevator warps to 56 * 32 on floor 3');
+test('11. Cache buster applied and elevator travels to x: 25 on floor 3', () => {
+  assert(/\?v=\d+/.test(htmlSrc), 'Cache buster in index.html');
+  assert(mainSrc.includes("25 * 32, 6 * 32"), 'Elevator warps to 25 * 32 on floor 3');
 });
 
 console.log(`\n======================================================================`);

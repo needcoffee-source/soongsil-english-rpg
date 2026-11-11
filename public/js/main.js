@@ -1258,7 +1258,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       },
       {
         id: 'usb',
-        text: '6층 1-2교실 가장 구석에서 [요션유의 알고리즘 USB] 회수하기',
+        text: '1학년 2반(1-2교실) 가장 구석에서 [요션유의 알고리즘 USB] 회수하기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.usbCollected ? 1 : 0)
       }
@@ -5819,6 +5819,15 @@ class MainApp {
         }
       });
     }
+    if (Array.isArray(this.playerData.inventory) && window.ALL_GAME_ITEMS) {
+      this.playerData.inventory.forEach(inv => {
+        if (inv && inv.item && window.ALL_GAME_ITEMS[inv.item]?.meta) {
+          const canonMeta = window.ALL_GAME_ITEMS[inv.item].meta;
+          if (canonMeta.stats) inv.stats = canonMeta.stats;
+          if (canonMeta.effect) inv.effect = canonMeta.effect;
+        }
+      });
+    }
 
         // 🌟 진로 직업 패시브 스킬 스탯 보너스 (각 직업은 고유 특수 기능만 적용)
 
@@ -6844,7 +6853,7 @@ class MainApp {
         const shoesRoll = Math.random() * 100;
         if (shoesRoll < 3) {
           this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
-            type: 'equipment', slot: 'shoes', stats: { atk: 0, def: 3, hp: 5 }, effect: '방어력 +3, 체력 +5 · 2티어 신발 · Shift 질주 배속 4.5'
+            type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발'
           });
           rewardItemsList.push('👟 날렵한 가죽 운동화 (대박 득템! [아주 낮은 확률 3%])');
         } else if (shoesRoll < 18) {
@@ -6884,7 +6893,7 @@ class MainApp {
         const dragonShoesRoll = Math.random() * 100;
         if (dragonShoesRoll < 15) {
           this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
-            type: 'equipment', slot: 'shoes', stats: { atk: 0, def: 3, hp: 5 }, effect: '방어력 +3, 체력 +5 · 2티어 신발 · Shift 질주 배속 4.5'
+            type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발'
           });
           rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [15%])');
         } else if (dragonShoesRoll < 30) {
@@ -6949,7 +6958,7 @@ class MainApp {
         const beastShoesRoll = Math.random() * 100;
         if (beastShoesRoll < 15) {
           this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
-            type: 'equipment', slot: 'shoes', stats: { atk: 0, def: 3, hp: 5 }, effect: '방어력 +3, 체력 +5 · 2티어 신발 · Shift 질주 배속 4.5'
+            type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발'
           });
           rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [15%])');
         } else if (beastShoesRoll < 30) {
@@ -9354,20 +9363,26 @@ class MainApp {
   }
 
   addItem(itemId, name, count = 1, icon = '📦', meta = {}) {
+    const canon = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[itemId]) ? window.ALL_GAME_ITEMS[itemId] : null;
+    const canonMeta = (canon && canon.meta) ? canon.meta : {};
+    const resolvedStats = canonMeta.stats || meta.stats || null;
+    const resolvedEffect = canonMeta.effect || meta.effect || '';
     const existing = this.playerData.inventory.find(i => i.item === itemId);
     if (existing) {
       existing.count += count;
+      if (resolvedStats) existing.stats = resolvedStats;
+      if (resolvedEffect) existing.effect = resolvedEffect;
     } else {
       this.playerData.inventory.push({
         item: itemId,
-        name,
+        name: (canon && canon.name) || name,
         count,
-        icon,
-        type: meta.type || (itemId.startsWith('equip_') ? 'equipment' : 'material'),
-        slot: meta.slot || null,
-        stats: meta.stats || null,
-        heal: meta.heal || 0,
-        effect: meta.effect || ''
+        icon: (canon && canon.icon) || icon,
+        type: canonMeta.type || meta.type || (itemId.startsWith('equip_') ? 'equipment' : 'material'),
+        slot: canonMeta.slot || meta.slot || null,
+        stats: resolvedStats,
+        heal: canonMeta.heal || meta.heal || 0,
+        effect: resolvedEffect
       });
     }
     if (itemId === 'item_forsythia' && this.playerData && this.playerData.quests && this.playerData.quests['quest_kimmijin_art']) {
@@ -12529,7 +12544,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '"진로 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n먼저 5층 귐즨숑 선생님을 찾아가 의뢰를 수락하세요!"';
+      const msg = '"진로 귐즨숑 선생님의 진로 적성 검사 안내서 같습니다.\n먼저 교무실의 귐즨숑 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
         window.RPGDialog.show('진로 적성 검사 안내서', msg, '📘');
       } else {
@@ -12651,7 +12666,7 @@ class MainApp {
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests['quest_yosunyu_info'];
     if (!quest || quest.status !== 'in_progress') {
-      const msg = '"정보 요션유 선생님의 파이썬 코딩 강의 자료가 담긴 고속 USB 같습니다.\n먼저 1-2교실 요션유 선생님을 찾아가 의뢰를 수락하세요!"';
+      const msg = '"정보 요션유 선생님의 파이썬 코딩 강의 자료가 담긴 고속 USB 같습니다.\n먼저 교무실의 요션유 선생님을 찾아가 의뢰를 수락하세요!"';
       if (window.RPGDialog) {
         window.RPGDialog.show('요션유의 알고리즘 USB', msg, '💾');
       } else {

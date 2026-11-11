@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=274">
+  <link rel="manifest" href="/manifest.json?v=275">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=274">
+  <link rel="stylesheet" href="css/style.css?v=275">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -1305,7 +1305,7 @@
       <div class="modal-body">
         <!-- Golem Weakness Scroll Alert Banner (전투창 상단 점등 알림) -->
         <div id="raid-weakness-alert-banner" class="raid-weakness-alert-banner hidden" style="display:none; background: linear-gradient(135deg, rgba(22, 101, 52, 0.95), rgba(21, 128, 61, 0.95)); border: 2px solid #eab308; box-shadow: 0 0 16px rgba(234, 179, 8, 0.45); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-weight: 800; font-size: 13.5px; color: #fef08a; text-align: center; animation: pulseGimmick 1.5s infinite alternate;">
-          ✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 50% 약화되었습니다! (HP 1,000)
+          ✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘이 대폭 약화되었습니다! (HP 200 · 방어력 5)
         </div>
         <!-- Boss HP Bar -->
         <div class="boss-status-box">
@@ -1993,10 +1993,10 @@
                       <option value="item_revive_scroll">📜 부활 주문서 (50% 부활)</option>
                       <option value="item_return_scroll">🌀 귀환 주문서 (7층 복도 즉시 귀환)</option>
                       <option value="item_green_potion">🧪 초록 물약 (1분간 기본 이속 +10%)</option>
-                      <option value="item_courage_potion">🧪 용기의 물약 (보라) (3분간 공격력 +5)</option>
+                      <option value="item_courage_potion">🧪 용기의 물약 (보라) (1분간 공격력 +5)</option>
                       <option value="item_boss_leather">🥋 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
                       <option value="item_bronze_heart">❤️‍🔥 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
-                      <option value="item_golem_weakness_scroll">📜 한강우의 골렘 연화 비책 (가죽 골렘 HP 50% 반감)</option>
+                      <option value="item_golem_weakness_scroll">📜 한강우의 골렘 연화 비책 (가죽 골렘 약화: HP 200 · DEF 5)</option>
                       <option value="equip_leather_sword">🗡️ 가죽손잡이 세이버 (공격력 +22)</option>
                       <option value="item_ginkgo">🍂 황금 은행잎</option>
                       <option value="equip_bronze_sword">⚔️ 청동검 (공격력 +30)</option>
@@ -2070,7 +2070,7 @@
                     <option value="item_eval_paper">📜 A+ 만점 수행평가지 (케르베로스 전리품)</option>
                     <option value="item_boss_leather">🥋 질긴 보스의 가죽 (가죽 골렘 전리품)</option>
                     <option value="item_bronze_heart">❤️‍🔥 청동 드래곤의 심장 (청동 드래곤 전리품)</option>
-                      <option value="item_golem_weakness_scroll">📜 한강우의 골렘 연화 비책 (가죽 골렘 HP 50% 반감)</option>
+                      <option value="item_golem_weakness_scroll">📜 한강우의 골렘 연화 비책 (가죽 골렘 약화: HP 200 · DEF 5)</option>
                   </optgroup>
                   <optgroup label="👟 신발 & 이벤트 특수 장비">
                     <option value="equip_shoes_samdidas">👟 삼디다스 실내화 (질주 가능, ATK/DEF +2, HP +10)</option>
@@ -2082,27 +2082,27 @@
                     <option value="item_revive_scroll">📜 부활 주문서 (동료 50% 부활)</option>
                     <option value="item_return_scroll">🌀 귀환 주문서 (소비 · 7층 복도 즉시 귀환)</option>
                     <option value="item_green_potion">🧪 초록 물약 (1분간 기본 이속 +10%)</option>
-                    <option value="item_courage_potion">🧪 용기의 물약 (보라) (3분간 공격력 +5)</option>
+                    <option value="item_courage_potion">🧪 용기의 물약 (보라) (1분간 공격력 +5)</option>
                   </optgroup>
                   <optgroup label="🥋 스포츠 가죽 장비 (농구장 & 풋살장)">
                     <option value="item_basketball_leather">🏀 농구공 가죽 조각 (재료)</option>
                     <option value="item_futsal_leather">⚽ 탄력있는 풋살공 가죽 (재료)</option>
                     <option value="equip_leather_sword">🗡️ 가죽손잡이 세이버 (ATK +22)</option>
                     <option value="equip_leather_helmet">⛑️ 가죽투구 (DEF +12, HP +28)</option>
-                    <option value="equip_leather_armor">🥋 가죽갑옷 (DEF +17, HP +20)</option>
+                    <option value="equip_leather_armor">🥋 가죽갑옷 (DEF +15, HP +20)</option>
                     <option value="equip_leather_shoes">👟 날렵한 가죽 운동화 (2티어 신발 · ATK +3, DEF +3, HP +10, 질주)</option>
                   </optgroup>
                   <optgroup label="🛡️ 1학년 기본 나무 장비">
                     <option value="equip_wood_sword">🗡️ 나무검 (ATK +15)</option>
                     <option value="equip_wood_helmet">🪖 나무투구 (DEF +8, HP +25)</option>
-                    <option value="equip_wood_armor">🛡️ 나무갑옷 (DEF +15, HP +15)</option>
-                    <option value="equip_forsythia_ring">🌼 성실의 개나리 반지 (ATK/DEF +10, HP +20)</option>
-                    <option value="equip_ginkgo_talisman">🍂 합심의 황금 은행잎 부적 (ATK +20, DEF +12, HP +40)</option>
+                    <option value="equip_wood_armor">🛡️ 나무갑옷 (DEF +12, HP +15)</option>
+                    <option value="equip_forsythia_ring">🌼 성실의 개나리 반지 (ATK +10, DEF +5, HP +20)</option>
+                    <option value="equip_ginkgo_talisman">🍂 합심의 황금 은행잎 부적 (ATK +15, DEF +5, HP +30)</option>
                   </optgroup>
                   <optgroup label="⚔️ 상위 청동 장비 (3티어)">
                     <option value="equip_bronze_sword">⚔️ 청동검 (ATK +30)</option>
                     <option value="equip_bronze_helmet">🪖 청동투구 (DEF +14, HP +35)</option>
-                    <option value="equip_bronze_armor">🛡️ 청동갑옷 (DEF +22, HP +25)</option>
+                    <option value="equip_bronze_armor">🛡️ 청동갑옷 (DEF +20, HP +25)</option>
                     <option value="equip_bronze_shoes">👟 청동 스파이크 (3티어 신발 · ATK +5, DEF +5, HP +10, 질주 4.75)</option>
                   </optgroup>
                   <optgroup label="👑 기말고사 파멸신 전리품 장비">
@@ -2333,19 +2333,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=274"></script>
-  <script src="js/dialog.js?v=274"></script>
+  <script src="js/audio.js?v=275"></script>
+  <script src="js/dialog.js?v=275"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=274"></script>
-  <script src="js/engine.js?v=274"></script>
-  <script src="js/quiz.js?v=274"></script>
-  <script src="js/crafting.js?v=274"></script>
-  <script src="js/network.js?v=274"></script>
-  <script src="js/acid_rain.js?v=274"></script>
-  <script src="js/brawl_ball.js?v=274"></script>
-  <script src="js/uphill_rush.js?v=274"></script>
-  <script src="js/main.js?v=274"></script>
+  <script src="js/world.js?v=275"></script>
+  <script src="js/engine.js?v=275"></script>
+  <script src="js/quiz.js?v=275"></script>
+  <script src="js/crafting.js?v=275"></script>
+  <script src="js/network.js?v=275"></script>
+  <script src="js/acid_rain.js?v=275"></script>
+  <script src="js/brawl_ball.js?v=275"></script>
+  <script src="js/uphill_rush.js?v=275"></script>
+  <script src="js/main.js?v=275"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">

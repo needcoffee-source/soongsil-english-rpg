@@ -30,12 +30,12 @@ assert.ok(worldJs.includes('{ id: "quest_library_book_office", type: "quest_libr
 assert.ok(!worldJs.includes('x: 73, y: 17.5'), 'Old seat 22 coordinates removed from world.js');
 console.log('✅ Check 3 Passed: Staff Office item moved to Desk 21 (x: 76, y: 15.5).');
 
-// Check 4: Quest text in main.js references 21번 연구석
-assert.ok(mainJs.includes('6층 교무실 21번 연구석 책상 위에 놓여 있단다.'), 'Quest story references 21번 연구석');
-assert.ok(mainJs.includes('6층 교무실 21번 연구석 (과학 잡지)'), 'In-progress story references 21번 연구석');
-assert.ok(mainJs.includes("text: '6층 교무실 21번 연구석에서 [과학 잡지] 회수하기'"), 'Objective text references 21번 연구석');
-assert.ok(mainJs.includes("placeName: '6층 교무실 21번 연구석'"), 'Book config placeName references 21번 연구석');
-console.log('✅ Check 4 Passed: Library book quest narrative updated to Desk 21.');
+// Check 4: Quest text in main.js references 연구석 (seat numbers removed)
+assert.ok(mainJs.includes('6층 교무실 연구석 책상 위에 놓여 있단다.'), 'Quest story references 연구석');
+assert.ok(mainJs.includes('6층 교무실 연구석 (과학 잡지)'), 'In-progress story references 연구석');
+assert.ok(mainJs.includes("text: '6층 교무실 연구석에서 [과학 잡지] 회수하기'"), 'Objective text references 연구석');
+assert.ok(mainJs.includes("placeName: '6층 교무실 연구석'"), 'Book config placeName references 연구석');
+console.log('✅ Check 4 Passed: Library book quest narrative updated to 연구석.');
 
 // Check 5: Max interaction distance for library book
 assert.ok(engineJs.includes("item.type === 'quest_library_book_of') ? 80 : 64;"), 'Library book interaction distance expanded to 80px');

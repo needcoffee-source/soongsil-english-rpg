@@ -131,7 +131,7 @@ assert(librarianNpc && librarianNpc.avatar === 'teacher', 'Librarian NPC uses st
 assert(librarianNpc && librarianNpc.questId === 'quest_library_missing_books', 'Librarian gives quest_library_missing_books');
 
 // 3 Missing Books in World Data
-assert(WORLD_DATA.playground && WORLD_DATA.playground.libraryBook && WORLD_DATA.playground.libraryBook.x === 23, 'Missing book 1 is on playground bleachers (x: 23, y: 7)');
+assert(WORLD_DATA.playground && WORLD_DATA.playground.libraryBook && WORLD_DATA.playground.libraryBook.x === 38, 'Missing book 1 is on playground bleachers (x: 38, y: 7)');
 const staffInteractive = WORLD_DATA.classroom_staff_office.interactive || [];
 assert(staffInteractive.some(i => i.id === 'quest_library_book_office'), 'Missing book 2 is in staff office');
 const histInteractive = WORLD_DATA.classroom_history.interactive || [];
@@ -220,7 +220,8 @@ app.playerData.equippedTitle = '📚 지혜의 탐구자';
 app.updatePlayerNameDisplay();
 assert(app.playerData.equippedTitle === null, 'updatePlayerNameDisplay purges 📚 지혜의 탐구자 from equipped title');
 
-// Test Missing Books Quest (3번 구현)
+// Test Missing Books Quest (3번 구현 - Lv.4 이상 수락 가능)
+app.playerData.level = 4;
 app.acceptQuest('quest_library_missing_books');
 const q = app.playerData.quests['quest_library_missing_books'];
 assert(q && q.status === 'in_progress', 'Quest quest_library_missing_books is in progress');

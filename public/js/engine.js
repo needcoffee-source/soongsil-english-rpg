@@ -234,6 +234,9 @@ class GameEngine {
           this.fade.onMidpoint();
           this.fade.onMidpoint = null;
         }
+        // 방/층 이동 시 이전 구역의 잔상 파티클 및 플로팅 텍스트 초기화
+        this.teacherDashParticles = [];
+        this.floatingTexts = [];
       }
     } else if (this.fade.phase === 'black_hold') {
       this.fade.holdFrames--;
@@ -7910,6 +7913,13 @@ class GameEngine {
   // (오직 교사 계정이 Shift 질주할 때만 발밑에 반짝이는 황금빛 십자별 파티클 발생)
   // ========================================================
   updateTeacherDashParticles() {
+    // 방/층 변경 시 이전 구역 좌표에 남은 파티클 즉시 제거
+    const curLocKey = `${this.player ? this.player.floor : 7}_${this.player ? this.player.room : 'hallway'}`;
+    if (this._lastParticleLocKey && this._lastParticleLocKey !== curLocKey) {
+      this.teacherDashParticles = [];
+    }
+    this._lastParticleLocKey = curLocKey;
+
     // 1. 내 캐릭터가 교사 계정이고 질주 중이며 이동 중일 때 파티클 방출
     if (this.player && this.player.isTeacher && this.player.isDashing && this.player.isMoving) {
       const pColors = ['#fef08a', '#fde047', '#fbbf24', '#f59e0b', '#ffffff'];

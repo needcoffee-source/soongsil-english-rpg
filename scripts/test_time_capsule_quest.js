@@ -206,10 +206,10 @@ test('Modals and rolling paper elements exist in index.html for both bleachers a
   });
 });
 
-test('Cache-buster tag v=235 is cleanly applied in index.html', () => {
+test('Cache-buster tag is cleanly applied in index.html', () => {
   const indexHtml = fs.readFileSync('public/index.html', 'utf8');
-  const matches = (indexHtml.match(/v=235/g) || []).length;
-  assert(matches >= 8, `Expected at least 8 v=235 tags, found ${matches}`);
+  const matches = (indexHtml.match(/\?v=\d+/g) || []).length;
+  assert(matches >= 8, `Expected at least 8 versioned cache tags, found ${matches}`);
   assert(!indexHtml.includes('v=210'), 'Found stale v=210 tag in index.html');
 });
 

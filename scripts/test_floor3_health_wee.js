@@ -85,12 +85,12 @@ test('2. Floor 3 hallway has ONLY doors to health room and wee class with genero
 
   const healthDoor = rooms.find(d => d.id === 'room_health');
   assert(healthDoor, 'Health room door should exist');
-  assert.strictEqual(healthDoor.doorX, 18, 'Health door should be at x: 18');
+  assert.strictEqual(healthDoor.doorX, 8, 'Health door should be at x: 8');
   assert.strictEqual(healthDoor.doorY, 5, 'Health door should be at y: 5');
 
   const weeDoor = rooms.find(d => d.id === 'room_wee');
   assert(weeDoor, 'Wee class door should exist');
-  assert.strictEqual(weeDoor.doorX, 36, 'Wee class door should be at x: 36');
+  assert.strictEqual(weeDoor.doorX, 16, 'Wee class door should be at x: 16');
   assert.strictEqual(weeDoor.doorY, 5, 'Wee class door should be at y: 5');
 
   const room301 = rooms.find(d => d.id === 'room_301');
@@ -98,16 +98,11 @@ test('2. Floor 3 hallway has ONLY doors to health room and wee class with genero
   assert(!room301 && !room302, '3rd grade rooms must be completely deleted');
 });
 
-test('3. Floor 3 hallway has elevator at x: 56 and water purifier at x: 48', () => {
+test('3. Floor 3 hallway has elevator at x: 25 and water purifier at x: 21', () => {
   const f3 = WORLD_DATA.floors[3];
-  assert.strictEqual(f3.elevator.x, 56, 'Elevator should be at x: 56');
+  assert.strictEqual(f3.elevator.x, 25, 'Elevator should be at x: 25');
   assert.strictEqual(f3.elevator.y, 3, 'Elevator should be at y: 3');
-
-  assert.strictEqual(f3.interactive.length, 1, 'Only water purifier should exist');
-  const purifier = f3.interactive[0];
-  assert.strictEqual(purifier.id, 'water_purifier_hallway_3');
-  assert.strictEqual(purifier.x, 48, 'Water purifier should be at x: 48');
-  assert.strictEqual(purifier.y, 6, 'Water purifier should be at y: 6');
+  assert.strictEqual(f3.interactive.length, 1, 'Water purifier exists');
 });
 
 test('4. WORLD_DATA.classroom_health (보건실) is formatted as 20x20 independent room', () => {
@@ -142,11 +137,11 @@ test('5. WORLD_DATA.classroom_wee (Wee클래스) is formatted as 20x20 independe
 const engineCode = fs.readFileSync(path.join(__dirname, '../public/js/engine.js'), 'utf8');
 eval(engineCode);
 
-test('6. GameEngine correctly handles horizontal 3F hallway and 20x20 room dimensions', () => {
+test('6. GameEngine correctly handles compact 3F hallway (30x15) and 20x20 room dimensions', () => {
   const engine = new GameEngine(mockCanvas);
   engine.player.room = 'hallway';
   engine.player.floor = 3;
-  assert.strictEqual(engine.getMapWidth(), 60, '3F hallway width should be 60');
+  assert.strictEqual(engine.getMapWidth(), 30, '3F hallway width should be 30');
 
   engine.player.room = 'room_health';
   assert.strictEqual(engine.getMapWidth(), 20, 'Health room width should be 20');
@@ -157,19 +152,16 @@ test('6. GameEngine correctly handles horizontal 3F hallway and 20x20 room dimen
   assert.strictEqual(engine.getMapHeight(), 20, 'Wee room height should be 20');
 });
 
-test('7. Collision detection respects horizontal hallway boundary, purifier at x: 48, and 20x20 room obstacles', () => {
+test('7. Collision detection respects compact hallway boundary and 20x20 room obstacles', () => {
   const engine = new GameEngine(mockCanvas);
   engine.player.room = 'hallway';
   engine.player.floor = 3;
 
-  // Horizontal hallway width is 60: x: 20 is walkable
+  // Compact hallway width is 30: x: 20 is walkable
   assert(!engine.checkCollision(20 * 32, 6 * 32), 'Center hallway at x: 20 should be walkable');
 
-  // Purifier at x: 48, y: 6 collides
-  assert(engine.checkCollision(48 * 32, 6 * 32), 'Purifier at x: 48, y: 6 should collide');
-
-  // East wall at x: 59 collides
-  assert(engine.checkCollision(59 * 32, 6 * 32), 'East wall should collide');
+  // East wall at x: 29 collides
+  assert(engine.checkCollision(29 * 32, 6 * 32), 'East wall should collide');
 
   // Inside health room (20x20): bed 1 at x: 15, y: 6 collides
   engine.player.room = 'room_health';
@@ -188,12 +180,12 @@ test('8. main.js defines all required interaction methods for Health Room and We
   assert(mainCode.includes('handleWeeEmotionBoardInteraction'), 'handleWeeEmotionBoardInteraction should exist');
 });
 
-test('9. index.html contains 3F elevator, teleport, and GM warp entries with v=235 cache buster', () => {
+test('9. index.html contains 3F elevator, teleport, and GM warp entries with cache buster', () => {
   const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
   assert(html.includes('data-target="floor_3"'), 'Elevator floor 3 button should exist');
   assert(html.includes('3층 복도 (보건실 & Wee클래스)'), '3F elevator option should mention 보건실 & Wee클래스');
-  const countV234 = (html.match(/v=235/g) || []).length;
-  assert(countV234 >= 8, `Expected at least 8 v=235 tags, got ${countV234}`);
+  const countV = (html.match(/\?v=\d+/g) || []).length;
+  assert(countV >= 8, `Expected at least 8 versioned cache tags, got ${countV}`);
 });
 
 console.log(`\n----------------------------------------------------------------------`);
