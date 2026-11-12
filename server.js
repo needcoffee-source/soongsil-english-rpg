@@ -1139,6 +1139,7 @@ io.on('connection', (socket) => {
       duration: duration,
       startedAt: now,
       expiresAt: now + duration * 1000,
+      stoppedByTeacher: false,
       participants: {}
     };
 
@@ -1165,6 +1166,7 @@ io.on('connection', (socket) => {
 
   socket.on('teacher_stop_boss_raid', () => {
     bossRaidEvent.active = false;
+    bossRaidEvent.stoppedByTeacher = true;
     bossRaidEvent.expiresAt = 0;
     io.emit('boss_raid_state', bossRaidEvent);
     io.emit('teacher_action_alert', {

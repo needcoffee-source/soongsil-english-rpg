@@ -1446,17 +1446,16 @@ class GameEngine {
           }
         }
         // 3. Playground Boss (축구장 서쪽 골대 앞 신규 보스 레이드)
-        const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
-          (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
-           window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태')));
-        const soccerBossObj = pg.boss || (isSoccerRaid ? {
+        const isStoppedByTeacher = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.stoppedByTeacher && !window.BOSS_CONFIG.active);
+        const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active && !window.BOSS_CONFIG.name.includes('골렘'));
+        const soccerBossObj = isStoppedByTeacher ? null : (isSoccerRaid ? {
           id: 'boss_soccer_raid',
           type: 'boss_raid',
-          x: 13,
+          x: 18,
           y: 35,
           name: window.BOSS_CONFIG.name,
-          prompt: '보스 레이드'
-        } : null);
+          prompt: '보스 레이드 (SPACE)'
+        } : pg.boss);
         if (soccerBossObj) {
           const bDist = Math.hypot(soccerBossObj.x * 32 - this.player.x, (soccerBossObj.y + 0.5) * 32 - this.player.y);
           if (bDist < 96 && bDist < minDist) {
@@ -1930,17 +1929,16 @@ class GameEngine {
             }
           }
         }
-        const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
-          (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
-           window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태')));
-        const soccerBossObj = pg.boss || (isSoccerRaid ? {
+        const isStoppedByTeacher = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.stoppedByTeacher && !window.BOSS_CONFIG.active);
+        const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active && !window.BOSS_CONFIG.name.includes('골렘'));
+        const soccerBossObj = isStoppedByTeacher ? null : (isSoccerRaid ? {
           id: 'boss_soccer_raid',
           type: 'boss_raid',
-          x: 13,
+          x: 18,
           y: 35,
           name: window.BOSS_CONFIG.name,
-          prompt: '보스 레이드'
-        } : null);
+          prompt: '보스 레이드 (SPACE)'
+        } : pg.boss);
         if (soccerBossObj && Math.hypot(soccerBossObj.x * 32 - x, (soccerBossObj.y + 0.5) * 32 - y) < 96) {
           return { type: 'boss_raid', data: soccerBossObj, name: soccerBossObj.name, prompt: soccerBossObj.prompt || '보스 레이드' };
         }
@@ -6577,18 +6575,15 @@ class GameEngine {
     // 7. NEW BOSS RAID ARENA: 축구장 청동 드래곤 레이드 전장 (x: 18, y: 35)
     // ========================================================
     const pg = WORLD_DATA.playground;
-    const isSoccerRaid = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active &&
-      (window.BOSS_CONFIG.name.includes('대마왕') || window.BOSS_CONFIG.name.includes('케르베로스') ||
-       window.BOSS_CONFIG.name.includes('파멸신') || window.BOSS_CONFIG.name.includes('나태') ||
-       window.BOSS_CONFIG.name.includes('드래곤') || window.BOSS_CONFIG.name.includes('dragon')));
-    const soccerBossObj = (window.BOSS_CONFIG && window.BOSS_CONFIG.active && !window.BOSS_CONFIG.name.includes('골렘')) ? {
+    const isStoppedByTeacher = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.stoppedByTeacher && !window.BOSS_CONFIG.active);
+    const soccerBossObj = isStoppedByTeacher ? null : ((window.BOSS_CONFIG && window.BOSS_CONFIG.active && !window.BOSS_CONFIG.name.includes('골렘')) ? {
       id: 'boss_soccer_raid',
       type: 'boss_raid',
       x: 18,
       y: 35,
       name: window.BOSS_CONFIG.name,
       prompt: '청동 드래곤 레이드 (SPACE)'
-    } : (pg && pg.boss);
+    } : (pg && pg.boss));
     if (soccerBossObj) {
       const bx = (soccerBossObj.x || 18) * 32 + 16;
       const by = (soccerBossObj.y || 35) * 32 + 16;
@@ -8176,7 +8171,9 @@ class GameEngine {
     const bx = 18 * 32 + 16; // 592
     const by = 35 * 32 + 16; // 1136
 
-    // 현재 축구장 보스가 청동 드래곤인지 확인
+    // 현재 축구장 보스가 철수(레이드 종료) 상태이거나 다른 보스인지 확인
+    const isStoppedByTeacher = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.stoppedByTeacher && !window.BOSS_CONFIG.active);
+    if (isStoppedByTeacher) return;
     const isOtherRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name &&
       !window.BOSS_CONFIG.name.includes('드래곤') && !window.BOSS_CONFIG.name.includes('dragon') && !window.BOSS_CONFIG.name.includes('골렘'));
     if (isOtherRaidActive) return;

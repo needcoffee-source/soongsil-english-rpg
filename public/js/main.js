@@ -6725,6 +6725,20 @@ class MainApp {
       ...window.BOSS_CONFIG,
       ...state
     };
+    if (this.engine && this.engine.dragonFx) {
+      if (!state.active && state.stoppedByTeacher) {
+        this.engine.dragonFx.landingActive = false;
+        this.engine.dragonFx.breathActive = false;
+        this.engine.dragonFx.bannerUntil = 0;
+        this.engine.dragonFx.shakePower = 0;
+        this.engine.dragonFx.flashAlpha = 0;
+        this.engine.dragonFx.shockwaves = [];
+        this.engine.dragonFx.particles = [];
+        this.engine.dragonFx.auraParticles = [];
+      } else if (state.active) {
+        this.engine.dragonFx.landingReady = true;
+      }
+    }
     this.bossState.maxHp = state.maxHp || 3000;
     this.bossState.currentHp = state.currentHp !== undefined ? state.currentHp : this.bossState.maxHp;
 
@@ -8546,7 +8560,7 @@ class MainApp {
         if (this.networkManager.socket) {
           this.networkManager.socket.emit('teacher_start_boss_raid', opts);
         } else {
-          this.onBossRaidStateUpdate({ ...opts, active: true, currentHp: opts.maxHp });
+          this.onBossRaidStateUpdate({ ...opts, active: true, stoppedByTeacher: false, currentHp: opts.maxHp });
         }
 
         alert(`🔥 [보스레이드 이벤트 개시]\n• 보스: ${opts.name}\n• 체력: ${opts.maxHp} HP (ATK ${opts.atk} / DEF ${opts.def})\n• 출제 범위: ${opts.unitFilter === 'ALL' ? '전체 단원' : opts.unitFilter}`);
@@ -8557,12 +8571,11 @@ class MainApp {
     const btnStopBoss = document.getElementById('btn-stop-boss-event');
     if (btnStopBoss) {
       btnStopBoss.addEventListener('click', () => {
-        if (this.networkManager.socket) {
+        if (this.networkManager.socket && this.networkManager.socket.connected) {
           this.networkManager.socket.emit('teacher_stop_boss_raid');
-        } else {
-          this.onBossRaidStateUpdate({ ...window.BOSS_CONFIG, active: false });
         }
-        alert('⏹️ 보스레이드 이벤트를 종료(대기 상태 전환)했습니다.');
+        this.onBossRaidStateUpdate({ ...window.BOSS_CONFIG, active: false, stoppedByTeacher: true });
+        alert('⏹️ 보스레이드 이벤트를 종료(보스 철수 및 대기 상태 전환)했습니다.');
       });
     }
 
