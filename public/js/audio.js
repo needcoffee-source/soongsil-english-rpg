@@ -1055,6 +1055,141 @@ class AudioManager {
       stamp.stop(now + 0.90);
     } catch (e) {}
   }
+
+  /**
+   * 🦥 Sloth Titan (Season 1 Final Boss): 07:50 School Alarm Ring + Giant Hand Smash
+   */
+  playSlothAlarmAndSmash() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      for (let i = 0; i < 6; i++) {
+        const t = now + i * 0.07;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(i % 2 === 0 ? 1180 : 1480, t);
+        g.gain.setValueAtTime(0.12, t);
+        g.gain.exponentialRampToValueAtTime(0.008, t + 0.06);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.065);
+      }
+
+      const smash = this.ctx.createOscillator();
+      const sg = this.ctx.createGain();
+      smash.type = 'sawtooth';
+      smash.frequency.setValueAtTime(180, now + 0.48);
+      smash.frequency.exponentialRampToValueAtTime(32, now + 0.85);
+      sg.gain.setValueAtTime(0.35, now + 0.48);
+      sg.gain.exponentialRampToValueAtTime(0.001, now + 0.88);
+      smash.connect(sg);
+      sg.connect(this.ctx.destination);
+      smash.start(now + 0.48);
+      smash.stop(now + 0.88);
+    } catch (e) {}
+  }
+
+  /**
+   * 🦥 Sloth Titan: Waterpark Tsunami Wave Sweep + Mega Cannonball Splash
+   */
+  playSlothTsunamiAndSplash() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const bufferSize = Math.floor(this.ctx.sampleRate * 1.0);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(320, now);
+      filter.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
+      filter.frequency.exponentialRampToValueAtTime(260, now + 1.0);
+      const ng = this.ctx.createGain();
+      ng.gain.setValueAtTime(0.32, now);
+      ng.gain.exponentialRampToValueAtTime(0.008, now + 1.0);
+      noise.connect(filter);
+      filter.connect(ng);
+      ng.connect(this.ctx.destination);
+      noise.start(now);
+
+      [140, 220, 330, 440, 660].forEach((freq, idx) => {
+        const t = now + 0.22 + idx * 0.05;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq * 0.6, t);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.4, t + 0.22);
+        g.gain.setValueAtTime(0.16, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.26);
+      });
+    } catch (e) {}
+  }
+
+  /**
+   * 🦥 Sloth Titan: Drowsy Yawn + Dopamine Shorts Prism Beam + Golden Tube Slam
+   */
+  playSlothHypnosisAndDopamine() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const yawn = this.ctx.createOscillator();
+      const yg = this.ctx.createGain();
+      yawn.type = 'triangle';
+      yawn.frequency.setValueAtTime(420, now);
+      yawn.frequency.exponentialRampToValueAtTime(130, now + 0.45);
+      yg.gain.setValueAtTime(0.24, now);
+      yg.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+      yawn.connect(yg);
+      yg.connect(this.ctx.destination);
+      yawn.start(now);
+      yawn.stop(now + 0.48);
+
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+      notes.forEach((f, idx) => {
+        const t = now + 0.32 + idx * 0.06;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.12, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.26);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.28);
+      });
+
+      const boing = this.ctx.createOscillator();
+      const bg = this.ctx.createGain();
+      boing.type = 'sine';
+      boing.frequency.setValueAtTime(95, now + 0.60);
+      boing.frequency.exponentialRampToValueAtTime(280, now + 0.80);
+      boing.frequency.exponentialRampToValueAtTime(140, now + 1.02);
+      bg.gain.setValueAtTime(0.34, now + 0.60);
+      bg.gain.exponentialRampToValueAtTime(0.001, now + 1.05);
+      boing.connect(bg);
+      bg.connect(this.ctx.destination);
+      boing.start(now + 0.60);
+      boing.stop(now + 1.05);
+    } catch (e) {}
+  }
 }
 
 window.AudioManager = new AudioManager();

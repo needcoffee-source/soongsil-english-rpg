@@ -88,7 +88,7 @@ class GameEngine {
     // Teacher Exclusive Dash Particle System (질주 ✨ 황금빛 별가루 이펙트)
     this.teacherDashParticles = [];
 
-    // 🐲😈🐕💀 Soccer Boss FX State (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 연출)
+    // 🐲😈🐕💀🦥 Soccer Boss FX State (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 연출)
     this.dragonFx = {
       bossKind: 'dragon',
       landingReady: true,
@@ -111,10 +111,19 @@ class GameEngine {
       particles: [],
       examPapers: [],
       glassShards: [],
+      vacationEmojis: [],
       orbitCards: Array.from({ length: 6 }, (_, i) => ({
         baseAngle: (i * Math.PI * 2) / 6,
         markType: i % 2 === 0 ? 'OMR' : 'F'
       })),
+      slothRelics: [
+        { angle: 0,                 icon: '📱', color: '#f43f5e' },
+        { angle: Math.PI / 3,       icon: '🍦', color: '#38bdf8' },
+        { angle: (Math.PI * 2) / 3, icon: '🎮', color: '#a855f7' },
+        { angle: Math.PI,           icon: '🍉', color: '#10b981' },
+        { angle: (Math.PI * 4) / 3, icon: '🛌', color: '#fbbf24' },
+        { angle: (Math.PI * 5) / 3, icon: '🏖️', color: '#06b6d4' }
+      ],
       auraParticles: []
     };
 
@@ -5586,7 +5595,7 @@ class GameEngine {
     });
   }
 
-  // 11-J. High-Res Boss: Sloth Titan of Summer Vacation (방학 직전 나태의 거인)
+  // 11-J. High-Res Boss: Sloth Titan of Summer Vacation (방학 직전 나태의 거인 / 나태신 — 시즌1 최종보스)
   drawHighResBossSlothTitan(boss) {
     const px = boss.x * 32 + 16;
     const py = boss.y * 32 + 16;
@@ -5594,10 +5603,113 @@ class GameEngine {
     const breath = Math.sin(now / 320) * 3;
     const zFloat = (now / 400) % 30;
 
+    const fx = this.dragonFx;
+    const isLanding = !!(fx && fx.landingActive && fx.bossKind === 'sloth_titan');
+    const landingProgress = isLanding ? Math.min(1, (now - fx.landingStartTime) / fx.landingDuration) : 1;
+
+    // Helper: ② 3D 타원 궤도로 공전하는 '나태의 6대 방학 유혹 위성'
+    const drawOrbitingSlothRelics = (layer) => {
+      if (!fx || !fx.slothRelics) return;
+      const rx = 110;
+      const ry = 34;
+      const cy = py - 4;
+      fx.slothRelics.forEach((rel, idx) => {
+        const ang = rel.angle + now / 720;
+        const sinA = Math.sin(ang);
+        const isBack = sinA < 0;
+        if ((layer === 'back' && !isBack) || (layer === 'front' && isBack)) return;
+
+        const cx = px + Math.cos(ang) * rx;
+        const itemY = cy + sinA * ry + Math.sin(now / 220 + idx) * 4;
+        const sc = 0.78 + (sinA + 1) * 0.24;
+
+        this.ctx.save();
+        this.ctx.translate(cx, itemY);
+        this.ctx.scale(sc, sc);
+        this.ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        this.ctx.strokeStyle = rel.color;
+        this.ctx.lineWidth = 2.2;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 15, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.stroke();
+
+        this.ctx.font = '15px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(rel.icon, 0, 1);
+        this.ctx.restore();
+      });
+    };
+
+    // ① 스페셜 강림 Phase A (0.0 ~ 0.32): 요란하게 울리는 07:50 등교 알람 & 거대 손바닥 박살!
+    if (isLanding && landingProgress < 0.32) {
+      const subP = landingProgress / 0.32;
+      const shakeAlarm = subP < 0.65 ? (Math.random() - 0.5) * 14 : 0;
+      const isSmashed = subP >= 0.65;
+
+      this.ctx.save();
+      this.ctx.translate(px + shakeAlarm, py - 10);
+      this.ctx.scale(1, isSmashed ? 0.25 : 1);
+      this.ctx.fillStyle = '#ef4444';
+      this.ctx.strokeStyle = '#fef08a';
+      this.ctx.lineWidth = 4;
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, 42, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.stroke();
+
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, 32, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      this.ctx.fillStyle = '#0f172a';
+      this.ctx.font = '900 13px monospace';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText('07:50', 0, 0);
+      this.ctx.restore();
+
+      if (subP > 0.35) {
+        const handT = Math.min(1, (subP - 0.35) / 0.3);
+        const handY = (py - 220) + handT * 195;
+        this.ctx.save();
+        this.ctx.fillStyle = '#67e8f9';
+        this.ctx.strokeStyle = '#0284c7';
+        this.ctx.lineWidth = 4;
+        this.ctx.beginPath();
+        this.ctx.roundRect(px - 52, handY - 35, 104, 52, 20);
+        this.ctx.fill();
+        this.ctx.stroke();
+        this.ctx.restore();
+      }
+
+      this.ctx.save();
+      this.ctx.fillStyle = isSmashed ? '#fde047' : '#fca5a5';
+      this.ctx.font = '900 14px "Pretendard", sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(
+        isSmashed ? '💥 [알람 영구 삭제 완료!!] "등교 알람 박살!! 지금부터 무한 여름방학이다~!!"' : '⏰ [따르르르릉!!] 오전 07:50 등교 알람이 요란하게 울립니다!!',
+        px,
+        py - 120
+      );
+      this.ctx.restore();
+      return;
+    }
+
+    const diveP = isLanding ? Math.min(1, (landingProgress - 0.32) / 0.26) : 1;
+    const dropY = diveP < 1 ? -(1 - diveP) * 220 : 0;
+    const bounceT = (isLanding && landingProgress > 0.58) ? (landingProgress - 0.58) / 0.42 : 0;
+    const squashX = bounceT > 0 ? 1 + Math.sin(bounceT * Math.PI * 3) * 0.16 * (1 - bounceT) : 1;
+    const squashY = bounceT > 0 ? 1 - Math.sin(bounceT * Math.PI * 3) * 0.16 * (1 - bounceT) : 1;
+
+    drawOrbitingSlothRelics('back');
+
     this.ctx.save();
     // 2.0x Scale for God of Sloth / Sloth Titan
-    this.ctx.translate(px, py);
-    this.ctx.scale(2.0, 2.0);
+    this.ctx.translate(px, py + dropY);
+    this.ctx.scale(2.0 * squashX, 2.0 * squashY);
     this.ctx.translate(-px, -py);
 
     // 1. Water Ripple Pool
@@ -5655,10 +5767,15 @@ class GameEngine {
     this.ctx.lineTo(px + 9, by - 27);
     this.ctx.stroke();
 
-    this.ctx.fillStyle = '#38bdf8';
+    // Expanding Sleep Snot Bubble
+    const bubbleR = 3.2 + Math.sin(now / 240) * 1.8;
+    this.ctx.fillStyle = 'rgba(186, 230, 253, 0.78)';
+    this.ctx.strokeStyle = '#38bdf8';
+    this.ctx.lineWidth = 1;
     this.ctx.beginPath();
-    this.ctx.arc(px + 6, by - 19 + Math.sin(now / 150) * 1.5, 2.5, 0, Math.PI * 2);
+    this.ctx.arc(px + 7, by - 19 + Math.sin(now / 150) * 1.5, bubbleR, 0, Math.PI * 2);
     this.ctx.fill();
+    this.ctx.stroke();
 
     // 6. Left Hand: Smartphone
     const phoneX = px - 28;
@@ -5683,7 +5800,7 @@ class GameEngine {
     this.ctx.fillRect(iceX - 6, iceY - 10, 12, 14);
 
     // 8. Floating Zzz
-    this.ctx.fillStyle = 'rgba(167, 139, 250, 0.85)';
+    this.ctx.fillStyle = 'rgba(250, 204, 21, 0.95)';
     this.ctx.font = 'bold 12px sans-serif';
     this.ctx.fillText('Z', px + 16, by - 36 - zFloat);
     this.ctx.font = 'bold 9px sans-serif';
@@ -5693,18 +5810,20 @@ class GameEngine {
 
     this.ctx.restore();
 
+    drawOrbitingSlothRelics('front');
+
     const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
-    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🦥 방학 직전 나태의 거인');
-    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 10000) : (boss.maxHp || 10000);
+    const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '🦥 방학 직전 나태신');
+    const bMaxHp = isRaidActive ? (window.BOSS_CONFIG.maxHp || 15000) : (boss.maxHp || 15000);
     const bCurHp = isRaidActive ? (window.BOSS_CONFIG.currentHp ?? bMaxHp) : bMaxHp;
     const labelText = isRaidActive
-      ? `🔥 ${bName} (HP ${bCurHp}/${bMaxHp})`
-      : `⏳ [축구장 보스] ${bName} (HP ${bMaxHp})`;
+      ? `👑 ${bName} (HP ${bCurHp}/${bMaxHp})`
+      : `⏳ [축구장 최종보스] ${bName} (HP ${bMaxHp})`;
 
-    this.drawSharpLabel(px, py - 66, labelText, {
+    this.drawSharpLabel(px, py - 96, labelText, {
       bgColor: isRaidActive ? 'rgba(8, 47, 73, 0.96)' : 'rgba(30, 41, 59, 0.94)',
-      borderColor: isRaidActive ? '#38bdf8' : '#f59e0b',
-      textColor: isRaidActive ? '#e0f2fe' : '#fef08a',
+      borderColor: isRaidActive ? '#fbbf24' : '#38bdf8',
+      textColor: isRaidActive ? '#fef08a' : '#e0f2fe',
       fontSize: 13,
       paddingX: 12,
       height: 24
@@ -8305,10 +8424,11 @@ class GameEngine {
   }
 
   // ========================================================
-  // 🐲 고대 청동 드래곤 / 😈 중간고사 대마왕 / 🐕 케르베로스 / 💀 기말고사 파멸신 인게임 이펙트 시스템
+  // 🐲 고대 청동 드래곤 / 😈 중간고사 대마왕 / 🐕 케르베로스 / 💀 기말고사 파멸신 / 🦥 방학 직전 나태신 인게임 이펙트 시스템
   // ========================================================
   getCurrentSoccerBossKind(overrideName) {
     const bName = overrideName || (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name) || '';
+    if (bName.includes('나태') || bName.includes('방학') || bName.includes('sloth')) return 'sloth_titan';
     if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final_god') || bName.includes('finalgod')) return 'final_god';
     if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon')) return 'demon';
     if (bName.includes('케르베로스') || bName.includes('3두마수') || bName.includes('cerberus')) return 'cerberus';
@@ -8323,13 +8443,16 @@ class GameEngine {
     this.dragonFx.landingReady = false;
     this.dragonFx.landingActive = true;
     this.dragonFx.landingStartTime = Date.now();
-    this.dragonFx.landingDuration = kind === 'final_god' ? 2250 : 1500;
+    this.dragonFx.landingDuration = kind === 'sloth_titan' ? 2450 : (kind === 'final_god' ? 2250 : 1500);
     this.dragonFx.landingImpacted = false;
-    this.dragonFx.bannerUntil = kind === 'final_god' ? 0 : (Date.now() + 3400);
+    this.dragonFx.bannerUntil = (kind === 'final_god' || kind === 'sloth_titan') ? 0 : (Date.now() + 3400);
     this.dragonFx.examPapers = [];
     this.dragonFx.glassShards = [];
+    this.dragonFx.vacationEmojis = [];
 
-    if (kind === 'final_god' && window.AudioManager && typeof window.AudioManager.playFinalGodSchoolBell === 'function') {
+    if (kind === 'sloth_titan' && window.AudioManager && typeof window.AudioManager.playSlothAlarmAndSmash === 'function') {
+      window.AudioManager.playSlothAlarmAndSmash();
+    } else if (kind === 'final_god' && window.AudioManager && typeof window.AudioManager.playFinalGodSchoolBell === 'function') {
       window.AudioManager.playFinalGodSchoolBell();
     }
   }
@@ -8345,7 +8468,7 @@ class GameEngine {
     this.dragonFx.bossKind = kind;
     this.dragonFx.breathActive = true;
     this.dragonFx.breathStartTime = Date.now();
-    this.dragonFx.breathDuration = kind === 'final_god' ? 1200 : 880;
+    this.dragonFx.breathDuration = kind === 'sloth_titan' ? 1320 : (kind === 'final_god' ? 1200 : 880);
     this.dragonFx.breathFired = false;
     this.dragonFx.stampTriggered = false;
     this.dragonFx.breathCallback = callback || null;
@@ -8353,7 +8476,14 @@ class GameEngine {
     const bx = 18 * 32 + 16;
     const by = 35 * 32 + 16;
 
-    if (kind === 'final_god') {
+    if (kind === 'sloth_titan') {
+      if (window.AudioManager && typeof window.AudioManager.playSlothHypnosisAndDopamine === 'function') {
+        window.AudioManager.playSlothHypnosisAndDopamine();
+      }
+      if (typeof this.addFloatingText === 'function') {
+        this.addFloatingText(bx, by - 102, '🦥 "하아아암~ 공부는 내일 해... 무한 쇼츠 도파민포 발사~!!"', '#fde047', 16);
+      }
+    } else if (kind === 'final_god') {
       if (window.AudioManager && typeof window.AudioManager.playFinalGodDimensionSlash === 'function') {
         window.AudioManager.playFinalGodDimensionSlash();
       }
@@ -8431,7 +8561,55 @@ class GameEngine {
         fx.shakePower = 18;
         fx.flashAlpha = 0.55;
 
-        if (fx.bossKind === 'final_god') {
+        if (fx.bossKind === 'sloth_titan') {
+          fx.shakePower = 25;
+          fx.flashAlpha = 0.58;
+          fx.flashColor = '56, 189, 248';
+          fx.bannerUntil = now + 3800;
+          if (window.AudioManager && typeof window.AudioManager.playSlothTsunamiAndSplash === 'function') {
+            window.AudioManager.playSlothTsunamiAndSplash();
+          }
+          // 3중 에메랄드·황금·핑크 워터파크 물보라 충격파 링
+          fx.shockwaves.push({ x: bx, y: by + 24, r: 14, maxR: 220, alpha: 1, color: '#38bdf8', width: 5.5, speed: 5.0 });
+          fx.shockwaves.push({ x: bx, y: by + 24, r: 8, maxR: 175, alpha: 0.95, color: '#fde047', width: 4.0, speed: 3.8 });
+          fx.shockwaves.push({ x: bx, y: by + 24, r: 3, maxR: 130, alpha: 0.9, color: '#f472b6', width: 3.0, speed: 2.7 });
+
+          // 48개 에메랄드 물방울 스플래시 + 18개 방학 이모지 폭죽!
+          for (let i = 0; i < 48; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            const spd = 2.6 + Math.random() * 6.5;
+            fx.particles.push({
+              x: bx,
+              y: by + 18,
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd * 0.65 - (2.4 + Math.random() * 3.8),
+              gravity: 0.14,
+              size: 4 + Math.random() * 5,
+              alpha: 1,
+              decay: 0.015 + Math.random() * 0.014,
+              color: i % 3 === 0 ? '#38bdf8' : (i % 2 === 0 ? '#fde047' : '#f472b6')
+            });
+          }
+          const emojis = ['🍉', '🍦', '🏖️', '💤', '📱', '🎮'];
+          fx.vacationEmojis = [];
+          for (let i = 0; i < 18; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            const spd = 2.4 + Math.random() * 5.2;
+            fx.vacationEmojis.push({
+              x: bx,
+              y: by - 6,
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd * 0.6 - (3.0 + Math.random() * 3.5),
+              rot: (Math.random() - 0.5) * 0.6,
+              vRot: (Math.random() - 0.5) * 0.12,
+              alpha: 1,
+              icon: emojis[i % emojis.length]
+            });
+          }
+          if (typeof this.addFloatingText === 'function') {
+            this.addFloatingText(bx, by - 98, '🏖️ "풍덩——!! 운동장이 통째로 내 워터파크다~!!"', '#67e8f9', 16);
+          }
+        } else if (fx.bossKind === 'final_god') {
           fx.shakePower = 22;
           fx.flashAlpha = 0.52;
           fx.flashColor = '56, 189, 248';
@@ -8583,7 +8761,10 @@ class GameEngine {
         const ang = Math.random() * Math.PI * 2;
         const rad = 22 + Math.random() * 82;
         let pColor = '#f59e0b';
-        if (fx.bossKind === 'final_god') {
+        if (fx.bossKind === 'sloth_titan') {
+          const r = Math.random();
+          pColor = r < 0.35 ? '#67e8f9' : (r < 0.7 ? '#f472b6' : '#fde047');
+        } else if (fx.bossKind === 'final_god') {
           pColor = Math.random() < 0.65 ? '#38bdf8' : '#818cf8';
         } else if (fx.bossKind === 'demon') {
           pColor = Math.random() < 0.55 ? '#a855f7' : '#ef4444';
@@ -8605,7 +8786,9 @@ class GameEngine {
       }
       if (now - fx.lastWingPulse > 1600) {
         fx.lastWingPulse = now;
-        const waveColor = fx.bossKind === 'final_god' ? '#38bdf8' : (fx.bossKind === 'demon' ? '#a855f7' : (fx.bossKind === 'cerberus' ? '#f97316' : '#2dd4bf'));
+        const waveColor = fx.bossKind === 'sloth_titan'
+          ? '#f472b6'
+          : (fx.bossKind === 'final_god' ? '#38bdf8' : (fx.bossKind === 'demon' ? '#a855f7' : (fx.bossKind === 'cerberus' ? '#f97316' : '#2dd4bf')));
         fx.shockwaves.push({ x: bx, y: by + 22, r: 26, maxR: 118, alpha: 0.55, color: waveColor, width: 2.2, speed: 1.9 });
       }
     }
@@ -8617,8 +8800,10 @@ class GameEngine {
       if (progress >= 0.22 && !fx.breathFired) {
         fx.breathFired = true;
         fx.shakePower = 15;
-        fx.flashAlpha = fx.bossKind === 'final_god' ? 0.35 : 0.48;
-        if (fx.bossKind === 'final_god') {
+        fx.flashAlpha = (fx.bossKind === 'final_god' || fx.bossKind === 'sloth_titan') ? 0.36 : 0.48;
+        if (fx.bossKind === 'sloth_titan') {
+          fx.flashColor = '244, 114, 182';
+        } else if (fx.bossKind === 'final_god') {
           fx.flashColor = '56, 189, 248';
         } else if (fx.bossKind === 'demon') {
           fx.flashColor = '239, 68, 68';
@@ -8634,21 +8819,24 @@ class GameEngine {
           }
         }
       }
-      if (fx.bossKind === 'final_god' && progress >= 0.46 && !fx.stampTriggered) {
+      if ((fx.bossKind === 'final_god' || fx.bossKind === 'sloth_titan') && progress >= 0.46 && !fx.stampTriggered) {
         fx.stampTriggered = true;
         fx.shakePower = 24;
-        fx.flashAlpha = 0.42;
-        fx.flashColor = '239, 68, 68';
+        fx.flashAlpha = 0.44;
+        fx.flashColor = fx.bossKind === 'sloth_titan' ? '250, 204, 21' : '239, 68, 68';
       }
       if (progress >= 0.22 && progress < 0.9 && fx.bossKind !== 'final_god') {
-        const mouthX = fx.bossKind === 'demon' ? (bx + 42) : bx;
-        const mouthY = fx.bossKind === 'demon' ? (by - 55) : (by - 44);
+        const mouthX = fx.bossKind === 'sloth_titan' ? (bx - 56) : (fx.bossKind === 'demon' ? (bx + 42) : bx);
+        const mouthY = fx.bossKind === 'sloth_titan' ? (by - 4) : (fx.bossKind === 'demon' ? (by - 55) : (by - 44));
         const targetX = this.player.x + 12;
         const targetY = this.player.y + 14;
         for (let k = 0; k < 4; k++) {
           const t = Math.random();
           let c = '#fef08a';
-          if (fx.bossKind === 'demon') {
+          if (fx.bossKind === 'sloth_titan') {
+            const r = Math.random();
+            c = r < 0.34 ? '#f472b6' : (r < 0.67 ? '#38bdf8' : '#fde047');
+          } else if (fx.bossKind === 'demon') {
             c = Math.random() < 0.5 ? '#ef4444' : '#c084fc';
           } else if (fx.bossKind === 'cerberus') {
             const r = Math.random();
@@ -8677,7 +8865,7 @@ class GameEngine {
       }
     }
 
-    // 물리 파티클 & 충격파 링 & 시험지/유리창 파편 업데이트
+    // 물리 파티클 & 충격파 링 & 시험지/유리창/방학이모지 파편 업데이트
     for (let i = fx.auraParticles.length - 1; i >= 0; i--) {
       const p = fx.auraParticles[i];
       p.x += p.vx;
@@ -8723,6 +8911,18 @@ class GameEngine {
         gs.rot += gs.vRot;
         gs.alpha -= 0.016;
         if (gs.alpha <= 0) fx.glassShards.splice(i, 1);
+      }
+    }
+
+    if (fx.vacationEmojis) {
+      for (let i = fx.vacationEmojis.length - 1; i >= 0; i--) {
+        const ve = fx.vacationEmojis[i];
+        ve.x += ve.vx;
+        ve.y += ve.vy;
+        ve.vy += 0.11;
+        ve.rot += ve.vRot;
+        ve.alpha -= 0.014;
+        if (ve.alpha <= 0) fx.vacationEmojis.splice(i, 1);
       }
     }
   }
@@ -8808,9 +9008,25 @@ class GameEngine {
         ctx.restore();
       }
     }
+
+    // 3-D. 방학 직전 나태신 전용: 방학 유혹 이모지 폭죽 파티클
+    if (fx.vacationEmojis && fx.vacationEmojis.length > 0) {
+      for (let i = 0; i < fx.vacationEmojis.length; i++) {
+        const ve = fx.vacationEmojis[i];
+        ctx.save();
+        ctx.translate(ve.x, ve.y);
+        ctx.rotate(ve.rot);
+        ctx.globalAlpha = Math.max(0, ve.alpha);
+        ctx.font = '15px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ve.icon, 0, 0);
+        ctx.restore();
+      }
+    }
     ctx.globalAlpha = 1;
 
-    // 4. ③ 레이드 돌입 보스별 필살 연출 (드래곤 브레스 / 대마왕 핏빛 X참격 / 케르베로스 3중 브레스 / 파멸신 F 직인 도장)
+    // 4. ③ 레이드 돌입 보스별 필살 연출 (드래곤 브레스 / 대마왕 핏빛 X참격 / 케르베로스 3중 브레스 / 파멸신 F 직인 도장 / 나태신 쇼츠 도파민포 & 황금 튜브 구속!)
     if (fx.breathActive) {
       const elapsed = Date.now() - fx.breathStartTime;
       const progress = Math.min(1, elapsed / fx.breathDuration);
@@ -8819,7 +9035,81 @@ class GameEngine {
       const targetX = this.player.x + 12;
       const targetY = this.player.y + 14;
 
-      if (fx.bossKind === 'final_god') {
+      if (fx.bossKind === 'sloth_titan') {
+        // 나태신 Step 2 (0.20 ~ 0.88): 스마트폰에서 발사되는 무지개 쇼츠(▶️) 도파민 프리즘 광선!
+        if (progress >= 0.20 && progress < 0.88) {
+          const phoneX = bx - 56;
+          const phoneY = by - 4;
+          const angle = Math.atan2(targetY - phoneY, targetX - phoneX);
+          const perpX = Math.cos(angle + Math.PI / 2) * 28;
+          const perpY = Math.sin(angle + Math.PI / 2) * 28;
+
+          const grad = ctx.createLinearGradient(phoneX, phoneY, targetX, targetY);
+          grad.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+          grad.addColorStop(0.28, 'rgba(244, 114, 182, 0.92)');
+          grad.addColorStop(0.62, 'rgba(56, 189, 248, 0.90)');
+          grad.addColorStop(0.88, 'rgba(250, 204, 21, 0.88)');
+          grad.addColorStop(1, 'rgba(250, 204, 21, 0)');
+
+          ctx.save();
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(phoneX, phoneY);
+          ctx.lineTo(targetX + perpX, targetY + perpY);
+          ctx.lineTo(targetX - perpX, targetY - perpY);
+          ctx.closePath();
+          ctx.fill();
+
+          // 빔을 타고 날아가는 쇼츠 재생(▶️) & 하트(❤️) 홀로그램
+          for (let s = 1; s <= 4; s++) {
+            const st = ((progress * 4.5 + s * 0.25) % 1);
+            const sx = phoneX + (targetX - phoneX) * st;
+            const sy = phoneY + (targetY - phoneY) * st;
+            ctx.font = '900 13px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText(s % 2 === 0 ? '▶️' : '❤️', sx, sy);
+          }
+          ctx.restore();
+        }
+        // 나태신 Step 3 (0.46 ~ 1.0): 플레이어에게 씌워지는 거대 황금·네온핑크 튜브 구속 + [💤 나태 감염: 방학 위기!]
+        if (progress >= 0.46) {
+          const tubeT = Math.min(1, (progress - 0.46) / 0.16);
+          const tubeScale = tubeT < 1 ? (2.5 - tubeT * 1.5) : 1.0;
+
+          ctx.save();
+          ctx.translate(targetX, targetY + 2);
+          ctx.scale(tubeScale, tubeScale);
+
+          // 황금·네온핑크 구속 튜브 도넛
+          ctx.fillStyle = '#ec4899';
+          ctx.strokeStyle = '#fde047';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 32, 16, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 14, 7, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 상단 경고 배지
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+          ctx.strokeStyle = '#fde047';
+          ctx.lineWidth = 2.5;
+          ctx.fillRect(-62, -44, 124, 24);
+          ctx.strokeRect(-62, -44, 124, 24);
+
+          ctx.fillStyle = '#fde047';
+          ctx.font = '900 11px "Pretendard", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('💤 [나태 감염: 방학 위기!]', 0, -32);
+          ctx.restore();
+        }
+      } else if (fx.bossKind === 'final_god') {
         // 파멸신: Step 3 (0.46 ~ 1.0) 플레이어 머리 위에 거대한 붉은 직인 도장 `[F · OMR 판독: 파멸]` 쾅!
         if (progress >= 0.46) {
           const stampT = Math.min(1, (progress - 0.46) / 0.16);
@@ -8972,6 +9262,39 @@ class GameEngine {
       ctx.restore();
     }
 
+    // 0-A2. 🦥 방학 직전 나태신 ① 강림 전용: 전 화면을 덮치는 에메랄드 워터파크 쓰나미 파도!
+    if (fx.landingActive && fx.bossKind === 'sloth_titan' && this.player && this.player.room === 'playground') {
+      const p = Math.min(1, (now - fx.landingStartTime) / fx.landingDuration);
+      if (p >= 0.36) {
+        const waveP = (p - 0.36) / 0.64;
+        const waveAlpha = waveP < 0.35 ? (waveP / 0.35) * 0.62 : (1 - (waveP - 0.35) / 0.65) * 0.62;
+        const waveTopY = this.height * (1 - Math.sin(waveP * Math.PI) * 0.85);
+
+        ctx.save();
+        const waterGrad = ctx.createLinearGradient(0, waveTopY, 0, this.height);
+        waterGrad.addColorStop(0, `rgba(103, 232, 249, ${Math.max(0, waveAlpha)})`);
+        waterGrad.addColorStop(0.45, `rgba(14, 165, 233, ${Math.max(0, waveAlpha * 0.85)})`);
+        waterGrad.addColorStop(1, `rgba(2, 132, 199, ${Math.max(0, waveAlpha * 0.95)})`);
+        ctx.fillStyle = waterGrad;
+
+        ctx.beginPath();
+        ctx.moveTo(0, this.height);
+        for (let wx = 0; wx <= this.width; wx += 24) {
+          const wy = waveTopY + Math.sin(wx * 0.025 + now * 0.012) * 14;
+          ctx.lineTo(wx, wy);
+        }
+        ctx.lineTo(this.width, this.height);
+        ctx.closePath();
+        ctx.fill();
+
+        // 하얀 파도 거품 라인
+        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0, Math.min(1, waveAlpha * 1.4))})`;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
     // 0-B. 💀 기말고사 파멸신 ③ 레이드 돌입 전용: 네거티브 색반전 임팩트 + 전 화면 대각선 공간 절단!
     if (fx.breathActive && fx.bossKind === 'final_god' && this.player && this.player.room === 'playground') {
       const p = Math.min(1, (now - fx.breathStartTime) / fx.breathDuration);
@@ -9009,6 +9332,33 @@ class GameEngine {
       }
     }
 
+    // 0-B2. 🦥 방학 직전 나태신 ③ 레이드 돌입 전용: 전 화면 강제 수면 절전모드(배터리 1%) 필터!
+    if (fx.breathActive && fx.bossKind === 'sloth_titan' && this.player && this.player.room === 'playground') {
+      const p = Math.min(1, (now - fx.breathStartTime) / fx.breathDuration);
+      const sleepAlpha = p < 0.8 ? 0.42 : (1 - p) * 2.1;
+      ctx.save();
+      ctx.fillStyle = `rgba(30, 10, 60, ${Math.max(0, Math.min(0.45, sleepAlpha))})`;
+      ctx.fillRect(0, 0, this.width, this.height);
+
+      // 상단 배터리 1% 절전모드 경고 배지
+      const bx = (this.width - 370) / 2;
+      const by = 22;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+      ctx.strokeStyle = '#f472b6';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, 370, 36, 18);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#fde047';
+      ctx.font = '900 13px "Pretendard", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🪫 [정신력 배터리 1%] 나태신의 강제 수면 절전모드 발동!!', this.width / 2, by + 18);
+      ctx.restore();
+    }
+
     // 1. 강림 착지 및 브레스 화면 플래시
     if (fx.flashAlpha > 0.01) {
       ctx.save();
@@ -9021,12 +9371,12 @@ class GameEngine {
       fx.flashAlpha = 0;
     }
 
-    // 2. 상단 보스 강림 경고 배너 (3.4초 표시)
+    // 2. 상단 보스 강림 경고 배너 (3.4~3.8초 표시)
     if (fx.bannerUntil && now < fx.bannerUntil && this.player && this.player.room === 'playground') {
       const rem = fx.bannerUntil - now;
       const alpha = rem < 400 ? (rem / 400) : 1;
-      const bw = 490;
-      const bh = 54;
+      const bw = 510;
+      const bh = 56;
       const bx = (this.width - bw) / 2;
       const by = 18;
 
@@ -9039,7 +9389,15 @@ class GameEngine {
       let borderColor = '#fbbf24';
       let subColor = '#fcd34d';
 
-      if (fx.bossKind === 'final_god') {
+      if (fx.bossKind === 'sloth_titan') {
+        bgGrad.addColorStop(0, 'rgba(8, 51, 68, 0.96)');
+        bgGrad.addColorStop(0.5, 'rgba(131, 24, 67, 0.96)');
+        bgGrad.addColorStop(1, 'rgba(8, 51, 68, 0.96)');
+        borderColor = '#fde047';
+        subColor = '#fde047';
+        subTitle = '👑 [SEASON 1 FINAL BOSS] 등교 알람을 박살 내고 축구장 워터파크 개장!';
+        mainTitle = '🦥 방학 직전 나태신이 전장에 다이빙 강림했습니다!';
+      } else if (fx.bossKind === 'final_god') {
         bgGrad.addColorStop(0, 'rgba(2, 6, 23, 0.96)');
         bgGrad.addColorStop(0.5, 'rgba(153, 27, 27, 0.96)');
         bgGrad.addColorStop(1, 'rgba(2, 6, 23, 0.96)');

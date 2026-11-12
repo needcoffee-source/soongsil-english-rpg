@@ -2038,7 +2038,8 @@ class MainApp {
         bName.includes('드래곤') || bName.includes('dragon') ||
         bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') ||
         bName.includes('케르베로스') || bName.includes('3두마수') || bName.includes('cerberus') ||
-        bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final_god') || bName.includes('finalgod');
+        bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final_god') || bName.includes('finalgod') ||
+        bName.includes('나태') || bName.includes('방학') || bName.includes('sloth');
       if (isSoccerSpecialBoss && this.engine && this.engine.player && this.engine.player.room === 'playground' && typeof this.engine.triggerDragonRaidBreath === 'function') {
         this.engine.triggerDragonRaidBreath(() => {
           this.openBossRaid(target.data);
