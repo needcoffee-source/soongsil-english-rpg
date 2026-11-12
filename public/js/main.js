@@ -6849,14 +6849,14 @@ class MainApp {
         this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
         rewardItemsList.push(`🟫 질긴 보스의 가죽 x${bossLeatherCount}`);
 
-        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (아주 낮은 확률 3%)
+        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (낮은 확률 5%)
         const shoesRoll = Math.random() * 100;
-        if (shoesRoll < 3) {
+        if (shoesRoll < 5) {
           this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
             type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발'
           });
-          rewardItemsList.push('👟 날렵한 가죽 운동화 (대박 득템! [아주 낮은 확률 3%])');
-        } else if (shoesRoll < 18) {
+          rewardItemsList.push('👟 날렵한 가죽 운동화 (대박 득템! [낮은 확률 5%])');
+        } else if (shoesRoll < 20) {
           this.addItem('equip_shoes_samdidas', '삼디다스 실내화', 1, '👟', {
             type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
           });
@@ -6889,14 +6889,14 @@ class MainApp {
         this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' });
         rewardItemsList.push('🥉 청동 드래곤의 심장');
 
-        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (낮은 확률 15%)
+        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (25% 확률)
         const dragonShoesRoll = Math.random() * 100;
-        if (dragonShoesRoll < 15) {
+        if (dragonShoesRoll < 25) {
           this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
             type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발'
           });
-          rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [15%])');
-        } else if (dragonShoesRoll < 30) {
+          rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [25%])');
+        } else if (dragonShoesRoll < 40) {
           this.addItem('equip_shoes_samdidas', '삼디다스 실내화', 1, '👟', {
             type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
           });
@@ -6954,14 +6954,14 @@ class MainApp {
         this.addItem('item_eval_paper', 'A+ 만점 수행평가지', 1, '📜', { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' });
         rewardItemsList.push('📜 A+ 만점 수행평가지 (확정 전리품)');
 
-        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (낮은 확률 15%)
+        // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (25% 확률)
         const beastShoesRoll = Math.random() * 100;
-        if (beastShoesRoll < 15) {
+        if (beastShoesRoll < 25) {
           this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
             type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발'
           });
-          rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [15%])');
-        } else if (beastShoesRoll < 30) {
+          rewardItemsList.push('👟 날렵한 가죽 운동화 (2티어 신발 득템! [25%])');
+        } else if (beastShoesRoll < 40) {
           this.addItem('equip_shoes_samdidas', '삼디다스 실내화', 1, '👟', {
             type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.'
           });
@@ -7727,15 +7727,15 @@ class MainApp {
         dropsList.push('🗡️ 가죽손잡이 세이버 (5% 대박 완제품 드랍!)');
       }
 
-      // Elite 2-Tier Leather Shoes Drop (거미손 골키퍼 등 풋살장 엘리트 10% 완제품 드랍!)
-      if (mob.type === 'elite' && Math.random() * 100 < 10) {
+      // Elite 2-Tier Leather Shoes Drop (거미손 골키퍼 등 풋살장 엘리트 15% 완제품 드랍!)
+      if (mob.type === 'elite' && Math.random() * 100 < 15) {
         this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
           type: 'equipment',
           slot: 'shoes',
           stats: { atk: 3, def: 3, hp: 10 },
           effect: '2티어 고급 신발'
         });
-        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 10% 완제품 드랍!)');
+        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 15% 완제품 드랍!)');
       }
     } else {
       // Basketball Court Standard Drops
@@ -7755,15 +7755,15 @@ class MainApp {
         dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
       }
 
-      // Elite 2-Tier Leather Shoes Drop (림 가디언 등 농구장 엘리트 10% 완제품 드랍!)
-      if (mob.type === 'elite' && Math.random() * 100 < 10) {
+      // Elite 2-Tier Leather Shoes Drop (림 가디언 등 농구장 엘리트 15% 완제품 드랍!)
+      if (mob.type === 'elite' && Math.random() * 100 < 15) {
         this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
           type: 'equipment',
           slot: 'shoes',
           stats: { atk: 3, def: 3, hp: 10 },
           effect: '2티어 고급 신발'
         });
-        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 10% 완제품 드랍!)');
+        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 15% 완제품 드랍!)');
       }
 
       if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {
