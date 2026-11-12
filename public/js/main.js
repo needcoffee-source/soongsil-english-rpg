@@ -6507,75 +6507,88 @@ class MainApp {
     // 🪵 1학년 2반: 가죽 골렘 1:1 솔로 상시 토벌 (교사 협동 레이드와 완전 분리)
     // ========================================================
     if (isLeatherGolemRaid) {
-      let useWeaknessScroll = false;
-      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
-      if (hasWeaknessScroll) {
-        const confirmUse = confirm(
-          "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘을 대폭 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 HP 2,000 ➔ 200 / DEF 14 ➔ 5)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 / DEF 14 유지)"
-        );
-        if (confirmUse) {
-          useWeaknessScroll = true;
-        }
-      }
+      const startLeatherGolemRaidWithScroll = (useWeaknessScroll) => {
+        const finalHp = useWeaknessScroll ? 200 : 2000;
+        const finalDef = useWeaknessScroll ? 5 : 14;
+        window.BOSS_CONFIG = {
+          ...window.BOSS_CONFIG,
+          name: '🪵 가죽 골렘',
+          title: '1-2반 1:1 솔로 상시 토벌',
+          level: 10,
+          mode: 'solo', // 무조건 1:1 솔로 레이드로 고정
+          unitFilter: 'ALL',
+          maxHp: finalHp,
+          currentHp: finalHp,
+          atk: 35,
+          def: finalDef,
+          rewardGold: 100,
+          rewardExp: 200,
+          isWeakened: useWeaknessScroll,
+          expiresAt: Date.now() + 180 * 1000
+        };
 
-      const finalHp = useWeaknessScroll ? 200 : 2000;
-      const finalDef = useWeaknessScroll ? 5 : 14;
-      window.BOSS_CONFIG = {
-        ...window.BOSS_CONFIG,
-        name: '🪵 가죽 골렘',
-        title: '1-2반 1:1 솔로 상시 토벌',
-        level: 10,
-        mode: 'solo', // 무조건 1:1 솔로 레이드로 고정
-        unitFilter: 'ALL',
-        maxHp: finalHp,
-        currentHp: finalHp,
-        atk: 35,
-        def: finalDef,
-        rewardGold: 100,
-        rewardExp: 200,
-        isWeakened: useWeaknessScroll,
-        expiresAt: Date.now() + 180 * 1000
+        this.bossState.currentHp = finalHp;
+        this.bossState.maxHp = finalHp;
+        this.bossState.hasAttacked = false;
+        this.bossState.damageDealt = 0;
+
+        document.getElementById('boss-raid-title').innerText = '🪵 가죽 골렘 [1:1 솔로 상시 토벌]';
+        document.getElementById('boss-name-label').innerText = '🪵 가죽 골렘';
+
+        const weaknessBanner = document.getElementById('raid-weakness-alert-banner');
+        if (weaknessBanner) {
+          if (useWeaknessScroll) {
+            weaknessBanner.style.display = 'block';
+            weaknessBanner.classList.remove('hidden');
+            weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘이 대폭 약화되었습니다! (HP 200 · 방어력 5)';
+          } else {
+            weaknessBanner.style.display = 'none';
+            weaknessBanner.classList.add('hidden');
+          }
+        }
+
+        const logEl = document.getElementById('raid-battle-log');
+        if (logEl) {
+          if (logEl.style) logEl.style.display = 'none';
+          logEl.innerHTML = '';
+        }
+
+        this.updateBossRaidUI();
+        this.loadNextBossQuestion();
+        this.modalBossRaid.classList.remove('hidden');
+
+        if (this.bossTimerInterval) clearInterval(this.bossTimerInterval);
+        this.bossTimerInterval = setInterval(() => {
+          if (this.modalBossRaid && !this.modalBossRaid.classList.contains('hidden')) {
+            this.updateBossRaidTimerOnly();
+          } else {
+            clearInterval(this.bossTimerInterval);
+            this.bossTimerInterval = null;
+          }
+        }, 500);
       };
 
-      this.bossState.currentHp = finalHp;
-      this.bossState.maxHp = finalHp;
-      this.bossState.hasAttacked = false;
-      this.bossState.damageDealt = 0;
-
-      document.getElementById('boss-raid-title').innerText = '🪵 가죽 골렘 [1:1 솔로 상시 토벌]';
-      document.getElementById('boss-name-label').innerText = '🪵 가죽 골렘';
-
-      const weaknessBanner = document.getElementById('raid-weakness-alert-banner');
-      if (weaknessBanner) {
-        if (useWeaknessScroll) {
-          weaknessBanner.style.display = 'block';
-          weaknessBanner.classList.remove('hidden');
-          weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘이 대폭 약화되었습니다! (HP 200 · 방어력 5)';
-        } else {
-          weaknessBanner.style.display = 'none';
-          weaknessBanner.classList.add('hidden');
+      const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
+      if (hasWeaknessScroll) {
+        const promptText = "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘을 대폭 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 HP 2,000 ➔ 200 / DEF 14 ➔ 5)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 / DEF 14 유지)";
+        if (window.RPGDialog && typeof window.RPGDialog.confirm === 'function') {
+          window.RPGDialog.confirm(
+            '골렘 연화 비책 사용',
+            promptText,
+            '📜',
+            () => startLeatherGolemRaidWithScroll(true),
+            () => startLeatherGolemRaidWithScroll(false),
+            '📜 비책 사용 (약화)',
+            '⚔️ 그냥 도전'
+          );
+          return;
         }
+        const confirmUse = confirm(promptText);
+        startLeatherGolemRaidWithScroll(!!confirmUse);
+        return;
       }
 
-      const logEl = document.getElementById('raid-battle-log');
-      if (logEl) {
-        if (logEl.style) logEl.style.display = 'none';
-        logEl.innerHTML = '';
-      }
-
-      this.updateBossRaidUI();
-      this.loadNextBossQuestion();
-      this.modalBossRaid.classList.remove('hidden');
-
-      if (this.bossTimerInterval) clearInterval(this.bossTimerInterval);
-      this.bossTimerInterval = setInterval(() => {
-        if (this.modalBossRaid && !this.modalBossRaid.classList.contains('hidden')) {
-          this.updateBossRaidTimerOnly();
-        } else {
-          clearInterval(this.bossTimerInterval);
-          this.bossTimerInterval = null;
-        }
-      }, 500);
+      startLeatherGolemRaidWithScroll(false);
       return;
     }
 
