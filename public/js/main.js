@@ -593,8 +593,8 @@ window.ITEM_CODEX_DATABASE = [
     category: 'quest',
     tierBadge: '입장 열쇠',
     tierColor: '#f59e0b',
-    effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠',
-    source: '6층 교무실 소회의실 보관함'
+    effect: '급식실 정문 출입용 황금 열쇠',
+    source: '6층 교무실'
   }
 ];
 
@@ -616,7 +616,7 @@ const ALL_GAME_ITEMS = {
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
   'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)' } },
-  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠' } },
+  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '급식실 정문 출입용 황금 열쇠' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
@@ -2034,11 +2034,14 @@ class MainApp {
     } else if (target.type === 'boss_raid') {
       const bData = target.data || target;
       const bName = (bData && bData.name) || (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name) || '';
-      const isDragon = (bData && bData.id === 'boss_bronze_dragon') || bName.includes('드래곤') || bName.includes('dragon');
-      if (isDragon && this.engine && this.engine.player && this.engine.player.room === 'playground' && typeof this.engine.triggerDragonRaidBreath === 'function') {
+      const isSoccerSpecialBoss = (bData && bData.id === 'boss_bronze_dragon') ||
+        bName.includes('드래곤') || bName.includes('dragon') ||
+        bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') ||
+        bName.includes('케르베로스') || bName.includes('3두마수') || bName.includes('cerberus');
+      if (isSoccerSpecialBoss && this.engine && this.engine.player && this.engine.player.room === 'playground' && typeof this.engine.triggerDragonRaidBreath === 'function') {
         this.engine.triggerDragonRaidBreath(() => {
           this.openBossRaid(target.data);
-        });
+        }, bName);
         return;
       }
       this.openBossRaid(target.data);
@@ -2512,7 +2515,7 @@ class MainApp {
     this.playerData.hasCafeteriaKey = true;
     this.addItem('item_cafeteria_key', '급식실 열쇠', 1, '🔑', {
       type: 'quest',
-      effect: '12레벨 이상 급식실 정문 출입용 황금 열쇠'
+      effect: '급식실 정문 출입용 황금 열쇠'
     });
     this.saveProgress(true);
 
@@ -2525,7 +2528,7 @@ class MainApp {
     }
 
     const usedWep = check.isOmr ? '전설의 컴싸 마법봉' : '1897 숭실 헤리티지 블레이드';
-    const successMsg = `✨ [1897 숭실 헤리티지 결계 해제!]\n\n착용 중인 1897 헤리티지 장비(투구·갑옷·부츠 및 ${usedWep})가 보관함의 고대 문양과 장엄하게 공명합니다!\n\n"철컥! 찰칵!"\n\n육중한 잠금장치가 해제되며, 안쪽에서 찬란하게 빛나는 [🔑 급식실 열쇠]를 발견했습니다!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔑 [획득 아이템] 급식실 열쇠 x1\n• 용도: 12레벨 이상 학생 급식실 정문 개방\n• 위치: 야외 운동장 북동쪽 (중앙 엘리베이터 우측)\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"숭실의 진정한 용사여, 이제 운동장의 학생 급식실로 당당히 나아가세요!"`;
+    const successMsg = `✨ [1897 숭실 헤리티지 결계 해제!]\n\n착용 중인 1897 헤리티지 장비(투구·갑옷·부츠 및 ${usedWep})가 보관함의 고대 문양과 장엄하게 공명합니다!\n\n"철컥! 찰칵!"\n\n육중한 잠금장치가 해제되며, 안쪽에서 찬란하게 빛나는 [🔑 급식실 열쇠]를 발견했습니다!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔑 [획득 아이템] 급식실 열쇠 x1\n• 용도: 학생 급식실 정문 개방\n• 위치: 야외 운동장 북동쪽 (중앙 엘리베이터 우측)\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"숭실의 진정한 용사여, 이제 운동장의 학생 급식실로 당당히 나아가세요!"`;
 
     if (window.RPGDialog) {
       window.RPGDialog.show('✨ 급식실 열쇠 획득!', successMsg, '🔑');

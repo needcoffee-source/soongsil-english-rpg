@@ -871,6 +871,77 @@ class AudioManager {
       noise.stop(now + 0.65);
     } catch (e) {}
   }
+
+  /**
+   * 😈 Midterm Exam Archdemon Dark Thunder Impact SFX
+   */
+  playDemonThunder() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(32, now + 0.65);
+      gain.gain.setValueAtTime(0.28, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.68);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.68);
+    } catch (e) {}
+  }
+
+  /**
+   * 😈 Midterm Exam Archdemon Red Scoring Spear Slash SFX
+   */
+  playDemonSlash() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(90, now + 0.35);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.38);
+    } catch (e) {}
+  }
+
+  /**
+   * 🐕 3-Headed Cerberus Triple Roar & Hellfire SFX
+   */
+  playCerberusRoar() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      [190, 240, 145].forEach((f, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(f, now + idx * 0.06);
+        osc.frequency.exponentialRampToValueAtTime(48, now + 0.65 + idx * 0.06);
+        gain.gain.setValueAtTime(0.14, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7 + idx * 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + 0.7 + idx * 0.06);
+      });
+    } catch (e) {}
+  }
 }
 
 window.AudioManager = new AudioManager();
