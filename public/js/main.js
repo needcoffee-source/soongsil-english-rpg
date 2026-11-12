@@ -6570,7 +6570,7 @@ class MainApp {
 
       const hasWeaknessScroll = this.hasItem('item_golem_weakness_scroll') || (this.playerData && this.playerData.inventory && this.playerData.inventory['item_golem_weakness_scroll'] > 0);
       if (hasWeaknessScroll) {
-        const promptText = "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘을 대폭 약화시키는 비책을 사용하시겠습니까?\n\n[확인]: 비책 사용 (가죽 골렘 HP 2,000 ➔ 200 / DEF 14 ➔ 5)\n[취소]: 비책을 사용하지 않고 도전 (HP 2,000 / DEF 14 유지)";
+        const promptText = "📜 [골렘 연화 비책 사용]\n\n가방에 '📜 한강우의 골렘 연화 비책'을 소지하고 있습니다.\n가죽 골렘을 대폭 약화시키는 비책을 사용하시겠습니까?\n\n[📜 비책 사용]: 비책 사용 (가죽 골렘 HP 2,000 ➔ 200 / DEF 14 ➔ 5)\n[⚔️ 그냥 도전]: 비책을 사용하지 않고 도전 (HP 2,000 / DEF 14 유지)";
         if (window.RPGDialog && typeof window.RPGDialog.confirm === 'function') {
           window.RPGDialog.confirm(
             '골렘 연화 비책 사용',
@@ -6578,7 +6578,7 @@ class MainApp {
             '📜',
             () => startLeatherGolemRaidWithScroll(true),
             () => startLeatherGolemRaidWithScroll(false),
-            '📜 비책 사용 (약화)',
+            '📜 비책 사용',
             '⚔️ 그냥 도전'
           );
           return;
