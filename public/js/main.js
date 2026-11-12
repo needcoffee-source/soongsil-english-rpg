@@ -2032,6 +2032,15 @@ class MainApp {
       const cat = (target.data && target.data.category) || target.category || (target.name && target.name.includes('포션') ? 'potion' : 'equipment');
       this.craftingManager.open(cat);
     } else if (target.type === 'boss_raid') {
+      const bData = target.data || target;
+      const bName = (bData && bData.name) || (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name) || '';
+      const isDragon = (bData && bData.id === 'boss_bronze_dragon') || bName.includes('드래곤') || bName.includes('dragon');
+      if (isDragon && this.engine && this.engine.player && this.engine.player.room === 'playground' && typeof this.engine.triggerDragonRaidBreath === 'function') {
+        this.engine.triggerDragonRaidBreath(() => {
+          this.openBossRaid(target.data);
+        });
+        return;
+      }
       this.openBossRaid(target.data);
     } else if (target.type === 'leaderboard') {
       this.openLeaderboard();
@@ -12053,7 +12062,7 @@ class MainApp {
       }
       if (btnNext) {
         btnNext.addEventListener('click', () => {
-          if (this.currentRoadmapStep < 5) {
+          if (this.currentRoadmapStep < 7) {
             this.showRoadmapStep(this.currentRoadmapStep + 1);
           } else {
             modal.classList.add('hidden');
@@ -12080,10 +12089,10 @@ class MainApp {
   }
 
   showRoadmapStep(step) {
-    this.currentRoadmapStep = Math.max(1, Math.min(5, step));
+    this.currentRoadmapStep = Math.max(1, Math.min(7, step));
 
     // Toggle card visibility
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       const card = document.getElementById('roadmap-card-' + i);
       if (card) {
         card.style.display = (i === this.currentRoadmapStep) ? 'block' : 'none';
@@ -12093,7 +12102,7 @@ class MainApp {
     // Update step indicator
     const indicator = document.getElementById('roadmap-step-indicator');
     if (indicator) {
-      indicator.innerText = `STEP ${this.currentRoadmapStep} / 5`;
+      indicator.innerText = `STEP ${this.currentRoadmapStep} / 7`;
     }
 
     // Update Prev / Next buttons
@@ -12103,9 +12112,9 @@ class MainApp {
       btnPrev.style.visibility = (this.currentRoadmapStep === 1) ? 'hidden' : 'visible';
     }
     if (btnNext) {
-      btnNext.innerHTML = (this.currentRoadmapStep === 5) ? '확인 완료 ➔' : '다음 단계 ▶';
-      btnNext.style.background = (this.currentRoadmapStep === 5) ? '#15803d' : '#0284c7';
-      btnNext.style.borderColor = (this.currentRoadmapStep === 5) ? '#166534' : '#0369a1';
+      btnNext.innerHTML = (this.currentRoadmapStep === 7) ? '확인 완료 ➔' : '다음 단계 ▶';
+      btnNext.style.background = (this.currentRoadmapStep === 7) ? '#15803d' : '#0284c7';
+      btnNext.style.borderColor = (this.currentRoadmapStep === 7) ? '#166534' : '#0369a1';
     }
 
     // Update top flow pills & arrows styling
@@ -12114,7 +12123,9 @@ class MainApp {
       2: '#be185d',
       3: '#4338ca',
       4: '#15803d',
-      5: '#d97706'
+      5: '#d97706',
+      6: '#6366f1',
+      7: '#dc2626'
     };
 
     document.querySelectorAll('.roadmap-step-pill').forEach(pill => {

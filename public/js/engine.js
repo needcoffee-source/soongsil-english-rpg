@@ -88,6 +88,27 @@ class GameEngine {
     // Teacher Exclusive Dash Particle System (질주 ✨ 황금빛 별가루 이펙트)
     this.teacherDashParticles = [];
 
+    // 🐲 Ancient Bronze Dragon FX State (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 브레스)
+    this.dragonFx = {
+      landingReady: true,
+      landingActive: false,
+      landingStartTime: 0,
+      landingDuration: 1500,
+      landingImpacted: false,
+      breathActive: false,
+      breathStartTime: 0,
+      breathDuration: 850,
+      breathFired: false,
+      breathCallback: null,
+      bannerUntil: 0,
+      shakePower: 0,
+      flashAlpha: 0,
+      lastWingPulse: 0,
+      shockwaves: [],
+      particles: [],
+      auraParticles: []
+    };
+
     // Movement callbacks
     this.onMoveCallback = null;
     this.onLocationChangeCallback = null;
@@ -237,6 +258,18 @@ class GameEngine {
         // 방/층 이동 시 이전 구역의 잔상 파티클 및 플로팅 텍스트 초기화
         this.teacherDashParticles = [];
         this.floatingTexts = [];
+        if (this.dragonFx) {
+          this.dragonFx.landingReady = true;
+          this.dragonFx.landingActive = false;
+          this.dragonFx.breathActive = false;
+          this.dragonFx.breathCallback = null;
+          this.dragonFx.bannerUntil = 0;
+          this.dragonFx.shakePower = 0;
+          this.dragonFx.flashAlpha = 0;
+          this.dragonFx.shockwaves = [];
+          this.dragonFx.particles = [];
+          this.dragonFx.auraParticles = [];
+        }
       }
     } else if (this.fade.phase === 'black_hold') {
       this.fade.holdFrames--;
@@ -267,7 +300,8 @@ class GameEngine {
     const isTeacherNoclip = !!(this.player.isTeacher && this.player.noclip);
     const isBrawlStunned = !isTeacherNoclip && !!(window.BrawlBall && Date.now() < window.BrawlBall.stunnedUntil);
     const isBrawlKickoffWait = !isTeacherNoclip && !!(window.BrawlBall && window.BrawlBall.match && window.BrawlBall.myTeam && window.BrawlBall.kickoffUntil && Date.now() < window.BrawlBall.kickoffUntil);
-    const isMovementLocked = !!((!isTeacherNoclip && this.player.isFallen) || isBrawlStunned || isBrawlKickoffWait || (this.player.stunnedUntil && Date.now() < this.player.stunnedUntil));
+    const isDragonBreathCutscene = !!(this.dragonFx && this.dragonFx.breathActive);
+    const isMovementLocked = !!((!isTeacherNoclip && this.player.isFallen) || isBrawlStunned || isBrawlKickoffWait || isDragonBreathCutscene || (this.player.stunnedUntil && Date.now() < this.player.stunnedUntil));
     if (this.player.isFallen || isBrawlStunned || (this.player.stunnedUntil && Date.now() < this.player.stunnedUntil)) {
       this.keys.up = false;
       this.keys.down = false;
@@ -363,6 +397,9 @@ class GameEngine {
 
     // Update Teacher Exclusive Golden Stardust Dash Effect (교사 전용 질주 황금빛 별가루 이펙트)
     this.updateTeacherDashParticles();
+
+    // Update Ancient Bronze Dragon FX (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 브레스)
+    this.updateDragonEffects();
 
     // Check nearby interactable
     this.checkNearbyInteractable();
@@ -2172,7 +2209,16 @@ class GameEngine {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     this.ctx.save();
-    this.ctx.translate(-this.camera.x, -this.camera.y);
+    let shakeDx = 0;
+    let shakeDy = 0;
+    if (this.dragonFx && this.dragonFx.shakePower > 0.2) {
+      shakeDx = (Math.random() - 0.5) * this.dragonFx.shakePower;
+      shakeDy = (Math.random() - 0.5) * this.dragonFx.shakePower;
+      this.dragonFx.shakePower *= 0.88;
+    } else if (this.dragonFx) {
+      this.dragonFx.shakePower = 0;
+    }
+    this.ctx.translate(-this.camera.x + shakeDx, -this.camera.y + shakeDy);
 
     // Defer world, NPC, material and guidance labels so they render in front of player nameplates
     this.deferredWorldLabels = [];
@@ -2207,6 +2253,9 @@ class GameEngine {
 
     // Render Local Player
     this.renderPlayer(this.player, true);
+
+    // Render Ancient Bronze Dragon Foreground Effects (충격파, 강림 파편, 브레스 화염)
+    this.renderDragonForegroundEffects();
 
     // Render deferred World, NPC, Material, and Guidance Labels ON TOP of characters!
     if (this.deferredWorldLabels && this.deferredWorldLabels.length > 0) {
@@ -2271,6 +2320,9 @@ class GameEngine {
     if (window.BrawlBall) {
       window.BrawlBall.renderHUD(this.ctx);
     }
+
+    // Ancient Bronze Dragon Screen Flash & Boss Arrival Banner Overlay
+    this.renderDragonScreenOverlay();
 
     // ========================================================
     // RENDER POKEMON FADE TO BLACK (암전 오버레이)
@@ -4416,8 +4468,13 @@ class GameEngine {
     const px = boss.x * 32 + 16;
     const py = boss.y * 32 + 16;
     const now = Date.now();
+    const fx = this.dragonFx;
+    const isBreath = !!(fx && fx.breathActive);
+    const isLanding = !!(fx && fx.landingActive);
+    const eyeGlowBoost = isBreath || (isLanding && fx.landingImpacted);
+
     const bob = Math.sin(now / 280) * 4;
-    const wingFlap = Math.sin(now / 220) * 9;
+    const wingFlap = Math.sin(now / (isBreath ? 120 : 220)) * (isBreath ? 15 : 9);
     const tailSway = Math.sin(now / 340) * 8;
 
     this.ctx.save();
@@ -4455,7 +4512,22 @@ class GameEngine {
       this.ctx.stroke();
     }
 
-    const by = py + bob;
+    // ① 강림(착지) 연출: 하늘에서 내려올 때 커지는 바닥 그림자 & 강하 오프셋
+    let dropOffsetY = 0;
+    if (isLanding) {
+      const elapsed = now - fx.landingStartTime;
+      const progress = Math.min(1, elapsed / fx.landingDuration);
+      if (progress < 0.36) {
+        const sProg = progress / 0.36;
+        this.ctx.fillStyle = `rgba(0, 0, 0, ${0.22 + sProg * 0.48})`;
+        this.ctx.beginPath();
+        this.ctx.ellipse(px, py + 26, 16 + sProg * 48, 7 + sProg * 20, 0, 0, Math.PI * 2);
+        this.ctx.fill();
+        dropOffsetY = -(1 - sProg) * 185;
+      }
+    }
+
+    const by = py + bob + dropOffsetY;
 
     // 2. Heavy Bronze Dragon Tail (With Antiqued Bronze Spikes)
     this.ctx.fillStyle = '#5c2b09';
@@ -4651,14 +4723,14 @@ class GameEngine {
     this.ctx.fillRect(px - 25, by - 63, 2, 4);
     this.ctx.fillRect(px + 24, by - 63, 2, 4);
 
-    // Fierce Mystic Cyan/Turquoise Draconic Eyes (신비로운 청동 고대 안광)
-    this.ctx.fillStyle = '#0f766e'; // Dark Teal Socket
+    // Fierce Mystic Cyan/Turquoise Draconic Eyes (신비로운 청동 고대 안광 / 브레스·강림 시 진홍빛 안광)
+    this.ctx.fillStyle = eyeGlowBoost ? '#991b1b' : '#0f766e'; // Socket
     this.ctx.fillRect(px - 9, by - 40, 6, 5);
     this.ctx.fillRect(px + 3, by - 40, 6, 5);
-    this.ctx.fillStyle = '#06b6d4'; // Bright Cyan Eye
+    this.ctx.fillStyle = eyeGlowBoost ? '#ef4444' : '#06b6d4'; // Eye Glow
     this.ctx.fillRect(px - 8, by - 39, 4, 3);
     this.ctx.fillRect(px + 4, by - 39, 4, 3);
-    this.ctx.fillStyle = '#a5f3fc'; // Piercing Mystic Pupil
+    this.ctx.fillStyle = eyeGlowBoost ? '#fef08a' : '#a5f3fc'; // Piercing Mystic Pupil
     this.ctx.fillRect(px - 7, by - 38, 2, 2);
     this.ctx.fillRect(px + 5, by - 38, 2, 2);
 
@@ -8057,6 +8129,325 @@ class GameEngine {
       ctx.restore();
     }
     ctx.restore();
+  }
+
+  // ========================================================
+  // 🐲 고대 청동 드래곤 인게임 이펙트 시스템 (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 브레스)
+  // ========================================================
+  triggerDragonLanding(bx, by) {
+    if (!this.dragonFx) return;
+    this.dragonFx.landingReady = false;
+    this.dragonFx.landingActive = true;
+    this.dragonFx.landingStartTime = Date.now();
+    this.dragonFx.landingDuration = 1500;
+    this.dragonFx.landingImpacted = false;
+    this.dragonFx.bannerUntil = Date.now() + 3200;
+  }
+
+  triggerDragonRaidBreath(callback) {
+    if (!this.dragonFx) {
+      if (typeof callback === 'function') callback();
+      return;
+    }
+    if (this.dragonFx.breathActive) return;
+
+    this.dragonFx.breathActive = true;
+    this.dragonFx.breathStartTime = Date.now();
+    this.dragonFx.breathDuration = 850;
+    this.dragonFx.breathFired = false;
+    this.dragonFx.breathCallback = callback || null;
+
+    if (window.AudioManager && typeof window.AudioManager.playDragonRoar === 'function') {
+      window.AudioManager.playDragonRoar();
+    }
+    if (typeof this.addFloatingText === 'function') {
+      this.addFloatingText(18 * 32 + 16, 35 * 32 + 16 - 78, '🔥 고대 청동 브레스!!', '#fb923c', 16);
+    }
+  }
+
+  updateDragonEffects() {
+    const fx = this.dragonFx;
+    if (!fx) return;
+
+    // 운동장이 아닐 때는 이펙트 상태 대기
+    if (!this.player || this.player.room !== 'playground') return;
+
+    const now = Date.now();
+    const bx = 18 * 32 + 16; // 592
+    const by = 35 * 32 + 16; // 1136
+
+    // 현재 축구장 보스가 청동 드래곤인지 확인
+    const isOtherRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name &&
+      !window.BOSS_CONFIG.name.includes('드래곤') && !window.BOSS_CONFIG.name.includes('dragon') && !window.BOSS_CONFIG.name.includes('골렘'));
+    if (isOtherRaidActive) return;
+
+    // 1. 플레이어와 청동 드래곤 거리 측정 (축구장 진입 시 ① 강림 연출 자동 트리거)
+    const dist = Math.hypot((this.player.x + 12) - bx, (this.player.y + 14) - by);
+    if (dist > 540) {
+      fx.landingReady = true;
+    } else if (dist <= 340 && fx.landingReady && !fx.landingActive && !fx.breathActive) {
+      this.triggerDragonLanding(bx, by);
+    }
+
+    // ① 강림(착지) 연출 진행 및 착지 충격 처리
+    if (fx.landingActive) {
+      const elapsed = now - fx.landingStartTime;
+      const progress = Math.min(1, elapsed / fx.landingDuration);
+      if (progress >= 0.36 && !fx.landingImpacted) {
+        fx.landingImpacted = true;
+        fx.shakePower = 18;
+        fx.flashAlpha = 0.55;
+
+        if (window.AudioManager) {
+          if (typeof window.AudioManager.playDragonLanding === 'function') window.AudioManager.playDragonLanding();
+          setTimeout(() => {
+            if (window.AudioManager && typeof window.AudioManager.playDragonRoar === 'function') {
+              window.AudioManager.playDragonRoar();
+            }
+          }, 130);
+        }
+
+        // 3중 동심원 청동·녹청 충격파 링 생성
+        fx.shockwaves.push({ x: bx, y: by + 24, r: 12, maxR: 185, alpha: 1, color: '#f59e0b', width: 5, speed: 4.5 });
+        fx.shockwaves.push({ x: bx, y: by + 24, r: 6, maxR: 145, alpha: 0.95, color: '#14b8a6', width: 3.5, speed: 3.3 });
+        fx.shockwaves.push({ x: bx, y: by + 24, r: 2, maxR: 105, alpha: 0.9, color: '#fef08a', width: 2.5, speed: 2.3 });
+
+        // 45개 청동 불꽃 & 녹청 파편 방출
+        for (let i = 0; i < 45; i++) {
+          const ang = Math.random() * Math.PI * 2;
+          const spd = 2.2 + Math.random() * 5.8;
+          fx.particles.push({
+            x: bx,
+            y: by + 20,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd * 0.65 - (1.8 + Math.random() * 3.2),
+            gravity: 0.13,
+            size: 3.5 + Math.random() * 4.5,
+            alpha: 1,
+            decay: 0.016 + Math.random() * 0.015,
+            color: (i % 3 === 0) ? '#2dd4bf' : (i % 2 === 0 ? '#f59e0b' : '#fef08a')
+          });
+        }
+
+        if (typeof this.addFloatingText === 'function') {
+          this.addFloatingText(bx, by - 82, '🐲 크아아앙!! (고대 청동 드래곤 강림!)', '#fef08a', 16);
+        }
+      }
+      if (progress >= 1) {
+        fx.landingActive = false;
+      }
+    }
+
+    // ② 상시 고대 드래곤 아우라 입자 & 날개짓 바람 파동 업데이트 (플레이어가 주변에 있을 때)
+    if (dist < 680 && !fx.landingActive) {
+      if (Math.random() < 0.48 && fx.auraParticles.length < 65) {
+        const ang = Math.random() * Math.PI * 2;
+        const rad = 22 + Math.random() * 82;
+        fx.auraParticles.push({
+          x: bx + Math.cos(ang) * rad,
+          y: by + 24 + Math.sin(ang) * (rad * 0.45),
+          vx: (Math.random() - 0.5) * 0.7,
+          vy: -0.9 - Math.random() * 1.5,
+          size: 2.5 + Math.random() * 3.5,
+          alpha: 0.9,
+          color: Math.random() < 0.5 ? '#f59e0b' : '#2dd4bf'
+        });
+      }
+      if (now - fx.lastWingPulse > 1600) {
+        fx.lastWingPulse = now;
+        fx.shockwaves.push({ x: bx, y: by + 22, r: 26, maxR: 118, alpha: 0.55, color: '#2dd4bf', width: 2.2, speed: 1.9 });
+      }
+    }
+
+    // ③ 레이드 돌입 브레스 연출 업데이트
+    if (fx.breathActive) {
+      const elapsed = now - fx.breathStartTime;
+      const progress = Math.min(1, elapsed / fx.breathDuration);
+      if (progress >= 0.22 && !fx.breathFired) {
+        fx.breathFired = true;
+        fx.shakePower = 14;
+        fx.flashAlpha = 0.45;
+        if (window.AudioManager && typeof window.AudioManager.playDragonBreath === 'function') {
+          window.AudioManager.playDragonBreath();
+        }
+      }
+      if (progress >= 0.22 && progress < 0.9) {
+        const mouthX = bx;
+        const mouthY = by - 44;
+        const targetX = this.player.x + 12;
+        const targetY = this.player.y + 14;
+        for (let k = 0; k < 4; k++) {
+          const t = Math.random();
+          fx.particles.push({
+            x: mouthX + (targetX - mouthX) * t + (Math.random() - 0.5) * 32 * t,
+            y: mouthY + (targetY - mouthY) * t + (Math.random() - 0.5) * 32 * t,
+            vx: (Math.random() - 0.5) * 3.2,
+            vy: -1 - Math.random() * 2.2,
+            gravity: 0,
+            size: 4 + Math.random() * 4.5,
+            alpha: 1,
+            decay: 0.055,
+            color: Math.random() < 0.5 ? '#fef08a' : '#2dd4bf'
+          });
+        }
+      }
+      if (progress >= 1) {
+        fx.breathActive = false;
+        const cb = fx.breathCallback;
+        fx.breathCallback = null;
+        if (typeof cb === 'function') cb();
+      }
+    }
+
+    // 물리 파티클 & 충격파 링 업데이트
+    for (let i = fx.auraParticles.length - 1; i >= 0; i--) {
+      const p = fx.auraParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.018;
+      if (p.alpha <= 0) fx.auraParticles.splice(i, 1);
+    }
+
+    for (let i = fx.shockwaves.length - 1; i >= 0; i--) {
+      const sw = fx.shockwaves[i];
+      sw.r += sw.speed;
+      sw.alpha = Math.max(0, 1 - sw.r / sw.maxR);
+      if (sw.r >= sw.maxR) fx.shockwaves.splice(i, 1);
+    }
+
+    for (let i = fx.particles.length - 1; i >= 0; i--) {
+      const p = fx.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.gravity) p.vy += p.gravity;
+      p.alpha -= p.decay;
+      if (p.alpha <= 0) fx.particles.splice(i, 1);
+    }
+  }
+
+  renderDragonForegroundEffects() {
+    if (!this.player || this.player.room !== 'playground' || !this.dragonFx) return;
+    const fx = this.dragonFx;
+    const ctx = this.ctx;
+
+    ctx.save();
+
+    // 1. 상시 아우라 불꽃 입자
+    for (let i = 0; i < fx.auraParticles.length; i++) {
+      const p = fx.auraParticles[i];
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2. 동심원 충격파 링 (강림 착지 3중 링 & 상시 날개짓 바람 파동)
+    for (let i = 0; i < fx.shockwaves.length; i++) {
+      const sw = fx.shockwaves[i];
+      ctx.save();
+      ctx.strokeStyle = sw.color;
+      ctx.globalAlpha = Math.max(0, sw.alpha);
+      ctx.lineWidth = sw.width;
+      ctx.beginPath();
+      ctx.ellipse(sw.x, sw.y, sw.r, sw.r * 0.48, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3. 강림 파편 & 브레스 스파크 파티클
+    for (let i = 0; i < fx.particles.length; i++) {
+      const p = fx.particles[i];
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+    }
+    ctx.globalAlpha = 1;
+
+    // 4. ③ 레이드 돌입 브레스 화염 원뿔 (드래곤 입 ➔ 플레이어 방향)
+    if (fx.breathActive) {
+      const elapsed = Date.now() - fx.breathStartTime;
+      const progress = Math.min(1, elapsed / fx.breathDuration);
+      if (progress >= 0.22 && progress < 0.9) {
+        const mouthX = 18 * 32 + 16;
+        const mouthY = 35 * 32 + 16 - 44;
+        const targetX = this.player.x + 12;
+        const targetY = this.player.y + 14;
+        const angle = Math.atan2(targetY - mouthY, targetX - mouthX);
+        const perpX = Math.cos(angle + Math.PI / 2) * 32;
+        const perpY = Math.sin(angle + Math.PI / 2) * 32;
+
+        const grad = ctx.createLinearGradient(mouthX, mouthY, targetX, targetY);
+        grad.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+        grad.addColorStop(0.45, 'rgba(249, 115, 22, 0.85)');
+        grad.addColorStop(0.85, 'rgba(20, 184, 166, 0.78)');
+        grad.addColorStop(1, 'rgba(20, 184, 166, 0)');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(mouthX, mouthY);
+        ctx.lineTo(targetX + perpX, targetY + perpY);
+        ctx.lineTo(targetX - perpX, targetY - perpY);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  renderDragonScreenOverlay() {
+    if (!this.dragonFx) return;
+    const fx = this.dragonFx;
+    const ctx = this.ctx;
+
+    // 1. 강림 착지 및 브레스 화면 플래시
+    if (fx.flashAlpha > 0.01) {
+      ctx.save();
+      ctx.fillStyle = `rgba(254, 243, 199, ${fx.flashAlpha})`;
+      ctx.fillRect(0, 0, this.width, this.height);
+      ctx.restore();
+      fx.flashAlpha *= 0.84;
+    } else {
+      fx.flashAlpha = 0;
+    }
+
+    // 2. 상단 보스 강림 경고 배너 (3.2초 표시)
+    const now = Date.now();
+    if (fx.bannerUntil && now < fx.bannerUntil && this.player && this.player.room === 'playground') {
+      const rem = fx.bannerUntil - now;
+      const alpha = rem < 400 ? (rem / 400) : 1;
+      const bw = 440;
+      const bh = 54;
+      const bx = (this.width - bw) / 2;
+      const by = 18;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+      const bgGrad = ctx.createLinearGradient(bx, by, bx + bw, by);
+      bgGrad.addColorStop(0, 'rgba(69, 26, 3, 0.95)');
+      bgGrad.addColorStop(0.5, 'rgba(146, 64, 14, 0.96)');
+      bgGrad.addColorStop(1, 'rgba(69, 26, 3, 0.95)');
+
+      ctx.fillStyle = bgGrad;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '800 12px "Pretendard", "Malgun Gothic", sans-serif';
+      ctx.fillStyle = '#fcd34d';
+      ctx.fillText('⚠️ [BOSS 강림] 천연잔디 축구장의 지배자', this.width / 2, by + 18);
+
+      ctx.font = '900 14.5px "Pretendard", "Malgun Gothic", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('🐲 고대 청동 드래곤이 전장에 강림했습니다!', this.width / 2, by + 38);
+      ctx.restore();
+    }
   }
 
   // ========================================================

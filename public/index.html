@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="숭실 RPG">
   <meta name="theme-color" content="#0f172a">
-  <link rel="manifest" href="/manifest.json?v=276">
+  <link rel="manifest" href="/manifest.json?v=277">
   <link rel="apple-touch-icon" href="/assets/icon.svg">
 
-  <link rel="stylesheet" href="css/style.css?v=276">
+  <link rel="stylesheet" href="css/style.css?v=277">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@700&family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
@@ -2333,19 +2333,19 @@
   </div>
 
   <!-- Audio & In-Game Dialogue Engine -->
-  <script src="js/audio.js?v=276"></script>
-  <script src="js/dialog.js?v=276"></script>
+  <script src="js/audio.js?v=277"></script>
+  <script src="js/dialog.js?v=277"></script>
 
   <!-- Game Scripts -->
-  <script src="js/world.js?v=276"></script>
-  <script src="js/engine.js?v=276"></script>
-  <script src="js/quiz.js?v=276"></script>
-  <script src="js/crafting.js?v=276"></script>
-  <script src="js/network.js?v=276"></script>
-  <script src="js/acid_rain.js?v=276"></script>
-  <script src="js/brawl_ball.js?v=276"></script>
-  <script src="js/uphill_rush.js?v=276"></script>
-  <script src="js/main.js?v=276"></script>
+  <script src="js/world.js?v=277"></script>
+  <script src="js/engine.js?v=277"></script>
+  <script src="js/quiz.js?v=277"></script>
+  <script src="js/crafting.js?v=277"></script>
+  <script src="js/network.js?v=277"></script>
+  <script src="js/acid_rain.js?v=277"></script>
+  <script src="js/brawl_ball.js?v=277"></script>
+  <script src="js/uphill_rush.js?v=277"></script>
+  <script src="js/main.js?v=277"></script>
 
   <!-- 4-I. Modal: Progression Manual (진행 매뉴얼) -->
   <div id="modal-roadmap" class="modal-overlay hidden" style="z-index: 140;">
@@ -2363,17 +2363,21 @@
       <div class="modal-body" style="padding: 14px; overflow-y: auto; flex: 1; background: #f8fafc;">
         <!-- Top Quick Flow Banner (Interactive Step Tracker) -->
         <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 11.5px; border: 1.5px solid #334155; text-align: center;">
-          <div style="font-weight: 800; color: #38bdf8; margin-bottom: 6px;">🗺️ 메인 공략 루트 5단계</div>
-          <div id="roadmap-flow-container" style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; flex-wrap: wrap; gap: 4px;">
-            <button class="roadmap-step-pill active" data-step="1" style="padding: 4px 8px; border-radius: 6px; border: 1.5px solid #38bdf8; background: #0284c7; color: #fff; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">1. 1학년 1반</button>
-            <span class="roadmap-arrow-click" data-target="2" style="color: #38bdf8; cursor: pointer; padding: 0 2px; font-size: 13px; user-select: none;" title="2단계로 이동">➔</span>
-            <button class="roadmap-step-pill" data-step="2" style="padding: 4px 8px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">2. 가죽 골렘</button>
-            <span class="roadmap-arrow-click" data-target="3" style="color: #475569; cursor: pointer; padding: 0 2px; font-size: 13px; user-select: none;" title="3단계로 이동">➔</span>
-            <button class="roadmap-step-pill" data-step="3" style="padding: 4px 8px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">3. 엘베 & 5층</button>
-            <span class="roadmap-arrow-click" data-target="4" style="color: #475569; cursor: pointer; padding: 0 2px; font-size: 13px; user-select: none;" title="4단계로 이동">➔</span>
-            <button class="roadmap-step-pill" data-step="4" style="padding: 4px 8px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">4. 농구·풋살장</button>
-            <span class="roadmap-arrow-click" data-target="5" style="color: #475569; cursor: pointer; padding: 0 2px; font-size: 13px; user-select: none;" title="5단계로 이동">➔</span>
-            <button class="roadmap-step-pill" data-step="5" style="padding: 4px 8px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">5. 청동 드래곤</button>
+          <div style="font-weight: 800; color: #38bdf8; margin-bottom: 6px;">🗺️ 숭실RPG</div>
+          <div id="roadmap-flow-container" style="display: flex; justify-content: center; align-items: center; font-weight: 700; flex-wrap: wrap; gap: 4px;">
+            <button class="roadmap-step-pill active" data-step="1" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #38bdf8; background: #0284c7; color: #fff; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">1. 1학년 1반</button>
+            <span class="roadmap-arrow-click" data-target="2" style="color: #38bdf8; cursor: pointer; padding: 0 1px; font-size: 12px; user-select: none;" title="2단계로 이동">➔</span>
+            <button class="roadmap-step-pill" data-step="2" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">2. 1학년 2반</button>
+            <span class="roadmap-arrow-click" data-target="3" style="color: #475569; cursor: pointer; padding: 0 1px; font-size: 12px; user-select: none;" title="3단계로 이동">➔</span>
+            <button class="roadmap-step-pill" data-step="3" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">3. 학교 탐험</button>
+            <span class="roadmap-arrow-click" data-target="4" style="color: #475569; cursor: pointer; padding: 0 1px; font-size: 12px; user-select: none;" title="4단계로 이동">➔</span>
+            <button class="roadmap-step-pill" data-step="4" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">4. 농구장&amp;풋살장</button>
+            <span class="roadmap-arrow-click" data-target="5" style="color: #475569; cursor: pointer; padding: 0 1px; font-size: 12px; user-select: none;" title="5단계로 이동">➔</span>
+            <button class="roadmap-step-pill" data-step="5" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">5. 보스레이드</button>
+            <span class="roadmap-arrow-click" data-target="6" style="color: #475569; cursor: pointer; padding: 0 1px; font-size: 12px; user-select: none;" title="6단계로 이동">➔</span>
+            <button class="roadmap-step-pill" data-step="6" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">6. 숭실역사관</button>
+            <span class="roadmap-arrow-click" data-target="7" style="color: #475569; cursor: pointer; padding: 0 1px; font-size: 12px; user-select: none;" title="7단계로 이동">➔</span>
+            <button class="roadmap-step-pill" data-step="7" style="padding: 4px 7px; border-radius: 6px; border: 1.5px solid #475569; background: #1e293b; color: #cbd5e1; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: all 0.2s;">7. 급식실</button>
           </div>
         </div>
 
@@ -2382,14 +2386,14 @@
           <!-- Stage 1 -->
           <div id="roadmap-card-1" class="roadmap-card" style="display: block; background: #ffffff; border: 2.5px solid #0284c7; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(2, 132, 199, 0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 14px; font-weight: 900; color: #0369a1;">🚩 STEP 1. 1학년 1반 (기초 파밍 & 1티어 나무 제작)</span>
+              <span style="font-size: 14px; font-weight: 900; color: #0369a1;">🚩 STEP 1. 1학년 1반 (기초 파밍 &amp; 1티어 나무 제작)</span>
               <span style="font-size: 11px; font-weight: 800; background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px;">권장: Lv.1~3</span>
             </div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
-              <li><b>위치</b>: 7층 1학년 복도 서쪽 끝 ➔ <code>1학년 1반</code> 입장</li>
-              <li><b>목표</b>: 책상·사물함·교탁 퀴즈를 풀어 <code>단단한 목재(🪵)</code> 수집</li>
-              <li><b>제작</b>: 단축키 <b>[C]</b> 제작창 ➔ <b>[나무검 · 나무투구 · 나무갑옷]</b> 3종 세트 제작 & 장착</li>
-              <li><b>핵심 팁</b>: 1티어 나무 풀세트를 착용해야 체력과 공격력이 올라 골렘에게 도전할 수 있습니다!</li>
+              <li><b>위치</b>: 1층 1학년 복도 서쪽 끝 ➔ <code>1학년 1반</code> 입장</li>
+              <li><b>목표</b>: 책상·사물함·교탁·화분 퀴즈를 풀어 <code>단단한 목재(🪵)</code>등 기타 재료를 수집</li>
+              <li><b>제작</b>: 단축키 <b>[C]</b> 제작창 ➔ <b>[나무검 · 나무투구 · 나무갑옷]</b> 세트 제작 &amp; 장착</li>
+              <li><b>핵심 팁</b>: 나무 3종 세트를 모두 장착한 상태로 1-2반 앞 한강우 선생님과 대화하세요.</li>
             </ul>
           </div>
 
@@ -2397,53 +2401,79 @@
           <div id="roadmap-card-2" class="roadmap-card" style="display: none; background: #ffffff; border: 2.5px solid #be185d; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(190, 24, 93, 0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <span style="font-size: 14px; font-weight: 900; color: #9d174d;">🚩 STEP 2. 1학년 2반 (가죽 골렘 보스 토벌)</span>
-              <span style="font-size: 11px; font-weight: 800; background: #fce7f3; color: #be185d; padding: 3px 8px; border-radius: 6px;">권장: Lv.4~5</span>
+              <span style="font-size: 11px; font-weight: 800; background: #fce7f3; color: #be185d; padding: 3px 8px; border-radius: 6px;">권장: Lv.3~5</span>
             </div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
-              <li><b>위치</b>: 7층 1학년 복도 중앙 ➔ <code>1학년 2반 보스 교실</code> 입장</li>
-              <li><b>목표</b>: 교실 중앙의 <code>가죽 골렘</code>과 1단원 보스 퀴즈 배틀 승리</li>
-              <li><b>보상</b>: <code>질긴 보스의 가죽(🥋)</code>, <code>엘리베이터 작동권(🪪)</code>, 회복 물약, 대량 골드·EXP 획득</li>
-              <li><b>핵심 팁</b>: 획득한 <code>🪪 엘리베이터 작동권</code>을 가방(I)에서 장신구 슬롯에 장착하면 복도 중앙 엘리베이터를 가동할 수 있습니다!</li>
+              <li><b>위치</b>: 1층 1학년 복도 중앙 ➔ <code>1학년 2반 보스 교실</code> 입장</li>
+              <li><b>목표</b>: 교실 중앙의 <code>가죽 골렘</code>과 1:1 보스 퀴즈 배틀 승리</li>
+              <li><b>보상</b>: <code>질긴 보스의 가죽(🟫)</code>, <code>엘리베이터 작동권(🪪)</code> 등</li>
+              <li><b>핵심 팁</b>: <code>🪪 엘리베이터 작동권</code>을 획득하면 복도 중앙 엘리베이터를 가동해 모든 층과 운동장으로 이동할 수 있습니다!</li>
             </ul>
           </div>
 
           <!-- Stage 3 -->
           <div id="roadmap-card-3" class="roadmap-card" style="display: none; background: #ffffff; border: 2.5px solid #4338ca; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(67, 56, 202, 0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 14px; font-weight: 900; color: #3730a3;">🚩 STEP 3. 중앙 엘리베이터 & 5층 진로실 (전직 & 호칭)</span>
-              <span style="font-size: 11px; font-weight: 800; background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px;">권장: Lv.5</span>
+              <span style="font-size: 14px; font-weight: 900; color: #3730a3;">🚩 STEP 3. 학교 탐험</span>
+              <span style="font-size: 11px; font-weight: 800; background: #e0e7ff; color: #4338ca; padding: 3px 8px; border-radius: 6px;">권장: Lv.4~6</span>
             </div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
-              <li><b>이동</b>: <code>🪪 엘리베이터 작동권</code> 장착 후 복도 중앙 <code>엘리베이터</code>로 7층·6층(교무실)·5층(진로상담실)·지상 운동장 이동 가능</li>
-              <li><b>7층 1-4반</b>: 후니후니 도덕 선생님 20문제 완파 ➔ <code>🥁 영혼의 드러머</code> 호칭 획득</li>
-              <li><b>5층 진로상담실</b>: 6개의 알파벳 단서(D·R·E·A·M·S)를 수집하여 방탈출에 성공하면 5대 직업(메딕·러너·스칼라·뱅커·파이터) 전직 및 고유 패시브 스킬·호칭을 획득합니다.</li>
+              <li><b>이동</b>: 2층 도서관, 5층 진로실, 6층 교무실</li>
+              <li><b>교내 특별 활동</b>: 특별 퀘스트를 클리어해보세요!</li>
             </ul>
           </div>
 
           <!-- Stage 4 -->
           <div id="roadmap-card-4" class="roadmap-card" style="display: none; background: #ffffff; border: 2.5px solid #15803d; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(21, 128, 61, 0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 14px; font-weight: 900; color: #166534;">🚩 STEP 4. 농구장 & 풋살장 (야외 2티어 가죽 파밍)</span>
+              <span style="font-size: 14px; font-weight: 900; color: #166534;">🚩 STEP 4. 농구장 &amp; 풋살장</span>
               <span style="font-size: 11px; font-weight: 800; background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 6px;">권장: Lv.6~9</span>
             </div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
-              <li><b>위치</b>: 중앙 엘리베이터 탑승 ➔ <code>지상 운동장</code> 이동 후 <code>농구장</code> & <code>풋살장</code> 진입</li>
-              <li><b>목표</b>: 체육 몬스터 퀴즈 사냥으로 <code>농구공 가죽 조각(🏀)</code>, <code>탄력있는 풋살공 가죽(⚽)</code> 수집</li>
-              <li><b>제작</b>: 단축키 <b>[C]</b> ➔ <b>[가죽손잡이 세이버 · 가죽투구 · 가죽갑옷]</b> 풀세트 완성</li>
-              <li><b>핵심 팁</b>: 2티어 장비를 모두 맞추면 방어력과 공격력이 비약적으로 상승하여 드래곤의 공격을 버틸 수 있습니다!</li>
+              <li><b>위치</b>: 지상 운동장 이동 후 <code>농구장</code> &amp; <code>풋살장</code> 진입</li>
+              <li><b>목표</b>: 체육 몬스터 1:1 사냥</li>
+              <li><b>제작</b>: 2티어 <b>[가죽손잡이 세이버 · 가죽투구 · 가죽갑옷]</b> 세트 제작</li>
             </ul>
           </div>
 
           <!-- Stage 5 -->
           <div id="roadmap-card-5" class="roadmap-card" style="display: none; background: #ffffff; border: 2.5px solid #d97706; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(217, 119, 6, 0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 14px; font-weight: 900; color: #92400e;">🚩 STEP 5. 청동 드래곤 레이드 (최종 결전)</span>
-              <span style="font-size: 11px; font-weight: 800; background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 6px;">권장: Lv.10~11</span>
+              <span style="font-size: 14px; font-weight: 900; color: #92400e;">🚩 STEP 5. 보스레이드</span>
+              <span style="font-size: 11px; font-weight: 800; background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 6px;">권장: Lv.9~12</span>
             </div>
             <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
-              <li><b>위치</b>: 지상 운동장 <code>천연잔디 축구장</code> (x: 18, y: 35) ➔ <code>고대 청동 드래곤</code> 출현</li>
-              <li><b>목표</b>: 1~4단원 통합 영어 퀴즈로 청동 드래곤 격파</li>
-              <li><b>보상</b>: <code>청동 드래곤의 심장(❤️‍🔥)</code> ➔ 3티어 <b>[청동검 · 청동투구 · 청동갑옷]</b> 제작</li>
+              <li><b>위치</b>: 지상 운동장 <code>천연잔디 축구장</code></li>
+              <li><b>목표</b>: 청동 드래곤을 격파해 <code>청동 드래곤의 심장(🥉)</code> 획득 및 케르베로스 토벌(<code>📜 A+ 만점 수행평가지</code> 획득)</li>
+              <li><b>제작</b>: 3티어 <b>[청동검 · 청동투구 · 청동갑옷 · 청동 스파이크]</b> 제작</li>
+            </ul>
+          </div>
+
+          <!-- Stage 6 -->
+          <div id="roadmap-card-6" class="roadmap-card" style="display: none; background: #ffffff; border: 2.5px solid #6366f1; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(99, 102, 241, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 14px; font-weight: 900; color: #4338ca;">🚩 STEP 6. 숭실역사관</span>
+              <span style="font-size: 11px; font-weight: 800; background: #e0e7ff; color: #6366f1; padding: 3px 8px; border-radius: 6px;">권장: Lv.12~15</span>
+            </div>
+            <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
+              <li><b>위치</b>: <code>숭실역사관</code> 입장</li>
+              <li><b>목표</b>: 역사관 몬스터 사냥</li>
+              <li><b>제작</b>: 역사관 중앙 신비한 제단에서 4티어 <b>1897 숭실 장비</b> 제작</li>
+              <li><b>핵심 팁</b>: 역사관 내 4개의 전시관의 히든퀘스트를 찾아보세요.</li>
+            </ul>
+          </div>
+
+          <!-- Stage 7 -->
+          <div id="roadmap-card-7" class="roadmap-card" style="display: none; background: #ffffff; border: 2.5px solid #dc2626; border-radius: 12px; padding: 14px; box-shadow: 0 4px 8px rgba(220, 38, 38, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 14px; font-weight: 900; color: #b91c1c;">🚩 STEP 7. 급식실</span>
+              <span style="font-size: 11px; font-weight: 800; background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 6px;">권장: Lv.15+</span>
+            </div>
+            <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.7;">
+              <li><b>위치</b>: <code>급식실</code> 입장</li>
+              <li><b>목표</b>: 급식실 몬스터 사냥</li>
+              <li><b>제작</b>: 5티어 <b>신화 장비</b> 제작</li>
+              <li><b>핵심 팁</b>: 급식실을 들어가기 위해서는 열쇠가 필요합니다.</li>
             </ul>
           </div>
         </div>
@@ -2454,7 +2484,7 @@
             ◀ 이전 단계
           </button>
           <div id="roadmap-step-indicator" style="font-size: 13px; font-weight: 900; color: #0284c7;">
-            STEP 1 / 5
+            STEP 1 / 7
           </div>
           <button id="btn-roadmap-next" class="btn-primary" style="padding: 7px 16px; font-size: 12px; font-weight: 800; background: #0284c7; border-color: #0369a1; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
             다음 단계 ▶
