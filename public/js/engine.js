@@ -88,7 +88,7 @@ class GameEngine {
     // Teacher Exclusive Dash Particle System (질주 ✨ 황금빛 별가루 이펙트)
     this.teacherDashParticles = [];
 
-    // 🐲😈🐕 Soccer Boss FX State (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 연출)
+    // 🐲😈🐕💀 Soccer Boss FX State (1: 강림 착지 연출, 2: 상시 아우라, 3: 레이드 돌입 연출)
     this.dragonFx = {
       bossKind: 'dragon',
       landingReady: true,
@@ -101,6 +101,7 @@ class GameEngine {
       breathDuration: 850,
       breathFired: false,
       breathCallback: null,
+      stampTriggered: false,
       bannerUntil: 0,
       shakePower: 0,
       flashAlpha: 0,
@@ -109,6 +110,11 @@ class GameEngine {
       shockwaves: [],
       particles: [],
       examPapers: [],
+      glassShards: [],
+      orbitCards: Array.from({ length: 6 }, (_, i) => ({
+        baseAngle: (i * Math.PI * 2) / 6,
+        markType: i % 2 === 0 ? 'OMR' : 'F'
+      })),
       auraParticles: []
     };
 
@@ -5307,10 +5313,140 @@ class GameEngine {
     const wingFloat = Math.sin(now / 210) * 6;
     const scytheGlow = 0.6 + Math.sin(now / 160) * 0.4;
 
+    const fx = this.dragonFx;
+    const isLanding = !!(fx && fx.landingActive && fx.bossKind === 'final_god');
+    const landingProgress = isLanding ? Math.min(1, (now - fx.landingStartTime) / fx.landingDuration) : 1;
+
+    // Helper 1: ② 사신의 운명 시계진 (Doom Clock Floor Seal)
+    const drawDoomClockSeal = (clockTime) => {
+      this.ctx.save();
+      this.ctx.translate(px, py + 24);
+      this.ctx.scale(1, 0.46);
+
+      this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.68)';
+      this.ctx.lineWidth = 3;
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, 92, 0, Math.PI * 2);
+      this.ctx.stroke();
+
+      this.ctx.strokeStyle = 'rgba(129, 140, 248, 0.48)';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, 76, 0, Math.PI * 2);
+      this.ctx.stroke();
+
+      for (let i = 0; i < 12; i++) {
+        const ang = (i * Math.PI) / 6;
+        this.ctx.strokeStyle = i % 3 === 0 ? '#38bdf8' : 'rgba(148, 163, 184, 0.5)';
+        this.ctx.lineWidth = i % 3 === 0 ? 3 : 1.5;
+        this.ctx.beginPath();
+        this.ctx.moveTo(Math.cos(ang) * 76, Math.sin(ang) * 76);
+        this.ctx.lineTo(Math.cos(ang) * 90, Math.sin(ang) * 90);
+        this.ctx.stroke();
+      }
+
+      const fastHand = -clockTime / 260;
+      const slowHand = clockTime / 900;
+      this.ctx.strokeStyle = '#38bdf8';
+      this.ctx.lineWidth = 3.5;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, 0);
+      this.ctx.lineTo(Math.cos(fastHand) * 68, Math.sin(fastHand) * 68);
+      this.ctx.stroke();
+
+      this.ctx.strokeStyle = '#ef4444';
+      this.ctx.lineWidth = 4;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, 0);
+      this.ctx.lineTo(Math.cos(slowHand) * 48, Math.sin(slowHand) * 48);
+      this.ctx.stroke();
+      this.ctx.restore();
+    };
+
+    // Helper 2: ② 3D 타원 궤도로 공전하는 6장의 OMR 사신 부적 카드
+    const drawOrbitingOmrCards = (layer) => {
+      if (!fx || !fx.orbitCards) return;
+      const rx = 86;
+      const ry = 26;
+      const cy = py - 8;
+      fx.orbitCards.forEach((card, idx) => {
+        const ang = card.baseAngle + now / 620;
+        const sinA = Math.sin(ang);
+        const isBack = sinA < 0;
+        if ((layer === 'back' && !isBack) || (layer === 'front' && isBack)) return;
+
+        const cx = px + Math.cos(ang) * rx;
+        const cardY = cy + sinA * ry + Math.sin(now / 200 + idx) * 4;
+        const sc = 0.78 + (sinA + 1) * 0.22;
+
+        this.ctx.save();
+        this.ctx.translate(cx, cardY);
+        this.ctx.scale(sc, sc);
+        this.ctx.fillStyle = '#0f172a';
+        this.ctx.strokeStyle = '#38bdf8';
+        this.ctx.lineWidth = 1.8;
+        this.ctx.fillRect(-10, -14, 20, 28);
+        this.ctx.strokeRect(-10, -14, 20, 28);
+
+        this.ctx.fillStyle = '#dc2626';
+        this.ctx.fillRect(-8, -12, 16, 5);
+
+        this.ctx.fillStyle = '#f8fafc';
+        this.ctx.font = '900 8px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(card.markType, 0, 2);
+
+        this.ctx.fillStyle = '#38bdf8';
+        this.ctx.beginPath();
+        this.ctx.arc(-4, 9, 2, 0, Math.PI * 2);
+        this.ctx.arc(4, 9, 2, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.restore();
+      });
+    };
+
+    // ① 스페셜 강림 Phase A (0.0 ~ 0.36): 시험 종료 시계 폭주 & 허공 차원 유리 균열
+    if (isLanding && landingProgress < 0.36) {
+      const t = landingProgress / 0.36;
+      drawDoomClockSeal(now * 8);
+
+      this.ctx.save();
+      this.ctx.strokeStyle = '#38bdf8';
+      this.ctx.lineWidth = 3;
+      const branches = [
+        [[px, py - 20], [px - 35, py - 65], [px - 70, py - 95]],
+        [[px, py - 20], [px + 42, py - 55], [px + 85, py - 80]],
+        [[px, py - 20], [px - 28, py + 25], [px - 65, py + 55]],
+        [[px, py - 20], [px + 36, py + 30], [px + 72, py + 60]],
+        [[px, py - 20], [px, py - 90], [px + 15, py - 130]]
+      ];
+      branches.forEach(br => {
+        this.ctx.beginPath();
+        this.ctx.moveTo(br[0][0], br[0][1]);
+        if (t > 0.3) this.ctx.lineTo(br[1][0], br[1][1]);
+        if (t > 0.65) this.ctx.lineTo(br[2][0], br[2][1]);
+        this.ctx.stroke();
+      });
+      this.ctx.fillStyle = '#f87171';
+      this.ctx.font = '900 13px "Pretendard", sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('⏰ [시험 종료 타종] 남은 시간 00:00 — 차원 봉인 파열 중...', px, py - 125);
+      this.ctx.restore();
+      return;
+    }
+
+    drawDoomClockSeal(now);
+    drawOrbitingOmrCards('back');
+
+    const emergeProgress = isLanding ? Math.min(1, (landingProgress - 0.36) / 0.25) : 1;
+    const bossScale = isLanding ? (0.6 + emergeProgress * 0.8) : 1.4;
+
     this.ctx.save();
+    this.ctx.globalAlpha = emergeProgress;
     // 1.4x Scale for Final Exam God of Ruin
     this.ctx.translate(px, py);
-    this.ctx.scale(1.4, 1.4);
+    this.ctx.scale(bossScale, bossScale);
     this.ctx.translate(-px, -py);
 
     // 1. OMR Answer Sheet Grid on Floor
@@ -5428,6 +5564,9 @@ class GameEngine {
     this.ctx.stroke();
 
     this.ctx.restore();
+
+    // 3D 공전 OMR 부적 전면 레이어 (보스 앞 통과)
+    drawOrbitingOmrCards('front');
 
     const isRaidActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active);
     const bName = isRaidActive ? (window.BOSS_CONFIG.name || boss.name) : (boss.name || '💀 기말고사 파멸신');
@@ -8166,10 +8305,11 @@ class GameEngine {
   }
 
   // ========================================================
-  // 🐲 고대 청동 드래곤 / 😈 중간고사 대마왕 / 🐕 케르베로스 인게임 이펙트 시스템 (1: 강림 연출, 2: 상시 아우라, 3: 레이드 돌입 연출)
+  // 🐲 고대 청동 드래곤 / 😈 중간고사 대마왕 / 🐕 케르베로스 / 💀 기말고사 파멸신 인게임 이펙트 시스템
   // ========================================================
   getCurrentSoccerBossKind(overrideName) {
     const bName = overrideName || (window.BOSS_CONFIG && window.BOSS_CONFIG.active && window.BOSS_CONFIG.name) || '';
+    if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final_god') || bName.includes('finalgod')) return 'final_god';
     if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon')) return 'demon';
     if (bName.includes('케르베로스') || bName.includes('3두마수') || bName.includes('cerberus')) return 'cerberus';
     if (!bName || bName.includes('드래곤') || bName.includes('dragon') || bName.includes('골렘')) return 'dragon';
@@ -8183,10 +8323,15 @@ class GameEngine {
     this.dragonFx.landingReady = false;
     this.dragonFx.landingActive = true;
     this.dragonFx.landingStartTime = Date.now();
-    this.dragonFx.landingDuration = 1500;
+    this.dragonFx.landingDuration = kind === 'final_god' ? 2250 : 1500;
     this.dragonFx.landingImpacted = false;
-    this.dragonFx.bannerUntil = Date.now() + 3400;
+    this.dragonFx.bannerUntil = kind === 'final_god' ? 0 : (Date.now() + 3400);
     this.dragonFx.examPapers = [];
+    this.dragonFx.glassShards = [];
+
+    if (kind === 'final_god' && window.AudioManager && typeof window.AudioManager.playFinalGodSchoolBell === 'function') {
+      window.AudioManager.playFinalGodSchoolBell();
+    }
   }
 
   triggerDragonRaidBreath(callback, overrideName) {
@@ -8200,14 +8345,22 @@ class GameEngine {
     this.dragonFx.bossKind = kind;
     this.dragonFx.breathActive = true;
     this.dragonFx.breathStartTime = Date.now();
-    this.dragonFx.breathDuration = 880;
+    this.dragonFx.breathDuration = kind === 'final_god' ? 1200 : 880;
     this.dragonFx.breathFired = false;
+    this.dragonFx.stampTriggered = false;
     this.dragonFx.breathCallback = callback || null;
 
     const bx = 18 * 32 + 16;
     const by = 35 * 32 + 16;
 
-    if (kind === 'demon') {
+    if (kind === 'final_god') {
+      if (window.AudioManager && typeof window.AudioManager.playFinalGodDimensionSlash === 'function') {
+        window.AudioManager.playFinalGodDimensionSlash();
+      }
+      if (typeof this.addFloatingText === 'function') {
+        this.addFloatingText(bx, by - 98, '💀 "네놈의 답안지를 공간째로 베어주마!!"', '#7dd3fc', 16);
+      }
+    } else if (kind === 'demon') {
       if (window.AudioManager && typeof window.AudioManager.playDemonSlash === 'function') {
         window.AudioManager.playDemonSlash();
       }
@@ -8278,7 +8431,37 @@ class GameEngine {
         fx.shakePower = 18;
         fx.flashAlpha = 0.55;
 
-        if (fx.bossKind === 'demon') {
+        if (fx.bossKind === 'final_god') {
+          fx.shakePower = 22;
+          fx.flashAlpha = 0.52;
+          fx.flashColor = '56, 189, 248';
+          fx.bannerUntil = now + 3500;
+          if (window.AudioManager && typeof window.AudioManager.playFinalGodRiftAndScan === 'function') {
+            window.AudioManager.playFinalGodRiftAndScan();
+          }
+          // 32개 차원 유리창 파편(Polygon Glass Shards) 폭발
+          fx.glassShards = [];
+          for (let i = 0; i < 32; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            const spd = 2.6 + Math.random() * 6.2;
+            fx.glassShards.push({
+              x: bx + (Math.random() - 0.5) * 40,
+              y: by - 20 + (Math.random() - 0.5) * 40,
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd - 2.0,
+              rot: Math.random() * Math.PI * 2,
+              vRot: (Math.random() - 0.5) * 0.25,
+              size: 7 + Math.random() * 11,
+              alpha: 1,
+              color: i % 3 === 0 ? '#38bdf8' : (i % 2 === 0 ? '#e0f2fe' : '#818cf8')
+            });
+          }
+          fx.shockwaves.push({ x: bx, y: by + 24, r: 12, maxR: 205, alpha: 1, color: '#38bdf8', width: 5, speed: 4.8 });
+          fx.shockwaves.push({ x: bx, y: by + 24, r: 6, maxR: 155, alpha: 0.95, color: '#ef4444', width: 3.5, speed: 3.5 });
+          if (typeof this.addFloatingText === 'function') {
+            this.addFloatingText(bx, by - 95, '💀 "종이 울렸다... 모든 답안지를 수거하마!!"', '#7dd3fc', 16);
+          }
+        } else if (fx.bossKind === 'demon') {
           fx.flashColor = '168, 85, 247';
           if (window.AudioManager && typeof window.AudioManager.playDemonThunder === 'function') {
             window.AudioManager.playDemonThunder();
@@ -8400,7 +8583,9 @@ class GameEngine {
         const ang = Math.random() * Math.PI * 2;
         const rad = 22 + Math.random() * 82;
         let pColor = '#f59e0b';
-        if (fx.bossKind === 'demon') {
+        if (fx.bossKind === 'final_god') {
+          pColor = Math.random() < 0.65 ? '#38bdf8' : '#818cf8';
+        } else if (fx.bossKind === 'demon') {
           pColor = Math.random() < 0.55 ? '#a855f7' : '#ef4444';
         } else if (fx.bossKind === 'cerberus') {
           const r = Math.random();
@@ -8420,7 +8605,7 @@ class GameEngine {
       }
       if (now - fx.lastWingPulse > 1600) {
         fx.lastWingPulse = now;
-        const waveColor = fx.bossKind === 'demon' ? '#a855f7' : (fx.bossKind === 'cerberus' ? '#f97316' : '#2dd4bf');
+        const waveColor = fx.bossKind === 'final_god' ? '#38bdf8' : (fx.bossKind === 'demon' ? '#a855f7' : (fx.bossKind === 'cerberus' ? '#f97316' : '#2dd4bf'));
         fx.shockwaves.push({ x: bx, y: by + 22, r: 26, maxR: 118, alpha: 0.55, color: waveColor, width: 2.2, speed: 1.9 });
       }
     }
@@ -8432,8 +8617,10 @@ class GameEngine {
       if (progress >= 0.22 && !fx.breathFired) {
         fx.breathFired = true;
         fx.shakePower = 15;
-        fx.flashAlpha = 0.48;
-        if (fx.bossKind === 'demon') {
+        fx.flashAlpha = fx.bossKind === 'final_god' ? 0.35 : 0.48;
+        if (fx.bossKind === 'final_god') {
+          fx.flashColor = '56, 189, 248';
+        } else if (fx.bossKind === 'demon') {
           fx.flashColor = '239, 68, 68';
         } else if (fx.bossKind === 'cerberus') {
           fx.flashColor = '249, 115, 22';
@@ -8447,7 +8634,13 @@ class GameEngine {
           }
         }
       }
-      if (progress >= 0.22 && progress < 0.9) {
+      if (fx.bossKind === 'final_god' && progress >= 0.46 && !fx.stampTriggered) {
+        fx.stampTriggered = true;
+        fx.shakePower = 24;
+        fx.flashAlpha = 0.42;
+        fx.flashColor = '239, 68, 68';
+      }
+      if (progress >= 0.22 && progress < 0.9 && fx.bossKind !== 'final_god') {
         const mouthX = fx.bossKind === 'demon' ? (bx + 42) : bx;
         const mouthY = fx.bossKind === 'demon' ? (by - 55) : (by - 44);
         const targetX = this.player.x + 12;
@@ -8484,7 +8677,7 @@ class GameEngine {
       }
     }
 
-    // 물리 파티클 & 충격파 링 & 시험지 파편 업데이트
+    // 물리 파티클 & 충격파 링 & 시험지/유리창 파편 업데이트
     for (let i = fx.auraParticles.length - 1; i >= 0; i--) {
       const p = fx.auraParticles[i];
       p.x += p.vx;
@@ -8518,6 +8711,18 @@ class GameEngine {
         ep.rot += ep.vRot;
         ep.alpha -= 0.014;
         if (ep.alpha <= 0) fx.examPapers.splice(i, 1);
+      }
+    }
+
+    if (fx.glassShards) {
+      for (let i = fx.glassShards.length - 1; i >= 0; i--) {
+        const gs = fx.glassShards[i];
+        gs.x += gs.vx;
+        gs.y += gs.vy;
+        gs.vy += 0.12;
+        gs.rot += gs.vRot;
+        gs.alpha -= 0.016;
+        if (gs.alpha <= 0) fx.glassShards.splice(i, 1);
       }
     }
   }
@@ -8581,18 +8786,69 @@ class GameEngine {
         ctx.restore();
       }
     }
+
+    // 3-C. 기말고사 파멸신 전용: 차원 유리창 파편(Polygon Glass Shards)
+    if (fx.glassShards && fx.glassShards.length > 0) {
+      for (let i = 0; i < fx.glassShards.length; i++) {
+        const gs = fx.glassShards[i];
+        ctx.save();
+        ctx.translate(gs.x, gs.y);
+        ctx.rotate(gs.rot);
+        ctx.globalAlpha = Math.max(0, gs.alpha);
+        ctx.fillStyle = gs.color;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, -gs.size);
+        ctx.lineTo(gs.size * 0.7, gs.size * 0.5);
+        ctx.lineTo(-gs.size * 0.8, gs.size * 0.3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
     ctx.globalAlpha = 1;
 
-    // 4. ③ 레이드 돌입 보스별 필살 연출 (드래곤 브레스 / 대마왕 핏빛 X참격 / 케르베로스 3중 브레스)
+    // 4. ③ 레이드 돌입 보스별 필살 연출 (드래곤 브레스 / 대마왕 핏빛 X참격 / 케르베로스 3중 브레스 / 파멸신 F 직인 도장)
     if (fx.breathActive) {
       const elapsed = Date.now() - fx.breathStartTime;
       const progress = Math.min(1, elapsed / fx.breathDuration);
-      if (progress >= 0.22 && progress < 0.92) {
-        const bx = 18 * 32 + 16;
-        const by = 35 * 32 + 16;
-        const targetX = this.player.x + 12;
-        const targetY = this.player.y + 14;
+      const bx = 18 * 32 + 16;
+      const by = 35 * 32 + 16;
+      const targetX = this.player.x + 12;
+      const targetY = this.player.y + 14;
 
+      if (fx.bossKind === 'final_god') {
+        // 파멸신: Step 3 (0.46 ~ 1.0) 플레이어 머리 위에 거대한 붉은 직인 도장 `[F · OMR 판독: 파멸]` 쾅!
+        if (progress >= 0.46) {
+          const stampT = Math.min(1, (progress - 0.46) / 0.16);
+          const stampScale = stampT < 1 ? (2.6 - stampT * 1.6) : 1.0;
+
+          ctx.save();
+          ctx.translate(targetX, targetY - 12);
+          ctx.scale(stampScale, stampScale);
+          ctx.rotate(-0.14);
+
+          ctx.fillStyle = 'rgba(2, 6, 23, 0.92)';
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 4;
+          ctx.fillRect(-54, -44, 108, 88);
+          ctx.strokeRect(-54, -44, 108, 88);
+          ctx.strokeRect(-48, -38, 96, 76);
+
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '900 40px "Pretendard", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('F', 0, -6);
+
+          ctx.font = '900 11px "Pretendard", sans-serif';
+          ctx.fillStyle = '#fca5a5';
+          ctx.fillText('[OMR 판독: 파멸]', 0, 24);
+          ctx.restore();
+        }
+      } else if (progress >= 0.22 && progress < 0.92) {
         if (fx.bossKind === 'demon') {
           // 대마왕: 채점창에서 뻗어나가는 핏빛 참격 광선 + 플레이어 위 거대한 붉은 X 베기
           const spearX = bx + 42;
@@ -8681,6 +8937,77 @@ class GameEngine {
     if (!this.dragonFx) return;
     const fx = this.dragonFx;
     const ctx = this.ctx;
+    const now = Date.now();
+
+    // 0-A. 💀 기말고사 파멸신 ① 강림 전용: 암전(Dark Eclipse) + 전 화면 적색 OMR 광학 스캐너 레이저
+    if (fx.landingActive && fx.bossKind === 'final_god' && this.player && this.player.room === 'playground') {
+      const p = Math.min(1, (now - fx.landingStartTime) / fx.landingDuration);
+      const darkAlpha = p < 0.75 ? 0.68 : (1 - p) * 2.72;
+      ctx.save();
+      ctx.fillStyle = `rgba(2, 6, 23, ${Math.max(0, Math.min(0.72, darkAlpha))})`;
+      ctx.fillRect(0, 0, this.width, this.height);
+
+      if (p >= 0.36) {
+        const scanProgress = (p - 0.36) / 0.64;
+        const scanY = scanProgress * this.height;
+        const scanGrad = ctx.createLinearGradient(0, scanY - 45, 0, scanY + 8);
+        scanGrad.addColorStop(0, 'rgba(239, 68, 68, 0)');
+        scanGrad.addColorStop(0.8, 'rgba(239, 68, 68, 0.38)');
+        scanGrad.addColorStop(1, 'rgba(254, 202, 202, 0.95)');
+        ctx.fillStyle = scanGrad;
+        ctx.fillRect(0, scanY - 45, this.width, 53);
+
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(0, scanY);
+        ctx.lineTo(this.width, scanY);
+        ctx.stroke();
+
+        ctx.fillStyle = '#fecaca';
+        ctx.font = '900 11px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText('🚨 [OMR OPTICAL SCANNER: GRADE_FINAL_OBLIVION_MODE]', this.width - 24, scanY - 8);
+      }
+      ctx.restore();
+    }
+
+    // 0-B. 💀 기말고사 파멸신 ③ 레이드 돌입 전용: 네거티브 색반전 임팩트 + 전 화면 대각선 공간 절단!
+    if (fx.breathActive && fx.bossKind === 'final_god' && this.player && this.player.room === 'playground') {
+      const p = Math.min(1, (now - fx.breathStartTime) / fx.breathDuration);
+      if (p >= 0.08 && p < 0.20) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'difference';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.restore();
+      } else if (p >= 0.20 && p < 0.72) {
+        const splitGap = Math.sin(((p - 0.20) / 0.52) * Math.PI) * 26;
+        ctx.save();
+        // 어긋난 차원 균열의 심연 검은 틈
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = splitGap;
+        ctx.beginPath();
+        ctx.moveTo(0, this.height * 0.18);
+        ctx.lineTo(this.width, this.height * 0.82);
+        ctx.stroke();
+
+        // 대각선 공간 절단 청록·백색 검기 섬광
+        ctx.strokeStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 18;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(0, this.height * 0.18);
+        ctx.lineTo(this.width, this.height * 0.82);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
 
     // 1. 강림 착지 및 브레스 화면 플래시
     if (fx.flashAlpha > 0.01) {
@@ -8695,11 +9022,10 @@ class GameEngine {
     }
 
     // 2. 상단 보스 강림 경고 배너 (3.4초 표시)
-    const now = Date.now();
     if (fx.bannerUntil && now < fx.bannerUntil && this.player && this.player.room === 'playground') {
       const rem = fx.bannerUntil - now;
       const alpha = rem < 400 ? (rem / 400) : 1;
-      const bw = 460;
+      const bw = 490;
       const bh = 54;
       const bx = (this.width - bw) / 2;
       const by = 18;
@@ -8713,7 +9039,15 @@ class GameEngine {
       let borderColor = '#fbbf24';
       let subColor = '#fcd34d';
 
-      if (fx.bossKind === 'demon') {
+      if (fx.bossKind === 'final_god') {
+        bgGrad.addColorStop(0, 'rgba(2, 6, 23, 0.96)');
+        bgGrad.addColorStop(0.5, 'rgba(153, 27, 27, 0.96)');
+        bgGrad.addColorStop(1, 'rgba(2, 6, 23, 0.96)');
+        borderColor = '#38bdf8';
+        subColor = '#7dd3fc';
+        subTitle = '🚨 [FINAL BOSS 강림] 시험 종료 타종과 함께 차원이 갈라졌습니다!';
+        mainTitle = '💀 기말고사 파멸신이 전장에 강림했습니다!';
+      } else if (fx.bossKind === 'demon') {
         bgGrad.addColorStop(0, 'rgba(59, 7, 100, 0.95)');
         bgGrad.addColorStop(0.5, 'rgba(153, 27, 27, 0.96)');
         bgGrad.addColorStop(1, 'rgba(59, 7, 100, 0.95)');

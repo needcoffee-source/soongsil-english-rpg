@@ -942,6 +942,119 @@ class AudioManager {
       });
     } catch (e) {}
   }
+
+  /**
+   * 💀 Final Exam Oblivion God: Eerie 4-Note School Bell Chime (딩-동-댕-동—)
+   */
+  playFinalGodSchoolBell() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [369.99, 293.66, 329.63, 220.0];
+      notes.forEach((freq, idx) => {
+        const t = now + idx * 0.16;
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+        osc1.frequency.setValueAtTime(freq, t);
+        osc2.frequency.setValueAtTime(freq * 2.01, t);
+        gain.gain.setValueAtTime(0.18, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.62);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc1.start(t);
+        osc2.start(t);
+        osc1.stop(t + 0.65);
+        osc2.stop(t + 0.65);
+      });
+    } catch (e) {}
+  }
+
+  /**
+   * 💀 Final Exam Oblivion God: Spatial Glass-Shatter Rift + OMR Optical Scanner Sweep
+   */
+  playFinalGodRiftAndScan() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      // 1. Glass shatter noise burst
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.42);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.14));
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1800, now);
+      const ng = this.ctx.createGain();
+      ng.gain.setValueAtTime(0.35, now);
+      ng.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+      noise.connect(filter);
+      filter.connect(ng);
+      ng.connect(this.ctx.destination);
+      noise.start(now);
+
+      // 2. OMR Optical Scanner electronic sweep
+      const scanOsc = this.ctx.createOscillator();
+      const scanG = this.ctx.createGain();
+      scanOsc.type = 'sawtooth';
+      scanOsc.frequency.setValueAtTime(620, now + 0.12);
+      scanOsc.frequency.linearRampToValueAtTime(180, now + 0.92);
+      scanG.gain.setValueAtTime(0.16, now + 0.12);
+      scanG.gain.exponentialRampToValueAtTime(0.001, now + 0.95);
+      scanOsc.connect(scanG);
+      scanG.connect(this.ctx.destination);
+      scanOsc.start(now + 0.12);
+      scanOsc.stop(now + 0.95);
+    } catch (e) {}
+  }
+
+  /**
+   * 💀 Final Exam Oblivion God: Screen-Splitting Dimension Slash + Giant 'F' Seal Stamp
+   */
+  playFinalGodDimensionSlash() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      // 1. Razor-sharp spatial slice
+      const slice = this.ctx.createOscillator();
+      const sg = this.ctx.createGain();
+      slice.type = 'sawtooth';
+      slice.frequency.setValueAtTime(1600, now + 0.10);
+      slice.frequency.exponentialRampToValueAtTime(65, now + 0.44);
+      sg.gain.setValueAtTime(0.26, now + 0.10);
+      sg.gain.exponentialRampToValueAtTime(0.001, now + 0.46);
+      slice.connect(sg);
+      sg.connect(this.ctx.destination);
+      slice.start(now + 0.10);
+      slice.stop(now + 0.46);
+
+      // 2. Heavy '[F · 파멸]' Stamp impact
+      const stamp = this.ctx.createOscillator();
+      const stg = this.ctx.createGain();
+      stamp.type = 'sine';
+      stamp.frequency.setValueAtTime(135, now + 0.48);
+      stamp.frequency.exponentialRampToValueAtTime(28, now + 0.88);
+      stg.gain.setValueAtTime(0.42, now + 0.48);
+      stg.gain.exponentialRampToValueAtTime(0.001, now + 0.90);
+      stamp.connect(stg);
+      stg.connect(this.ctx.destination);
+      stamp.start(now + 0.48);
+      stamp.stop(now + 0.90);
+    } catch (e) {}
+  }
 }
 
 window.AudioManager = new AudioManager();
