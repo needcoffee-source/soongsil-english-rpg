@@ -7057,10 +7057,13 @@ class MainApp {
         }
       }
 
-      // 8. 나태의 거인 전용 드랍
-      if (bName.includes('나태') || bName.includes('거인')) {
+      // 8. 나태의 거인 / 방학 직전 나태신 전용 드랍 & 시즌 1 피날레 축포
+      if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
         this.addItem('item_orange_potion', '주홍 물약', 2, '🧪', { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 즉시 회복' });
-      rewardItemsList.push('🧪 주홍 물약 x2');
+        rewardItemsList.push('🧪 주홍 물약 x2');
+        if (this.engine && typeof this.engine.triggerSlothGrandFinale === 'function') {
+          this.engine.triggerSlothGrandFinale();
+        }
       }
 
       // 9. 숭실 백호 성수 전용 드랍
@@ -7079,6 +7082,8 @@ class MainApp {
         clearNotice = '\n\n🎉 숭실 청동 드래곤을 토벌하여 3티어 청동 장비의 핵심 재료를 획득했습니다!';
       } else if (bName.includes('케르베로스') || bName.includes('cerberus')) {
         clearNotice = '\n\n🎉 [신규 구역 해금] 3두마수 케르베로스를 토벌하여 다음 미지의 모험 구역으로 향하는 길이 열렸습니다!';
+      } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+        clearNotice = '\n\n🎆 👑 [SEASON 1 GRAND CLEAR] 방학 직전 나태신을 물리치고 운동장에 진짜 여름방학이 개막했습니다!! 🏖️ 전교생에게 무한 방학의 축포가 쏟아집니다!';
       }
 
       alert(`🏆 [${data.bossName}] 협동 토벌 성공!\n\n🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}${clearNotice}`);

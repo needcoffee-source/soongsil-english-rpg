@@ -127,6 +127,15 @@ class GameEngine {
       auraParticles: []
     };
 
+    // 🎆 Season 1 Grand Finale FX State (Sloth God Defeated Fireworks & Confetti)
+    this.slothFinale = {
+      active: false,
+      startTime: 0,
+      duration: 6800,
+      fireworks: [],
+      confetti: []
+    };
+
     // Movement callbacks
     this.onMoveCallback = null;
     this.onLocationChangeCallback = null;
@@ -2340,6 +2349,9 @@ class GameEngine {
 
     // Ancient Bronze Dragon Screen Flash & Boss Arrival Banner Overlay
     this.renderDragonScreenOverlay();
+
+    // 🎆 Season 1 Grand Finale Fireworks & Confetti Celebration Overlay
+    this.renderSlothGrandFinaleOverlay();
 
     // ========================================================
     // RENDER POKEMON FADE TO BLACK (암전 오버레이)
@@ -8211,6 +8223,69 @@ class GameEngine {
         }
 
         if (sprite) this.ctx.drawImage(sprite, drawX, drawY, drawW, drawH);
+
+        // === 🐤 나태신 워터파크 구역: 학생 캐릭터 오리튜브 자동 장착 & 물보라 이펙트 ===
+        if (this.player && this.player.room === 'playground' && !isFallen) {
+          const isSlothActive = this.getCurrentSoccerBossKind && this.getCurrentSoccerBossKind() === 'sloth_titan';
+          if (isSlothActive) {
+            const bx = 18 * 32 + 16;
+            const by = 35 * 32 + 16;
+            const pDist = Math.hypot((px + 12) - bx, (py + 16) - by);
+            if (pDist <= 340) {
+              const duckBob = Math.sin(now / 180 + (isLocal ? 0 : 2.1)) * 2.8;
+              this.ctx.save();
+              this.ctx.translate(px + 12, py + 18 + duckBob);
+
+              // 튜브 몸체 (노란 도넛)
+              this.ctx.fillStyle = '#facc15';
+              this.ctx.strokeStyle = '#ca8a04';
+              this.ctx.lineWidth = 2.5;
+              this.ctx.beginPath();
+              this.ctx.ellipse(0, 0, 19, 9.5, 0, 0, Math.PI * 2);
+              this.ctx.fill();
+              this.ctx.stroke();
+
+              // 귀여운 오리 머리
+              this.ctx.beginPath();
+              this.ctx.arc(14, -3, 6.5, 0, Math.PI * 2);
+              this.ctx.fill();
+              this.ctx.stroke();
+
+              // 주황색 오리 부리
+              this.ctx.fillStyle = '#f97316';
+              this.ctx.beginPath();
+              this.ctx.ellipse(19, -2, 4.2, 2.2, 0, 0, Math.PI * 2);
+              this.ctx.fill();
+
+              // 오리 눈
+              this.ctx.fillStyle = '#0f172a';
+              this.ctx.beginPath();
+              this.ctx.arc(15, -4, 1.4, 0, Math.PI * 2);
+              this.ctx.fill();
+              this.ctx.restore();
+
+              // 발밑 첨벙 수면 링
+              const splashR = 12 + ((now / 32 + (isLocal ? 0 : 25)) % 16);
+              const splashA = Math.max(0, 1 - (splashR - 12) / 16) * 0.75;
+              this.ctx.save();
+              this.ctx.strokeStyle = `rgba(103, 232, 249, ${splashA})`;
+              this.ctx.lineWidth = 1.8;
+              this.ctx.beginPath();
+              this.ctx.ellipse(px + 12, py + 28, splashR, splashR * 0.45, 0, 0, Math.PI * 2);
+              this.ctx.stroke();
+              this.ctx.restore();
+
+              // 머리 위 💤 꾸벅.. 수면방울
+              const zOffset = (now / 42 + (isLocal ? 0 : 15)) % 18;
+              this.ctx.save();
+              this.ctx.fillStyle = '#fde047';
+              this.ctx.font = '900 11px sans-serif';
+              this.ctx.textAlign = 'center';
+              this.ctx.fillText('💤 꾸벅..', px + 12, plateY - 8 - zOffset * 0.4);
+              this.ctx.restore();
+            }
+          }
+        }
       }
     } catch (sprErr) {
       console.warn('[Engine] renderPlayer sprite draw fallback:', sprErr);
@@ -9449,6 +9524,141 @@ class GameEngine {
   }
 
   // ========================================================
+  // 🎆 시즌 1 대단원 피날레: 나태신 토벌 불꽃놀이 & 황금 컨페티 축포 시스템
+  // ========================================================
+  triggerSlothGrandFinale() {
+    this.slothFinale = {
+      active: true,
+      startTime: Date.now(),
+      duration: 6800,
+      fireworks: [],
+      confetti: []
+    };
+    const colors = ['#fde047', '#f472b6', '#38bdf8', '#4ade80', '#c084fc', '#fb923c', '#ffffff'];
+    for (let i = 0; i < 90; i++) {
+      this.slothFinale.confetti.push({
+        x: Math.random() * this.width,
+        y: -20 - Math.random() * 200,
+        vx: (Math.random() - 0.5) * 3.5,
+        vy: 2.2 + Math.random() * 3.5,
+        rot: Math.random() * Math.PI * 2,
+        vRot: (Math.random() - 0.5) * 0.22,
+        w: 6 + Math.random() * 6,
+        h: 4 + Math.random() * 4,
+        color: colors[i % colors.length]
+      });
+    }
+    if (window.AudioManager && typeof window.AudioManager.playSlothGrandFinale === 'function') {
+      window.AudioManager.playSlothGrandFinale();
+    }
+    if (typeof this.addFloatingText === 'function') {
+      const bx = 18 * 32 + 16;
+      const by = 35 * 32 + 16;
+      this.addFloatingText(bx, by - 95, '🎆 "수고했어 숭실중학교! 해피 여름방학 개막~!!" 🎊', '#fef08a', 18);
+    }
+  }
+
+  renderSlothGrandFinaleOverlay() {
+    if (!this.slothFinale || !this.slothFinale.active) return;
+    const now = Date.now();
+    const p = Math.min(1, (now - this.slothFinale.startTime) / this.slothFinale.duration);
+    if (p >= 1) {
+      this.slothFinale.active = false;
+      return;
+    }
+
+    const ctx = this.ctx;
+
+    // 주기적 불꽃놀이 폭죽 생성 (16% 확률)
+    if (Math.random() < 0.16) {
+      const fx = 120 + Math.random() * (this.width - 240);
+      const fy = 60 + Math.random() * (this.height * 0.45);
+      const colors = ['#fde047', '#f472b6', '#38bdf8', '#4ade80', '#c084fc', '#fbbf24'];
+      const col = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < 26; i++) {
+        const ang = (Math.PI * 2 * i) / 26;
+        const spd = 2.4 + Math.random() * 3.8;
+        this.slothFinale.fireworks.push({
+          x: fx,
+          y: fy,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          alpha: 1,
+          color: col
+        });
+      }
+    }
+
+    ctx.save();
+
+    // 1. 불꽃놀이 파티클 업데이트 & 렌더링
+    for (let i = this.slothFinale.fireworks.length - 1; i >= 0; i--) {
+      const fw = this.slothFinale.fireworks[i];
+      fw.x += fw.vx;
+      fw.y += fw.vy;
+      fw.vy += 0.05;
+      fw.alpha -= 0.022;
+      if (fw.alpha <= 0) {
+        this.slothFinale.fireworks.splice(i, 1);
+        continue;
+      }
+      ctx.fillStyle = fw.color;
+      ctx.globalAlpha = fw.alpha;
+      ctx.beginPath();
+      ctx.arc(fw.x, fw.y, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2. 흩날리는 황금 & 무지개 컨페티 색종이
+    for (let i = 0; i < this.slothFinale.confetti.length; i++) {
+      const cf = this.slothFinale.confetti[i];
+      cf.x += cf.vx;
+      cf.y += cf.vy;
+      cf.rot += cf.vRot;
+      if (cf.y > this.height + 20) cf.y = -10;
+      ctx.save();
+      ctx.translate(cf.x, cf.y);
+      ctx.rotate(cf.rot);
+      ctx.fillStyle = cf.color;
+      ctx.globalAlpha = 0.95;
+      ctx.fillRect(-cf.w / 2, -cf.h / 2, cf.w, cf.h);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+
+    // 3. 시즌1 대단원 피날레 그랜드 배너
+    const bw = 560;
+    const bh = 64;
+    const bx = (this.width - bw) / 2;
+    const by = 20;
+
+    const bgGrad = ctx.createLinearGradient(bx, by, bx + bw, by);
+    bgGrad.addColorStop(0, 'rgba(6, 78, 59, 0.96)');
+    bgGrad.addColorStop(0.5, 'rgba(131, 24, 67, 0.96)');
+    bgGrad.addColorStop(1, 'rgba(120, 53, 15, 0.96)');
+
+    ctx.fillStyle = bgGrad;
+    ctx.strokeStyle = '#fde047';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fde047';
+    ctx.font = '900 13px "Pretendard", "Malgun Gothic", sans-serif';
+    ctx.fillText('🎆 🏆 [SEASON 1 GRAND CLEAR] 나태신을 물리치고 진짜 방학이 찾아왔습니다!! 🏆 🎆', this.width / 2, by + 22);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 16px "Pretendard", "Malgun Gothic", sans-serif';
+    ctx.fillText('🏖️ "수고했어 숭실중학교! 해피 여름방학 개막~!!" 🎊', this.width / 2, by + 46);
+
+    ctx.restore();
+  }
+
+  // ========================================================
   // 👩‍🏫 선생님 전용 황금빛 반짝반짝 후광 아우라 렌더러
   // ========================================================
   renderTeacherGoldenAura(px, py, now) {
@@ -9628,7 +9838,8 @@ class GameEngine {
     // Dynamically scale arena magic circle and prompt offset depending on boss scale
     let arenaRadius = 78;
     let promptOffsetY = 48;
-    if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+    const isSlothBoss = bName.includes('나태') || bName.includes('거인') || bName.includes('sloth');
+    if (isSlothBoss) {
       arenaRadius = 126; // 2.0x Sloth Titan
       promptOffsetY = 88;
     } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final')) {
@@ -9639,38 +9850,89 @@ class GameEngine {
       promptOffsetY = 82;
     }
 
-    // Sacred Magic Circle
-    this.ctx.save();
-    this.ctx.translate(bx, by);
-
-    this.ctx.strokeStyle = `rgba(250, 204, 21, ${pulse})`;
-    this.ctx.lineWidth = 3.5;
-    this.ctx.beginPath();
-    this.ctx.arc(0, 0, arenaRadius, 0, Math.PI * 2);
-    this.ctx.stroke();
-
-    this.ctx.fillStyle = 'rgba(234, 88, 12, 0.18)';
-    this.ctx.fill();
-
-    this.ctx.rotate(rot);
-    this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
-    this.ctx.lineWidth = 1.5;
-    this.ctx.beginPath();
-    for (let r = 0; r < 8; r++) {
-      const ang = (r * Math.PI) / 4;
-      this.ctx.moveTo(Math.cos(ang) * (arenaRadius * 0.6), Math.sin(ang) * (arenaRadius * 0.6));
-      this.ctx.lineTo(Math.cos(ang) * (arenaRadius * 0.94), Math.sin(ang) * (arenaRadius * 0.94));
-    }
-    this.ctx.stroke();
-
-    for (let r = 0; r < 6; r++) {
-      const ang = (r * Math.PI) / 3;
-      this.ctx.fillStyle = '#fef08a';
+    // 🏖️ 나태신 전용: 축구장 워터파크 풀장 오아시스 바닥 변신 & 비치볼/수박 렌더링
+    if (isSlothBoss) {
+      this.ctx.save();
+      const poolPulse = Math.sin(now * 0.003) * 6;
+      const poolGrad = this.ctx.createRadialGradient(bx, by + 10, 20, bx, by + 10, 290 + poolPulse);
+      poolGrad.addColorStop(0, 'rgba(6, 182, 212, 0.72)');
+      poolGrad.addColorStop(0.55, 'rgba(14, 165, 233, 0.52)');
+      poolGrad.addColorStop(0.85, 'rgba(56, 189, 248, 0.30)');
+      poolGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      this.ctx.fillStyle = poolGrad;
       this.ctx.beginPath();
-      this.ctx.arc(Math.cos(ang) * (arenaRadius * 0.78), Math.sin(ang) * (arenaRadius * 0.78), 3.5, 0, Math.PI * 2);
+      this.ctx.ellipse(bx, by + 10, 300 + poolPulse, 140 + poolPulse * 0.45, 0, 0, Math.PI * 2);
       this.ctx.fill();
+
+      // 일렁이는 카우스틱 수면 링
+      this.ctx.strokeStyle = 'rgba(186, 230, 253, 0.45)';
+      this.ctx.lineWidth = 2;
+      for (let r = 1; r <= 3; r++) {
+        const rr = ((now * 0.04 + r * 75) % 230);
+        this.ctx.beginPath();
+        this.ctx.ellipse(bx, by + 10, rr, rr * 0.45, 0, 0, Math.PI * 2);
+        this.ctx.stroke();
+      }
+
+      // 둥둥 떠다니는 비치볼, 수박, 야자수
+      const floats = [
+        { icon: '🏐', x: bx - 145, y: by - 45 },
+        { icon: '🍉', x: bx - 110, y: by + 68 },
+        { icon: '🏖️', x: bx + 135, y: by + 52 },
+        { icon: '🌴', x: bx - 185, y: by - 70 },
+        { icon: '🌴', x: bx + 185, y: by - 70 }
+      ];
+      floats.forEach((fl, idx) => {
+        const bob = Math.sin(now * 0.005 + idx * 2) * 4;
+        this.ctx.font = fl.icon === '🌴' ? '28px sans-serif' : '19px sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(fl.icon, fl.x, fl.y + bob);
+      });
+
+      // 나태 워터파크 네온 알림 배지
+      this.drawSharpLabel(bx, by - 96, '🏖️ [나태 워터파크 풀장] 전교생 오리튜브 자동 장착 ON', {
+        bgColor: 'rgba(8, 51, 68, 0.94)',
+        borderColor: '#67e8f9',
+        textColor: '#fef08a',
+        fontSize: 11.5,
+        paddingX: 12,
+        height: 22
+      });
+      this.ctx.restore();
+    } else {
+      // Sacred Magic Circle (드래곤 / 대마왕 / 케르베로스 / 파멸신)
+      this.ctx.save();
+      this.ctx.translate(bx, by);
+
+      this.ctx.strokeStyle = `rgba(250, 204, 21, ${pulse})`;
+      this.ctx.lineWidth = 3.5;
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, arenaRadius, 0, Math.PI * 2);
+      this.ctx.stroke();
+
+      this.ctx.fillStyle = 'rgba(234, 88, 12, 0.18)';
+      this.ctx.fill();
+
+      this.ctx.rotate(rot);
+      this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.beginPath();
+      for (let r = 0; r < 8; r++) {
+        const ang = (r * Math.PI) / 4;
+        this.ctx.moveTo(Math.cos(ang) * (arenaRadius * 0.6), Math.sin(ang) * (arenaRadius * 0.6));
+        this.ctx.lineTo(Math.cos(ang) * (arenaRadius * 0.94), Math.sin(ang) * (arenaRadius * 0.94));
+      }
+      this.ctx.stroke();
+
+      for (let r = 0; r < 6; r++) {
+        const ang = (r * Math.PI) / 3;
+        this.ctx.fillStyle = '#fef08a';
+        this.ctx.beginPath();
+        this.ctx.arc(Math.cos(ang) * (arenaRadius * 0.78), Math.sin(ang) * (arenaRadius * 0.78), 3.5, 0, Math.PI * 2);
+        this.ctx.fill();
+      }
+      this.ctx.restore();
     }
-    this.ctx.restore();
 
     if (bName.includes('대마왕') || bName.includes('중간고사') || bName.includes('demon') || bName.includes('마왕')) {
       this.drawHighResBossDemon(boss);

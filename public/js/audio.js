@@ -1190,6 +1190,49 @@ class AudioManager {
       boing.stop(now + 1.05);
     } catch (e) {}
   }
+
+  /**
+   * 🎆 Season 1 Grand Finale: Fireworks Fanfare & Confetti Celebration
+   */
+  playSlothGrandFinale() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      // 1. Victory Fanfare Arpeggio
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+      notes.forEach((f, idx) => {
+        const t = now + idx * 0.085;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.22, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.52);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.54);
+      });
+
+      // 2. Periodic Firework Cracker Pops
+      [0.2, 0.45, 0.75, 1.05, 1.4].forEach((delay) => {
+        const pt = now + delay;
+        const pop = this.ctx.createOscillator();
+        const pg = this.ctx.createGain();
+        pop.type = 'sawtooth';
+        pop.frequency.setValueAtTime(440, pt);
+        pop.frequency.exponentialRampToValueAtTime(60, pt + 0.16);
+        pg.gain.setValueAtTime(0.24, pt);
+        pg.gain.exponentialRampToValueAtTime(0.001, pt + 0.18);
+        pop.connect(pg);
+        pg.connect(this.ctx.destination);
+        pop.start(pt);
+        pop.stop(pt + 0.19);
+      });
+    } catch (e) {}
+  }
 }
 
 window.AudioManager = new AudioManager();
