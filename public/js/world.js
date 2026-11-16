@@ -769,9 +769,9 @@ const WORLD_DATA = {
     npcs: [],
     gymMonsters: [],
     interactive: [
-      { id: "gym_stage_podium", type: "gym_stage_podium", x: 11, y: 13, name: "🎤 강연 무대 연단", prompt: "강연 무대 살펴보기 (SPACE)" },
-      { id: "gym_broadcast_storage", type: "gym_broadcast_storage", x: 6, y: 6, name: "🎙️ 체육관 방송장비 창고", prompt: "방송장비 창고 살펴보기 (SPACE)" },
-      { id: "gym_equipment_storage", type: "gym_equipment_storage", x: 6, y: 20, name: "🏀 공 · 체육복 보관창고", prompt: "공·체육복 창고 살펴보기 (SPACE)" }
+      { id: "gym_stage_podium", type: "gym_stage_podium", x: 11, y: 13, name: "🎤 강연 무대", prompt: "강연 무대 살펴보기 (SPACE)" },
+      { id: "gym_broadcast_storage", type: "gym_broadcast_storage", x: 6, y: 6, name: "🎛️ 체육관 방송실", prompt: "체육관 방송실 살펴보기 (SPACE)" },
+      { id: "gym_equipment_storage", type: "gym_equipment_storage", x: 6, y: 20, name: "📦 창고", prompt: "창고 살펴보기 (SPACE)" }
     ]
   },
   classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },

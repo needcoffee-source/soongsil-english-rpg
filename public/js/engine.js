@@ -19055,7 +19055,7 @@ class GameEngine {
     ctx.fillStyle = '#38bdf8';
     ctx.fillRect(2 * 32 + 10, 7 * 32 + 10, 12, 8);
 
-    this.drawSharpLabel(7.5 * 32, 3.3 * 32, '🎛️ 체육관 방송장비 창고', {
+    this.drawSharpLabel(7.5 * 32, 3.3 * 32, '🎛️ 체육관 방송실', {
       bgColor: '#0f172a',
       borderColor: '#38bdf8',
       textColor: '#e0f2fe',
@@ -19114,7 +19114,7 @@ class GameEngine {
     ctx.fillStyle = '#e2e8f0';
     ctx.fillRect(11 * 32 + 12, 13 * 32 + 12, 8, 8);
 
-    this.drawSharpLabel(7 * 32, 10.6 * 32, '🎤 강연 무대 (STAGE)', {
+    this.drawSharpLabel(7 * 32, 10.6 * 32, '🎤 강연 무대', {
       bgColor: '#7c2d12',
       borderColor: '#facc15',
       textColor: '#fef3c7',
@@ -19176,7 +19176,7 @@ class GameEngine {
     ctx.arc(11 * 32 + 16, 22 * 32 + 16, 9, 0, Math.PI * 2);
     ctx.fill();
 
-    this.drawSharpLabel(7.5 * 32, 18.3 * 32, '🏀 공 · 체육복 보관창고', {
+    this.drawSharpLabel(7.5 * 32, 18.3 * 32, '📦 창고', {
       bgColor: '#1e293b',
       borderColor: '#fb923c',
       textColor: '#ffedd5',

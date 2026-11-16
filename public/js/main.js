@@ -2258,21 +2258,21 @@ class MainApp {
       });
     } else if (target.type === 'gym_stage_podium') {
       this.showGameDialog(
-        '🎤 체육관 강연 무대 연단',
+        '🎤 강연 무대',
         `"농구 코트 정면을 바라보는 아늑한 강연 무대입니다.\n학교 행사나 영어 발표회, 8단원 심화 강연이 진행되는 숭실 체육관의 상징적인 단상입니다."`,
         '🎤'
       );
     } else if (target.type === 'gym_broadcast_storage') {
       this.showGameDialog(
-        '🎙️ 체육관 방송장비 창고',
-        `"강연 무대 위쪽 창고입니다.\n대형 음향 믹서 콘솔, 무선 마이크 세트, 앰프 랙과 고출력 스피커가 행사에 대비해 깔끔하게 정돈되어 있습니다."`,
+        '🎛️ 체육관 방송실',
+        `"강연 무대 위쪽 체육관 방송실입니다.\n대형 음향 믹서 콘솔, 무선 마이크 세트, 앰프 랙과 고출력 스피커가 행사에 대비해 깔끔하게 정돈되어 있습니다."`,
         '🎛️'
       );
     } else if (target.type === 'gym_equipment_storage') {
       this.showGameDialog(
-        '🏀 공 · 체육복 보관창고',
+        '📦 창고',
         `"강연 무대 아래쪽 창고입니다.\n농구공·배구공·피구공 보관함과 팀 조끼(유니폼), 접이식 체조 매트가 종목별로 정갈하게 수납되어 있습니다."`,
-        '🏀'
+        '📦'
       );
     } else if (target.type === 'gym_pe_teacher') {
       this.handlePETeacherInteraction();
