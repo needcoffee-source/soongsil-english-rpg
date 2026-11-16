@@ -14,15 +14,17 @@
 
 const SPREADSHEET_ID = '1r-fa5wMoNLPLQX3j3dfo75UEzOkPPApaUD46yOtCwk4';
 const SHEET_NAME = '학생계정';
+const BACKUP_SHEET_NAME = '진행백업';
 const SYNC_SECRET = ''; // 선택사항: 교사 관리자 화면과 동일한 보안키를 입력하면 인증을 검사합니다.
 
 const HEADERS = ['학번', '이름', '이메일', 'PIN', '레벨', '골드', '등록일시', '최근접속'];
+const BACKUP_HEADERS = ['학번', '업데이트시각', '진행상태JSON'];
 
 function onOpen() {
   try {
     SpreadsheetApp.getUi()
       .createMenu('🏫 숭실RPG 계정 시트')
-      .addItem('✨ 학생계정 시트 초기 서식 만들기', 'setupStudentSheet')
+      .addItem('✨ 학생계정 · 진행백업 시트 서식 만들기', 'setupStudentSheet')
       .addToUi();
   } catch (e) {}
 }
@@ -70,27 +72,134 @@ function ensureStudentSheet_() {
   return sheet;
 }
 
+function ensureBackupSheet_() {
+  const ss = getSpreadsheet_();
+  let sheet = ss.getSheetByName(BACKUP_SHEET_NAME);
+  let created = false;
+  if (!sheet) {
+    sheet = ss.insertSheet(BACKUP_SHEET_NAME);
+    created = true;
+  }
+  const firstRow = sheet.getRange(1, 1, 1, BACKUP_HEADERS.length).getValues()[0];
+  const hasHeader = String(firstRow[0] || '').trim() === '학번';
+  if (created || !hasHeader) {
+    sheet.getRange(1, 1, 1, BACKUP_HEADERS.length).setValues([BACKUP_HEADERS]);
+    const headerRange = sheet.getRange(1, 1, 1, BACKUP_HEADERS.length);
+    headerRange
+      .setBackground('#1e293b')
+      .setFontColor('#ffffff')
+      .setFontWeight('bold')
+      .setHorizontalAlignment('center');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 95);   // 학번
+    sheet.setColumnWidth(2, 165);  // 업데이트시각
+    sheet.setColumnWidth(3, 460);  // 진행상태JSON
+  }
+  const maxRows = Math.max(sheet.getMaxRows(), 200);
+  sheet.getRange(2, 1, maxRows - 1, 1).setNumberFormat('@');
+  sheet.getRange(2, 3, maxRows - 1, 1).setNumberFormat('@');
+  return sheet;
+}
+
 function setupStudentSheet() {
   const sheet = ensureStudentSheet_();
+  const backupSheet = ensureBackupSheet_();
   try {
     sheet.getRange('D1').setNote('4자리 숫자 PIN이 평문으로 표시됩니다.\n이 칸의 숫자를 4자리로 바꾸면 학생 로그인 시 새 PIN으로 자동 반영됩니다.\nPIN을 비우게 하려면 "초기화" 라고 입력하세요.');
+    backupSheet.getRange('C1').setNote('학생의 경험치·장비·인벤토리·퀘스트 전체 JSON 스냅샷 자동 백업입니다. 직접 수정하지 마세요.');
   } catch (e) {}
-  return { success: true, sheetName: sheet.getName() };
+  return { success: true, sheetName: sheet.getName(), backupSheetName: backupSheet.getName() };
 }
 
 function normalizeTextCell_(val) {
   return String(val === undefined || val === null ? '' : val).trim();
 }
 
-function readAllStudentRows_(sheet) {
+function readBackupMap_(backupSheet) {
+  const map = {};
+  if (!backupSheet) return map;
+  const lastRow = backupSheet.getLastRow();
+  if (lastRow < 2) return map;
+  const values = backupSheet.getRange(2, 1, lastRow - 1, BACKUP_HEADERS.length).getDisplayValues();
+  for (let i = 0; i < values.length; i++) {
+    const sid = normalizeTextCell_(values[i][0]);
+    if (!sid || sid === '학번') continue;
+    map[sid] = {
+      rowNumber: i + 2,
+      studentId: sid,
+      updatedAt: normalizeTextCell_(values[i][1]),
+      progressJson: String(values[i][2] === undefined || values[i][2] === null ? '' : values[i][2]).trim()
+    };
+  }
+  return map;
+}
+
+function upsertBackupOne_(backupSheet, sid, updatedAt, progressJson) {
+  const jsonStr = String(progressJson === undefined || progressJson === null ? '' : progressJson).trim();
+  if (!backupSheet || !sid || !jsonStr || jsonStr.length > 49500) return false;
+  const backupMap = readBackupMap_(backupSheet);
+  const existing = backupMap[sid];
+  const line = [sid, normalizeTextCell_(updatedAt), jsonStr];
+  if (existing) {
+    backupSheet.getRange(existing.rowNumber, 1).setNumberFormat('@');
+    backupSheet.getRange(existing.rowNumber, 3).setNumberFormat('@');
+    backupSheet.getRange(existing.rowNumber, 1, 1, BACKUP_HEADERS.length).setValues([line]);
+  } else {
+    const targetRow = Math.max(backupSheet.getLastRow() + 1, 2);
+    backupSheet.getRange(targetRow, 1).setNumberFormat('@');
+    backupSheet.getRange(targetRow, 3).setNumberFormat('@');
+    backupSheet.getRange(targetRow, 1, 1, BACKUP_HEADERS.length).setValues([line]);
+  }
+  return true;
+}
+
+function syncBackupAll_(backupSheet, incomingRows) {
+  if (!backupSheet || !Array.isArray(incomingRows) || incomingRows.length === 0) return;
+  const existingMap = readBackupMap_(backupSheet);
+  const appendList = [];
+  for (let i = 0; i < incomingRows.length; i++) {
+    const row = incomingRows[i] || {};
+    const sid = normalizeTextCell_(row.studentId);
+    const jsonStr = String(row.progressJson === undefined || row.progressJson === null ? '' : row.progressJson).trim();
+    if (!sid || !jsonStr || jsonStr.length > 49500) continue;
+    const line = [sid, normalizeTextCell_(row.updatedAt), jsonStr];
+    const ex = existingMap[sid];
+    if (ex) {
+      backupSheet.getRange(ex.rowNumber, 1).setNumberFormat('@');
+      backupSheet.getRange(ex.rowNumber, 3).setNumberFormat('@');
+      backupSheet.getRange(ex.rowNumber, 1, 1, BACKUP_HEADERS.length).setValues([line]);
+    } else {
+      appendList.push(line);
+    }
+  }
+  if (appendList.length > 0) {
+    const startRow = Math.max(backupSheet.getLastRow() + 1, 2);
+    backupSheet.getRange(startRow, 1, appendList.length, 1).setNumberFormat('@');
+    backupSheet.getRange(startRow, 3, appendList.length, 1).setNumberFormat('@');
+    backupSheet.getRange(startRow, 1, appendList.length, BACKUP_HEADERS.length).setValues(appendList);
+  }
+}
+
+function deleteBackupOne_(backupSheet, sid) {
+  if (!backupSheet || !sid) return;
+  const backupMap = readBackupMap_(backupSheet);
+  const existing = backupMap[sid];
+  if (existing) {
+    backupSheet.deleteRow(existing.rowNumber);
+  }
+}
+
+function readAllStudentRows_(sheet, backupSheet) {
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
   const displayValues = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getDisplayValues();
+  const backupMap = backupSheet ? readBackupMap_(backupSheet) : {};
   const list = [];
   for (let i = 0; i < displayValues.length; i++) {
     const r = displayValues[i];
     const sid = normalizeTextCell_(r[0]);
     if (!sid || sid === '학번') continue;
+    const bk = backupMap[sid];
     list.push({
       rowNumber: i + 2,
       studentId: sid,
@@ -100,7 +209,8 @@ function readAllStudentRows_(sheet) {
       level: Number(r[4]) || 1,
       gold: Number(r[5]) || 0,
       registeredAt: normalizeTextCell_(r[6]),
-      updatedAt: normalizeTextCell_(r[7])
+      updatedAt: normalizeTextCell_(r[7]),
+      progressJson: bk ? bk.progressJson : ''
     });
   }
   return list;
@@ -127,18 +237,19 @@ function doGet(e) {
   }
   const action = normalizeTextCell_(params.action || 'getAll');
   const sheet = ensureStudentSheet_();
+  const backupSheet = ensureBackupSheet_();
 
   if (action === 'ping') {
-    return jsonOut_({ success: true, sheetName: SHEET_NAME, spreadsheetId: SPREADSHEET_ID });
+    return jsonOut_({ success: true, sheetName: SHEET_NAME, backupSheetName: BACKUP_SHEET_NAME, spreadsheetId: SPREADSHEET_ID });
   }
   if (action === 'getOne') {
     const sid = normalizeTextCell_(params.studentId);
-    const rows = readAllStudentRows_(sheet);
+    const rows = readAllStudentRows_(sheet, backupSheet);
     const hit = rows.find(r => r.studentId === sid) || null;
     return jsonOut_({ success: true, found: !!hit, row: hit });
   }
-  const rows = readAllStudentRows_(sheet);
-  return jsonOut_({ success: true, sheetName: SHEET_NAME, rows: rows });
+  const rows = readAllStudentRows_(sheet, backupSheet);
+  return jsonOut_({ success: true, sheetName: SHEET_NAME, backupSheetName: BACKUP_SHEET_NAME, rows: rows });
 }
 
 function doPost(e) {
@@ -155,18 +266,19 @@ function doPost(e) {
 
     const action = normalizeTextCell_(body.action || 'getAll');
     const sheet = ensureStudentSheet_();
+    const backupSheet = ensureBackupSheet_();
 
     if (action === 'ping') {
-      return jsonOut_({ success: true, sheetName: SHEET_NAME, spreadsheetId: SPREADSHEET_ID });
+      return jsonOut_({ success: true, sheetName: SHEET_NAME, backupSheetName: BACKUP_SHEET_NAME, spreadsheetId: SPREADSHEET_ID });
     }
 
     if (action === 'getAll') {
-      return jsonOut_({ success: true, sheetName: SHEET_NAME, rows: readAllStudentRows_(sheet) });
+      return jsonOut_({ success: true, sheetName: SHEET_NAME, backupSheetName: BACKUP_SHEET_NAME, rows: readAllStudentRows_(sheet, backupSheet) });
     }
 
     if (action === 'getOne') {
       const sid = normalizeTextCell_(body.studentId);
-      const rows = readAllStudentRows_(sheet);
+      const rows = readAllStudentRows_(sheet, backupSheet);
       const hit = rows.find(r => r.studentId === sid) || null;
       return jsonOut_({ success: true, found: !!hit, row: hit });
     }
@@ -178,6 +290,7 @@ function doPost(e) {
       const rows = readAllStudentRows_(sheet);
       const existing = rows.find(r => r.studentId === sid);
       const resolvedPin = row.clearPin ? '' : (normalizeTextCell_(row.pin) || (existing ? existing.pin : ''));
+      const updatedAtStr = normalizeTextCell_(row.updatedAt) || (existing ? existing.updatedAt : '');
       const line = [
         sid,
         normalizeTextCell_(row.name) || (existing ? existing.name : ''),
@@ -186,7 +299,7 @@ function doPost(e) {
         Number(row.level) || (existing ? existing.level : 1),
         row.gold !== undefined ? Number(row.gold) : (existing ? existing.gold : 10),
         normalizeTextCell_(row.registeredAt) || (existing ? existing.registeredAt : ''),
-        normalizeTextCell_(row.updatedAt) || (existing ? existing.updatedAt : '')
+        updatedAtStr
       ];
       if (existing) {
         const range = sheet.getRange(existing.rowNumber, 1, 1, HEADERS.length);
@@ -198,6 +311,9 @@ function doPost(e) {
         sheet.getRange(targetRow, 1).setNumberFormat('@');
         sheet.getRange(targetRow, 4).setNumberFormat('@');
         sheet.getRange(targetRow, 1, 1, HEADERS.length).setValues([line]);
+      }
+      if (row.progressJson) {
+        upsertBackupOne_(backupSheet, sid, updatedAtStr, row.progressJson);
       }
       return jsonOut_({ success: true, studentId: sid });
     }
@@ -244,6 +360,8 @@ function doPost(e) {
         sheet.getRange(startRow, 1, appendList.length, HEADERS.length).setValues(appendList);
       }
 
+      syncBackupAll_(backupSheet, incomingRows);
+
       return jsonOut_({
         success: true,
         updatedCount: updatedCount,
@@ -259,6 +377,7 @@ function doPost(e) {
       if (existing) {
         sheet.deleteRow(existing.rowNumber);
       }
+      deleteBackupOne_(backupSheet, sid);
       return jsonOut_({ success: true, deleted: !!existing });
     }
 

@@ -199,6 +199,75 @@ function formatSheetTimestamp(ts) {
   }
 }
 
+const SHEET_SNAPSHOT_EXCLUDED_KEYS = new Set([
+  'pinHash',
+  'pinSalt',
+  'pinPlain',
+  'studentAuthToken'
+]);
+
+function extractProgressSnapshotFromRecord(rec = {}) {
+  if (!rec || typeof rec !== 'object' || Array.isArray(rec)) return '';
+  const snap = {};
+  for (const [k, v] of Object.entries(rec)) {
+    if (SHEET_SNAPSHOT_EXCLUDED_KEYS.has(k) || k.startsWith('_') || v === undefined) continue;
+    snap[k] = v;
+  }
+  try {
+    const json = JSON.stringify(snap);
+    return json.length <= 49000 ? json : '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function parseProgressSnapshotJson(rawJson) {
+  if (!rawJson || typeof rawJson !== 'string') return null;
+  const trimmed = rawJson.trim();
+  if (!trimmed || trimmed[0] !== '{') return null;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    for (const badKey of SHEET_SNAPSHOT_EXCLUDED_KEYS) {
+      delete parsed[badKey];
+    }
+    delete parsed.studentId;
+    return parsed;
+  } catch (e) {
+    return null;
+  }
+}
+
+function hasSubstantialRpgProgress(rec = {}) {
+  if (!rec || typeof rec !== 'object') return false;
+  if (Array.isArray(rec.inventory) && rec.inventory.length > 0) return true;
+  if ((Number(rec.exp) || 0) > 0) return true;
+  if ((Number(rec.level) || 1) > 1) return true;
+  if (rec.hasClearedFirstBoss || rec.hasClearedDragonRaid || rec.hasClearedCerberusRaid || rec.hasClearedClass704 || rec.hasCafeteriaKey) return true;
+  if (rec.quests && typeof rec.quests === 'object' && Object.keys(rec.quests).length > 0) return true;
+  if (rec.equipment && typeof rec.equipment === 'object' && Object.values(rec.equipment).some(v => v && v.item)) return true;
+  return false;
+}
+
+function mergeSnapshotIntoExistingRecord(rec, snap) {
+  if (!rec || !snap) return false;
+  const localTs = Number(rec.updatedAt) || 0;
+  const snapTs = Number(snap.updatedAt) || 0;
+  const shouldRestore =
+    (!hasSubstantialRpgProgress(rec) && hasSubstantialRpgProgress(snap)) ||
+    (snapTs > 0 && snapTs > localTs);
+  if (!shouldRestore) return false;
+
+  const preservedAuth = {
+    ...(rec.pinHash ? { pinHash: rec.pinHash } : {}),
+    ...(rec.pinSalt ? { pinSalt: rec.pinSalt } : {}),
+    ...(rec.pinPlain ? { pinPlain: rec.pinPlain } : {}),
+    ...(rec.authProvider ? { authProvider: rec.authProvider } : {})
+  };
+  Object.assign(rec, snap, preservedAuth);
+  return true;
+}
+
 function buildSheetRowFromRecord(studentId, rec = {}, opts = {}) {
   const plainPin = /^\d{4}$/.test(String(rec.pinPlain || '').trim())
     ? String(rec.pinPlain).trim()
@@ -212,7 +281,8 @@ function buildSheetRowFromRecord(studentId, rec = {}, opts = {}) {
     level: Math.max(1, Number(rec.level) || 1),
     gold: Math.max(0, Number(rec.gold) || 0),
     registeredAt: formatSheetTimestamp(rec.registeredAt),
-    updatedAt: formatSheetTimestamp(rec.updatedAt || Date.now())
+    updatedAt: formatSheetTimestamp(rec.updatedAt || Date.now()),
+    progressJson: extractProgressSnapshotFromRecord(rec)
   };
 }
 
@@ -658,15 +728,20 @@ app.post('/api/auth/student-login', async (req, res) => {
   const all = getStudentsProgress() || {};
   let existing = all[studentId];
 
-  // 📊 Google Sheets 실시간 PIN · 계정 동기화 (교사가 시트에서 PIN을 수정한 경우 즉시 반영)
+  // 📊 Google Sheets 실시간 PIN · 계정 · 진행상태 동기화
   let sheetRow = null;
-  if (isGoogleSheetsReady() && googleSheetsConfig.syncPinOnLogin) {
+  if (isGoogleSheetsReady() && (googleSheetsConfig.syncPinOnLogin || !existing)) {
     sheetRow = await pullSingleStudentFromSheet(studentId);
     if (sheetRow) {
       const sheetPinRaw = String(sheetRow.pin || '').trim();
       const isSheetPinValid4 = /^\d{4}$/.test(sheetPinRaw);
       const isSheetResetCmd = /^(초기화|reset)$/i.test(sheetPinRaw);
+      const sheetSnap = parseProgressSnapshotJson(sheetRow.progressJson);
       if (existing) {
+        let touched = false;
+        if (mergeSnapshotIntoExistingRecord(existing, sheetSnap)) {
+          touched = true;
+        }
         if (isSheetPinValid4 && existing.pinPlain !== sheetPinRaw) {
           const { salt, hash } = hashStudentPin(sheetPinRaw);
           existing = {
@@ -677,12 +752,14 @@ app.post('/api/auth/student-login', async (req, res) => {
             authProvider: 'pin',
             updatedAt: Date.now()
           };
-          all[studentId] = existing;
-          saveStudentsProgress(all, true);
+          touched = true;
         } else if (isSheetResetCmd) {
           delete existing.pinHash;
           delete existing.pinSalt;
           delete existing.pinPlain;
+          touched = true;
+        }
+        if (touched) {
           all[studentId] = existing;
           saveStudentsProgress(all, true);
         }
@@ -809,24 +886,28 @@ app.post('/api/auth/student-login', async (req, res) => {
         });
       }
     }
-    isNewAccount = true;
+    const sheetSnap = sheetRow ? parseProgressSnapshotJson(sheetRow.progressJson) : null;
+    isNewAccount = !(sheetRow && sheetSnap);
     const { salt, hash } = hashStudentPin(rawPin);
     all[studentId] = {
+      ...(sheetSnap || {}),
       name: (sheetRow && sheetRow.name) || name,
       studentId,
-      grade: 1,
-      level: (sheetRow && Number(sheetRow.level)) || 1,
-      exp: 0,
-      gold: (sheetRow && sheetRow.gold !== undefined) ? Number(sheetRow.gold) : 10,
-      hairColor: ['black', 'brown', 'blonde'].includes(body.hairColor) ? body.hairColor : 'black',
-      outfitColor: ['red', 'blue', 'green'].includes(body.outfitColor) ? body.outfitColor : 'red',
+      grade: (sheetSnap && Number(sheetSnap.grade)) || 1,
+      level: (sheetRow && Number(sheetRow.level)) || (sheetSnap && Number(sheetSnap.level)) || 1,
+      exp: (sheetSnap && Number.isFinite(Number(sheetSnap.exp))) ? Number(sheetSnap.exp) : 0,
+      gold: (sheetRow && sheetRow.gold !== undefined && sheetRow.gold !== '')
+        ? Number(sheetRow.gold)
+        : ((sheetSnap && sheetSnap.gold !== undefined) ? Number(sheetSnap.gold) : 10),
+      hairColor: (sheetSnap && sheetSnap.hairColor) || (['black', 'brown', 'blonde'].includes(body.hairColor) ? body.hairColor : 'black'),
+      outfitColor: (sheetSnap && sheetSnap.outfitColor) || (['red', 'blue', 'green'].includes(body.outfitColor) ? body.outfitColor : 'red'),
       email,
       pinSalt: salt,
       pinHash: hash,
       pinPlain: rawPin,
       authProvider: 'pin',
-      registeredAt: now,
-      updatedAt: now
+      registeredAt: (sheetSnap && Number(sheetSnap.registeredAt)) || now,
+      updatedAt: Math.max(now, Number(sheetSnap && sheetSnap.updatedAt) || 0)
     };
     saveStudentsProgress(all, true);
 
@@ -1085,6 +1166,10 @@ app.post('/api/admin/rename-student-id', requireTeacherHttp, (req, res) => {
   }
   all[newStudentId] = record;
   saveStudentsProgress(all, true);
+  scheduleSheetStudentSync(newStudentId);
+  if (oldStudentId !== newStudentId && isGoogleSheetsReady() && googleSheetsConfig.autoPushChanges) {
+    callGoogleAppsScript({ action: 'deleteOne', studentId: oldStudentId }, 4000).catch(() => {});
+  }
 
   const deletedMap = getDeletedStudents();
   if (deletedMap[newStudentId]) {
@@ -1322,6 +1407,7 @@ async function syncAllFromGoogleSheet({ quiet = false } = {}) {
   let updatedCount = 0;
   let pinUpdatedCount = 0;
   let pinClearedCount = 0;
+  let snapshotRestoredCount = 0;
   let skippedInvalidPinCount = 0;
 
   for (const row of sheetRows) {
@@ -1331,6 +1417,7 @@ async function syncAllFromGoogleSheet({ quiet = false } = {}) {
     const sName = String((row && row.name) || '').trim();
     const sEmail = String((row && row.email) || '').trim().toLowerCase();
     const sPin = String((row && row.pin) || '').trim();
+    const snap = parseProgressSnapshotJson(row && row.progressJson);
     const isPin4 = /^\d{4}$/.test(sPin);
     const isResetCmd = /^(초기화|reset)$/i.test(sPin);
     if (sPin && !isPin4 && !isResetCmd) {
@@ -1346,6 +1433,10 @@ async function syncAllFromGoogleSheet({ quiet = false } = {}) {
     if (all[sid]) {
       const rec = { ...all[sid] };
       let changed = false;
+      if (mergeSnapshotIntoExistingRecord(rec, snap)) {
+        snapshotRestoredCount++;
+        changed = true;
+      }
       if (sName && rec.name !== sName) {
         rec.name = sName;
         changed = true;
@@ -1382,23 +1473,27 @@ async function syncAllFromGoogleSheet({ quiet = false } = {}) {
         changed = true;
       }
       if (changed) {
-        rec.updatedAt = now;
+        rec.updatedAt = Math.max(now, Number(snap && snap.updatedAt) || 0);
         all[sid] = rec;
         updatedCount++;
       }
     } else {
       const newRec = {
-        name: sName || `학생_${sid}`,
+        ...(snap || {}),
+        name: sName || (snap && snap.name) || `학생_${sid}`,
         studentId: sid,
-        grade: /^[123]/.test(sid) ? Number(sid[0]) : 1,
-        level: Math.max(1, Number(row.level) || 1),
-        exp: 0,
-        gold: row.gold !== undefined && row.gold !== '' ? Math.max(0, Number(row.gold) || 0) : 10,
-        email: sEmail || '',
+        grade: (snap && Number(snap.grade)) || (/^[123]/.test(sid) ? Number(sid[0]) : 1),
+        level: Math.max(1, Number(row.level) || (snap && Number(snap.level)) || 1),
+        exp: (snap && Number.isFinite(Number(snap.exp))) ? Number(snap.exp) : 0,
+        gold: row.gold !== undefined && row.gold !== ''
+          ? Math.max(0, Number(row.gold) || 0)
+          : ((snap && snap.gold !== undefined) ? Math.max(0, Number(snap.gold) || 0) : 10),
+        email: sEmail || (snap && snap.email) || '',
         authProvider: 'pin',
-        registeredAt: now,
-        updatedAt: now
+        registeredAt: (snap && Number(snap.registeredAt)) || now,
+        updatedAt: Math.max(now, Number(snap && snap.updatedAt) || 0)
       };
+      if (snap) snapshotRestoredCount++;
       if (isPin4) {
         const { salt, hash } = hashStudentPin(sPin);
         newRec.pinSalt = salt;
@@ -1415,15 +1510,16 @@ async function syncAllFromGoogleSheet({ quiet = false } = {}) {
     saveStudentsProgress(all, true);
   }
   googleSheetsConfig.lastSyncAt = Date.now();
-  googleSheetsConfig.lastSyncMessage = `시트 가져오기 완료 (신규 ${createdCount}, 갱신 ${updatedCount}, PIN 변경 ${pinUpdatedCount})`;
+  googleSheetsConfig.lastSyncMessage = `시트 가져오기 완료 (신규 ${createdCount}, 갱신 ${updatedCount}, 상태복원 ${snapshotRestoredCount}, PIN 변경 ${pinUpdatedCount})`;
   saveGoogleSheetsConfig();
   if (!quiet || createdCount > 0 || updatedCount > 0) {
-    console.log(`[Google Sheets Sync] rows=${sheetRows.length}, created=${createdCount}, updated=${updatedCount}, pinUpdated=${pinUpdatedCount}`);
+    console.log(`[Google Sheets Sync] rows=${sheetRows.length}, created=${createdCount}, updated=${updatedCount}, snapshotRestored=${snapshotRestoredCount}, pinUpdated=${pinUpdatedCount}`);
   }
   return {
     totalRows: sheetRows.length,
     createdCount,
     updatedCount,
+    snapshotRestoredCount,
     pinUpdatedCount,
     pinClearedCount,
     skippedInvalidPinCount
@@ -2214,6 +2310,7 @@ function applyServerExpAndLevelUp(record, baseAmount) {
 }
 
 function syncActivePlayerAfterMutation(studentId, record) {
+  scheduleSheetStudentSync(studentId);
   const activeStudent = Object.values(players).find(p => p.studentId === studentId);
   if (!activeStudent) return;
   activeStudent.level = record.level;
@@ -2525,6 +2622,7 @@ app.post('/api/safe/cafeteria-key', (req, res) => {
   record.updatedAt = Date.now();
   all[auth.studentId] = record;
   saveStudentsProgress(all, true);
+  scheduleSheetStudentSync(auth.studentId);
 
   return res.json({
     success: true,
@@ -3203,6 +3301,7 @@ setInterval(() => {
         Object.values(bossRaidEvent.participants).forEach(part => {
           if (part.studentId && all[part.studentId]) {
             all[part.studentId].hasClearedFirstBoss = true;
+            scheduleSheetStudentSync(part.studentId);
           }
         });
         saveStudentsProgress(all);

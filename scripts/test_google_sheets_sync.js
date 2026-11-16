@@ -46,8 +46,9 @@ async function runTests() {
     deleted: fs.existsSync(deletedPath) ? fs.readFileSync(deletedPath, 'utf8') : null
   };
 
-  // In-memory Mock Apps Script Google Sheet Server
+  // In-memory Mock Apps Script Google Sheet Server (학생계정 + 진행백업 2-tab model)
   const mockSheetRows = new Map();
+  const mockBackupRows = new Map();
   let mockServer = null;
   let gameServer = null;
   let startedGameServer = false;
@@ -66,25 +67,36 @@ async function runTests() {
         const action = body.action;
         if (action === 'ping') {
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: true, sheetName: '학생계정' }));
+          return res.end(JSON.stringify({ success: true, sheetName: '학생계정', backupSheetName: '진행백업' }));
         }
         if (action === 'getOne') {
-          const hit = mockSheetRows.get(String(body.studentId || '').trim()) || null;
+          const sid = String(body.studentId || '').trim();
+          const hit = mockSheetRows.get(sid) || null;
+          const bk = mockBackupRows.get(sid);
+          const rowOut = hit ? { ...hit, progressJson: (bk && bk.progressJson) || hit.progressJson || '' } : null;
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: true, found: !!hit, row: hit }));
+          return res.end(JSON.stringify({ success: true, found: !!rowOut, row: rowOut }));
         }
         if (action === 'getAll') {
+          const merged = Array.from(mockSheetRows.values()).map(r => {
+            const bk = mockBackupRows.get(r.studentId);
+            return { ...r, progressJson: (bk && bk.progressJson) || r.progressJson || '' };
+          });
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: true, rows: Array.from(mockSheetRows.values()) }));
+          return res.end(JSON.stringify({ success: true, rows: merged }));
         }
         if (action === 'upsertOne') {
           const r = body.row || {};
           const prev = mockSheetRows.get(r.studentId) || {};
+          const { progressJson, ...accountCols } = r;
           mockSheetRows.set(r.studentId, {
             ...prev,
-            ...r,
+            ...accountCols,
             pin: r.clearPin ? '' : (r.pin || prev.pin || '')
           });
+          if (progressJson) {
+            mockBackupRows.set(r.studentId, { studentId: r.studentId, updatedAt: r.updatedAt || '', progressJson });
+          }
           res.writeHead(200, { 'Content-Type': 'application/json' });
           return res.end(JSON.stringify({ success: true, studentId: r.studentId }));
         }
@@ -94,7 +106,11 @@ async function runTests() {
           for (const r of (body.rows || [])) {
             const existed = mockSheetRows.has(r.studentId);
             const prev = mockSheetRows.get(r.studentId) || {};
-            mockSheetRows.set(r.studentId, { ...prev, ...r, pin: r.pin || prev.pin || '' });
+            const { progressJson, ...accountCols } = r;
+            mockSheetRows.set(r.studentId, { ...prev, ...accountCols, pin: r.pin || prev.pin || '' });
+            if (progressJson) {
+              mockBackupRows.set(r.studentId, { studentId: r.studentId, updatedAt: r.updatedAt || '', progressJson });
+            }
             if (existed) updatedCount++;
             else appendedCount++;
           }
@@ -103,6 +119,7 @@ async function runTests() {
         }
         if (action === 'deleteOne') {
           const deleted = mockSheetRows.delete(body.studentId);
+          mockBackupRows.delete(body.studentId);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           return res.end(JSON.stringify({ success: true, deleted }));
         }
@@ -143,6 +160,7 @@ async function runTests() {
     assert.strictEqual(cfgRes.status, 200);
     assert.strictEqual(cfgRes.data.config.isReady, true);
     assert(cfgRes.data.codeGs.includes("const SPREADSHEET_ID = '1r-fa5wMoNLPLQX3j3dfo75UEzOkPPApaUD46yOtCwk4';"));
+    assert(cfgRes.data.codeGs.includes("const BACKUP_SHEET_NAME = '진행백업';"));
     assert(cfgRes.data.codeGs.includes("const SYNC_SECRET = 'sec-test-123';"));
 
     // 2. Test Connection
@@ -214,7 +232,93 @@ async function runTests() {
     assert.strictEqual(mockSheetRows.get('10888').pin, '9876');
     assert.strictEqual(mockSheetRows.get('10889').pin, '0011');
 
-    console.log('✅ All Google Sheets bidirectional account + plaintext PIN sync tests PASSED!');
+    // 7. Save full RPG progression (exp, inventory, equipment, quests, boss flags, titles) -> backed up in 진행백업
+    const saveRes = await reqJson(3000, 'POST', '/api/save-progress', {
+      studentId: '10888',
+      studentAuthToken: newPinOk.data.studentAuthToken,
+      progress: {
+        name: '김시트',
+        studentId: '10888',
+        grade: 1,
+        level: 10,
+        exp: 420,
+        gold: 777,
+        hp: 150,
+        maxHp: 150,
+        inventory: [
+          { item: 'equip_heritage_blade', name: '⚔️ 1897 숭실 헤리티지 소드', count: 1, icon: '⚔️' },
+          { item: 'item_wood', name: '🪵 단단한 목재', count: 12, icon: '🪵' }
+        ],
+        equipment: {
+          weapon: { item: 'equip_heritage_blade', name: '⚔️ 1897 숭실 헤리티지 소드' },
+          helmet: null,
+          armor: null,
+          shoes: null,
+          accessory: null,
+          accessory2: null
+        },
+        quests: {
+          quest_library_missing_books: { status: 'done', completedAt: 1700000000000 }
+        },
+        hasClearedFirstBoss: true,
+        hasCafeteriaKey: true,
+        titles: ['역사 수호자'],
+        equippedTitle: '역사 수호자',
+        updatedAt: Date.now()
+      }
+    });
+    assert.strictEqual(saveRes.status, 200);
+    await new Promise(r => setTimeout(r, 1800));
+
+    const bk10888 = mockBackupRows.get('10888');
+    assert(bk10888 && bk10888.progressJson, 'Full progress snapshot must be pushed to 진행백업 tab');
+    const parsedBk = JSON.parse(bk10888.progressJson);
+    assert.strictEqual(parsedBk.exp, 420);
+    assert.strictEqual(parsedBk.hasClearedFirstBoss, true);
+    assert.strictEqual(parsedBk.pinPlain, undefined, 'Snapshot JSON must never contain plaintext PIN');
+    assert.strictEqual(parsedBk.pinHash, undefined, 'Snapshot JSON must never contain pinHash');
+
+    // 8. Wipe local DB (simulate Render disk reset!) -> verify /api/admin/all-students-progress auto-restores full state!
+    const wipeRes = await reqJson(3000, 'POST', '/api/admin/clear-all-students-progress', {}, adminHeaders);
+    assert.strictEqual(wipeRes.status, 200);
+
+    // Simulate teacher raising gold in 학생계정 sheet directly while Render disk is wiped
+    const prevAcctRow = mockSheetRows.get('10888');
+    mockSheetRows.set('10888', { ...prevAcctRow, gold: 888 });
+
+    const autoAllRes = await reqJson(3000, 'GET', '/api/admin/all-students-progress', null, adminHeaders);
+    assert.strictEqual(autoAllRes.status, 200);
+    const restored10888 = autoAllRes.data.students['10888'];
+    assert(restored10888, 'Wiped DB must auto-restore 10888 from Google Sheet + 진행백업');
+    assert.strictEqual(restored10888.level, 10);
+    assert.strictEqual(restored10888.exp, 420);
+    assert.strictEqual(restored10888.gold, 888, 'Direct edit in 학생계정 sheet column must win on merge');
+    assert.strictEqual(restored10888.equipment.weapon.item, 'equip_heritage_blade');
+    assert.strictEqual(restored10888.inventory.find(i => i.item === 'item_wood').count, 12);
+    assert.strictEqual(restored10888.hasClearedFirstBoss, true);
+    assert.strictEqual(restored10888.hasCafeteriaKey, true);
+    assert.strictEqual(restored10888.equippedTitle, '역사 수호자');
+    assert.strictEqual(restored10888.quests.quest_library_missing_books.status, 'done');
+
+    // 9. Wipe local DB again -> verify immediate student login (pullSingleStudentFromSheet) restores full RPG state cleanly!
+    const wipeRes2 = await reqJson(3000, 'POST', '/api/admin/clear-all-students-progress', {}, adminHeaders);
+    assert.strictEqual(wipeRes2.status, 200);
+
+    const loginRestoreRes = await reqJson(3000, 'POST', '/api/auth/student-login', {
+      studentId: '10888',
+      name: '김시트',
+      email: 's10888@senedu.kr',
+      pin: '9876'
+    });
+    assert.strictEqual(loginRestoreRes.status, 200, JSON.stringify(loginRestoreRes));
+    assert.strictEqual(loginRestoreRes.data.isNewAccount, false, 'Restored account should not look brand new');
+    assert.strictEqual(loginRestoreRes.data.progress.pinPlain, undefined);
+    assert.strictEqual(loginRestoreRes.data.progress.exp, 420);
+    assert.strictEqual(loginRestoreRes.data.progress.gold, 888);
+    assert.strictEqual(loginRestoreRes.data.progress.equipment.weapon.item, 'equip_heritage_blade');
+    assert.strictEqual(loginRestoreRes.data.progress.hasClearedFirstBoss, true);
+
+    console.log('✅ All Google Sheets bidirectional account + plaintext PIN + 진행백업 full snapshot tests PASSED!');
   } finally {
     if (mockServer) mockServer.close();
     if (gameServer && startedGameServer) gameServer.kill();

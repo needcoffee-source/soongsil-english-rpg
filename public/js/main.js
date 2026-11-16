@@ -9635,7 +9635,7 @@ class MainApp {
           const data = await callAdminSheetsPost('/api/admin/sheets/sync-from-sheet');
           await this.loadGoogleSheetsConfigAdmin();
           this.loadSavedStudentsForEditor();
-          alert(`✅ 구글 시트 동기화 완료!\n• 시트 행: ${data.totalRows || 0}건\n• 신규 계정 생성: ${data.createdCount || 0}명\n• 계정 정보 갱신: ${data.updatedCount || 0}명\n• PIN 변경 반영: ${data.pinUpdatedCount || 0}명\n• PIN 초기화 반영: ${data.pinClearedCount || 0}명`);
+          alert(`✅ 구글 시트 동기화 완료!\n• 시트 행: ${data.totalRows || 0}건\n• 신규 계정 생성: ${data.createdCount || 0}명\n• 계정 정보 갱신: ${data.updatedCount || 0}명\n• 진행상태 풀 복원: ${data.snapshotRestoredCount || 0}명\n• PIN 변경 반영: ${data.pinUpdatedCount || 0}명\n• PIN 초기화 반영: ${data.pinClearedCount || 0}명`);
         } catch (err) {
           await this.loadGoogleSheetsConfigAdmin();
           alert('❌ 시트 가져오기 실패: ' + err.message);
