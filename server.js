@@ -1,6 +1,9 @@
 const express = require('express');
 const http = require('http');
+const https = require('https');
+const tls = require('tls');
 const { Server } = require('socket.io');
+const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 
@@ -11,6 +14,53 @@ const io = new Server(server, {
 });
 
 const PORT = process.env.PORT || 3000;
+const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD || '03220322';
+const ALLOWED_EMAIL_DOMAIN = (process.env.ALLOWED_EMAIL_DOMAIN || 'senedu.kr').trim().toLowerCase();
+const activeTeacherTokens = new Set();
+const activeStudentSessions = new Map(); // token -> { studentId, email, name, expiresAt }
+
+function issueTeacherToken() {
+  const token = crypto.randomBytes(24).toString('hex');
+  if (activeTeacherTokens.size >= 32) {
+    const oldest = activeTeacherTokens.values().next().value;
+    activeTeacherTokens.delete(oldest);
+  }
+  activeTeacherTokens.add(token);
+  return token;
+}
+
+function isAuthorizedTeacherHttp(req) {
+  const token = req.headers['x-teacher-token'] || (req.query && req.query.token);
+  const pwd = req.headers['x-teacher-pwd'];
+  return !!(
+    (typeof token === 'string' && activeTeacherTokens.has(token)) ||
+    (typeof pwd === 'string' && pwd === TEACHER_PASSWORD)
+  );
+}
+
+function requireTeacherHttp(req, res, next) {
+  if (!isAuthorizedTeacherHttp(req)) {
+    return res.status(401).json({ success: false, error: '🔒 교사 인증이 필요합니다.' });
+  }
+  return next();
+}
+
+function isSoccerFieldBoss(name = '') {
+  const bName = String(name || '');
+  return (
+    bName.includes('케르베로스') ||
+    bName.includes('파멸신') ||
+    bName.includes('기말고사') ||
+    bName.includes('나태') ||
+    bName.includes('대마왕') ||
+    bName.includes('중간고사') ||
+    bName.includes('드래곤') ||
+    bName.includes('dragon') ||
+    bName.includes('cerberus') ||
+    bName.includes('final_god') ||
+    bName.includes('sloth')
+  );
+}
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.text({ type: ['text/plain', 'text/*'], limit: '2mb' }));
@@ -21,8 +71,19 @@ const DATA_DIR = path.join(__dirname, 'data');
 const g1Questions = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'questions_grade1.json'), 'utf8'));
 const g2Questions = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'questions_grade2.json'), 'utf8'));
 const g3Questions = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'questions_grade3.json'), 'utf8'));
-const craftRecipes = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'craft_recipes.json'), 'utf8'));
+const craftRecipes = loadCraftRecipesSafe([]);
 const schoolFloors = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'school_floors.json'), 'utf8'));
+
+function loadCraftRecipesSafe(fallback = null) {
+  try {
+    const raw = fs.readFileSync(path.join(DATA_DIR, 'craft_recipes.json'), 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch (e) {
+    console.error('[Craft Recipes Load Error]', e.message);
+    return fallback;
+  }
+}
 
 // Grade Question Pool (No cumulative mixing across grades)
 function getQuestionsForGrade(grade) {
@@ -48,13 +109,24 @@ app.get('/api/quiz', (req, res) => {
 
 app.get('/api/craft-recipes', (req, res) => {
   const grade = parseInt(req.query.grade) || 1;
-  const latestRecipes = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'craft_recipes.json'), 'utf8'));
+  const latestRecipes = loadCraftRecipesSafe(craftRecipes) || [];
   const filtered = latestRecipes.filter(r => r.gradeLevel <= grade);
   res.json(filtered);
 });
 
+// Teacher Authentication API
+app.post('/api/teacher-auth', (req, res) => {
+  const body = (typeof req.body === 'string') ? (() => { try { return JSON.parse(req.body); } catch (e) { return {}; } })() : (req.body || {});
+  const entered = String(body.password || '').trim();
+  if (entered !== TEACHER_PASSWORD) {
+    return res.status(401).json({ success: false, error: '🔒 교사 인증 암호가 일치하지 않습니다.' });
+  }
+  const token = issueTeacherToken();
+  return res.json({ success: true, token });
+});
+
 // Teacher Question Addition / Update API
-app.post('/api/admin/questions', (req, res) => {
+app.post('/api/admin/questions', requireTeacherHttp, (req, res) => {
   const { grade, questionData } = req.body;
   if (!grade || !questionData) return res.status(400).json({ error: 'Invalid data' });
 
@@ -76,11 +148,242 @@ const PROGRESS_FILE = path.join(DATA_DIR, 'students_progress.json');
 const DELETED_FILE = path.join(DATA_DIR, 'deleted_students.json');
 const PLANT_FILE = path.join(DATA_DIR, 'plant_progress.json');
 const SERVER_STATE_FILE = path.join(DATA_DIR, 'server_state.json');
+const ROSTER_FILE = path.join(DATA_DIR, 'student_roster.json');
+const SHEETS_CONFIG_FILE = path.join(DATA_DIR, 'google_sheets_config.json');
+const DEFAULT_SPREADSHEET_ID = '1r-fa5wMoNLPLQX3j3dfo75UEzOkPPApaUD46yOtCwk4';
 
-// 🔒 Teacher Server Gate State (Persistent)
+let googleSheetsConfig = {
+  spreadsheetId: DEFAULT_SPREADSHEET_ID,
+  sheetName: '학생계정',
+  webAppUrl: '',
+  syncSecret: '',
+  syncPinOnLogin: true,
+  autoPushChanges: true,
+  lastSyncAt: 0,
+  lastSyncMessage: ''
+};
+
+if (fs.existsSync(SHEETS_CONFIG_FILE)) {
+  try {
+    const parsedCfg = JSON.parse(fs.readFileSync(SHEETS_CONFIG_FILE, 'utf8'));
+    if (parsedCfg && typeof parsedCfg === 'object') {
+      googleSheetsConfig = { ...googleSheetsConfig, ...parsedCfg };
+    }
+  } catch (e) {
+    console.error('[Google Sheets Config Load Error]', e);
+  }
+} else {
+  try {
+    fs.writeFileSync(SHEETS_CONFIG_FILE, JSON.stringify(googleSheetsConfig, null, 2), 'utf8');
+  } catch (e) {}
+}
+
+function saveGoogleSheetsConfig() {
+  try {
+    fs.writeFileSync(SHEETS_CONFIG_FILE, JSON.stringify(googleSheetsConfig, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Google Sheets Config Save Error]', e);
+  }
+}
+
+function isGoogleSheetsReady() {
+  return !!(googleSheetsConfig.webAppUrl && /^https?:\/\//i.test(String(googleSheetsConfig.webAppUrl).trim()));
+}
+
+function formatSheetTimestamp(ts) {
+  if (!ts) return '';
+  try {
+    return new Date(Number(ts)).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false });
+  } catch (e) {
+    return '';
+  }
+}
+
+function buildSheetRowFromRecord(studentId, rec = {}, opts = {}) {
+  const plainPin = /^\d{4}$/.test(String(rec.pinPlain || '').trim())
+    ? String(rec.pinPlain).trim()
+    : '';
+  return {
+    studentId: String(studentId || '').trim(),
+    name: String(rec.name || '').trim(),
+    email: String(rec.email || '').trim().toLowerCase(),
+    pin: plainPin,
+    clearPin: !!opts.clearPin,
+    level: Math.max(1, Number(rec.level) || 1),
+    gold: Math.max(0, Number(rec.gold) || 0),
+    registeredAt: formatSheetTimestamp(rec.registeredAt),
+    updatedAt: formatSheetTimestamp(rec.updatedAt || Date.now())
+  };
+}
+
+let _cachedSystemCaBundle = null;
+function getCombinedSystemCaCertificates() {
+  if (_cachedSystemCaBundle) return _cachedSystemCaBundle;
+  try {
+    if (typeof tls.getCACertificates === 'function') {
+      const merged = new Set([
+        ...tls.getCACertificates('default'),
+        ...tls.getCACertificates('system')
+      ]);
+      _cachedSystemCaBundle = Array.from(merged);
+      return _cachedSystemCaBundle;
+    }
+  } catch (e) {}
+  _cachedSystemCaBundle = [...tls.rootCertificates];
+  return _cachedSystemCaBundle;
+}
+
+function requestHttpWithRedirects(targetUrl, method = 'POST', bodyStr = '', timeoutMs = 6000, redirectsLeft = 5) {
+  return new Promise((resolve, reject) => {
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(targetUrl);
+    } catch (e) {
+      return reject(new Error('올바르지 않은 URL입니다.'));
+    }
+    const isHttps = parsedUrl.protocol === 'https:';
+    const lib = isHttps ? https : http;
+    const reqOpts = {
+      hostname: parsedUrl.hostname,
+      port: parsedUrl.port || (isHttps ? 443 : 80),
+      path: `${parsedUrl.pathname}${parsedUrl.search}`,
+      method,
+      headers: (method === 'POST' || method === 'PUT')
+        ? {
+            'Content-Type': 'text/plain;charset=utf-8',
+            'Content-Length': Buffer.byteLength(bodyStr || '')
+          }
+        : {},
+      timeout: timeoutMs,
+      ...(isHttps ? { ca: getCombinedSystemCaCertificates() } : {})
+    };
+    const req = lib.request(reqOpts, (res) => {
+      const code = res.statusCode || 0;
+      if ([301, 302, 303, 307, 308].includes(code) && res.headers.location && redirectsLeft > 0) {
+        res.resume();
+        const nextUrl = new URL(res.headers.location, targetUrl).toString();
+        const nextMethod = (code === 307 || code === 308) ? method : 'GET';
+        const nextBody = (nextMethod === 'GET') ? '' : bodyStr;
+        return requestHttpWithRedirects(nextUrl, nextMethod, nextBody, timeoutMs, redirectsLeft - 1)
+          .then(resolve, reject);
+      }
+      let raw = '';
+      res.setEncoding('utf8');
+      res.on('data', chunk => { raw += chunk; });
+      res.on('end', () => resolve({ status: code, text: raw }));
+    });
+    req.on('timeout', () => {
+      req.destroy(new Error(`요청 시간 초과 (${timeoutMs}ms)`));
+    });
+    req.on('error', reject);
+    if (bodyStr && (method === 'POST' || method === 'PUT')) {
+      req.write(bodyStr);
+    }
+    req.end();
+  });
+}
+
+async function callGoogleAppsScript(payload = {}, timeoutMs = 8000) {
+  if (!isGoogleSheetsReady()) {
+    throw new Error('구글 Apps Script 웹 앱 URL이 설정되어 있지 않습니다.');
+  }
+  const bodyObj = {
+    ...payload,
+    secret: googleSheetsConfig.syncSecret || ''
+  };
+  const { status, text } = await requestHttpWithRedirects(
+    String(googleSheetsConfig.webAppUrl).trim(),
+    'POST',
+    JSON.stringify(bodyObj),
+    timeoutMs
+  );
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    if (text.includes('<!DOCTYPE') || text.includes('accounts.google.com')) {
+      throw new Error('구글 로그인 화면이 반환되었습니다. Apps Script [배포 -> 웹 앱]에서 액세스 권한을 "모든 사용자"로 설정하고 /exec 주소를 입력해 주세요.');
+    }
+    throw new Error(`Apps Script 응답 파싱 실패 (HTTP ${status})`);
+  }
+  if (status < 200 || status >= 300 || !parsed || !parsed.success) {
+    throw new Error((parsed && parsed.error) || `Apps Script 요청 실패 (HTTP ${status})`);
+  }
+  return parsed;
+}
+
+async function pullSingleStudentFromSheet(studentId) {
+  if (!isGoogleSheetsReady()) return null;
+  try {
+    const res = await callGoogleAppsScript({ action: 'getOne', studentId }, 3500);
+    return (res && res.found && res.row) ? res.row : null;
+  } catch (e) {
+    console.warn('[Sheets Pull One Warning]', studentId, e.message);
+    return null;
+  }
+}
+
+async function pushSingleStudentToSheet(studentId, opts = {}) {
+  if (pendingSheetSyncTimers.has(studentId)) {
+    clearTimeout(pendingSheetSyncTimers.get(studentId));
+    pendingSheetSyncTimers.delete(studentId);
+  }
+  if (!isGoogleSheetsReady()) return false;
+  const all = getStudentsProgress() || {};
+  const rec = all[studentId];
+  if (!rec) return false;
+  try {
+    await callGoogleAppsScript({
+      action: 'upsertOne',
+      row: buildSheetRowFromRecord(studentId, rec, opts)
+    }, 4500);
+    googleSheetsConfig.lastSyncAt = Date.now();
+    googleSheetsConfig.lastSyncMessage = `[자동 반영] ${studentId} 동기화 완료`;
+    saveGoogleSheetsConfig();
+    return true;
+  } catch (e) {
+    console.warn('[Sheets Push One Warning]', studentId, e.message);
+    googleSheetsConfig.lastSyncMessage = `[자동 반영 실패] ${e.message}`;
+    return false;
+  }
+}
+
+const pendingSheetSyncTimers = new Map();
+function scheduleSheetStudentSync(studentId, opts = {}) {
+  if (!isGoogleSheetsReady() || !googleSheetsConfig.autoPushChanges || !studentId || studentId === '교사') return;
+  if (pendingSheetSyncTimers.has(studentId)) {
+    clearTimeout(pendingSheetSyncTimers.get(studentId));
+  }
+  const t = setTimeout(() => {
+    pendingSheetSyncTimers.delete(studentId);
+    pushSingleStudentToSheet(studentId, opts).catch(() => {});
+  }, 1500);
+  pendingSheetSyncTimers.set(studentId, t);
+}
+
+function buildCustomizedAppsScriptCode() {
+  const templatePath = path.join(__dirname, 'google_apps_script', '학생계정_연동_Code.gs');
+  let raw = '';
+  try {
+    raw = fs.readFileSync(templatePath, 'utf8');
+  } catch (e) {
+    return '// 템플릿 파일을 찾을 수 없습니다.';
+  }
+  const sid = String(googleSheetsConfig.spreadsheetId || DEFAULT_SPREADSHEET_ID).trim();
+  const sName = String(googleSheetsConfig.sheetName || '학생계정').trim() || '학생계정';
+  const secret = String(googleSheetsConfig.syncSecret || '').trim();
+  return raw
+    .replace(/const SPREADSHEET_ID = '[^']*';/, `const SPREADSHEET_ID = '${sid.replace(/'/g, "\\'")}';`)
+    .replace(/const SHEET_NAME = '[^']*';/, `const SHEET_NAME = '${sName.replace(/'/g, "\\'")}';`)
+    .replace(/const SYNC_SECRET = '[^']*';/, `const SYNC_SECRET = '${secret.replace(/'/g, "\\'")}';`);
+}
+
+// 🔒 Teacher Server Gate & Auth Mode State (Persistent)
 let serverGateState = {
   isOpen: true,
   closedMessage: "지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!",
+  allowEmergencyStudentLogin: false,
+  requireRosterWhitelist: false,
   updatedAt: Date.now(),
   updatedBy: "교사"
 };
@@ -90,11 +393,49 @@ if (fs.existsSync(SERVER_STATE_FILE)) {
     const sData = JSON.parse(fs.readFileSync(SERVER_STATE_FILE, 'utf8'));
     if (typeof sData.isOpen === 'boolean') serverGateState.isOpen = sData.isOpen;
     if (sData.closedMessage) serverGateState.closedMessage = sData.closedMessage;
+    if (typeof sData.allowEmergencyStudentLogin === 'boolean') {
+      serverGateState.allowEmergencyStudentLogin = sData.allowEmergencyStudentLogin;
+    }
+    if (typeof sData.requireRosterWhitelist === 'boolean') {
+      serverGateState.requireRosterWhitelist = sData.requireRosterWhitelist;
+    }
     if (sData.updatedAt) serverGateState.updatedAt = sData.updatedAt;
     if (sData.updatedBy) serverGateState.updatedBy = sData.updatedBy;
   } catch (e) {
     console.error('[Server State Load Error]', e);
   }
+}
+
+function getStudentRoster() {
+  try {
+    if (fs.existsSync(ROSTER_FILE)) {
+      const parsed = JSON.parse(fs.readFileSync(ROSTER_FILE, 'utf8'));
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.error('[Roster Load Error]', e);
+  }
+  return {};
+}
+
+function saveStudentRoster(rosterMap) {
+  try {
+    fs.writeFileSync(ROSTER_FILE, JSON.stringify(rosterMap || {}, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[Roster Save Error]', e);
+  }
+}
+
+function getPublicServerGatePayload() {
+  return {
+    isOpen: serverGateState.isOpen,
+    closedMessage: serverGateState.closedMessage,
+    allowEmergencyStudentLogin: !!serverGateState.allowEmergencyStudentLogin,
+    requireRosterWhitelist: !!serverGateState.requireRosterWhitelist,
+    allowedEmailDomain: ALLOWED_EMAIL_DOMAIN,
+    updatedAt: serverGateState.updatedAt,
+    updatedBy: serverGateState.updatedBy
+  };
 }
 
 function saveServerGateState() {
@@ -199,6 +540,351 @@ function saveDeletedStudents(data) {
   }
 }
 
+function sanitizeStudentProgressForPublic(record) {
+  if (!record || typeof record !== 'object') return null;
+  const { email, googleSub, pinHash, pinSalt, pinPlain, ...safeRecord } = record;
+  return {
+    ...safeRecord,
+    hasEmailSet: !!email,
+    hasPinSet: !!(pinHash && pinSalt)
+  };
+}
+
+function hashStudentPin(pin, saltHex = null) {
+  const salt = saltHex || crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(String(pin), salt, 32).toString('hex');
+  return { salt, hash };
+}
+
+function verifyStudentPin(pin, saltHex, expectedHashHex) {
+  if (!pin || !saltHex || !expectedHashHex) return false;
+  try {
+    const derived = crypto.scryptSync(String(pin), saltHex, 32);
+    const expected = Buffer.from(expectedHashHex, 'hex');
+    if (derived.length !== expected.length) return false;
+    return crypto.timingSafeEqual(derived, expected);
+  } catch (e) {
+    return false;
+  }
+}
+
+function issueTimedToken(storeMap, data, ttlMs) {
+  const token = crypto.randomBytes(24).toString('hex');
+  if (storeMap.size >= 500) {
+    const oldest = storeMap.keys().next().value;
+    storeMap.delete(oldest);
+  }
+  storeMap.set(token, { ...data, expiresAt: Date.now() + ttlMs });
+  return token;
+}
+
+function consumeValidToken(storeMap, token, remove = false) {
+  if (!token || typeof token !== 'string') return null;
+  const entry = storeMap.get(token);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    storeMap.delete(token);
+    return null;
+  }
+  if (remove) storeMap.delete(token);
+  return entry;
+}
+
+function parseJsonBody(rawBody) {
+  if (typeof rawBody === 'string') {
+    try { return JSON.parse(rawBody); } catch (e) { return {}; }
+  }
+  return rawBody || {};
+}
+
+function normalizeAndValidateStudentEmail(rawEmail) {
+  const email = String(rawEmail || '').trim().toLowerCase();
+  if (!email) return { valid: false, error: `@${ALLOWED_EMAIL_DOMAIN} 이메일을 입력해 주세요.` };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { valid: false, error: '올바른 이메일 주소 형식이 아닙니다.' };
+  }
+  if (!email.endsWith(`@${ALLOWED_EMAIL_DOMAIN}`)) {
+    return { valid: false, error: `🏫 @${ALLOWED_EMAIL_DOMAIN} 학교 이메일만 사용할 수 있습니다.` };
+  }
+  return { valid: true, email };
+}
+
+app.get('/api/auth-config', (req, res) => {
+  res.json({
+    allowedDomain: ALLOWED_EMAIL_DOMAIN,
+    allowEmergencyStudentLogin: !!serverGateState.allowEmergencyStudentLogin,
+    requireRosterWhitelist: !!serverGateState.requireRosterWhitelist
+  });
+});
+
+app.post('/api/auth/student-login', async (req, res) => {
+  const body = parseJsonBody(req.body);
+  const studentId = String(body.studentId || '').trim();
+  const name = String(body.name || '').trim();
+  const rawEmail = String(body.email || '').trim().toLowerCase();
+  const rawPin = String(body.pin || '').trim();
+
+  if (!studentId || studentId === '교사' || studentId.length < 2) {
+    return res.status(400).json({ success: false, error: '학번을 올바르게 입력해 주세요. (예: 10101)' });
+  }
+  if (!name) {
+    return res.status(400).json({ success: false, error: '이름을 입력해 주세요. (예: 홍길동)' });
+  }
+
+  // Optional Teacher Whitelist Roster check
+  if (serverGateState.requireRosterWhitelist) {
+    const roster = getStudentRoster();
+    const rEntry = roster[studentId];
+    if (!rEntry) {
+      return res.status(403).json({
+        success: false,
+        error: `📋 선생님이 등록한 학생 명단에 없는 학번([${studentId}])입니다.\n학번을 확인하거나 선생님께 명단 등록을 요청해 주세요.`
+      });
+    }
+    if (rEntry.name && rEntry.name.trim() !== name) {
+      return res.status(403).json({
+        success: false,
+        error: `📋 등록된 명단의 이름과 일치하지 않습니다. 본인 이름인지 확인해 주세요.`
+      });
+    }
+    if (rEntry.email && rawEmail && rEntry.email.toLowerCase() !== rawEmail) {
+      return res.status(403).json({
+        success: false,
+        error: `📋 명단에 등록된 @${ALLOWED_EMAIL_DOMAIN} 이메일과 일치하지 않습니다.`
+      });
+    }
+  }
+
+  const all = getStudentsProgress() || {};
+  let existing = all[studentId];
+
+  // 📊 Google Sheets 실시간 PIN · 계정 동기화 (교사가 시트에서 PIN을 수정한 경우 즉시 반영)
+  let sheetRow = null;
+  if (isGoogleSheetsReady() && googleSheetsConfig.syncPinOnLogin) {
+    sheetRow = await pullSingleStudentFromSheet(studentId);
+    if (sheetRow) {
+      const sheetPinRaw = String(sheetRow.pin || '').trim();
+      const isSheetPinValid4 = /^\d{4}$/.test(sheetPinRaw);
+      const isSheetResetCmd = /^(초기화|reset)$/i.test(sheetPinRaw);
+      if (existing) {
+        if (isSheetPinValid4 && existing.pinPlain !== sheetPinRaw) {
+          const { salt, hash } = hashStudentPin(sheetPinRaw);
+          existing = {
+            ...existing,
+            pinSalt: salt,
+            pinHash: hash,
+            pinPlain: sheetPinRaw,
+            authProvider: 'pin',
+            updatedAt: Date.now()
+          };
+          all[studentId] = existing;
+          saveStudentsProgress(all, true);
+        } else if (isSheetResetCmd) {
+          delete existing.pinHash;
+          delete existing.pinSalt;
+          delete existing.pinPlain;
+          all[studentId] = existing;
+          saveStudentsProgress(all, true);
+        }
+      }
+    }
+  }
+
+  // Emergency mode shortcut (when enabled by teacher and student omits email/pin)
+  if (serverGateState.allowEmergencyStudentLogin && (!rawEmail || !rawPin)) {
+    if (existing && existing.name && existing.name.trim() !== name) {
+      return res.status(409).json({
+        success: false,
+        error: `⚠️ 학번 [${studentId}]에 이미 등록된 이름과 다릅니다. 본인 학번인지 확인해 주세요.`
+      });
+    }
+    const studentAuthToken = issueTimedToken(activeStudentSessions, {
+      studentId,
+      email: (existing && existing.email) || rawEmail || '',
+      name
+    }, 24 * 3600 * 1000);
+    return res.json({
+      success: true,
+      emergencyUsed: true,
+      isNewAccount: !existing,
+      studentId,
+      name: (existing && existing.name) || name,
+      progress: sanitizeStudentProgressForPublic(existing),
+      studentAuthToken
+    });
+  }
+
+  // Standard Option 2: @senedu.kr Email + 4-digit PIN verification/registration
+  const emailCheck = normalizeAndValidateStudentEmail(rawEmail);
+  if (!emailCheck.valid) {
+    return res.status(400).json({ success: false, error: emailCheck.error });
+  }
+  const email = emailCheck.email;
+
+  if (!/^\d{4}$/.test(rawPin)) {
+    return res.status(400).json({ success: false, error: '🔢 4자리 숫자 PIN(비밀번호)을 입력해 주세요! (예: 0322)' });
+  }
+
+  // Prevent reusing the same email on a different studentId
+  for (const [otherId, rec] of Object.entries(all)) {
+    if (otherId !== studentId && rec && rec.email && rec.email.toLowerCase() === email) {
+      return res.status(409).json({
+        success: false,
+        error: `⚠️ 이메일 [${email}]은(는) 이미 다른 학번([${otherId}]) 계정에 등록되어 있습니다.`
+      });
+    }
+  }
+
+  const now = Date.now();
+  let isNewAccount = false;
+  let pinWasReset = false;
+
+  if (existing) {
+    if (existing.name && existing.name.trim() !== name) {
+      return res.status(409).json({
+        success: false,
+        error: `⚠️ 학번 [${studentId}]에 등록된 이름과 다릅니다. 본인 계정이 맞는지 확인해 주세요.`
+      });
+    }
+    if (existing.email && existing.email.toLowerCase() !== email) {
+      return res.status(409).json({
+        success: false,
+        error: `⚠️ 학번 [${studentId}]에 등록된 @${ALLOWED_EMAIL_DOMAIN} 이메일과 다릅니다.\n수정이 필요하면 선생님께 요청하세요.`
+      });
+    }
+
+    if (existing.pinHash && existing.pinSalt) {
+      if (!verifyStudentPin(rawPin, existing.pinSalt, existing.pinHash)) {
+        return res.status(401).json({
+          success: false,
+          error: '🔒 4자리 PIN이 일치하지 않습니다!\nPIN을 잊어버렸다면 선생님께 [PIN 초기화]를 요청해 주세요.'
+        });
+      }
+      if (!existing.email || existing.pinPlain !== rawPin) {
+        all[studentId] = {
+          ...existing,
+          email: existing.email || email,
+          pinPlain: rawPin,
+          updatedAt: existing.updatedAt || now
+        };
+        saveStudentsProgress(all, true);
+      }
+    } else {
+      // Teacher cleared PIN or student had no PIN yet -> set new PIN cleanly
+      const { salt, hash } = hashStudentPin(rawPin);
+      all[studentId] = {
+        ...existing,
+        email: existing.email || email,
+        pinSalt: salt,
+        pinHash: hash,
+        pinPlain: rawPin,
+        authProvider: 'pin',
+        updatedAt: existing.updatedAt || now
+      };
+      saveStudentsProgress(all, true);
+      pinWasReset = true;
+    }
+  } else {
+    // If pre-registered in Google Sheet with a 4-digit PIN, enforce matching PIN on first login
+    if (sheetRow) {
+      const sheetName = String(sheetRow.name || '').trim();
+      const sheetEmail = String(sheetRow.email || '').trim().toLowerCase();
+      const sheetPinRaw = String(sheetRow.pin || '').trim();
+      if (sheetName && sheetName !== name) {
+        return res.status(409).json({
+          success: false,
+          error: `⚠️ 구글 시트에 등록된 이름([${sheetName}])과 다릅니다. 본인 이름인지 확인해 주세요.`
+        });
+      }
+      if (sheetEmail && sheetEmail !== email) {
+        return res.status(409).json({
+          success: false,
+          error: `⚠️ 구글 시트에 등록된 이메일과 다릅니다.`
+        });
+      }
+      if (/^\d{4}$/.test(sheetPinRaw) && sheetPinRaw !== rawPin) {
+        return res.status(401).json({
+          success: false,
+          error: '🔒 구글 시트에 설정된 4자리 PIN과 일치하지 않습니다! 선생님께 PIN을 확인해 주세요.'
+        });
+      }
+    }
+    isNewAccount = true;
+    const { salt, hash } = hashStudentPin(rawPin);
+    all[studentId] = {
+      name: (sheetRow && sheetRow.name) || name,
+      studentId,
+      grade: 1,
+      level: (sheetRow && Number(sheetRow.level)) || 1,
+      exp: 0,
+      gold: (sheetRow && sheetRow.gold !== undefined) ? Number(sheetRow.gold) : 10,
+      hairColor: ['black', 'brown', 'blonde'].includes(body.hairColor) ? body.hairColor : 'black',
+      outfitColor: ['red', 'blue', 'green'].includes(body.outfitColor) ? body.outfitColor : 'red',
+      email,
+      pinSalt: salt,
+      pinHash: hash,
+      pinPlain: rawPin,
+      authProvider: 'pin',
+      registeredAt: now,
+      updatedAt: now
+    };
+    saveStudentsProgress(all, true);
+
+    const deletedMap = getDeletedStudents();
+    if (deletedMap[studentId]) {
+      delete deletedMap[studentId];
+      saveDeletedStudents(deletedMap);
+    }
+  }
+
+  scheduleSheetStudentSync(studentId);
+
+  const studentAuthToken = issueTimedToken(activeStudentSessions, {
+    studentId,
+    email,
+    name: all[studentId].name
+  }, 24 * 3600 * 1000);
+
+  return res.json({
+    success: true,
+    isNewAccount,
+    pinWasReset,
+    studentId,
+    name: all[studentId].name,
+    progress: sanitizeStudentProgressForPublic(all[studentId]),
+    studentAuthToken
+  });
+});
+
+app.post('/api/auth/emergency-student', (req, res) => {
+  if (!serverGateState.allowEmergencyStudentLogin) {
+    return res.status(403).json({
+      success: false,
+      error: `🔒 현재 선생님이 [@${ALLOWED_EMAIL_DOMAIN} 이메일 + 4자리 PIN 전용 모드]를 적용 중입니다.`
+    });
+  }
+  const body = parseJsonBody(req.body);
+  const studentId = String(body.studentId || '').trim();
+  const name = String(body.name || '').trim();
+  if (!studentId || studentId === '교사' || !name) {
+    return res.status(400).json({ success: false, error: '학번과 이름을 모두 입력해 주세요.' });
+  }
+  const all = getStudentsProgress() || {};
+  const existing = all[studentId];
+  if (existing && existing.name && existing.name.trim() !== name) {
+    return res.status(409).json({
+      success: false,
+      error: `⚠️ 학번 [${studentId}]에 이미 등록된 이름과 다릅니다. 본인 학번인지 확인해 주세요.`
+    });
+  }
+  const studentAuthToken = issueTimedToken(activeStudentSessions, {
+    studentId,
+    email: (existing && existing.email) || '',
+    name
+  }, 24 * 3600 * 1000);
+  return res.json({ success: true, studentAuthToken });
+});
+
 app.get('/api/load-progress', (req, res) => {
   const studentId = (req.query.studentId || '').trim();
   if (!studentId) return res.status(400).json({ error: 'Missing studentId' });
@@ -206,25 +892,67 @@ app.get('/api/load-progress', (req, res) => {
   const deletedMap = getDeletedStudents();
   res.json({
     success: true,
-    progress: all[studentId] || null,
+    progress: sanitizeStudentProgressForPublic(all[studentId]),
     deletedAt: deletedMap[studentId] || 0
   });
 });
 
 app.post('/api/save-progress', (req, res) => {
-  let body = req.body;
-  if (typeof body === 'string') {
-    try { body = JSON.parse(body); } catch(e) {}
-  }
+  const body = parseJsonBody(req.body);
   const { studentId, progress } = body || {};
   if (!studentId || !progress) return res.status(400).json({ error: 'Invalid data' });
+  if (body && body.fromAdmin && !isAuthorizedTeacherHttp(req)) {
+    return res.status(401).json({ success: false, error: '🔒 교사 관리자 권한이 필요합니다.' });
+  }
+  const providedStudentToken = req.headers['x-student-token'] || body.studentAuthToken;
+  if (providedStudentToken && !isAuthorizedTeacherHttp(req)) {
+    const sess = consumeValidToken(activeStudentSessions, providedStudentToken, false);
+    if (!sess || sess.studentId !== studentId) {
+      return res.status(401).json({ success: false, error: '🔒 학생 세션 토큰이 유효하지 않습니다.' });
+    }
+  }
   const all = getStudentsProgress();
+  const existingRecord = (all[studentId] && typeof all[studentId] === 'object') ? all[studentId] : {};
+  const adminUpdatedEmail = (body && body.fromAdmin && typeof progress.email === 'string')
+    ? progress.email.trim().toLowerCase()
+    : undefined;
+
+  const isTeacherRecord = !!(progress.isTeacher || studentId === '교사');
+  const nextLevel = Math.max(1, Number(progress.level) || 1);
+  let sanitizedEquipment = progress.equipment;
+  if (!isTeacherRecord && sanitizedEquipment && typeof sanitizedEquipment === 'object') {
+    sanitizedEquipment = { ...sanitizedEquipment };
+    for (const [slotKey, eq] of Object.entries(sanitizedEquipment)) {
+      if (!eq || !eq.item) continue;
+      if (eq.item === 'equip_elevator_pass') {
+        sanitizedEquipment[slotKey] = null;
+        continue;
+      }
+      const canonReqLv = ALL_GAME_ITEMS[eq.item] && ALL_GAME_ITEMS[eq.item].meta && ALL_GAME_ITEMS[eq.item].meta.requiredLevel;
+      if (canonReqLv && nextLevel < canonReqLv) {
+        sanitizedEquipment[slotKey] = null;
+      }
+    }
+  }
+
   all[studentId] = {
     ...progress,
+    ...(sanitizedEquipment ? { equipment: sanitizedEquipment } : {}),
+    ...(existingRecord.email ? { email: existingRecord.email } : {}),
+    ...(adminUpdatedEmail !== undefined ? (adminUpdatedEmail ? { email: adminUpdatedEmail } : {}) : {}),
+    ...(existingRecord.pinHash ? { pinHash: existingRecord.pinHash } : {}),
+    ...(existingRecord.pinSalt ? { pinSalt: existingRecord.pinSalt } : {}),
+    ...(existingRecord.pinPlain ? { pinPlain: existingRecord.pinPlain } : {}),
+    ...(existingRecord.authProvider ? { authProvider: existingRecord.authProvider } : {}),
+    ...(existingRecord.registeredAt ? { registeredAt: existingRecord.registeredAt } : {}),
     studentId: studentId,
     updatedAt: progress.updatedAt || Date.now()
   };
+  if (adminUpdatedEmail === '') {
+    delete all[studentId].email;
+  }
   saveStudentsProgress(all);
+  scheduleSheetStudentSync(studentId);
 
   // If this student was previously deleted, remove from deleted map now that fresh data exists
   const deletedMap = getDeletedStudents();
@@ -242,6 +970,18 @@ app.post('/api/save-progress', (req, res) => {
     if (progress.name) activeStudent.name = progress.name;
     if (progress.hp !== undefined) activeStudent.hp = progress.hp;
     if (progress.maxHp !== undefined) activeStudent.maxHp = progress.maxHp;
+    if (progress.baseAtk !== undefined) activeStudent.baseAtk = progress.baseAtk;
+    if (progress.baseDef !== undefined) activeStudent.baseDef = progress.baseDef;
+    if (progress.equipment && typeof progress.equipment === 'object') {
+      activeStudent.equipment = progress.equipment;
+    }
+    const syncedCombat = computeStudentCombatStats({
+      ...activeStudent,
+      atk: progress.atk,
+      def: progress.def
+    });
+    activeStudent.atk = syncedCombat.atk;
+    activeStudent.def = syncedCombat.def;
     if (progress.isFallen !== undefined) activeStudent.isFallen = progress.isFallen;
     // 관리자(교사)의 직접 수정일 때만 학생에게 알림 동기화 전송 (학생 자신의 저장은 알림 미전송)
     if (body.fromAdmin) {
@@ -253,7 +993,7 @@ app.post('/api/save-progress', (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/api/admin/export-progress', (req, res) => {
+app.get('/api/admin/export-progress', requireTeacherHttp, (req, res) => {
   res.setHeader('Content-Disposition', 'attachment; filename=students_progress_backup.json');
   res.setHeader('Content-Type', 'application/json');
   res.send(fs.readFileSync(PROGRESS_FILE, 'utf8'));
@@ -284,7 +1024,7 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true, timestamp: Date.now() });
 });
 
-app.post('/api/admin/restore-progress', (req, res) => {
+app.post('/api/admin/restore-progress', requireTeacherHttp, (req, res) => {
   let body = req.body;
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch (e) {}
@@ -298,19 +1038,443 @@ app.post('/api/admin/restore-progress', (req, res) => {
 });
 
 app.get('/api/server-status', (req, res) => {
-  res.json({
-    isOpen: serverGateState.isOpen,
-    closedMessage: serverGateState.closedMessage,
-    updatedAt: serverGateState.updatedAt,
-    updatedBy: serverGateState.updatedBy
+  res.json(getPublicServerGatePayload());
+});
+
+app.post('/api/admin/auth-settings', requireTeacherHttp, (req, res) => {
+  const body = parseJsonBody(req.body);
+  if (typeof body.allowEmergencyStudentLogin === 'boolean') {
+    serverGateState.allowEmergencyStudentLogin = body.allowEmergencyStudentLogin;
+  }
+  if (typeof body.requireRosterWhitelist === 'boolean') {
+    serverGateState.requireRosterWhitelist = body.requireRosterWhitelist;
+  }
+  serverGateState.updatedAt = Date.now();
+  serverGateState.updatedBy = '교사';
+  saveServerGateState();
+
+  io.emit('server_state_changed', getPublicServerGatePayload());
+  return res.json({ success: true, ...getPublicServerGatePayload() });
+});
+
+app.post('/api/admin/rename-student-id', requireTeacherHttp, (req, res) => {
+  const body = parseJsonBody(req.body);
+  const oldStudentId = String(body.oldStudentId || '').trim();
+  const newStudentId = String(body.newStudentId || '').trim();
+  const newName = String(body.newName || '').trim();
+  if (!oldStudentId || !newStudentId || newStudentId === '교사') {
+    return res.status(400).json({ success: false, error: '기존 학번과 새 학번을 올바르게 입력해 주세요.' });
+  }
+
+  const all = getStudentsProgress();
+  if (!all[oldStudentId]) {
+    return res.status(404).json({ success: false, error: '기존 학번의 저장 데이터를 찾을 수 없습니다.' });
+  }
+  if (oldStudentId !== newStudentId && all[newStudentId]) {
+    return res.status(409).json({ success: false, error: `이미 [${newStudentId}] 학번 데이터가 존재합니다.` });
+  }
+
+  const record = {
+    ...all[oldStudentId],
+    studentId: newStudentId,
+    ...(newName ? { name: newName } : {}),
+    updatedAt: Date.now()
+  };
+  if (oldStudentId !== newStudentId) {
+    delete all[oldStudentId];
+  }
+  all[newStudentId] = record;
+  saveStudentsProgress(all, true);
+
+  const deletedMap = getDeletedStudents();
+  if (deletedMap[newStudentId]) {
+    delete deletedMap[newStudentId];
+    saveDeletedStudents(deletedMap);
+  }
+
+  const activeStudent = Object.values(players).find(p => p.studentId === oldStudentId);
+  if (activeStudent) {
+    activeStudent.studentId = newStudentId;
+    if (newName) activeStudent.name = newName;
+    io.to(activeStudent.id).emit('student_progress_sync_from_admin', { ...record, studentId: newStudentId });
+    broadcastStudentList();
+  }
+
+  return res.json({ success: true, studentId: newStudentId, progress: record });
+});
+
+app.post('/api/admin/reset-student-pin', requireTeacherHttp, async (req, res) => {
+  const body = parseJsonBody(req.body);
+  const studentId = String(body.studentId || '').trim();
+  const newPin = body.newPin !== undefined && body.newPin !== null ? String(body.newPin).trim() : '';
+  if (!studentId) return res.status(400).json({ success: false, error: 'Missing studentId' });
+
+  const all = getStudentsProgress();
+  if (!all[studentId]) {
+    return res.status(404).json({ success: false, error: '학생 데이터를 찾을 수 없습니다.' });
+  }
+
+  if (newPin) {
+    if (!/^\d{4}$/.test(newPin)) {
+      return res.status(400).json({ success: false, error: '새 PIN은 숫자 4자리여야 합니다.' });
+    }
+    const { salt, hash } = hashStudentPin(newPin);
+    all[studentId].pinSalt = salt;
+    all[studentId].pinHash = hash;
+    all[studentId].pinPlain = newPin;
+    all[studentId].authProvider = 'pin';
+  } else {
+    delete all[studentId].pinHash;
+    delete all[studentId].pinSalt;
+    delete all[studentId].pinPlain;
+  }
+  all[studentId].updatedAt = Date.now();
+  saveStudentsProgress(all, true);
+  if (isGoogleSheetsReady()) {
+    await pushSingleStudentToSheet(studentId, { clearPin: !newPin });
+  }
+
+  for (const [tok, sess] of activeStudentSessions.entries()) {
+    if (sess.studentId === studentId) activeStudentSessions.delete(tok);
+  }
+
+  return res.json({
+    success: true,
+    studentId,
+    hasPinSet: !!newPin,
+    pinPlain: newPin || ''
   });
 });
 
-app.get('/api/admin/all-students-progress', (req, res) => {
+app.get('/api/admin/roster', requireTeacherHttp, (req, res) => {
+  const roster = getStudentRoster();
+  const list = Object.values(roster).sort((a, b) => String(a.studentId).localeCompare(String(b.studentId)));
+  return res.json({
+    success: true,
+    count: list.length,
+    requireRosterWhitelist: !!serverGateState.requireRosterWhitelist,
+    students: list
+  });
+});
+
+app.post('/api/admin/roster', requireTeacherHttp, (req, res) => {
+  const body = parseJsonBody(req.body);
+  const roster = body.replace ? {} : getStudentRoster();
+  let added = 0;
+
+  const addRosterRow = (sidRaw, nameRaw, emailRaw) => {
+    const sid = String(sidRaw || '').trim();
+    const name = String(nameRaw || '').trim();
+    const email = String(emailRaw || '').trim().toLowerCase();
+    if (!sid || sid === '학번' || sid === 'studentId' || sid.length < 2) return;
+    roster[sid] = {
+      studentId: sid,
+      name,
+      email
+    };
+    added++;
+  };
+
+  if (Array.isArray(body.entries)) {
+    body.entries.forEach(item => {
+      if (item && typeof item === 'object') {
+        addRosterRow(item.studentId, item.name, item.email);
+      }
+    });
+  }
+
+  if (typeof body.csvText === 'string' && body.csvText.trim()) {
+    const lines = body.csvText.split(/\r?\n/);
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+      const parts = trimmed.split(/[,\t;/|]+/).map(p => p.trim());
+      if (parts.length >= 2) {
+        addRosterRow(parts[0], parts[1], parts[2] || '');
+      }
+    });
+  }
+
+  if (typeof body.fileBase64 === 'string' && body.fileBase64.trim()) {
+    try {
+      const XLSX = require('xlsx');
+      const buf = Buffer.from(body.fileBase64, 'base64');
+      const wb = XLSX.read(buf, { type: 'buffer' });
+      const firstSheet = wb.SheetNames[0];
+      if (firstSheet) {
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[firstSheet], { header: 1, defval: '' });
+        rows.forEach(r => {
+          if (Array.isArray(r) && r.length >= 2) {
+            addRosterRow(r[0], r[1], r[2] || '');
+          }
+        });
+      }
+    } catch (xlsxErr) {
+      return res.status(400).json({ success: false, error: '엑셀/CSV 파일 파싱 오류: ' + xlsxErr.message });
+    }
+  }
+
+  saveStudentRoster(roster);
+  const totalCount = Object.keys(roster).length;
+  return res.json({ success: true, added, count: totalCount });
+});
+
+app.post('/api/admin/roster-clear', requireTeacherHttp, (req, res) => {
+  saveStudentRoster({});
+  return res.json({ success: true, count: 0 });
+});
+
+app.get('/api/admin/sheets/config', requireTeacherHttp, (req, res) => {
+  return res.json({
+    success: true,
+    config: {
+      ...googleSheetsConfig,
+      isReady: isGoogleSheetsReady()
+    },
+    codeGs: buildCustomizedAppsScriptCode()
+  });
+});
+
+app.post('/api/admin/sheets/config', requireTeacherHttp, (req, res) => {
+  const body = parseJsonBody(req.body);
+  let rawWebAppUrl = typeof body.webAppUrl === 'string' ? body.webAppUrl.trim() : undefined;
+  if (typeof body.spreadsheetId === 'string' && body.spreadsheetId.trim()) {
+    const rawId = body.spreadsheetId.trim();
+    if (/script\.google\.com\/macros\//i.test(rawId)) {
+      if (!rawWebAppUrl) rawWebAppUrl = rawId;
+    } else {
+      const matchUrl = rawId.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+      googleSheetsConfig.spreadsheetId = matchUrl ? matchUrl[1] : rawId;
+    }
+  }
+  if (typeof body.sheetName === 'string' && body.sheetName.trim()) {
+    googleSheetsConfig.sheetName = body.sheetName.trim();
+  }
+  if (rawWebAppUrl !== undefined) {
+    if (rawWebAppUrl && !/^https?:\/\/.+/i.test(rawWebAppUrl)) {
+      return res.status(400).json({ success: false, error: '올바른 http/https 웹 앱 URL을 입력해 주세요.' });
+    }
+    googleSheetsConfig.webAppUrl = rawWebAppUrl;
+  }
+  if (typeof body.syncSecret === 'string') {
+    googleSheetsConfig.syncSecret = body.syncSecret.trim();
+  }
+  if (typeof body.syncPinOnLogin === 'boolean') {
+    googleSheetsConfig.syncPinOnLogin = body.syncPinOnLogin;
+  }
+  if (typeof body.autoPushChanges === 'boolean') {
+    googleSheetsConfig.autoPushChanges = body.autoPushChanges;
+  }
+  saveGoogleSheetsConfig();
+  return res.json({
+    success: true,
+    config: { ...googleSheetsConfig, isReady: isGoogleSheetsReady() },
+    codeGs: buildCustomizedAppsScriptCode()
+  });
+});
+
+app.post('/api/admin/sheets/test', requireTeacherHttp, async (req, res) => {
+  try {
+    const result = await callGoogleAppsScript({ action: 'ping' }, 5000);
+    googleSheetsConfig.lastSyncAt = Date.now();
+    googleSheetsConfig.lastSyncMessage = '연결 테스트 성공';
+    saveGoogleSheetsConfig();
+    return res.json({ success: true, result });
+  } catch (err) {
+    googleSheetsConfig.lastSyncMessage = `연결 실패: ${err.message}`;
+    saveGoogleSheetsConfig();
+    return res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/sheets/push-all', requireTeacherHttp, async (req, res) => {
+  try {
+    const all = getStudentsProgress() || {};
+    const rows = Object.keys(all)
+      .filter(sid => sid && sid !== '교사')
+      .sort((a, b) => String(a).localeCompare(String(b)))
+      .map(sid => buildSheetRowFromRecord(sid, all[sid]));
+
+    const result = await callGoogleAppsScript({ action: 'syncAll', rows }, 10000);
+    googleSheetsConfig.lastSyncAt = Date.now();
+    googleSheetsConfig.lastSyncMessage = `전체 ${rows.length}명 시트 반영 완료`;
+    saveGoogleSheetsConfig();
+    return res.json({
+      success: true,
+      pushedCount: rows.length,
+      updatedCount: result.updatedCount || 0,
+      appendedCount: result.appendedCount || 0
+    });
+  } catch (err) {
+    googleSheetsConfig.lastSyncMessage = `내보내기 실패: ${err.message}`;
+    saveGoogleSheetsConfig();
+    return res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/sheets/sync-from-sheet', requireTeacherHttp, async (req, res) => {
+  try {
+    const result = await callGoogleAppsScript({ action: 'getAll' }, 8000);
+    const sheetRows = Array.isArray(result.rows) ? result.rows : [];
+    const all = getStudentsProgress() || {};
+    const now = Date.now();
+
+    let createdCount = 0;
+    let updatedCount = 0;
+    let pinUpdatedCount = 0;
+    let pinClearedCount = 0;
+    let skippedInvalidPinCount = 0;
+
+    for (const row of sheetRows) {
+      const sid = String((row && row.studentId) || '').trim();
+      if (!sid || sid === '교사' || sid === '학번' || sid.length < 2) continue;
+
+      const sName = String((row && row.name) || '').trim();
+      const sEmail = String((row && row.email) || '').trim().toLowerCase();
+      const sPin = String((row && row.pin) || '').trim();
+      const isPin4 = /^\d{4}$/.test(sPin);
+      const isResetCmd = /^(초기화|reset)$/i.test(sPin);
+      if (sPin && !isPin4 && !isResetCmd) {
+        skippedInvalidPinCount++;
+      }
+
+      const revokeStudentSessions = () => {
+        for (const [tok, sess] of activeStudentSessions.entries()) {
+          if (sess.studentId === sid) activeStudentSessions.delete(tok);
+        }
+      };
+
+      if (all[sid]) {
+        const rec = { ...all[sid] };
+        let changed = false;
+        if (sName && rec.name !== sName) {
+          rec.name = sName;
+          changed = true;
+        }
+        if (sEmail && rec.email !== sEmail) {
+          rec.email = sEmail;
+          changed = true;
+        }
+        const sLv = Number(row && row.level);
+        if (Number.isFinite(sLv) && sLv >= 1 && rec.level !== Math.floor(sLv)) {
+          rec.level = Math.floor(sLv);
+          changed = true;
+        }
+        const sGold = (row && row.gold !== undefined && row.gold !== '') ? Number(row.gold) : NaN;
+        if (Number.isFinite(sGold) && sGold >= 0 && rec.gold !== Math.floor(sGold)) {
+          rec.gold = Math.floor(sGold);
+          changed = true;
+        }
+        if (isPin4 && rec.pinPlain !== sPin) {
+          const { salt, hash } = hashStudentPin(sPin);
+          rec.pinSalt = salt;
+          rec.pinHash = hash;
+          rec.pinPlain = sPin;
+          rec.authProvider = 'pin';
+          revokeStudentSessions();
+          pinUpdatedCount++;
+          changed = true;
+        } else if (isResetCmd && (rec.pinHash || rec.pinPlain)) {
+          delete rec.pinHash;
+          delete rec.pinSalt;
+          delete rec.pinPlain;
+          revokeStudentSessions();
+          pinClearedCount++;
+          changed = true;
+        }
+        if (changed) {
+          rec.updatedAt = now;
+          all[sid] = rec;
+          updatedCount++;
+        }
+      } else {
+        const newRec = {
+          name: sName || `학생_${sid}`,
+          studentId: sid,
+          grade: /^[123]/.test(sid) ? Number(sid[0]) : 1,
+          level: Math.max(1, Number(row.level) || 1),
+          exp: 0,
+          gold: row.gold !== undefined && row.gold !== '' ? Math.max(0, Number(row.gold) || 0) : 10,
+          email: sEmail || '',
+          authProvider: 'pin',
+          registeredAt: now,
+          updatedAt: now
+        };
+        if (isPin4) {
+          const { salt, hash } = hashStudentPin(sPin);
+          newRec.pinSalt = salt;
+          newRec.pinHash = hash;
+          newRec.pinPlain = sPin;
+          pinUpdatedCount++;
+        }
+        all[sid] = newRec;
+        createdCount++;
+      }
+    }
+
+    if (createdCount > 0 || updatedCount > 0) {
+      saveStudentsProgress(all, true);
+    }
+    googleSheetsConfig.lastSyncAt = Date.now();
+    googleSheetsConfig.lastSyncMessage = `시트 가져오기 완료 (신규 ${createdCount}, 갱신 ${updatedCount}, PIN 변경 ${pinUpdatedCount})`;
+    saveGoogleSheetsConfig();
+
+    return res.json({
+      success: true,
+      totalRows: sheetRows.length,
+      createdCount,
+      updatedCount,
+      pinUpdatedCount,
+      pinClearedCount,
+      skippedInvalidPinCount
+    });
+  } catch (err) {
+    googleSheetsConfig.lastSyncMessage = `가져오기 실패: ${err.message}`;
+    saveGoogleSheetsConfig();
+    return res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/delete-students-by-grade', requireTeacherHttp, (req, res) => {
+  const body = parseJsonBody(req.body);
+  const gradePrefix = String(body.gradePrefix || '').trim();
+  if (!['1', '2', '3'].includes(gradePrefix)) {
+    return res.status(400).json({ success: false, error: '학년 구분(1, 2, 3)이 올바르지 않습니다.' });
+  }
+  const all = getStudentsProgress();
+  const deletedMap = getDeletedStudents();
+  const deletedIds = [];
+
+  for (const sid of Object.keys(all)) {
+    if (sid.startsWith(gradePrefix)) {
+      deletedIds.push(sid);
+      delete all[sid];
+      deletedMap[sid] = Date.now();
+    }
+  }
+
+  if (deletedIds.length > 0) {
+    saveStudentsProgress(all, true);
+    saveDeletedStudents(deletedMap);
+    for (const p of Object.values(players)) {
+      if (!p.isTeacher && deletedIds.includes(p.studentId)) {
+        io.to(p.id).emit('student_progress_reset_by_admin', { studentId: p.studentId });
+        p.level = 1;
+        p.exp = 0;
+        p.gold = 10;
+      }
+    }
+    broadcastStudentList();
+  }
+
+  return res.json({ success: true, deletedCount: deletedIds.length, deletedIds });
+});
+
+app.get('/api/admin/all-students-progress', requireTeacherHttp, (req, res) => {
   res.json({ success: true, students: getStudentsProgress() });
 });
 
-app.post('/api/admin/clear-all-students-progress', (req, res) => {
+app.post('/api/admin/clear-all-students-progress', requireTeacherHttp, (req, res) => {
   studentsProgressCache = {};
   try {
     fs.writeFileSync(PROGRESS_FILE, JSON.stringify({}, null, 2), 'utf8');
@@ -332,7 +1496,7 @@ app.post('/api/admin/clear-all-students-progress', (req, res) => {
   res.json({ success: true });
 });
 
-app.post('/api/admin/delete-student-progress', (req, res) => {
+app.post('/api/admin/delete-student-progress', requireTeacherHttp, (req, res) => {
   let body = req.body;
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch (e) {}
@@ -340,9 +1504,16 @@ app.post('/api/admin/delete-student-progress', (req, res) => {
   const studentId = (body && body.studentId || '').trim();
   if (!studentId) return res.status(400).json({ error: 'Missing studentId' });
   const all = getStudentsProgress();
+  if (pendingSheetSyncTimers.has(studentId)) {
+    clearTimeout(pendingSheetSyncTimers.get(studentId));
+    pendingSheetSyncTimers.delete(studentId);
+  }
   if (all[studentId]) {
     delete all[studentId];
     saveStudentsProgress(all, true);
+  }
+  if (isGoogleSheetsReady() && googleSheetsConfig.autoPushChanges) {
+    callGoogleAppsScript({ action: 'deleteOne', studentId }, 4000).catch(() => {});
   }
 
   // Record deleted timestamp so student client cannot resurrect from browser localStorage
@@ -639,9 +1810,9 @@ const ALL_GAME_ITEMS = {
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
     'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
   'item_unyielding_stone': { name: '💎 꺾이지 않는 사명석', icon: '💎', meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료' } },
-  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
-  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
-  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 25, hp: 35 }, effect: '4티어 갑옷 · 방어력 +25, 체력 +35' } },
+  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 10, stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35 (Lv.10 이상)' } },
+  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 10, stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35 (Lv.10 이상)' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 10, stats: { atk: 0, def: 25, hp: 35 }, effect: '4티어 갑옷 · 방어력 +25, 체력 +35 (Lv.10 이상)' } },
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 보물' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
@@ -670,21 +1841,21 @@ const ALL_GAME_ITEMS = {
   'equip_wood_sword': { name: '나무검', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
   'equip_wood_helmet': { name: '나무투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 12, hp: 15 }, effect: '방어력 +12, 체력 +15' } },
-  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
-  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 20 }, effect: '방어력 +15, 체력 +20' } },
+  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 3, stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22 (Lv.3 이상)' } },
+  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 3, stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28 (Lv.3 이상)' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', meta: { type: 'equipment', slot: 'armor', requiredLevel: 3, stats: { atk: 0, def: 15, hp: 20 }, effect: '방어력 +15, 체력 +20 (Lv.3 이상)' } },
   'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 5, hp: 20 }, effect: '공격력 +10, 방어력 +5, 체력 +20' } },
-  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 5, hp: 30 }, effect: '공격력 +15, 방어력 +5, 체력 +30' } },
-  'equip_bronze_sword': { name: '청동검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' } },
-  'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25' } },
+  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', meta: { type: 'equipment', slot: 'accessory', requiredLevel: 5, stats: { atk: 15, def: 5, hp: 30 }, effect: '공격력 +15, 방어력 +5, 체력 +30 (Lv.5 이상)' } },
+  'equip_bronze_sword': { name: '청동검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 5, stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30 (Lv.5 이상)' } },
+  'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 5, stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35 (Lv.5 이상)' } },
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 5, stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25 (Lv.5 이상)' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
-  'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 13, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.13 이상)' } },
-  'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 13, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.13 이상)' } },
-  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 13, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.13 이상)' } },
-  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
+  'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 12, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)' } },
+  'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 12, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)' } },
+  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
+  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'quest', isQuestItem: true, effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', meta: { type: 'quest', effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', meta: { type: 'quest', effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
@@ -693,6 +1864,661 @@ const ALL_GAME_ITEMS = {
   'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
 
 };
+
+function computeStudentCombatStats(record = {}) {
+  if (record.isTeacher || record.studentId === '교사') {
+    return { atk: 9999, def: 9999 };
+  }
+  const level = Math.max(1, Number(record.level) || 1);
+  const lvBonus = Math.max(0, level - 1);
+  const baseAtk = (record.baseAtk !== undefined && Number.isFinite(Number(record.baseAtk)) && Number(record.baseAtk) > 0)
+    ? Number(record.baseAtk)
+    : 10;
+  const baseDef = (record.baseDef !== undefined && Number.isFinite(Number(record.baseDef)) && Number(record.baseDef) >= 0)
+    ? Number(record.baseDef)
+    : 2;
+
+  let bonusAtk = 0;
+  let bonusDef = 0;
+  const eqMap = (record.equipment && typeof record.equipment === 'object') ? record.equipment : null;
+  if (eqMap) {
+    const firstAccItem = (eqMap.accessory && eqMap.accessory.item) ? eqMap.accessory.item : null;
+    for (const [slot, eq] of Object.entries(eqMap)) {
+      if (!eq) continue;
+      if (slot === 'accessory2' && firstAccItem && eq.item === firstAccItem) continue;
+      const canonStats = (eq.item && ALL_GAME_ITEMS[eq.item] && ALL_GAME_ITEMS[eq.item].meta && ALL_GAME_ITEMS[eq.item].meta.stats)
+        ? ALL_GAME_ITEMS[eq.item].meta.stats
+        : eq.stats;
+      if (canonStats) {
+        bonusAtk += Number(canonStats.atk) || 0;
+        bonusDef += Number(canonStats.def) || 0;
+      }
+    }
+  }
+
+  const computedAtk = baseAtk + lvBonus + bonusAtk;
+  const computedDef = baseDef + lvBonus + bonusDef;
+  const rawAtk = Number(record.atk);
+  const rawDef = Number(record.def);
+  return {
+    atk: Number.isFinite(rawAtk) ? Math.max(computedAtk, Math.min(computedAtk + 20, Math.round(rawAtk))) : computedAtk,
+    def: Number.isFinite(rawDef) ? Math.max(computedDef, Math.min(computedDef + 20, Math.round(rawDef))) : computedDef
+  };
+}
+
+function buildLeaderboardPayload(requesterStudentId = '', requesterSocketId = '') {
+  const merged = new Map();
+  const savedAll = getStudentsProgress() || {};
+
+  for (const [sidKey, saved] of Object.entries(savedAll)) {
+    if (!saved || typeof saved !== 'object') continue;
+    const sid = String(saved.studentId || sidKey || '').trim();
+    if (!sid || sid === '교사' || saved.isTeacher || !saved.name) continue;
+    const stats = computeStudentCombatStats(saved);
+    merged.set(sid, {
+      id: `offline_${sid}`,
+      name: String(saved.name),
+      studentId: sid,
+      level: Math.max(1, Number(saved.level) || 1),
+      exp: Math.max(0, Number(saved.exp) || 0),
+      gold: Math.max(0, Number(saved.gold) || 0),
+      atk: stats.atk,
+      def: stats.def,
+      isOnline: false,
+      equipment: saved.equipment || null,
+      baseAtk: saved.baseAtk,
+      baseDef: saved.baseDef
+    });
+  }
+
+  for (const p of Object.values(players)) {
+    if (!p || p.isTeacher || p.studentId === '교사' || !p.name) continue;
+    const sid = String(p.studentId || p.id || '').trim();
+    if (!sid) continue;
+    const prev = merged.get(sid);
+    const combined = {
+      ...(prev || {}),
+      ...p,
+      studentId: sid,
+      equipment: p.equipment || (prev && prev.equipment) || null,
+      baseAtk: p.baseAtk !== undefined ? p.baseAtk : (prev && prev.baseAtk),
+      baseDef: p.baseDef !== undefined ? p.baseDef : (prev && prev.baseDef)
+    };
+    const stats = computeStudentCombatStats(combined);
+    merged.set(sid, {
+      id: p.id,
+      name: String(p.name),
+      studentId: sid,
+      level: Math.max(1, Number(p.level) || 1),
+      exp: Math.max(0, Number(p.exp) || 0),
+      gold: Math.max(0, Number(p.gold) || 0),
+      atk: stats.atk,
+      def: stats.def,
+      isOnline: true
+    });
+  }
+
+  const sorted = Array.from(merged.values())
+    .map(({ equipment, baseAtk, baseDef, ...entry }) => entry)
+    .sort((a, b) =>
+      (b.level - a.level) ||
+      (b.exp - a.exp) ||
+      (b.atk - a.atk) ||
+      (b.def - a.def) ||
+      (b.gold - a.gold)
+    );
+
+  const reqSid = String(requesterStudentId || '').trim();
+  let myRank = -1;
+  if (reqSid || requesterSocketId) {
+    myRank = sorted.findIndex(e =>
+      (reqSid && e.studentId === reqSid) ||
+      (requesterSocketId && e.id === requesterSocketId)
+    );
+    if (myRank >= 0) myRank += 1;
+  }
+
+  return {
+    list: sorted.slice(0, 10),
+    myRank,
+    totalCount: sorted.length
+  };
+}
+
+app.get('/api/leaderboard', (req, res) => {
+  const sid = (req.query.studentId || '').trim();
+  res.json({ success: true, ...buildLeaderboardPayload(sid) });
+});
+
+// =========================================================================
+// 🔒 Server-Authoritative Economy / Crafting / Quest / Safe APIs
+// =========================================================================
+const SERVER_MAX_LEVEL = 100;
+
+const SERVER_STORE_BUY_ITEMS = {
+  'item_red_potion': { id: 'item_red_potion', name: '빨간 물약', icon: '🧪', price: 30, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
+  'item_orange_potion': { id: 'item_orange_potion', name: '주홍 물약', icon: '🧪', price: 75, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
+  'item_green_potion': { id: 'item_green_potion', name: '초록 물약', icon: '🧪', price: 75, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
+  'item_revive_scroll': { id: 'item_revive_scroll', name: '부활 주문서', icon: '📜', price: 100, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
+  'item_return_scroll': { id: 'item_return_scroll', name: '귀환 주문서', icon: '📜', price: 100, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
+  'item_teleport_scroll': { id: 'item_teleport_scroll', name: '순간이동 주문서', icon: '📜', price: 300, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 공간 이동' } }
+};
+
+const SERVER_ITEM_SELL_PRICES = {
+  'item_wood': 1, 'item_herb': 1, 'item_forsythia': 2, 'item_ginkgo': 3,
+  'item_basketball_leather': 2, 'item_futsal_leather': 2, 'item_boss_leather': 15, 'item_bronze_heart': 30,
+  'equip_shoes_samdidas': 20, 'item_perfect_exam': 50, 'item_eval_paper': 25,
+  'equip_wood_sword': 4, 'equip_wood_helmet': 3, 'equip_wood_armor': 3,
+  'equip_leather_sword': 10, 'equip_leather_helmet': 10, 'equip_leather_armor': 10, 'equip_leather_shoes': 10, 'equip_forsythia_ring': 20,
+  'equip_bronze_sword': 100, 'equip_bronze_helmet': 60, 'equip_bronze_armor': 60, 'equip_ginkgo_talisman': 100,
+  'item_history_essence': 5, 'item_unyielding_stone': 10,
+  'equip_heritage_blade': 160, 'equip_heritage_helmet': 100, 'equip_heritage_armor': 100, 'equip_bronze_shoes': 16, 'equip_heritage_boots': 30,
+  'equip_omr_wand': 20, 'equip_vintage_armband': 0, 'equip_elevator_pass': 0
+};
+
+function getServerItemSellPrice(itemId) {
+  if (Object.prototype.hasOwnProperty.call(SERVER_ITEM_SELL_PRICES, itemId)) {
+    return SERVER_ITEM_SELL_PRICES[itemId];
+  }
+  if (itemId.startsWith('equip_bronze')) return 10;
+  if (itemId.startsWith('equip_leather')) return 8;
+  if (itemId.startsWith('equip_wood')) return 3;
+  if (itemId.startsWith('item_')) return 2;
+  return 1;
+}
+
+function getServerInventoryCount(inv, itemId) {
+  if (!Array.isArray(inv)) return 0;
+  const entry = inv.find(i => i && i.item === itemId);
+  return entry ? (Number(entry.count) || 0) : 0;
+}
+
+const SERVER_QUEST_DEFINITIONS = {
+  'quest_joshua_intro': {
+    minLevel: 1,
+    isComplete: (q) => ((q.quizCount || 0) >= 2 && !!q.memoCollected),
+    cleanupItems: ['item_joshua_memo'],
+    rewards: [
+      { type: 'gold', amount: 100 },
+      { type: 'exp', amount: 100 },
+      { type: 'item', itemKey: 'item_teleport_scroll', itemName: '순간이동 주문서', count: 1, icon: '📜' }
+    ]
+  },
+  'quest_okchohan_social': {
+    minLevel: 4,
+    isComplete: (q) => ((q.acidRainScore || 0) >= 1000 && !!q.textbookCollected),
+    cleanupItems: ['item_okchohan_textbook'],
+    rewards: [
+      { type: 'item', itemKey: 'item_bronze_heart', itemName: '청동 드래곤의 심장', count: 1, icon: '❤️‍🔥' },
+      { type: 'gold', amount: 100 },
+      { type: 'exp', amount: 100 }
+    ]
+  },
+  'quest_kimmijin_art': {
+    minLevel: 3,
+    isComplete: (q, inv) => (Math.max(getServerInventoryCount(inv, 'item_forsythia'), q.forsythiaCount || 0) >= 3 && !!q.sketchbookCollected),
+    cleanupItems: ['item_kimmijin_sketchbook'],
+    rewards: [
+      { type: 'item', itemKey: 'item_forsythia', itemName: '노란 개나리 꽃잎', count: 3, icon: '🌼' },
+      { type: 'exp', amount: 100 }
+    ]
+  },
+  'quest_yosunyu_info': {
+    minLevel: 5,
+    isComplete: (q) => (!!q.serverInspected && !!q.usbCollected),
+    cleanupItems: ['item_yosunyu_usb'],
+    rewards: [
+      { type: 'item', itemKey: 'item_boss_leather', itemName: '보스의 가죽', count: 1, icon: '🥋' },
+      { type: 'exp', amount: 200 }
+    ]
+  },
+  'quest_kwimjinsyong_career': {
+    minLevel: 7,
+    isComplete: (q) => (!!q.guidebookCollected && !!q.studentComforted),
+    cleanupItems: ['item_career_guidebook'],
+    rewards: [
+      { type: 'exp', amount: 150 },
+      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기 포션', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } }
+    ]
+  },
+  'quest_library_missing_books': {
+    minLevel: 8,
+    isComplete: (q) => (!!q.bookPgCollected && !!q.bookOfCollected && !!q.bookHiCollected),
+    cleanupItems: ['item_lib_book_pg', 'item_lib_book_of', 'item_lib_book_hi'],
+    rewards: [
+      { type: 'gold', amount: 100 },
+      { type: 'exp', amount: 150 }
+    ]
+  },
+  'quest_cafeteria_order': {
+    minLevel: 10,
+    isComplete: (q) => !!q.targetCalmed,
+    cleanupItems: [],
+    rewards: [
+      { type: 'gold', amount: 150 },
+      { type: 'exp', amount: 200 }
+    ]
+  },
+  'quest_cafeteria_manners': {
+    minLevel: 10,
+    isComplete: (q) => !!q.targetCalmed,
+    cleanupItems: [],
+    rewards: [
+      { type: 'gold', amount: 100 },
+      { type: 'exp', amount: 200 },
+      { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 2, icon: '🍱' },
+      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨' }
+    ]
+  }
+};
+
+function authorizeStudentAction(req, res, targetStudentId) {
+  const sid = String(targetStudentId || '').trim();
+  if (!sid || sid === '교사') {
+    res.status(400).json({ success: false, error: '유효한 학번이 필요합니다.' });
+    return null;
+  }
+  if (isAuthorizedTeacherHttp(req)) {
+    return { studentId: sid, isTeacher: true };
+  }
+  const token = req.headers['x-student-token'] || (req.body && req.body.studentAuthToken);
+  const sess = consumeValidToken(activeStudentSessions, token, false);
+  if (!sess || sess.studentId !== sid) {
+    res.status(401).json({ success: false, error: '🔒 학생 세션 인증이 만료되었거나 유효하지 않습니다. 다시 로그인해 주세요.' });
+    return null;
+  }
+  return { studentId: sid, isTeacher: false, session: sess };
+}
+
+function addServerInventoryItem(inv, itemId, name, count = 1, icon = '📦', meta = {}) {
+  const canon = ALL_GAME_ITEMS[itemId] || null;
+  const canonMeta = (canon && canon.meta) ? canon.meta : {};
+  const resolvedStats = canonMeta.stats || meta.stats || null;
+  const resolvedEffect = canonMeta.effect || meta.effect || '';
+  const existing = inv.find(i => i && i.item === itemId);
+  if (existing) {
+    existing.count = (Number(existing.count) || 0) + count;
+    if (resolvedStats) existing.stats = resolvedStats;
+    if (resolvedEffect) existing.effect = resolvedEffect;
+  } else {
+    inv.push({
+      item: itemId,
+      name: (canon && canon.name) || name,
+      count,
+      icon: (canon && canon.icon) || icon,
+      type: canonMeta.type || meta.type || (itemId.startsWith('equip_') ? 'equipment' : 'material'),
+      slot: canonMeta.slot || meta.slot || null,
+      stats: resolvedStats,
+      heal: canonMeta.heal || meta.heal || 0,
+      effect: resolvedEffect
+    });
+  }
+}
+
+function removeServerInventoryItem(inv, equipment, itemId, count = 1) {
+  const idx = inv.findIndex(i => i && i.item === itemId);
+  if (idx === -1) return inv;
+  inv[idx].count = (Number(inv[idx].count) || 0) - count;
+  if (inv[idx].count <= 0) {
+    if (equipment && typeof equipment === 'object') {
+      for (const slot of Object.keys(equipment)) {
+        if (equipment[slot] && equipment[slot].item === itemId) {
+          equipment[slot] = null;
+        }
+      }
+    }
+    return inv.filter(i => i && i.item !== itemId);
+  }
+  return inv;
+}
+
+function applyServerExpAndLevelUp(record, baseAmount) {
+  const curLv = Math.max(1, Number(record.level) || 1);
+  if (curLv >= SERVER_MAX_LEVEL) {
+    record.level = SERVER_MAX_LEVEL;
+    record.exp = 0;
+    return 0;
+  }
+  let finalAmount = Number(baseAmount) || 0;
+  const eq = record.equipment || {};
+  const hasVintageArmband = (
+    (eq.accessory && eq.accessory.item === 'equip_vintage_armband') ||
+    (eq.accessory2 && eq.accessory2.item === 'equip_vintage_armband')
+  );
+  if (hasVintageArmband && baseAmount > 0) {
+    finalAmount += Math.max(1, Math.round(baseAmount * 0.10));
+  }
+  record.exp = (Number(record.exp) || 0) + finalAmount;
+  record.level = curLv;
+  while (record.level < SERVER_MAX_LEVEL && record.exp >= record.level * 100) {
+    record.exp -= record.level * 100;
+    record.level++;
+  }
+  if (record.level >= SERVER_MAX_LEVEL) {
+    record.exp = 0;
+  }
+  return finalAmount;
+}
+
+function syncActivePlayerAfterMutation(studentId, record) {
+  const activeStudent = Object.values(players).find(p => p.studentId === studentId);
+  if (!activeStudent) return;
+  activeStudent.level = record.level;
+  activeStudent.gold = record.gold;
+  activeStudent.exp = record.exp;
+  if (record.equipment && typeof record.equipment === 'object') {
+    activeStudent.equipment = record.equipment;
+  }
+  const computed = computeStudentCombatStats({
+    ...activeStudent,
+    atk: record.atk,
+    def: record.def
+  });
+  activeStudent.atk = computed.atk;
+  activeStudent.def = computed.def;
+  broadcastStudentList();
+}
+
+app.post('/api/craft', (req, res) => {
+  const body = parseJsonBody(req.body);
+  const auth = authorizeStudentAction(req, res, body.studentId);
+  if (!auth) return;
+
+  const recipeId = String(body.recipeId || '').trim();
+  const multiplier = Number(body.multiplier || 1);
+  const assembled = String(body.assembled || '').trim();
+
+  if (!Number.isInteger(multiplier) || multiplier < 1 || multiplier > 20) {
+    return res.status(400).json({ success: false, error: '유효하지 않은 제작 수량입니다. (1~20)' });
+  }
+
+  const latestRecipes = loadCraftRecipesSafe(null);
+  if (!latestRecipes) {
+    return res.status(500).json({ success: false, error: '제작 레시피 데이터를 불러오지 못했습니다.' });
+  }
+  const recipe = latestRecipes.find(r => r.id === recipeId);
+  if (!recipe) {
+    return res.status(404).json({ success: false, error: '존재하지 않는 제작 레시피입니다.' });
+  }
+
+  const all = getStudentsProgress() || {};
+  const record = all[auth.studentId];
+  if (!record) {
+    return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  const pLevel = Math.max(1, Number(record.level) || 1);
+  const pGrade = Math.max(1, Number(record.grade) || 1);
+  if (!auth.isTeacher && recipe.gradeLevel && pGrade < recipe.gradeLevel) {
+    return res.status(403).json({ success: false, error: '해당 학년에서는 제작할 수 없는 레시피입니다.' });
+  }
+  if (!auth.isTeacher && recipe.requiredLevel && pLevel < recipe.requiredLevel) {
+    return res.status(403).json({ success: false, error: `레벨이 부족합니다! (필요: Lv.${recipe.requiredLevel}, 현재: Lv.${pLevel})` });
+  }
+
+  const expectedSentence = recipe.unscramble && recipe.unscramble.correct;
+  if (expectedSentence && assembled !== expectedSentence) {
+    return res.status(400).json({ success: false, error: '영어 문장 어순이 올바르지 않습니다!' });
+  }
+
+  record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
+  record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
+
+  for (const reqItem of (recipe.requiredItems || [])) {
+    const needCount = reqItem.count * multiplier;
+    const haveCount = getServerInventoryCount(record.inventory, reqItem.item);
+    if (haveCount < needCount) {
+      return res.status(400).json({ success: false, error: `재료 '${reqItem.name}'이(가) 부족합니다. (필요: ${needCount}, 보유: ${haveCount})` });
+    }
+  }
+
+  const needGold = (recipe.requiredGold || 0) * multiplier;
+  const haveGold = Number(record.gold) || 0;
+  if (haveGold < needGold) {
+    return res.status(400).json({ success: false, error: `골드가 부족합니다. (필요: ${needGold}G, 보유: ${haveGold}G)` });
+  }
+
+  for (const reqItem of (recipe.requiredItems || [])) {
+    record.inventory = removeServerInventoryItem(record.inventory, record.equipment, reqItem.item, reqItem.count * multiplier);
+  }
+  record.gold = haveGold - needGold;
+
+  const resultDef = recipe.result;
+  addServerInventoryItem(record.inventory, resultDef.item, resultDef.name, multiplier, resultDef.icon || recipe.icon, {
+    type: resultDef.type || 'equipment',
+    slot: resultDef.slot || 'accessory',
+    stats: resultDef.stats || { atk: 0, def: 0, hp: 0 },
+    heal: resultDef.heal || 0,
+    effect: resultDef.effect || ''
+  });
+  const expGained = applyServerExpAndLevelUp(record, 50 * multiplier);
+  record.updatedAt = Date.now();
+  all[auth.studentId] = record;
+  saveStudentsProgress(all, true);
+  syncActivePlayerAfterMutation(auth.studentId, record);
+
+  return res.json({
+    success: true,
+    level: record.level,
+    exp: record.exp,
+    gold: record.gold,
+    inventory: record.inventory,
+    expGained,
+    craftedItem: resultDef
+  });
+});
+
+app.post('/api/store/buy', (req, res) => {
+  const body = parseJsonBody(req.body);
+  const auth = authorizeStudentAction(req, res, body.studentId);
+  if (!auth) return;
+
+  const itemId = String(body.itemId || '').trim();
+  const quantity = Number(body.quantity || 1);
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+    return res.status(400).json({ success: false, error: '유효하지 않은 구매 수량입니다.' });
+  }
+  const storeItem = SERVER_STORE_BUY_ITEMS[itemId];
+  if (!storeItem) {
+    return res.status(404).json({ success: false, error: '매점에서 판매하지 않는 상품입니다.' });
+  }
+
+  const all = getStudentsProgress() || {};
+  const record = all[auth.studentId];
+  if (!record) {
+    return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  const totalCost = storeItem.price * quantity;
+  const currentGold = Number(record.gold) || 0;
+  if (currentGold < totalCost) {
+    return res.status(400).json({ success: false, error: `골드가 부족합니다! (필요: ${totalCost} G / 보유: ${currentGold} G)` });
+  }
+
+  record.gold = currentGold - totalCost;
+  record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
+  addServerInventoryItem(record.inventory, storeItem.id, storeItem.name, quantity, storeItem.icon, storeItem.meta || {});
+  record.updatedAt = Date.now();
+  all[auth.studentId] = record;
+  saveStudentsProgress(all, true);
+  syncActivePlayerAfterMutation(auth.studentId, record);
+
+  return res.json({
+    success: true,
+    gold: record.gold,
+    inventory: record.inventory,
+    totalCost
+  });
+});
+
+app.post('/api/store/sell', (req, res) => {
+  const body = parseJsonBody(req.body);
+  const auth = authorizeStudentAction(req, res, body.studentId);
+  if (!auth) return;
+
+  const itemId = String(body.itemId || '').trim();
+  const count = Number(body.count || 1);
+  if (!Number.isInteger(count) || count < 1) {
+    return res.status(400).json({ success: false, error: '유효하지 않은 판매 수량입니다.' });
+  }
+
+  const def = ALL_GAME_ITEMS[itemId] || {};
+  const type = (def.meta && def.meta.type) || '';
+  const unitPrice = getServerItemSellPrice(itemId);
+  if (itemId === 'equip_vintage_armband' || itemId === 'equip_elevator_pass' || (def.meta && def.meta.isQuestItem) || unitPrice <= 0) {
+    return res.status(400).json({ success: false, error: '이 유물/특수 아이템은 매점에서 매각할 수 없습니다!' });
+  }
+  if (type === 'consumable' || itemId.includes('potion') || itemId.includes('scroll') || itemId.includes('elixir')) {
+    return res.status(400).json({ success: false, error: '소비품(물약 및 주문서)은 매점에서 매각할 수 없습니다!' });
+  }
+
+  const all = getStudentsProgress() || {};
+  const record = all[auth.studentId];
+  if (!record) {
+    return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
+  record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
+
+  const equippedIds = new Set(Object.values(record.equipment).filter(e => e && e.item).map(e => e.item));
+  if (equippedIds.has(itemId)) {
+    return res.status(400).json({ success: false, error: '착용 중인 장비는 판매할 수 없습니다!' });
+  }
+
+  const existing = record.inventory.find(i => i && i.item === itemId);
+  if (!existing || (Number(existing.count) || 0) < count) {
+    return res.status(400).json({ success: false, error: '보유 수량이 부족합니다.' });
+  }
+
+  const earnedGold = unitPrice * count;
+  record.inventory = removeServerInventoryItem(record.inventory, record.equipment, itemId, count);
+  record.gold = (Number(record.gold) || 0) + earnedGold;
+  record.updatedAt = Date.now();
+  all[auth.studentId] = record;
+  saveStudentsProgress(all, true);
+  syncActivePlayerAfterMutation(auth.studentId, record);
+
+  return res.json({
+    success: true,
+    gold: record.gold,
+    inventory: record.inventory,
+    soldCount: count,
+    earnedGold
+  });
+});
+
+app.post('/api/quest/complete', (req, res) => {
+  const body = parseJsonBody(req.body);
+  const auth = authorizeStudentAction(req, res, body.studentId);
+  if (!auth) return;
+
+  const questId = String(body.questId || '').trim();
+  const qDef = SERVER_QUEST_DEFINITIONS[questId];
+  if (!qDef) {
+    return res.status(404).json({ success: false, error: '존재하지 않는 퀘스트입니다.' });
+  }
+
+  const all = getStudentsProgress() || {};
+  const record = all[auth.studentId];
+  if (!record) {
+    return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  record.quests = (record.quests && typeof record.quests === 'object') ? { ...record.quests } : {};
+  const quest = record.quests[questId];
+  if (!quest || (quest.status !== 'in_progress' && quest.status !== 'completed')) {
+    return res.status(400).json({ success: false, error: '수락하여 진행 중인 퀘스트만 완료할 수 있습니다.' });
+  }
+
+  const pLevel = Math.max(1, Number(record.level) || 1);
+  if (!auth.isTeacher && qDef.minLevel && pLevel < qDef.minLevel) {
+    return res.status(403).json({ success: false, error: `최소 레벨 Lv.${qDef.minLevel} 이상이 필요합니다.` });
+  }
+
+  record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
+  record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
+
+  if (!qDef.isComplete(quest, record.inventory)) {
+    return res.status(400).json({ success: false, error: '아직 의뢰 목표를 모두 달성하지 못했습니다!' });
+  }
+
+  record.quests[questId] = { ...quest, status: 'done', completedAt: Date.now() };
+  for (const r of qDef.rewards) {
+    if (r.type === 'gold') {
+      record.gold = (Number(record.gold) || 0) + r.amount;
+    } else if (r.type === 'exp') {
+      applyServerExpAndLevelUp(record, r.amount);
+    } else if (r.type === 'item') {
+      addServerInventoryItem(record.inventory, r.itemKey, r.itemName, r.count || 1, r.icon || '📦', r.meta || { type: 'material' });
+    }
+  }
+  for (const cleanupId of (qDef.cleanupItems || [])) {
+    record.inventory = removeServerInventoryItem(record.inventory, record.equipment, cleanupId, 1);
+  }
+
+  record.updatedAt = Date.now();
+  all[auth.studentId] = record;
+  saveStudentsProgress(all, true);
+  syncActivePlayerAfterMutation(auth.studentId, record);
+
+  return res.json({
+    success: true,
+    level: record.level,
+    exp: record.exp,
+    gold: record.gold,
+    inventory: record.inventory,
+    quests: record.quests
+  });
+});
+
+app.post('/api/safe/cafeteria-key', (req, res) => {
+  const body = parseJsonBody(req.body);
+  const auth = authorizeStudentAction(req, res, body.studentId);
+  if (!auth) return;
+
+  const all = getStudentsProgress() || {};
+  const record = all[auth.studentId];
+  if (!record) {
+    return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  const pLevel = Math.max(1, Number(record.level) || 1);
+  if (!auth.isTeacher && pLevel < 10) {
+    return res.status(403).json({ success: false, error: `10레벨 이상부터 조사할 수 있습니다. (현재: Lv.${pLevel})` });
+  }
+
+  record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
+  record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
+
+  if (record.hasCafeteriaKey || getServerInventoryCount(record.inventory, 'item_cafeteria_key') > 0) {
+    return res.json({ success: true, alreadyUnlocked: true, hasCafeteriaKey: true, inventory: record.inventory });
+  }
+
+  const eq = record.equipment;
+  const isHelm = eq.helmet && eq.helmet.item === 'equip_heritage_helmet';
+  const isArmor = eq.armor && eq.armor.item === 'equip_heritage_armor';
+  const wepItem = eq.weapon && eq.weapon.item;
+  const isWep = (wepItem === 'equip_heritage_blade' || wepItem === 'equip_omr_wand');
+  if (!auth.isTeacher && !(isHelm && isArmor && isWep)) {
+    return res.status(400).json({ success: false, error: '1897 헤리티지 3종 세트(투구·갑옷·무기/컴싸 마법봉)를 착용해야 보관함을 열 수 있습니다.' });
+  }
+
+  record.hasCafeteriaKey = true;
+  addServerInventoryItem(record.inventory, 'item_cafeteria_key', '급식실 열쇠', 1, '🔑', {
+    type: 'quest',
+    effect: '급식실 정문 출입용 황금 열쇠'
+  });
+  record.updatedAt = Date.now();
+  all[auth.studentId] = record;
+  saveStudentsProgress(all, true);
+
+  return res.json({
+    success: true,
+    hasCafeteriaKey: true,
+    inventory: record.inventory
+  });
+});
 
 // Simple Korean/English Bad Words Filter
 const BAD_WORDS = ['바보', '멍청', '시발', '새끼', '지랄', '병신', 'fuck', 'shit', 'idiot', 'damn'];
@@ -734,26 +2560,50 @@ function sanitizeGear(g) {
 
 // Normalize floor for singleton rooms (playground, career, staff_office, history)
 function normalizeSingletonRoomFloor(room, floor) {
-  if (room === 'playground' || room === 'playground_gym' || room === 'room_cafeteria') return 1;
+  if (room === 'playground' || room === 'playground_gym' || room === 'room_cafeteria' || room === 'room_gym') return 1;
   if (room === 'room_career') return 5;
   if (room === 'room_staff_office') return 6;
   if (room === 'room_history') return 0;
   return floor;
 }
 
+function isAuthorizedTeacherSocket(socket, payload = {}) {
+  const player = players[socket.id];
+  const token = payload && (payload.token || payload.teacherToken);
+  const pwd = payload && (payload.pwd || payload.teacherPwd);
+  return !!(
+    socket.isTeacher ||
+    (player && player.isTeacher) ||
+    (typeof token === 'string' && activeTeacherTokens.has(token)) ||
+    (typeof pwd === 'string' && pwd === TEACHER_PASSWORD)
+  );
+}
+
+function rejectUnauthorizedTeacherSocket(socket, msg = '🔒 교사 권한이 필요합니다.') {
+  socket.emit('teacher_action_alert', { message: msg });
+}
+
 io.on('connection', (socket) => {
   console.log(`[Connect] Socket ID: ${socket.id}`);
 
   // 🔒 Send current server gate state immediately to new connection
-  socket.emit('server_state_sync', {
-    isOpen: serverGateState.isOpen,
-    closedMessage: serverGateState.closedMessage
-  });
+  socket.emit('server_state_sync', getPublicServerGatePayload());
 
   // Player Login
   socket.on('player_join', (data) => {
-    const { name, grade, studentId, avatar, isTeacher, teacherPwd } = data;
-    const isVerifiedTeacher = !!isTeacher && teacherPwd === '03220322';
+    const { name, grade, studentId, avatar, isTeacher, teacherPwd, teacherToken, studentAuthToken } = data || {};
+    const isVerifiedTeacher = !!isTeacher && (
+      (typeof teacherToken === 'string' && activeTeacherTokens.has(teacherToken)) ||
+      teacherPwd === TEACHER_PASSWORD
+    );
+    socket.isTeacher = isVerifiedTeacher;
+    if (isVerifiedTeacher) {
+      socket.teacherToken = (typeof teacherToken === 'string' && activeTeacherTokens.has(teacherToken))
+        ? teacherToken
+        : issueTeacherToken();
+    } else {
+      socket.teacherToken = null;
+    }
 
     // 🔒 Teacher Gate Enforcement: If server is closed and not a verified teacher, reject entry
     if (!serverGateState.isOpen && !isVerifiedTeacher) {
@@ -763,9 +2613,31 @@ io.on('connection', (socket) => {
       });
       return;
     }
+
+    // 🔐 Enforce @senedu.kr Email + 4-digit PIN session when emergency login is disabled
+    if (!isVerifiedTeacher && !serverGateState.allowEmergencyStudentLogin) {
+      const sess = consumeValidToken(activeStudentSessions, studentAuthToken, false);
+      if (!sess || (studentId && sess.studentId !== String(studentId).trim())) {
+        socket.emit('server_entry_rejected', {
+          reason: 'pin_auth_required',
+          message: `🔒 @${ALLOWED_EMAIL_DOMAIN} 이메일과 4자리 PIN 인증이 필요합니다.\n로그인 화면에서 이메일과 PIN을 입력해 주세요!`
+        });
+        return;
+      }
+    }
     const resolvedName = isVerifiedTeacher ? ((name && name !== '교사') ? name : '갓준철') : (name || '학생_' + socket.id.substr(0, 4));
     const initRoom = data.room || 'hallway';
     const initFloor = normalizeSingletonRoomFloor(initRoom, (data.floor !== undefined) ? parseInt(data.floor) : 7);
+    const joinedStats = isVerifiedTeacher
+      ? { atk: 9999, def: 9999 }
+      : computeStudentCombatStats({
+          level: data.level || 1,
+          baseAtk: data.baseAtk,
+          baseDef: data.baseDef,
+          equipment: data.equipment,
+          atk: data.atk,
+          def: data.def
+        });
     players[socket.id] = {
       id: socket.id,
       name: resolvedName,
@@ -775,8 +2647,10 @@ io.on('connection', (socket) => {
       isTeacher: isVerifiedTeacher,
       hp: isVerifiedTeacher ? 9999 : 100,
       maxHp: isVerifiedTeacher ? 9999 : 100,
-      atk: isVerifiedTeacher ? 9999 : 10,
-      def: isVerifiedTeacher ? 9999 : 2,
+      baseAtk: isVerifiedTeacher ? 9999 : (Number(data.baseAtk) || 10),
+      baseDef: isVerifiedTeacher ? 9999 : (Number(data.baseDef) >= 0 ? Number(data.baseDef) : 2),
+      atk: joinedStats.atk,
+      def: joinedStats.def,
       floor: initFloor,
       room: initRoom,
       x: (data.x !== undefined) ? parseInt(data.x) : 14 * 32,
@@ -795,8 +2669,10 @@ io.on('connection', (socket) => {
     const currentRoom = `server_${players[socket.id].grade}_f${players[socket.id].floor}_${players[socket.id].room}`;
     socket.join(currentRoom);
 
-    // Send initial self data & current Boss Raid state
-    socket.emit('init_self', players[socket.id]);
+    // Send initial self data & current Boss Raid state (teacherToken is ONLY sent to the verified teacher's own socket)
+    socket.emit('init_self', isVerifiedTeacher
+      ? { ...players[socket.id], teacherToken: socket.teacherToken }
+      : players[socket.id]);
     socket.emit('boss_raid_state', bossRaidEvent);
     socket.emit('plant_water_sync', { waterCount: plantWaterCount });
     socket.emit('field_monsters_state', defeatedFieldMobs);
@@ -864,7 +2740,11 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('teacher_set_plant_water', ({ count }) => {
+  socket.on('teacher_set_plant_water', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) {
+      return rejectUnauthorizedTeacherSocket(socket);
+    }
+    const { count } = payload;
     if (typeof count === 'number' && count >= 0) {
       plantWaterCount = Math.floor(count);
       savePlantProgress();
@@ -973,11 +2853,12 @@ io.on('connection', (socket) => {
   socket.on('trade_execute', () => {});
 
   // Teacher Item & Gold Grant System
-  socket.on('teacher_grant_item', ({ pwd, targetSocketId, itemKey, count, reason }) => {
-    if (pwd !== '03220322') {
+  socket.on('teacher_grant_item', (reqData = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, reqData)) {
       socket.emit('teacher_action_alert', { message: '🔒 교사 암호 인증에 실패했습니다.' });
       return;
     }
+    const { targetSocketId, itemKey, count, reason } = reqData;
 
     const qty = Math.max(1, parseInt(count) || 1);
     const itemInfo = itemKey === 'gold' 
@@ -1025,12 +2906,12 @@ io.on('connection', (socket) => {
   });
 
   // 🔒 Teacher Server Open/Close Toggle (수업 시작 / 종료 제어)
-  socket.on('teacher_toggle_server_state', ({ isOpen, message, pwd }) => {
-    const isTeacher = socket.isTeacher || (players[socket.id] && players[socket.id].isTeacher) || (pwd === '03220322');
-    if (!isTeacher) {
+  socket.on('teacher_toggle_server_state', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) {
       socket.emit('teacher_action_alert', { message: '⚠️ 교사 권한이 없어 서버 상태를 변경할 수 없습니다.' });
       return;
     }
+    const { isOpen, message } = payload;
 
     serverGateState.isOpen = !!isOpen;
     if (message) serverGateState.closedMessage = message;
@@ -1039,11 +2920,7 @@ io.on('connection', (socket) => {
     saveServerGateState();
 
     // Broadcast state change to all clients
-    io.emit('server_state_changed', {
-      isOpen: serverGateState.isOpen,
-      closedMessage: serverGateState.closedMessage,
-      updatedBy: serverGateState.updatedBy
-    });
+    io.emit('server_state_changed', getPublicServerGatePayload());
 
     // When closing server, safely save & exit all current student players
     if (!serverGateState.isOpen) {
@@ -1065,19 +2942,25 @@ io.on('connection', (socket) => {
   });
 
   // Teacher Moderation Tools
-  socket.on('teacher_mute', ({ studentName, durationMinutes }) => {
+  socket.on('teacher_mute', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
+    const { studentName, durationMinutes } = payload;
     mutedStudents.add(studentName);
     io.emit('teacher_action_alert', { message: `[알림] 학생 '${studentName}'의 채팅이 ${durationMinutes || 10}분간 금지되었습니다.` });
     broadcastStudentList();
   });
 
-  socket.on('teacher_unmute', ({ studentName }) => {
+  socket.on('teacher_unmute', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
+    const { studentName } = payload;
     mutedStudents.delete(studentName);
     io.emit('teacher_action_alert', { message: `[알림] 학생 '${studentName}'의 채팅 금지가 해제되었습니다.` });
     broadcastStudentList();
   });
 
-  socket.on('teacher_kick_player', ({ targetSocketId, studentName }) => {
+  socket.on('teacher_kick_player', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
+    const { targetSocketId, studentName } = payload;
     const targetSocket = io.sockets.sockets.get(targetSocketId);
     if (targetSocket) {
       targetSocket.emit('player_kicked', { message: '선생님에 의해 서버에서 퇴장(강퇴) 조치되었습니다.' });
@@ -1088,21 +2971,25 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('teacher_get_students', () => {
+  socket.on('teacher_get_students', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return;
     broadcastStudentList();
   });
 
-  socket.on('teacher_delete_message', ({ chatId }) => {
-    io.emit('chat_deleted', { chatId });
+  socket.on('teacher_delete_message', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
+    io.emit('chat_deleted', { chatId: payload.chatId });
   });
 
-  socket.on('teacher_broadcast', ({ message }) => {
-    io.emit('teacher_announcement_popup', { message });
+  socket.on('teacher_broadcast', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
+    io.emit('teacher_announcement_popup', { message: payload.message });
   });
 
-  socket.on('teacher_summon_all_to_me', ({ floor, room, x, y, message }) => {
-    const p = players[socket.id];
-    if (!p || !p.isTeacher) return;
+  socket.on('teacher_summon_all_to_me', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
+    const { floor, room, x, y, message } = payload;
+    const p = players[socket.id] || {};
 
     const teacherPos = {
       floor: floor || p.floor || 7,
@@ -1121,6 +3008,7 @@ io.on('connection', (socket) => {
 
   // Boss Raid Event Controls (Teacher)
   socket.on('teacher_start_boss_raid', (opts = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, opts)) return rejectUnauthorizedTeacherSocket(socket);
     const maxHp = Math.max(50, parseInt(opts.maxHp) || 2000);
     const duration = 180; // 3분 제한 시간
     const now = Date.now();
@@ -1145,8 +3033,7 @@ io.on('connection', (socket) => {
 
     io.emit('boss_raid_state', bossRaidEvent);
 
-    const bName = bossRaidEvent.name || '';
-    const isSoccerBoss = bName.includes('케르베로스') || bName.includes('파멸신') || bName.includes('나태') || bName.includes('대마왕') || bName.includes('드래곤') || bName.includes('dragon');
+    const isSoccerBoss = isSoccerFieldBoss(bossRaidEvent.name);
     const locText = isSoccerBoss ? '숭실 운동장(천연잔디 축구장)' : '1학년 2반';
 
     if (opts.announce !== false) {
@@ -1164,7 +3051,8 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('teacher_stop_boss_raid', () => {
+  socket.on('teacher_stop_boss_raid', (payload = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
     bossRaidEvent.active = false;
     bossRaidEvent.stoppedByTeacher = true;
     bossRaidEvent.expiresAt = 0;
@@ -1206,8 +3094,7 @@ setInterval(() => {
 
   // 2. 보스방 파티 전멸(Wipe) 감지 (전투 중 보스방 안의 생존자가 0명일 때)
   if (bossRaidEvent.currentHp < bossRaidEvent.maxHp && bossRaidEvent.currentHp > 0) {
-    const bName = bossRaidEvent.name || '';
-    const isSoccerBoss = bName.includes('케르베로스') || bName.includes('파멸신') || bName.includes('나태') || bName.includes('대마왕');
+    const isSoccerBoss = isSoccerFieldBoss(bossRaidEvent.name);
     const targetRoom = isSoccerBoss ? 'playground' : 'room_702';
 
     const studentsInRoom = Object.values(players).filter(p => !p.isTeacher && p.room === targetRoom);
@@ -1236,7 +3123,8 @@ setInterval(() => {
   // ========================================================
   // TEACHER POP QUIZ & REWARD BROADCAST
   // ========================================================
-  socket.on('teacher_start_pop_quiz', (quizData) => {
+  socket.on('teacher_start_pop_quiz', (quizData = {}) => {
+    if (!isAuthorizedTeacherSocket(socket, quizData)) return rejectUnauthorizedTeacherSocket(socket);
     io.emit('pop_quiz_started', quizData);
     io.emit('teacher_action_alert', {
       message: `📢 [돌발 퀴즈] 선생님이 전교생 돌발 퀴즈를 출제했습니다! (제한시간 ${quizData.duration || 30}초)`
@@ -1250,37 +3138,48 @@ setInterval(() => {
   });
 
   // ========================================================
-  // REAL-TIME LEADERBOARD & STATS SYNC
+  // REAL-TIME LEADERBOARD TOP 10 (ONLINE + OFFLINE) & STATS SYNC
   // ========================================================
   socket.on('get_leaderboard', () => {
-    const list = Object.values(players)
-      .filter(p => !p.isTeacher && p.name)
-      .map(p => ({
-        id: p.id,
-        name: p.name,
-        studentId: p.studentId,
-        level: p.level || 1,
-        exp: p.exp || 0,
-        gold: p.gold || 0
-      }))
-      .sort((a, b) => (b.level - a.level) || (b.exp - a.exp) || (b.gold - a.gold))
-      .slice(0, 5);
-    socket.emit('leaderboard_data', list);
+    const p = players[socket.id];
+    const payload = buildLeaderboardPayload(p ? p.studentId : '', socket.id);
+    socket.emit('leaderboard_data', payload);
   });
 
   socket.on('player_stats_sync', (stats) => {
     const p = players[socket.id];
     if (p && stats) {
-      if (stats.level !== undefined) p.level = stats.level;
-      if (stats.exp !== undefined) p.exp = stats.exp;
-      if (stats.gold !== undefined) p.gold = stats.gold;
+      if (stats.level !== undefined) p.level = Math.max(1, Number(stats.level) || 1);
+      if (stats.exp !== undefined) p.exp = Math.max(0, Number(stats.exp) || 0);
+      if (stats.gold !== undefined) p.gold = Math.max(0, Number(stats.gold) || 0);
+      if (stats.baseAtk !== undefined && Number.isFinite(Number(stats.baseAtk))) p.baseAtk = Number(stats.baseAtk);
+      if (stats.baseDef !== undefined && Number.isFinite(Number(stats.baseDef))) p.baseDef = Number(stats.baseDef);
+      if (stats.equipment && typeof stats.equipment === 'object') p.equipment = stats.equipment;
+      if (!p.isTeacher) {
+        const computed = computeStudentCombatStats({
+          ...p,
+          atk: stats.atk !== undefined ? stats.atk : p.atk,
+          def: stats.def !== undefined ? stats.def : p.def
+        });
+        p.atk = computed.atk;
+        p.def = computed.def;
+      }
     }
   });
 
-  socket.on('boss_raid_attack', ({ damage }) => {
+  socket.on('boss_raid_attack', ({ damage } = {}) => {
     if (!bossRaidEvent.active || bossRaidEvent.mode !== 'coop') return;
     const attacker = players[socket.id];
-    const dmg = Math.max(1, parseInt(damage) || 5);
+    const now = Date.now();
+    if ((!attacker || !attacker.isTeacher) && socket.lastBossAttackAt && (now - socket.lastBossAttackAt) < 650) {
+      return; // 과도한 연속 패킷(매크로/스팸) 방지
+    }
+    socket.lastBossAttackAt = now;
+    const maxAllowedDmg = (attacker && attacker.isTeacher)
+      ? 99999
+      : Math.max(100, Math.min(2000, ((attacker && attacker.level) || 1) * 20 + 250));
+    const rawDmg = parseInt(damage, 10) || 5;
+    const dmg = Math.max(1, Math.min(maxAllowedDmg, rawDmg));
     bossRaidEvent.currentHp = Math.max(0, bossRaidEvent.currentHp - dmg);
 
     const pName = attacker ? attacker.name : '학생';

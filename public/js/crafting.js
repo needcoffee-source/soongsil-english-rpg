@@ -139,8 +139,12 @@ class CraftingManager {
       nameKo = nameKo.replace(/^[\uD800-\uDBFF][\uDC00-\uDFFF]\s*/, '').replace(/^[^\w\s\uAC00-\uD7A3]+\s*/, '');
 
       const potionClass = this.getPotionClass(r);
+      const itemIdForIcon = (r.result && r.result.item) || r.id;
+      const iconMarkup = (typeof window.renderItemIconHtml === 'function')
+        ? window.renderItemIconHtml(itemIdForIcon, r.icon, potionClass)
+        : (potionClass ? `<span class="${potionClass}">${r.icon}</span>` : r.icon);
       item.innerHTML = `
-        <span class="recipe-item-icon ${potionClass}">${r.icon}</span>
+        <span class="recipe-item-icon">${iconMarkup}</span>
         <div class="recipe-item-info">
           <div class="recipe-name-ko" style="display:flex; align-items:center; gap:4px; min-width:0;">
             <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${nameKo}</span>
@@ -161,11 +165,16 @@ class CraftingManager {
     this.selectedRecipe = recipe;
     this.renderRecipeList();
 
-    this.craftIcon.innerText = recipe.icon;
-    this.craftIcon.className = 'recipe-detail-icon';
     const potionClass = this.getPotionClass(recipe);
-    if (potionClass) {
-      this.craftIcon.classList.add(potionClass);
+    const itemIdForIcon = (recipe.result && recipe.result.item) || recipe.id;
+    this.craftIcon.className = 'recipe-detail-icon';
+    if (typeof window.renderItemIconHtml === 'function' && (itemIdForIcon === 'item_elixir' || itemIdForIcon === 'item_futsal_leather')) {
+      this.craftIcon.innerHTML = window.renderItemIconHtml(itemIdForIcon, recipe.icon, potionClass);
+    } else {
+      this.craftIcon.innerText = recipe.icon;
+      if (potionClass) {
+        this.craftIcon.classList.add(potionClass);
+      }
     }
     this.craftName.innerText = recipe.name;
     this.craftDesc.innerText = `${recipe.description} (효과: ${recipe.result.effect})`;
@@ -322,7 +331,12 @@ class CraftingManager {
       return;
     }
 
-    // Deduct materials & gold & Grant item
+    if (window.MainApp && typeof window.MainApp.canUseAuthoritativeServerApi === 'function' && window.MainApp.canUseAuthoritativeServerApi()) {
+      this._attemptCraftOnServer(this.selectedRecipe, multiplier, assembled);
+      return;
+    }
+
+    // Deduct materials & gold & Grant item (오프라인/교사/단위테스트 폴백)
     this.selectedRecipe.requiredItems.forEach(req => {
       window.MainApp.removeItem(req.item, req.count * multiplier);
     });
@@ -351,6 +365,43 @@ class CraftingManager {
       alert(`🎉 [${res.name}] 제작 완료! (+50 EXP)`);
     }
     this.close();
+  }
+
+  async _attemptCraftOnServer(recipe, multiplier, assembled) {
+    if (this._craftBusy) return;
+    this._craftBusy = true;
+    try {
+      await window.MainApp.flushProgressSync();
+      const res = await fetch('/api/craft', {
+        method: 'POST',
+        headers: window.MainApp.getStudentAuthHeaders(),
+        body: JSON.stringify({
+          studentId: window.MainApp.playerData.studentId,
+          recipeId: recipe.id,
+          multiplier,
+          assembled
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        if (window.AudioManager) window.AudioManager.playWrong();
+        alert((data && data.error) || '서버 제작 검증에 실패했습니다.');
+        return;
+      }
+      window.MainApp.applyAuthoritativeServerState(data);
+      const itemName = (data.craftedItem && data.craftedItem.name) || recipe.result.name;
+      const gainedExp = data.expGained || (50 * multiplier);
+      if (multiplier > 1) {
+        alert(`🎉 [${itemName}] ${multiplier}개 일괄 제작 완료! (+${gainedExp} EXP)`);
+      } else {
+        alert(`🎉 [${itemName}] 제작 완료! (+${gainedExp} EXP)`);
+      }
+      this.close();
+    } catch (err) {
+      alert('서버 통신 오류로 제작을 완료하지 못했습니다.');
+    } finally {
+      this._craftBusy = false;
+    }
   }
 }
 

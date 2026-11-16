@@ -4,8 +4,14 @@ console.log('Testing Teacher Login Logic...');
 
 const mainCode = fs.readFileSync('public/js/main.js', 'utf8');
 
-// Check that isTeacher checks both checkbox and password
-if (!mainCode.includes("const isTeacher = (checkIsTeacher && checkIsTeacher.checked) || (enteredPwd === '03220322');")) {
+// Verify plaintext teacher password is no longer hardcoded in client source
+if (mainCode.includes("'03220322'")) {
+  throw new Error('Plaintext teacher password must not be hardcoded in public/js/main.js');
+}
+if (!mainCode.includes("fetch('/api/teacher-auth'")) {
+  throw new Error('Server-side /api/teacher-auth verification missing in public/js/main.js');
+}
+if (!mainCode.includes('const isTeacher = (checkIsTeacher && checkIsTeacher.checked) || (enteredPwd.length > 0);')) {
   throw new Error('Teacher detection condition missing or incorrect');
 }
 

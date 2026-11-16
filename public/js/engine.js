@@ -37,7 +37,7 @@ class GameEngine {
       y: 11 * 32,
       w: 24,
       h: 28,
-      speed: 3.8,
+      speed: 3.2,
       isDashing: false,
       hasRunningShoes: false,
       direction: 'down',
@@ -215,7 +215,7 @@ class GameEngine {
     // 5번 구현: 2층 도서관 정숙 이스터에그 (대시 1번이라도 시도 시 즉시 해제 + 사서 선생님 정숙 팝업)
     if (isDashing && this.player && this.player.room === 'hallway' && this.player.floor === 2) {
       this.player.isDashing = false;
-      this.player.speed = this.player.isTeacher ? 4.0 : 3.8;
+      this.player.speed = this.player.isTeacher ? 4.0 : 3.2;
       this.triggerLibraryShh();
       return;
     }
@@ -226,14 +226,14 @@ class GameEngine {
 
     if (this.player.isTeacher) {
       this.player.isDashing = isDashing;
-      this.player.speed = isDashing ? 7.6 : 4.0 * speedBuffMult; // 교사: 기본 이동속도 4.0(버프 시 4.4), Shift 누르면 7.6
+      this.player.speed = isDashing ? 7.2 : 4.0 * speedBuffMult; // 교사: 기본 이동속도 4.0(버프 시 4.4), Shift 누르면 7.2
       return;
     }
     const isSpeedJob = (window.MainApp && window.MainApp.playerData && (window.MainApp.playerData.job === 'engineer' || window.MainApp.playerData.job === 'runner'));
     const runnerMult = isSpeedJob ? 1.10 : 1.0; // 러너: 기본 걷기 속도 +10% 상시 증가
 
-    // 기본 이동속도: 기본 3.8에 초록물약 버프(+10%) 및 러너 직업 효과(+10%) 적용
-    const baseWalkSpeed = 3.8 * speedBuffMult * runnerMult;
+    // 기본 이동속도: 기본 3.2에 초록물약 버프(+10%) 및 러너 직업 효과(+10%) 적용
+    const baseWalkSpeed = 3.2 * speedBuffMult * runnerMult;
 
     if (!this.player.hasRunningShoes) {
       this.player.isDashing = false;
@@ -241,16 +241,16 @@ class GameEngine {
       return;
     }
     this.player.isDashing = isDashing;
-    // 신발 종류 확인: 1티어 실내화(4.37), 2티어 가죽 운동화(4.56), 3티어 청동 스파이크(4.75), 4티어 헤리티지 부츠(4.75)
+    // 신발 종류 확인: 1티어 실내화(3.68), 2티어 가죽 운동화(3.84), 3티어 청동 스파이크(4.0), 4티어 헤리티지 부츠(4.0)
     const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
-    let dashSpeed = 4.37; // 기본 1티어 실내화 (+15% 속도)
+    let dashSpeed = 3.68; // 기본 1티어 실내화 (+15% 속도)
     if (equippedShoes) {
       if (equippedShoes.item === 'equip_heritage_boots') {
-        dashSpeed = 4.75; // 4티어 헤리티지 부츠 (+25% 고속 질주)
+        dashSpeed = 4.0; // 4티어 헤리티지 부츠 (+25% 고속 질주)
       } else if (equippedShoes.item === 'equip_bronze_shoes') {
-        dashSpeed = 4.75; // 3티어 청동 스파이크 (+25% 고속 질주)
+        dashSpeed = 4.0; // 3티어 청동 스파이크 (+25% 고속 질주)
       } else if (equippedShoes.item === 'equip_leather_shoes') {
-        dashSpeed = 4.56; // 2티어 가죽 운동화 (+20% 질주)
+        dashSpeed = 3.84; // 2티어 가죽 운동화 (+20% 질주)
       }
     }
     this.player.speed = isDashing ? dashSpeed : baseWalkSpeed;
@@ -269,11 +269,11 @@ class GameEngine {
     this.fade.onMidpoint = onMidpoint;
   }
 
-  updateFade() {
+  updateFade(dtScale = 1) {
     if (!this.fade.active) return;
 
     if (this.fade.phase === 'fade_out') {
-      this.fade.alpha += this.fade.speed;
+      this.fade.alpha += this.fade.speed * dtScale;
       if (this.fade.alpha >= 1) {
         this.fade.alpha = 1;
         this.fade.phase = 'black_hold';
@@ -300,12 +300,12 @@ class GameEngine {
         }
       }
     } else if (this.fade.phase === 'black_hold') {
-      this.fade.holdFrames--;
+      this.fade.holdFrames -= dtScale;
       if (this.fade.holdFrames <= 0) {
         this.fade.phase = 'fade_in';
       }
     } else if (this.fade.phase === 'fade_in') {
-      this.fade.alpha -= this.fade.speed;
+      this.fade.alpha -= this.fade.speed * dtScale;
       if (this.fade.alpha <= 0) {
         this.fade.alpha = 0;
         this.fade.phase = 'none';
@@ -314,9 +314,13 @@ class GameEngine {
     }
   }
 
-  update() {
+  update(dtScale = 1) {
+    const stepScale = (typeof dtScale === 'number' && Number.isFinite(dtScale))
+      ? Math.max(0.05, Math.min(2.0, dtScale))
+      : 1;
+
     // Update screen fade transition
-    this.updateFade();
+    this.updateFade(stepScale);
 
     // If fading out or in hold, pause movement
     if (this.fade.active && this.fade.phase !== 'fade_in') {
@@ -339,7 +343,7 @@ class GameEngine {
 
     if (this.player.isDashing && this.player.room === 'hallway' && this.player.floor === 2) {
       this.player.isDashing = false;
-      this.player.speed = this.player.isTeacher ? 4.0 : 3.8;
+      this.player.speed = this.player.isTeacher ? 4.0 : 3.2;
       this.triggerLibraryShh();
     }
 
@@ -362,8 +366,8 @@ class GameEngine {
       }
 
       const speedMult = (window.BrawlBall && Date.now() < window.BrawlBall.speedBuffUntil) ? 1.35 : 1.0;
-      const nextX = this.player.x + dx * this.player.speed * speedMult;
-      const nextY = this.player.y + dy * this.player.speed * speedMult;
+      const nextX = this.player.x + dx * this.player.speed * speedMult * stepScale;
+      const nextY = this.player.y + dy * this.player.speed * speedMult * stepScale;
 
       if (!this.checkCollision(nextX, this.player.y)) {
         this.player.x = nextX;
@@ -373,7 +377,7 @@ class GameEngine {
       }
 
       // Animation cycle
-      this.player.animTimer++;
+      this.player.animTimer += stepScale;
       if (this.player.animTimer > 6) {
         this.player.animFrame = (this.player.animFrame + 1) % 4;
         this.player.animTimer = 0;
@@ -420,7 +424,7 @@ class GameEngine {
 
     // 3v3 Brawl Ball Logic Update
     if (window.BrawlBall) {
-      window.BrawlBall.update(0.016);
+      window.BrawlBall.update(0.016 * stepScale);
     }
 
     // Update Teacher Exclusive Golden Stardust Dash Effect (교사 전용 질주 황금빛 별가루 이펙트)
@@ -471,6 +475,9 @@ class GameEngine {
     if (this.player && this.player.room === 'room_cafeteria') {
       return WORLD_DATA.CAFETERIA_WIDTH || 42;
     }
+    if (this.player && this.player.room === 'room_gym') {
+      return WORLD_DATA.GYM_WIDTH || 44;
+    }
     return WORLD_DATA.MAP_WIDTH || 30;
   }
 
@@ -501,6 +508,9 @@ class GameEngine {
     }
     if (this.player && this.player.room === 'room_cafeteria') {
       return WORLD_DATA.CAFETERIA_HEIGHT || 24;
+    }
+    if (this.player && this.player.room === 'room_gym') {
+      return WORLD_DATA.GYM_HEIGHT || 26;
     }
     return WORLD_DATA.MAP_HEIGHT || 20;
   }
@@ -638,11 +648,11 @@ class GameEngine {
         }
         if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
 
-        // 소회의실 (tx: 7..28, ty: 3..10) 출입 통제: 12레벨 이상 모범 학생만 출입 가능
+        // 소회의실 (tx: 7..28, ty: 3..10) 출입 통제: 10레벨 이상 모범 학생만 출입 가능
         if (tileX >= 7 && tileX <= 28 && tileY >= 3 && tileY <= 10) {
           const pLevel = (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.level) || (this.player && this.player.level) || 1;
           const isTeacher = (this.player && this.player.isTeacher) || (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.isTeacher);
-          if (!isTeacher && pLevel < 12) {
+          if (!isTeacher && pLevel < 10) {
             const currentTileY = Math.floor(this.player.y / 32);
             const currentTileX = Math.floor(this.player.x / 32);
             const isCurrentlyInside = (currentTileX >= 7 && currentTileX <= 28 && currentTileY >= 3 && currentTileY <= 10);
@@ -650,7 +660,7 @@ class GameEngine {
               if (!this._lastMeetingRoomNotice || Date.now() - this._lastMeetingRoomNotice > 2500) {
                 this._lastMeetingRoomNotice = Date.now();
                 if (window.MainApp && typeof window.MainApp.showToast === 'function') {
-                  window.MainApp.showToast(`🚫 [소회의실 출입 제한] 12레벨 이상부터 출입할 수 있습니다! (현재: Lv.${pLevel} / 필요: Lv.12)`, 'warning');
+                  window.MainApp.showToast(`🚫 [소회의실 출입 제한] 10레벨 이상부터 출입할 수 있습니다! (현재: Lv.${pLevel} / 필요: Lv.10)`, 'warning');
                 }
               }
               return true;
@@ -681,6 +691,16 @@ class GameEngine {
         if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
         if (tileX <= 0 || tileX >= curMapWidth - 1) return true;
         return this.checkCafeteriaCollision(tileX, tileY);
+      }
+
+      if (this.player.room === 'room_gym') {
+        // Exit Door area (tx: 28..30, ty >= 23) is ALWAYS passable
+        if (tileX >= 28 && tileX <= 30 && tileY >= 23) {
+          return false;
+        }
+        if (tileY <= 2 || tileY >= curMapHeight - 2) return true;
+        if (tileX <= 0 || tileX >= curMapWidth - 1) return true;
+        return this.checkGymInteriorCollision(tileX, tileY);
       }
 
       // Exit Door area is ALWAYS passable
@@ -716,6 +736,7 @@ class GameEngine {
 
   getCurrentClassroomData() {
     if (this.player.room === 'room_cafeteria' && WORLD_DATA.classroom_cafeteria) return WORLD_DATA.classroom_cafeteria;
+    if (this.player.room === 'room_gym' && WORLD_DATA.classroom_gym) return WORLD_DATA.classroom_gym;
     if (this.player.room === 'room_health' && WORLD_DATA.classroom_health) return WORLD_DATA.classroom_health;
     if (this.player.room === 'room_wee' && WORLD_DATA.classroom_wee) return WORLD_DATA.classroom_wee;
     if (this.player.room === 'room_history' && WORLD_DATA.classroom_history) return WORLD_DATA.classroom_history;
@@ -825,11 +846,12 @@ class GameEngine {
       const gymGate = (pg && pg.gymGate) || { x: 2, y: 48 };
       // Check if player stepped on the west gym gate (x: 1~3, y: 47~49)
       if (Math.abs(tileX - gymGate.x) <= 1 && tileY >= 47 && tileY <= 51) {
-        if (!this.player.isTeacher) {
+        const pLevel = Number((window.MainApp && window.MainApp.playerData && window.MainApp.playerData.level) || (this.player && this.player.level)) || 1;
+        if (!this.player.isTeacher && pLevel < 12) {
           this.player.x = 4.2 * 32;
           if (!this._lastGymNotice || Date.now() - this._lastGymNotice > 2000) {
             this._lastGymNotice = Date.now();
-            alert('🚫 [교직원 전용 시설 관리 구역]\n\n"🚗 숭실 체육관 및 주차장 구역은 교직원 전용 시설 관리 구역입니다.\n(교사 계정으로 로그인 후 출입할 수 있습니다.)"');
+            alert(`🔒 [숭실 체육관 구역 - Lv.12 입장 제한]\n\n"🏛️ 숭실 체육관 및 주차장 구역은 Lv.12 이상부터 입장할 수 있습니다!\n(현재 레벨: Lv.${pLevel} / 필요: Lv.12 이상)"`);
           }
           return;
         }
@@ -900,6 +922,10 @@ class GameEngine {
       this.warpToRoom('playground', '야외 운동장', 86 * 32, 5 * 32);
       return;
     }
+    if (this.player.room === 'room_gym') {
+      this.warpToRoom('playground_gym', '🏛️ 숭실 체육관 & 주차장', 46.5 * 32, 12 * 32);
+      return;
+    }
     if (this.player.room === 'room_history') {
       this._lastHistoryHallExitTime = Date.now() + 1500;
       this.warpToRoom('playground', '숭실 운동장', 87 * 32, 51 * 32);
@@ -953,7 +979,7 @@ class GameEngine {
     else if (roomId === 'room_career') this.player.floor = 5;
     else if (roomId === 'room_staff_office') this.player.floor = 6;
     else if (roomId === 'room_history' || roomId === 'room_secret_history') this.player.floor = 0;
-    else if (roomId === 'room_cafeteria') this.player.floor = 1;
+    else if (roomId === 'room_cafeteria' || roomId === 'room_gym') this.player.floor = 1;
     this.player.roomName = roomName;
     this.player.x = x;
     this.player.y = y;
@@ -1359,15 +1385,17 @@ class GameEngine {
             minDist = cDist;
           }
         }
-                // 2-E. Gym Gate to West (체육관 & 주차장 게이트: x: 2, y: 35)
+        // 2-E. Gym Gate to West (체육관 & 주차장 게이트: x: 2, y: 35)
         if (pg.gymGate) {
           const gDist = Math.hypot(pg.gymGate.x * 32 - this.player.x, (pg.gymGate.y + 0.5) * 32 - this.player.y);
           if (gDist < 64 && gDist < minDist) {
+            const pLevel = Number((window.MainApp && window.MainApp.playerData && window.MainApp.playerData.level) || (this.player && this.player.level)) || 1;
+            const canEnterGymPlaza = !!(this.player.isTeacher || pLevel >= 12);
             closest = {
               type: 'gym_gate',
               data: pg.gymGate,
               name: pg.gymGate.name || '🚗 숭실 체육관 & 주차장 진입 게이트',
-              prompt: this.player.isTeacher ? '체육관 & 주차장 진입 (SPACE)' : '교직원 전용 구역 (출입 제한)'
+              prompt: canEnterGymPlaza ? '체육관 & 주차장 진입 (SPACE)' : '체육관 & 주차장 게이트 (Lv.12+ 입장)'
             };
             minDist = gDist;
           }
@@ -1376,11 +1404,13 @@ class GameEngine {
         if (pg.historyHall && (!this._lastHistoryHallExitTime || Date.now() > this._lastHistoryHallExitTime)) {
           const hDist = Math.hypot(pg.historyHall.x * 32 - this.player.x, (pg.historyHall.y + 0.5) * 32 - this.player.y);
           if (hDist < 64 && hDist < minDist) {
+            const pLevel = Number((window.MainApp && window.MainApp.playerData && window.MainApp.playerData.level) || (this.player && this.player.level)) || 1;
+            const canEnterHistory = !!(this.player.isTeacher || pLevel >= 8);
             closest = {
               type: 'history_hall',
               data: pg.historyHall,
               name: pg.historyHall.name || '🏛️ 숭실역사관',
-              prompt: pg.historyHall.prompt || '🏛️ 숭실역사관'
+              prompt: canEnterHistory ? '🏛️ 숭실역사관 입장 (SPACE)' : '🏛️ 숭실역사관 (Lv.8+ 입장)'
             };
             minDist = hDist;
           }
@@ -1390,7 +1420,7 @@ class GameEngine {
         if (pg.store) {
           const sDist = Math.hypot(pg.store.x * 32 - this.player.x, (pg.store.y + 0.5) * 32 - this.player.y);
           if (sDist < 64 && sDist < minDist) {
-            closest = { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '물품 매각' };
+            closest = { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '매점 이용하기 (구매 · 매각)' };
             minDist = sDist;
           }
         }
@@ -1665,7 +1695,7 @@ class GameEngine {
           }
         }
       }
-      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702' || this.player.room === 'room_history' || this.player.room === 'room_secret_history' || this.player.room === 'room_cafeteria') && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702' || this.player.room === 'room_history' || this.player.room === 'room_secret_history' || this.player.room === 'room_cafeteria' || this.player.room === 'room_gym') && cr.interactive) {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
@@ -1798,6 +1828,9 @@ class GameEngine {
         if (this.player.room === 'room_cafeteria' || this.player.room === 'room_history') {
           exitPrompt = '운동장으로 나가기 (SPACE)';
           exitName = '운동장 출구';
+        } else if (this.player.room === 'room_gym') {
+          exitPrompt = '체육관 광장으로 나가기 (SPACE)';
+          exitName = '체육관 광장 출구';
         } else if (this.player.room === 'room_secret_history') {
           exitPrompt = '숭실역사관으로 나가기 (SPACE)';
           exitName = '숭실역사관 출구';
@@ -1867,7 +1900,7 @@ class GameEngine {
           return { type: 'history_hall', name: pg.historyHall.name, prompt: pg.historyHall.prompt };
         }
         if (pg.store && Math.hypot(pg.store.x * 32 - x, (pg.store.y + 0.5) * 32 - y) < 56) {
-          return { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '물품 매각' };
+          return { type: 'store', name: pg.store.name || '매점', prompt: pg.store.prompt || '매점 이용하기 (구매 · 매각)' };
         }
         if (pg.titleExchange && Math.hypot(pg.titleExchange.x * 32 - x, (pg.titleExchange.y + 0.5) * 32 - y) < 56) {
           return { type: 'title_exchange', name: pg.titleExchange.name || '🏅 호칭 교환소', prompt: pg.titleExchange.prompt || '호칭 교환' };
@@ -2080,7 +2113,7 @@ class GameEngine {
           }
         }
       }
-      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702' || this.player.room === 'room_history' || this.player.room === 'room_secret_history' || this.player.room === 'room_cafeteria') && cr.interactive) {
+      if ((this.player.room === 'room_career' || this.player.room === 'room_staff_office' || this.player.room === 'room_702' || this.player.room === 'room_history' || this.player.room === 'room_secret_history' || this.player.room === 'room_cafeteria' || this.player.room === 'room_gym') && cr.interactive) {
         for (const item of cr.interactive) {
           if (item.type === 'quest_memo') {
             if (window.MainApp && typeof window.MainApp.isQuestMemoCollected === 'function' && window.MainApp.isQuestMemoCollected()) {
@@ -6158,6 +6191,12 @@ class GameEngine {
     if (typeof app.isElevatorPassEquipped === 'function') {
       return app.isElevatorPassEquipped();
     }
+    if (typeof app.hasItem === 'function' && app.hasItem('equip_elevator_pass')) {
+      return true;
+    }
+    if (Array.isArray(app.playerData.inventory) && app.playerData.inventory.some(i => i && i.item === 'equip_elevator_pass' && (i.count || 0) > 0)) {
+      return true;
+    }
     if (app.playerData.equipment) {
       return Object.values(app.playerData.equipment).some(eq => eq && eq.item === 'equip_elevator_pass');
     }
@@ -6202,7 +6241,7 @@ class GameEngine {
       return {
         state: 'need_pass',
         name: '중앙 엘리베이터 (작동권 필요)',
-        prompt: '작동권 장착 필요',
+        prompt: '작동권 소지 필요',
         ledText: '[ 키 필요 ]',
         ledColor: '#f59e0b'
       };
@@ -6475,6 +6514,8 @@ class GameEngine {
           this.drawHighResAlchemyFloor(tx, ty);
         } else if (this.player.room === 'room_cafeteria') {
           this.drawCafeteriaFloorTile(tx, ty);
+        } else if (this.player.room === 'room_gym') {
+          this.drawGymFloorTile(tx, ty);
         } else {
           this.drawHighResWoodPlankFloor(tx, ty);
         }
@@ -6488,8 +6529,9 @@ class GameEngine {
     const isHealthRoom = (this.player.room === 'room_health');
     const isWeeRoom = (this.player.room === 'room_wee');
     const isCafeteria = (this.player.room === 'room_cafeteria');
+    const isGymRoom = (this.player.room === 'room_gym');
     const centerTileX = isStaffOffice ? 45 : (isCareerRoom ? 30 : ((isHealthRoom || isWeeRoom) ? 10 : 15));
-    if (!isStaffOffice && !isSecretHistory && !isCafeteria) {
+    if (!isStaffOffice && !isSecretHistory && !isCafeteria && !isGymRoom) {
       this.drawHighResBlackboard(cr, centerTileX);
       this.drawHighResWallClock(centerTileX * 32, 16);
     }
@@ -6500,7 +6542,7 @@ class GameEngine {
     } else if (isCareerRoom) {
       this.drawHighResLockers(4, 17, 6);
       this.drawHighResLockers(50, 17, 6);
-    } else if (this.player.room === 'room_history' || this.player.room === 'room_705' || this.player.room === 'room_secret_history' || this.player.room === 'room_health' || this.player.room === 'room_wee' || this.player.room === 'room_cafeteria') {
+    } else if (this.player.room === 'room_history' || this.player.room === 'room_705' || this.player.room === 'room_secret_history' || this.player.room === 'room_health' || this.player.room === 'room_wee' || this.player.room === 'room_cafeteria' || this.player.room === 'room_gym') {
       // Museum, Alchemy Lab, Health Room, Wee Class, and Cafeteria have custom atmospheric layouts without standard school lockers
     } else {
       this.drawHighResLockers(3, 17, 5);
@@ -6562,6 +6604,8 @@ class GameEngine {
     } else if (this.player.room === 'room_cafeteria') {
       this.renderCafeteria(cr);
       this.renderCafeteriaMonsters();
+    } else if (this.player.room === 'room_gym') {
+      this.renderGymInterior(cr);
     } else if (this.player.floor === 5) {
       // 5층 잠긴 교실들: 깨끗한 빈 공간 연출
     } else {
@@ -6679,6 +6723,8 @@ class GameEngine {
       let exitText = '🚪 ▼ 복도로 나가기 (EXIT)';
       if (this.player.room === 'room_cafeteria' || this.player.room === 'room_history') {
         exitText = '🚪 ▼ 운동장으로 나가기 (EXIT)';
+      } else if (this.player.room === 'room_gym') {
+        exitText = '🚪 ▼ 체육관 광장으로 (EXIT)';
       } else if (this.player.room === 'room_secret_history') {
         exitText = '🚪 ▼ 숭실역사관 (EXIT)';
       }
@@ -8226,7 +8272,9 @@ class GameEngine {
 
         // === 🐤 나태신 워터파크 구역: 학생 캐릭터 오리튜브 자동 장착 & 물보라 이펙트 ===
         if (this.player && this.player.room === 'playground' && !isFallen) {
-          const isSlothActive = this.getCurrentSoccerBossKind && this.getCurrentSoccerBossKind() === 'sloth_titan';
+          const isSlothActive = !!(window.BOSS_CONFIG && window.BOSS_CONFIG.active) &&
+            !(window.BrawlBall && window.BrawlBall.match) &&
+            this.getCurrentSoccerBossKind && this.getCurrentSoccerBossKind() === 'sloth_titan';
           if (isSlothActive) {
             const bx = 18 * 32 + 16;
             const by = 35 * 32 + 16;
@@ -9390,14 +9438,17 @@ class GameEngine {
         ctx.lineTo(this.width, this.height * 0.82);
         ctx.stroke();
 
-        // 대각선 공간 절단 청록·백색 검기 섬광
-        ctx.strokeStyle = '#38bdf8';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 18;
-        ctx.lineWidth = 8;
+        // 대각선 공간 절단 청록·백색 검기 섬광 (소프트웨어 shadowBlur 대신 다중 레이어 스트로크로 고성능 글로우 구현)
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
+        ctx.lineWidth = 22;
         ctx.beginPath();
         ctx.moveTo(0, this.height * 0.18);
         ctx.lineTo(this.width, this.height * 0.82);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 8;
         ctx.stroke();
 
         ctx.strokeStyle = '#ffffff';
@@ -12639,12 +12690,13 @@ class GameEngine {
     this.ctx.lineWidth = 1.5;
     this.ctx.stroke();
 
-    // Floating Standby Text
+    // Floating Standby Text (shadowBlur 대신 얇은 다크 스트로크 아웃라인으로 가독성 + 프레임 확보)
     this.ctx.textAlign = 'center';
     this.ctx.font = 'bold 13px sans-serif';
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = 'rgba(2, 6, 23, 0.9)';
+    this.ctx.strokeText('⚔️ [보스 레이드 대기실]', bx + 16, by - 36);
     this.ctx.fillStyle = '#f8fafc';
-    this.ctx.shadowColor = 'rgba(0,0,0,0.85)';
-    this.ctx.shadowBlur = 6;
     this.ctx.fillText('⚔️ [보스 레이드 대기실]', bx + 16, by - 36);
 
     this.ctx.font = '11px sans-serif';
@@ -14382,8 +14434,11 @@ class GameEngine {
 
     if (status === 'locked') {
       // 0. 자물쇠 [ 🔒 ] (레벨 부족 잠김)
-      ctx.shadowColor = 'rgba(239, 68, 68, 0.4)';
-      ctx.shadowBlur = 6;
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
+      ctx.beginPath();
+      ctx.arc(cx, my, 13.5, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#7f1d1d';
       ctx.beginPath();
       ctx.arc(cx, my, 11, 0, Math.PI * 2);
@@ -14393,7 +14448,6 @@ class GameEngine {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.shadowBlur = 0;
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -14404,14 +14458,12 @@ class GameEngine {
       const pulse = (Math.sin(Date.now() / 200) + 1) / 2;
 
       // 은은한 외곽 골드 글로우
-      ctx.fillStyle = `rgba(234, 179, 8, ${0.25 + pulse * 0.3})`;
+      ctx.fillStyle = `rgba(234, 179, 8, ${0.28 + pulse * 0.3})`;
       ctx.beginPath();
-      ctx.arc(cx, my, 14 + pulse * 3, 0, Math.PI * 2);
+      ctx.arc(cx, my, 15 + pulse * 3, 0, Math.PI * 2);
       ctx.fill();
 
       // 골드 서클 배지
-      ctx.shadowColor = 'rgba(234, 179, 8, 0.9)';
-      ctx.shadowBlur = 10;
       ctx.fillStyle = '#eab308';
       ctx.beginPath();
       ctx.arc(cx, my, 11, 0, Math.PI * 2);
@@ -14422,7 +14474,6 @@ class GameEngine {
       ctx.stroke();
 
       // [ ! ] 느낌표 텍스트
-      ctx.shadowBlur = 0;
       ctx.font = '900 15px "Pretendard", "Noto Sans KR", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -14431,8 +14482,11 @@ class GameEngine {
 
     } else if (status === 'in_progress') {
       // 2. 회색 물음표 [ ? ] (진행 중)
-      ctx.shadowColor = 'rgba(100, 116, 139, 0.6)';
-      ctx.shadowBlur = 6;
+      ctx.fillStyle = 'rgba(100, 116, 139, 0.35)';
+      ctx.beginPath();
+      ctx.arc(cx, my, 13.5, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#475569';
       ctx.beginPath();
       ctx.arc(cx, my, 11, 0, Math.PI * 2);
@@ -14443,7 +14497,6 @@ class GameEngine {
       ctx.stroke();
 
       // [ ? ] 물음표 텍스트
-      ctx.shadowBlur = 0;
       ctx.font = '900 14px "Pretendard", "Noto Sans KR", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -14455,14 +14508,12 @@ class GameEngine {
       const pulse = (Math.sin(Date.now() / 180) + 1) / 2;
 
       // 에메랄드 광휘 아우라
-      ctx.fillStyle = `rgba(16, 185, 129, ${0.3 + pulse * 0.35})`;
+      ctx.fillStyle = `rgba(16, 185, 129, ${0.32 + pulse * 0.35})`;
       ctx.beginPath();
-      ctx.arc(cx, my, 16 + pulse * 4, 0, Math.PI * 2);
+      ctx.arc(cx, my, 17 + pulse * 4, 0, Math.PI * 2);
       ctx.fill();
 
       // 반짝이는 에메랄드 그린 배지
-      ctx.shadowColor = 'rgba(16, 185, 129, 0.95)';
-      ctx.shadowBlur = 12;
       ctx.fillStyle = '#059669';
       ctx.beginPath();
       ctx.arc(cx, my, 12, 0, Math.PI * 2);
@@ -14473,7 +14524,6 @@ class GameEngine {
       ctx.stroke();
 
       // [ ? ] 물음표 텍스트
-      ctx.shadowBlur = 0;
       ctx.font = '900 15px "Pretendard", "Noto Sans KR", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -14494,8 +14544,6 @@ class GameEngine {
         const sy = my + Math.sin(sp.angle) * (r * 0.7);
         ctx.font = `bold ${sp.size}px sans-serif`;
         ctx.fillStyle = sp.color;
-        ctx.shadowColor = sp.color;
-        ctx.shadowBlur = 8;
         ctx.fillText('✦', sx, sy);
       }
     }
@@ -18811,6 +18859,424 @@ class GameEngine {
     const dy = 22 * 32;
 
     // 출입구 유리문 바닥 프레임
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(dx - 32, dy, 3 * 32, 14);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(dx - 28, dy + 2, 1.4 * 32, 10);
+    ctx.fillRect(dx + 4, dy + 2, 1.4 * 32, 10);
+  }
+
+  // ========================================================
+  // SCENE RENDERING: INDOOR GYMNASIUM (room_gym: 44 x 26 타일)
+  // - 우측: 실내 농구 코트 (tx: 17..41, ty: 5..21) & 상단 관람석
+  // - 좌측 중앙 (농구장 절반 규모): 강연 무대 (tx: 1..13, ty: 10..16) + 계단 + 연단
+  // - 무대 위쪽 창고: 체육관 방송장비 창고 (tx: 1..13, ty: 3..8, 동측 출입구 ty: 5..7)
+  // - 무대 아래쪽 창고: 공 · 체육복 보관창고 (tx: 1..13, ty: 18..23, 동측 출입구 ty: 19..21)
+  // ========================================================
+  drawGymFloorTile(tx, ty) {
+    const ctx = this.ctx;
+    const px = tx * 32;
+    const py = ty * 32;
+
+    // 1. 상단 방송장비 창고 바닥 (tx: 1..13, ty: 3..8) - 정전기 방지 스튜디오 타일
+    if (tx >= 1 && tx <= 13 && ty >= 3 && ty <= 8) {
+      ctx.fillStyle = ((tx + ty) % 2 === 0) ? '#1e293b' : '#263349';
+      ctx.fillRect(px, py, 32, 32);
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px, py, 32, 32);
+      return;
+    }
+
+    // 2. 좌측 중앙 강연 무대 데크 (tx: 1..13, ty: 10..16) - 고급 짙은 월넛 무대 마루
+    if (tx >= 1 && tx <= 13 && ty >= 10 && ty <= 16) {
+      ctx.fillStyle = (ty % 2 === 0) ? '#78350f' : '#854d0e';
+      ctx.fillRect(px, py, 32, 32);
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.08)';
+      ctx.fillRect(px, py + 8, 32, 2);
+      ctx.fillRect(px, py + 22, 32, 2);
+      ctx.strokeStyle = 'rgba(69, 26, 3, 0.45)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px, py, 32, 32);
+      return;
+    }
+
+    // 3. 하단 공·체육복 보관창고 바닥 (tx: 1..13, ty: 18..23) - 체육 창고 우레탄 회색 타일
+    if (tx >= 1 && tx <= 13 && ty >= 18 && ty <= 23) {
+      ctx.fillStyle = ((tx + ty) % 2 === 0) ? '#334155' : '#3f4f63';
+      ctx.fillRect(px, py, 32, 32);
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px, py, 32, 32);
+      return;
+    }
+
+    // 4. 출입구 논슬립 매트 (tx: 28..30, ty: 22..23)
+    if (tx >= 28 && tx <= 30 && ty >= 22) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(px, py, 32, 32);
+      ctx.fillStyle = '#1e293b';
+      for (let ry = 2; ry < 32; ry += 6) {
+        ctx.fillRect(px + 2, py + ry, 28, 2);
+      }
+      return;
+    }
+
+    // 5. 실내 농구 코트 내부 (tx: 18..40, ty: 5..21) vs 외곽 사이드 마루
+    const inCourt = (tx >= 18 && tx <= 40 && ty >= 5 && ty <= 21);
+    if (inCourt) {
+      ctx.fillStyle = ((tx + ty) % 2 === 0) ? '#eab308' : '#f59e0b';
+      ctx.fillRect(px, py, 32, 32);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.fillRect(px, py + 6, 32, 3);
+      ctx.fillRect(px, py + 20, 32, 3);
+    } else {
+      ctx.fillStyle = ((tx + ty) % 2 === 0) ? '#fde68a' : '#fef3c7';
+      ctx.fillRect(px, py, 32, 32);
+      ctx.fillStyle = 'rgba(180, 83, 9, 0.08)';
+      ctx.fillRect(px, py + 15, 32, 2);
+    }
+    ctx.strokeStyle = 'rgba(180, 83, 9, 0.16)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(px, py, 32, 32);
+  }
+
+  checkGymInteriorCollision(tx, ty) {
+    // 1. 무대 위쪽(방송장비 창고) / 아래쪽(공·체육복 창고) 분리벽
+    if (ty === 9 && tx >= 1 && tx <= 14) return true;
+    if (ty === 17 && tx >= 1 && tx <= 14) return true;
+
+    // 방송장비 창고 동측 출입벽 (tx: 14, ty: 3..8 / 출입구 ty: 5..7)
+    if (tx === 14 && ty >= 3 && ty <= 8) {
+      return !(ty >= 5 && ty <= 7);
+    }
+    // 공·체육복 창고 동측 출입벽 (tx: 14, ty: 18..23 / 출입구 ty: 19..21)
+    if (tx === 14 && ty >= 18 && ty <= 23) {
+      return !(ty >= 19 && ty <= 21);
+    }
+
+    // 2. 방송장비 창고 내부 기자재 (tx: 1..13, ty: 3..8)
+    if (tx >= 2 && tx <= 6 && ty === 4) return true; // 음향 믹서 콘솔 & 앰프 데스크
+    if (tx >= 9 && tx <= 11 && ty === 4) return true; // 고출력 스피커 랙
+    if (tx === 2 && (ty === 6 || ty === 7)) return true; // 무선 마이크 & 케이블 캐비닛
+
+    // 3. 좌측 중앙 강연 무대 (tx: 1..13, ty: 10..16)
+    if (tx === 1 && ty >= 10 && ty <= 16) return true; // 무대 뒷막 벽
+    if (tx === 11 && ty === 13) return true; // 강연 연단 (포디움)
+    if (tx === 10 && (ty === 10 || ty === 16)) return true; // 무대 양측 모니터 스피커
+
+    // 4. 공·체육복 보관창고 내부 선반 (tx: 1..13, ty: 18..23)
+    if (tx >= 2 && tx <= 6 && ty === 22) return true; // 이동식 농구·배구·피구공 보관함
+    if (tx === 2 && (ty === 19 || ty === 20)) return true; // 체육복·팀 조끼 랙
+    if (tx >= 8 && tx <= 11 && ty === 22) return true; // 체조 매트 & 콘 적재함
+
+    // 5. 농구장 상단 관람석 스탠드 & 양측 농구 골대 기둥
+    if (ty === 3 && tx >= 18 && tx <= 40) return true;
+    if ((tx === 17 || tx === 41) && ty === 13) return true;
+
+    return false;
+  }
+
+  renderGymInterior(cr) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 1. 무대 위 창고: 체육관 방송장비 창고
+    this.drawGymBroadcastStorage();
+
+    // 2. 좌측 중앙: 농구장 절반 크기 강연 무대
+    this.drawGymLectureStage();
+
+    // 3. 무대 아래 창고: 공 · 체육복 보관창고
+    this.drawGymEquipmentStorage();
+
+    // 4. 우측 대형 실내 농구 코트 & 관람석 & 골대
+    this.drawGymBasketballCourt();
+
+    // 5. 하단 광장 연결 유리 출입문 프레임
+    this.drawGymEntranceDoor();
+
+    ctx.restore();
+  }
+
+  drawGymBroadcastStorage() {
+    const ctx = this.ctx;
+
+    // 남쪽 분리벽 (ty: 9, tx: 1..14)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(1 * 32, 9 * 32 + 4, 13 * 32 + 28, 24);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(1 * 32, 9 * 32, 13 * 32 + 28, 6);
+
+    // 동쪽 분리벽 (tx: 14, ty: 3..8 / 출입구 ty: 5..7 개방)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(14 * 32 + 4, 3 * 32, 24, 2 * 32);
+    ctx.fillRect(14 * 32 + 4, 8 * 32, 24, 32);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(14 * 32 + 2, 5 * 32 - 3, 28, 4);
+    ctx.fillRect(14 * 32 + 2, 8 * 32 - 1, 28, 4);
+
+    // 음향 믹서 콘솔 데스크 (tx: 2..6, ty: 4)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(2 * 32 + 4, 4 * 32 + 2, 5 * 32 - 8, 28);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(2 * 32 + 4, 4 * 32 + 2, 5 * 32 - 8, 28);
+    for (let sx = 0; sx < 10; sx++) {
+      ctx.fillStyle = sx % 2 === 0 ? '#22c55e' : '#38bdf8';
+      ctx.fillRect(2 * 32 + 14 + sx * 13, 4 * 32 + 9, 4, 12);
+    }
+
+    // 고출력 스피커 랙 타워 (tx: 9..11, ty: 4)
+    for (let i = 0; i < 3; i++) {
+      const bx = (9 + i) * 32 + 3;
+      const by = 4 * 32 + 2;
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(bx, by, 26, 28);
+      ctx.strokeStyle = '#475569';
+      ctx.strokeRect(bx, by, 26, 28);
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.arc(bx + 13, by + 16, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.arc(bx + 13, by + 16, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 무선 마이크 & 케이블 캐비닛 (tx: 2, ty: 6..7)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(2 * 32 + 4, 6 * 32 + 4, 24, 56);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.strokeRect(2 * 32 + 4, 6 * 32 + 4, 24, 56);
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(2 * 32 + 10, 6 * 32 + 14, 12, 8);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(2 * 32 + 10, 7 * 32 + 10, 12, 8);
+
+    this.drawSharpLabel(7.5 * 32, 3.3 * 32, '🎛️ 체육관 방송장비 창고', {
+      bgColor: '#0f172a',
+      borderColor: '#38bdf8',
+      textColor: '#e0f2fe',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
+  }
+
+  drawGymLectureStage() {
+    const ctx = this.ctx;
+    const sx = 1 * 32;
+    const sy = 10 * 32;
+    const sw = 12 * 32;
+    const sh = 7 * 32;
+
+    // 무대 단차 외곽 프레임 (노란 안전 라인)
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(sx + 2, sy + 2, sw - 4, sh - 4);
+
+    // 좌측 로열 블루/네이비 커튼 & 무대 백월 (tx: 1, ty: 10..16)
+    ctx.fillStyle = '#1e3a8a';
+    ctx.fillRect(sx, sy, 32, sh);
+    for (let cy = sy + 6; cy < sy + sh - 6; cy += 18) {
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(sx + 4, cy, 24, 12);
+    }
+
+    // 동쪽 무대 계단 (tx: 13..14, ty: 11..15)
+    for (let step = 0; step < 3; step++) {
+      ctx.fillStyle = step % 2 === 0 ? '#b45309' : '#92400e';
+      ctx.fillRect(13 * 32 + step * 11, 11 * 32, 11, 5 * 32);
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(13 * 32 + step * 11, 11 * 32, 11, 5 * 32);
+    }
+
+    // 무대 위 모니터 스피커 (tx: 10, ty: 10 & ty: 16)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(10 * 32 + 4, 10 * 32 + 4, 24, 24);
+    ctx.fillRect(10 * 32 + 4, 16 * 32 + 4, 24, 24);
+    ctx.strokeStyle = '#64748b';
+    ctx.strokeRect(10 * 32 + 4, 10 * 32 + 4, 24, 24);
+    ctx.strokeRect(10 * 32 + 4, 16 * 32 + 4, 24, 24);
+
+    // 중앙 레드카펫 & 강연 연단 (tx: 11, ty: 13)
+    ctx.fillStyle = 'rgba(185, 28, 28, 0.55)';
+    ctx.fillRect(3 * 32, 12.5 * 32, 8 * 32, 2 * 32);
+    ctx.fillStyle = '#7c2d12';
+    ctx.fillRect(11 * 32 + 2, 13 * 32 + 2, 28, 28);
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(11 * 32 + 2, 13 * 32 + 2, 28, 28);
+    // 마이크 스탠드 포인트
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(11 * 32 + 12, 13 * 32 + 12, 8, 8);
+
+    this.drawSharpLabel(7 * 32, 10.6 * 32, '🎤 강연 무대 (STAGE)', {
+      bgColor: '#7c2d12',
+      borderColor: '#facc15',
+      textColor: '#fef3c7',
+      fontSize: 11,
+      paddingX: 9,
+      height: 21
+    });
+  }
+
+  drawGymEquipmentStorage() {
+    const ctx = this.ctx;
+
+    // 북쪽 분리벽 (ty: 17, tx: 1..14)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(1 * 32, 17 * 32 + 4, 13 * 32 + 28, 24);
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(1 * 32, 17 * 32, 13 * 32 + 28, 6);
+
+    // 동쪽 분리벽 (tx: 14, ty: 18..23 / 출입구 ty: 19..21 개방)
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(14 * 32 + 4, 18 * 32, 24, 32);
+    ctx.fillRect(14 * 32 + 4, 22 * 32, 24, 2 * 32);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(14 * 32 + 2, 19 * 32 - 3, 28, 4);
+    ctx.fillRect(14 * 32 + 2, 22 * 32 - 1, 28, 4);
+
+    // 공 보관 케이지 카트 (농구공·배구공·피구공, tx: 2..6, ty: 22)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(2 * 32 + 2, 22 * 32 + 2, 5 * 32 - 4, 28);
+    ctx.strokeStyle = '#fb923c';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(2 * 32 + 2, 22 * 32 + 2, 5 * 32 - 4, 28);
+    const ballColors = ['#ea580c', '#facc15', '#3b82f6', '#ea580c', '#ef4444'];
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = ballColors[i];
+      ctx.beginPath();
+      ctx.arc(2 * 32 + 18 + i * 30, 22 * 32 + 16, 9, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 체육복 · 팀 조끼 랙 (tx: 2, ty: 19..20)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(2 * 32 + 4, 19 * 32 + 2, 24, 60);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.strokeRect(2 * 32 + 4, 19 * 32 + 2, 24, 60);
+    const vestColors = ['#ef4444', '#3b82f6', '#22c55e', '#facc15'];
+    for (let v = 0; v < 4; v++) {
+      ctx.fillStyle = vestColors[v];
+      ctx.fillRect(2 * 32 + 8, 19 * 32 + 6 + v * 13, 16, 9);
+    }
+
+    // 체조 매트 & 라바콘 적재 구역 (tx: 8..11, ty: 22)
+    ctx.fillStyle = '#1d4ed8';
+    ctx.fillRect(8 * 32 + 4, 22 * 32 + 4, 3 * 32 - 4, 24);
+    ctx.strokeStyle = '#93c5fd';
+    ctx.strokeRect(8 * 32 + 4, 22 * 32 + 4, 3 * 32 - 4, 24);
+    ctx.fillStyle = '#f97316';
+    ctx.beginPath();
+    ctx.arc(11 * 32 + 16, 22 * 32 + 16, 9, 0, Math.PI * 2);
+    ctx.fill();
+
+    this.drawSharpLabel(7.5 * 32, 18.3 * 32, '🏀 공 · 체육복 보관창고', {
+      bgColor: '#1e293b',
+      borderColor: '#fb923c',
+      textColor: '#ffedd5',
+      fontSize: 10.5,
+      paddingX: 8,
+      height: 20
+    });
+  }
+
+  drawGymBasketballCourt() {
+    const ctx = this.ctx;
+    const cx = 18 * 32;
+    const cy = 5 * 32;
+    const cw = 23 * 32;
+    const ch = 17 * 32;
+    const midX = cx + cw / 2;
+    const midY = cy + ch / 2;
+
+    // 1. 상단 2단 응원 관람석 (ty: 3, tx: 18..40)
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(18 * 32, 3 * 32 + 2, 23 * 32, 28);
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(18 * 32 + 2, 3 * 32 + 6, 23 * 32 - 4, 7);
+    ctx.fillRect(18 * 32 + 2, 3 * 32 + 18, 23 * 32 - 4, 7);
+
+    // 2. 농구 코트 외곽 흰색 라인 & 하프라인
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(cx, cy, cw, ch);
+
+    ctx.beginPath();
+    ctx.moveTo(midX, cy);
+    ctx.lineTo(midX, cy + ch);
+    ctx.stroke();
+
+    // 센터 서클 + SOONGSIL 배지
+    ctx.fillStyle = 'rgba(30, 58, 138, 0.78)';
+    ctx.beginPath();
+    ctx.arc(midX, midY, 64, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(midX, midY, 64, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#facc15';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SOONGSIL GYM', midX, midY + 4);
+
+    // 좌우 페인트존 (키 영역) & 3점 슛 아크
+    const keyW = 4.2 * 32;
+    const keyH = 5.4 * 32;
+    ctx.fillStyle = 'rgba(30, 64, 175, 0.55)';
+    ctx.fillRect(cx, midY - keyH / 2, keyW, keyH);
+    ctx.fillRect(cx + cw - keyW, midY - keyH / 2, keyW, keyH);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(cx, midY - keyH / 2, keyW, keyH);
+    ctx.strokeRect(cx + cw - keyW, midY - keyH / 2, keyW, keyH);
+
+    // 3점 라인 호
+    ctx.beginPath();
+    ctx.arc(cx + 28, midY, 190, -Math.PI * 0.44, Math.PI * 0.44);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx + cw - 28, midY, 190, Math.PI * 0.56, Math.PI * 1.44);
+    ctx.stroke();
+
+    // 좌측 & 우측 농구 골대 (tx: 17 & tx: 41, ty: 13)
+    const drawHoop = (hx, facingRight) => {
+      const dir = facingRight ? 1 : -1;
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(hx - 12, midY - 14, 24, 28);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(hx + dir * 10 - 3, midY - 24, 6, 48);
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(hx + dir * 20, midY, 9, 0, Math.PI * 2);
+      ctx.stroke();
+    };
+    drawHoop(17 * 32 + 16, true);
+    drawHoop(41 * 32 + 16, false);
+
+    this.drawSharpLabel(midX, 4.4 * 32, '🏀 숭실 실내 농구 코트 (8단원 예정)', {
+      bgColor: '#1e3a8a',
+      borderColor: '#facc15',
+      textColor: '#ffffff',
+      fontSize: 11,
+      paddingX: 10,
+      height: 21
+    });
+  }
+
+  drawGymEntranceDoor() {
+    const ctx = this.ctx;
+    const dx = 29 * 32;
+    const dy = 24 * 32;
+
     ctx.fillStyle = '#334155';
     ctx.fillRect(dx - 32, dy, 3 * 32, 14);
     ctx.fillStyle = '#38bdf8';

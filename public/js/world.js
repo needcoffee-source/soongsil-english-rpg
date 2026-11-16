@@ -27,6 +27,8 @@ const WORLD_DATA = {
   GYM_PLAZA_HEIGHT: 36, // 농구장 아래 동일 규격(26x20타일) 인조잔디 풋살장 수용 확장
   CAFETERIA_WIDTH: 42, // 학생 급식실 대형 식음 공간 (42 x 24 타일)
   CAFETERIA_HEIGHT: 24,
+  GYM_WIDTH: 44, // 숭실 체육관 실내 공간 (농구코트 + 좌측 절반 강연무대 + 상하 창고, 44 x 26 타일)
+  GYM_HEIGHT: 26,
   MAP_HEIGHT: 20,
 
   floors: {
@@ -757,6 +759,21 @@ const WORLD_DATA = {
       { id: "cafeteria_tray_return", type: "cafeteria_tray_return", x: 35, y: 17, name: "🥣 퇴식구 & 잔반 버리는 곳", prompt: "퇴식구 둘러보기 (SPACE)" }
     ]
   },
+  classroom_gym: {
+    name: "🏛️ 숭실 체육관 (실내)",
+    exitDoor: { x: 29, y: 24, name: "🚪 체육관 광장 출구", prompt: "체육관 광장으로 나가기 (SPACE)" },
+    blackboard: null,
+    teacherDesk: null,
+    gatherSpots: [],
+    desks: [],
+    npcs: [],
+    gymMonsters: [],
+    interactive: [
+      { id: "gym_stage_podium", type: "gym_stage_podium", x: 11, y: 13, name: "🎤 강연 무대 연단", prompt: "강연 무대 살펴보기 (SPACE)" },
+      { id: "gym_broadcast_storage", type: "gym_broadcast_storage", x: 6, y: 6, name: "🎙️ 체육관 방송장비 창고", prompt: "방송장비 창고 살펴보기 (SPACE)" },
+      { id: "gym_equipment_storage", type: "gym_equipment_storage", x: 6, y: 20, name: "🏀 공 · 체육복 보관창고", prompt: "공·체육복 창고 살펴보기 (SPACE)" }
+    ]
+  },
   classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
   classroom_205: { name: "2학년 5반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
   classroom_206: { name: "2학년 6반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
@@ -1019,7 +1036,7 @@ const WORLD_DATA = {
       x: 46.5,
       y: 10,
       name: "🏛️ 숭실 체육관 메인 로비",
-      prompt: "체육관 입장 (개관 준비 중)"
+      prompt: "🏛️ 체육관 입장 (Lv.12+ · SPACE)"
     },
     teacherCar: {
       id: "gym_teacher_car",
@@ -1097,7 +1114,7 @@ const WORLD_DATA = {
       x: 87,
       y: 52,
       name: "🏛️ 숭실역사관",
-      prompt: "🏛️ 숭실역사관"
+      prompt: "🏛️ 숭실역사관 (Lv.8+ · SPACE)"
     },
     gymGate: {
       id: "gym_gate",
@@ -1113,7 +1130,7 @@ const WORLD_DATA = {
       x: 72,
       y: 4,
       name: "매점",
-      prompt: "매점 이용하기 (물품 매각)"
+      prompt: "매점 이용하기 (구매 · 매각)"
     },
     titleExchange: {
       id: "title_exchange",
@@ -1143,7 +1160,7 @@ const WORLD_DATA = {
       type: "quest_kimmijin_book",
       x: 16,
       y: 7,
-      name: "🎨 김진미의 풍경화 스케치북",
+      name: "🎨 김진믜의 풍경화 스케치북",
       prompt: "스케치북 회수하기 (SPACE)"
     },
     libraryBook: {

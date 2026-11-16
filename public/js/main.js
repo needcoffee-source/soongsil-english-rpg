@@ -43,7 +43,7 @@ const SOONGSIL_HISTORY_VITRINES = [
 // 📖 ITEM CODEX MASTER DATABASE (도감 및 획득처 사전)
 // =========================================================================
 window.ITEM_CODEX_DATABASE = [
-  // 1. Materials (재료 10종)
+  // 1. Materials (재료 14종)
   {
     id: 'item_wood',
     name: '단단한 목재',
@@ -93,7 +93,7 @@ window.ITEM_CODEX_DATABASE = [
     name: '질긴 보스의 가죽',
     icon: '🥋',
     category: 'material',
-    tierBadge: '보스 가죽',
+    tierBadge: '보스 전리품',
     tierColor: '#b45309',
     effect: '2티어 고급 가죽 방어구(세이버·투구·갑옷) 제작 핵심 재료',
     source: '1학년 2반 가죽 골렘 보스 처치 시 획득',
@@ -129,8 +129,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '보스 전리품',
     tierColor: '#dc2626',
     effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
-    source: '퀘스트',
-    recipe: '퀘스트'
+    source: '운동장 청동 드래곤 레이드 / 6층 교무실 옥촣한 선생님 퀘스트',
+    recipe: '보스 레이드 및 퀘스트 전리품'
   },
   {
     id: 'item_perfect_exam',
@@ -208,7 +208,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '회복 물약',
     tierColor: '#e11d48',
     effect: '사용 시 체력(HP) +10 즉시 회복',
-    source: '소비품 제작대(C)에서 조제 / 보스 레이드 전리품',
+    source: '소비품 제작대(C)에서 조제',
     recipe: '향긋한 허브 1개 + 5G'
   },
   {
@@ -219,7 +219,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '중급 회복 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '소비품 제작대(C)에서 조제 (5레벨 이상) / 보스 레이드 전리품',
+    source: '소비품 제작대(C)에서 조제 (5레벨 이상)',
     recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
   },
   {
@@ -456,7 +456,7 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '제작 불가'
   },
 
-  // 5티어 불멸세트 (13레벨 락 · 현재 제작 잠김)
+  // 5티어 불멸세트 (12레벨 락 · 급식실 핵심 재료 + 목재·허브)
   {
     id: 'equip_immortal_blade',
     name: '불멸의 열정 대검',
@@ -464,9 +464,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '5티어 무기',
     tierColor: '#ef4444',
-    effect: '공격력 +60, 체력 +35 (Lv.13 이상)',
-    source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
-    recipe: '현재 제작 불가'
+    effect: '공격력 +60, 체력 +35 (Lv.12 이상)',
+    source: '장비 제작대(C)에서 제작 (12레벨 이상)',
+    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 15개 + 향긋한 허브 10개 + 1,500G'
   },
   {
     id: 'equip_immortal_helmet',
@@ -475,9 +475,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '5티어 투구',
     tierColor: '#ef4444',
-    effect: '방어력 +25, 체력 +35 (Lv.13 이상)',
-    source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
-    recipe: '현재 제작 불가'
+    effect: '방어력 +25, 체력 +35 (Lv.12 이상)',
+    source: '장비 제작대(C)에서 제작 (12레벨 이상)',
+    recipe: '정제된 영양의 정수 6개 + 특수 강화 스텐 조각 4개 + 단단한 목재 10개 + 향긋한 허브 8개 + 1,000G'
   },
   {
     id: 'equip_immortal_armor',
@@ -486,9 +486,9 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '5티어 갑옷',
     tierColor: '#ef4444',
-    effect: '방어력 +30, 체력 +35 (Lv.13 이상)',
-    source: '5티어 최고급 유물 (현재 제작 잠김 / 특별 지급)',
-    recipe: '현재 제작 불가'
+    effect: '방어력 +30, 체력 +35 (Lv.12 이상)',
+    source: '장비 제작대(C)에서 제작 (12레벨 이상)',
+    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 12개 + 향긋한 허브 10개 + 1,200G'
   },
 
   // 4. Shoes (신발 1~4티어 순 정렬)
@@ -512,7 +512,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '2티어 신발',
     tierColor: '#b45309',
     effect: '공격력 +3, 방어력 +3, 체력 +10',
-    source: '농구장/풋살장 엘리트 몬스터 토벌 시 드랍'
+    source: '농구장/풋살장 몬스터 토벌 시 드랍'
   },
   {
     id: 'equip_bronze_shoes',
@@ -577,10 +577,10 @@ window.ITEM_CODEX_DATABASE = [
     id: 'equip_elevator_pass',
     name: '엘리베이터 작동권',
     icon: '🪪',
-    category: 'accessory', subCategory: 'accessory',
+    category: 'quest',
     tierBadge: '퀘스트 인가증',
     tierColor: '#2563eb',
-    effect: '🛗 중앙 엘리베이터 가동 필수 인가증',
+    effect: '🛗 중앙 엘리베이터 가동 필수 인가증 (소지 시 자동 작동)',
     source: '1학년 2반 가죽 골렘 토벌 시 획득',
     recipe: '가죽 골렘 토벌'
   },
@@ -597,6 +597,22 @@ window.ITEM_CODEX_DATABASE = [
     source: '6층 교무실'
   }
 ];
+
+/**
+ * Shared crisp UI icon renderer for items whose OS emoji glyphs render poorly
+ * (e.g., washed-out futsal ball on light backgrounds or black-legged elixir alembic).
+ */
+window.renderItemIconHtml = function renderItemIconHtml(itemId, fallbackIcon = '📦', extraClass = '') {
+  if (itemId === 'item_futsal_leather') {
+    const svg = `<svg width="1em" height="1em" viewBox="0 0 32 32" aria-hidden="true" style="display:inline-block; vertical-align:-0.15em; filter:drop-shadow(0 1px 1.5px rgba(15,23,42,0.28));"><circle cx="16" cy="16" r="14" fill="#ffffff" stroke="#0f172a" stroke-width="2.2"/><path d="M7.5 25 A14 14 0 0 0 26 9 A13.5 13.5 0 0 1 7.5 25 Z" fill="#cbd5e1"/><polygon points="16,9.5 22,13.8 19.7,20.8 12.3,20.8 10,13.8" fill="#0f172a"/><polygon points="16,2 19.4,4.2 12.6,4.2" fill="#0f172a"/><polygon points="28.8,10.5 29.5,14.5 26.2,13.5" fill="#0f172a"/><polygon points="3.2,10.5 5.8,13.5 2.5,14.5" fill="#0f172a"/><polygon points="24.8,26.2 21.8,28.5 20.5,25.2" fill="#0f172a"/><polygon points="7.2,26.2 11.5,25.2 10.2,28.5" fill="#0f172a"/><path d="M16 4V9.5M22 13.8L26.5 13M19.7 20.8L21.5 25.5M12.3 20.8L10.5 25.5M10 13.8L5.5 13" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+    return extraClass ? `<span class="${extraClass}">${svg}</span>` : svg;
+  }
+  if (itemId === 'item_elixir' || itemId === 'recipe_elixir') {
+    const svg = `<svg width="1em" height="1em" viewBox="0 0 32 32" aria-hidden="true" style="display:inline-block; vertical-align:-0.15em; filter:drop-shadow(0 0 5px rgba(192,132,252,0.7));"><path d="M20.5 10.5 L25.8 5.2 L27.8 7.2 L22.5 12.5" fill="#bae6fd" stroke="#0284c7" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="26.8" cy="6.2" rx="2.1" ry="1.1" transform="rotate(45 26.8 6.2)" fill="#7dd3fc" stroke="#0369a1" stroke-width="1.3"/><circle cx="15" cy="18.5" r="10.2" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.8"/><path d="M6.2 19.5 C10 17.5, 13.5 21, 18 19 C21.2 17.6, 23.6 18.8, 24.4 20 A9.4 9.4 0 0 1 6.2 19.5 Z" fill="#22c55e"/><circle cx="12.5" cy="22" r="1.4" fill="#86efac"/><circle cx="17.5" cy="23.5" r="1.1" fill="#bbf7d0"/><circle cx="15.5" cy="20.8" r="0.9" fill="#dcfce7"/><path d="M9.5 14.5 A6.2 6.2 0 0 1 15 11.2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>`;
+    return `<span class="icon-elixir ${extraClass}">${svg}</span>`;
+  }
+  return extraClass ? `<span class="${extraClass}">${fallbackIcon}</span>` : `<span>${fallbackIcon}</span>`;
+};
 
 /**
  * Main Application Orchestrator for Soongsil English Open World RPG — Season 1
@@ -640,31 +656,31 @@ const ALL_GAME_ITEMS = {
   'equip_wood_sword': { name: '나무검', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 15, def: 0, hp: 0 }, effect: '공격력 +15' } },
   'equip_wood_helmet': { name: '나무투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 8, hp: 25 }, effect: '방어력 +8, 체력 +25' } },
   'equip_wood_armor': { name: '나무갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 12, hp: 15 }, effect: '방어력 +12, 체력 +15' } },
-  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22' } },
-  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28' } },
-  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 15, hp: 20 }, effect: '방어력 +15, 체력 +20' } },
+  'equip_leather_sword': { name: '가죽손잡이 세이버', icon: '🗡️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 3, stats: { atk: 22, def: 0, hp: 0 }, effect: '공격력 +22 (Lv.3 이상)' } },
+  'equip_leather_helmet': { name: '가죽투구', icon: '⛑️', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 3, stats: { atk: 0, def: 12, hp: 28 }, effect: '방어력 +12, 체력 +28 (Lv.3 이상)' } },
+  'equip_leather_armor': { name: '가죽갑옷', icon: '🥋', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 3, stats: { atk: 0, def: 15, hp: 20 }, effect: '방어력 +15, 체력 +20 (Lv.3 이상)' } },
   'equip_leather_shoes': { name: '날렵한 가죽 운동화', icon: '👟', count: 9999, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 3, def: 3, hp: 10 }, effect: '2티어 고급 신발' } },
   'equip_forsythia_ring': { name: '성실의 개나리 반지', icon: '🌼', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 10, def: 5, hp: 20 }, effect: '공격력 +10, 방어력 +5, 체력 +20' } },
-  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 15, def: 5, hp: 30 }, effect: '공격력 +15, 방어력 +5, 체력 +30' } },
-  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 0, def: 0, hp: 0 }, effect: '🛗 중앙 엘리베이터 가동 인가증' } },
+  'equip_ginkgo_talisman': { name: '합심의 황금 은행잎 부적', icon: '🍂', count: 9999, meta: { type: 'equipment', slot: 'accessory', requiredLevel: 5, stats: { atk: 15, def: 5, hp: 30 }, effect: '공격력 +15, 방어력 +5, 체력 +30 (Lv.5 이상)' } },
+  'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)' } },
 
   // 4. Bronze Equipment (Boss Rare Drops)
-  'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30' } },
-  'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35' } },
-  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25' } },
+  'equip_bronze_sword': { name: '청동검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 5, stats: { atk: 30, def: 0, hp: 0 }, effect: '공격력 +30 (Lv.5 이상)' } },
+  'equip_bronze_helmet': { name: '청동투구', icon: '🪖', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 5, stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35 (Lv.5 이상)' } },
+  'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 5, stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25 (Lv.5 이상)' } },
 
   // 5. Tier 4 Heritage Equipment
-  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35' } },
-  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35' } },
-  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', stats: { atk: 0, def: 25, hp: 35 }, effect: '4티어 갑옷 · 방어력 +25, 체력 +35' } },
+  'equip_heritage_blade': { name: '⚔️ 1897 숭실 헤리티지 소드', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 10, stats: { atk: 45, def: 0, hp: 35 }, effect: '4티어 무기 · 공격력 +45, 체력 +35 (Lv.10 이상)' } },
+  'equip_heritage_helmet': { name: '👑 1897 숭실 헤리티지 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 10, stats: { atk: 0, def: 20, hp: 35 }, effect: '4티어 투구 · 방어력 +20, 체력 +35 (Lv.10 이상)' } },
+  'equip_heritage_armor': { name: '🛡️ 1897 숭실 헤리티지 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 10, stats: { atk: 0, def: 25, hp: 35 }, effect: '4티어 갑옷 · 방어력 +25, 체력 +35 (Lv.10 이상)' } },
   'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 보물' } },
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
 
-  // 6. Tier 5 Immortal Equipment (5티어 불멸세트 · 13레벨 락 · 현재 제작 잠김)
-  'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 13, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.13 이상)' } },
-  'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 13, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.13 이상)' } },
-  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 13, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.13 이상)' } },
+  // 6. Tier 5 Immortal Equipment (5티어 불멸세트 · 12레벨 락 · 현재 제작 잠김)
+  'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 12, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)' } },
+  'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 12, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)' } },
+  'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
 
   // 7. Legendary Season Boss Artifacts & Rewards
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
@@ -1109,7 +1125,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   },
   'quest_okchohan_social': {
     id: 'quest_okchohan_social',
-    minLevel: 9,
+    minLevel: 4,
     teacherId: 'npc_teacher_okchohan',
     teacherName: '옥촣한 선생님',
     teacherRole: '사회',
@@ -1154,7 +1170,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       }
     ],
     rewards: [
-      { type: 'item', itemKey: 'item_bronze_heart', itemName: '청동 드래곤의 심장', count: 1, icon: '🥉', meta: { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' }, label: '🥉 청동 드래곤의 심장 x1개' },
+      { type: 'item', itemKey: 'item_bronze_heart', itemName: '청동 드래곤의 심장', count: 1, icon: '❤️‍🔥', meta: { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' }, label: '❤️‍🔥 청동 드래곤의 심장 x1개' },
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
     ]
@@ -1316,7 +1332,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   },
   'quest_library_missing_books': {
     id: 'quest_library_missing_books',
-    minLevel: 4,
+    minLevel: 8,
     teacherId: 'npc_librarian',
     teacherName: '사서 선생님',
     teacherRole: '2층 도서관',
@@ -1374,7 +1390,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   },
   'quest_cafeteria_order': {
     id: 'quest_cafeteria_order',
-    minLevel: 12,
+    minLevel: 10,
     teacherId: 'npc_cafeteria_teacher',
     teacherName: '급식지도 선생님',
     teacherRole: '영양 및 급식지도',
@@ -1408,7 +1424,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   },
   'quest_cafeteria_manners': {
     id: 'quest_cafeteria_manners',
-    minLevel: 12,
+    minLevel: 10,
     teacherId: 'npc_cafeteria_teacher',
     teacherName: '급식지도 선생님',
     teacherRole: '영양 및 급식지도',
@@ -1462,6 +1478,9 @@ class MainApp {
 
     this.isServerOpen = true;
     this.serverClosedMessage = '';
+    this.allowEmergencyStudentLogin = false;
+    this.requireRosterWhitelist = false;
+    this.allowedEmailDomain = 'senedu.kr';
 
     this.playerData = {
       name: '',
@@ -1558,6 +1577,39 @@ class MainApp {
     this.recalcCombatStats();
   }
 
+  escapeHtml(value) {
+    return String(value === undefined || value === null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  getAdminHeaders(extra = {}) {
+    const token = (this.playerData && this.playerData.teacherToken) ? this.playerData.teacherToken : '';
+    return token ? { ...extra, 'X-Teacher-Token': token } : { ...extra };
+  }
+
+  showGameDialog(title, message, icon = '💬', onClose = null) {
+    if (window.RPGDialog && typeof window.RPGDialog.show === 'function') {
+      window.RPGDialog.show(title, message, icon, onClose);
+      return;
+    }
+    alert(title ? `[${title}]\n\n${message}` : message);
+    if (typeof onClose === 'function') onClose();
+  }
+
+  async verifyTeacherPasswordOffline(pwd) {
+    const expectedHash = '7144b2256875d81279418df540fe595a27a8c7edd558fe0f4f1d8e3dc988ea56';
+    if (window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
+      const buf = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+      const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+      return hex === expectedHash;
+    }
+    return false;
+  }
+
   setServerStatus(isOnline) {
     this.isServerOnline = isOnline;
     this.updateServerGateUI();
@@ -1585,6 +1637,104 @@ class MainApp {
         }
       })
       .catch(() => {});
+
+    fetch('/api/auth-config', { method: 'GET', cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (data) this.applyAuthConfig(data);
+      })
+      .catch(() => {});
+  }
+
+  applyAuthConfig(data = {}) {
+    if (typeof data.allowEmergencyStudentLogin === 'boolean') {
+      this.allowEmergencyStudentLogin = data.allowEmergencyStudentLogin;
+    }
+    if (typeof data.requireRosterWhitelist === 'boolean') {
+      this.requireRosterWhitelist = data.requireRosterWhitelist;
+    }
+    if (typeof data.allowedDomain === 'string' && data.allowedDomain.trim()) {
+      this.allowedEmailDomain = data.allowedDomain.trim();
+    } else if (typeof data.allowedEmailDomain === 'string' && data.allowedEmailDomain.trim()) {
+      this.allowedEmailDomain = data.allowedEmailDomain.trim();
+    }
+    this.updateAuthModeUI();
+  }
+
+  updateAuthModeUI() {
+    const checkIsTeacher = document.getElementById('check-is-teacher');
+    const isTeacherChecked = !!(checkIsTeacher && checkIsTeacher.checked);
+    const emergencyBanner = document.getElementById('emergency-login-banner');
+    const studentIdNameRow = document.getElementById('student-id-name-row');
+    const syncBadgeEl = document.getElementById('student-id-sync-badge');
+    const groupStudentId = document.getElementById('group-student-id');
+    const groupStudentNickname = document.getElementById('group-student-nickname');
+    const groupStudentEmail = document.getElementById('group-student-email');
+    const groupStudentPin = document.getElementById('group-student-pin');
+    const emailInput = document.getElementById('input-student-email');
+    const pinInput = document.getElementById('input-student-pin');
+
+    if (studentIdNameRow) studentIdNameRow.style.display = isTeacherChecked ? 'none' : 'flex';
+    if (syncBadgeEl) syncBadgeEl.style.display = isTeacherChecked ? 'none' : '';
+    if (emergencyBanner) emergencyBanner.classList.toggle('hidden', isTeacherChecked || !this.allowEmergencyStudentLogin);
+    if (groupStudentId) groupStudentId.style.display = isTeacherChecked ? 'none' : 'flex';
+    if (groupStudentNickname) groupStudentNickname.style.display = isTeacherChecked ? 'none' : 'flex';
+    if (groupStudentEmail) groupStudentEmail.style.display = isTeacherChecked ? 'none' : 'flex';
+    if (groupStudentPin) groupStudentPin.style.display = isTeacherChecked ? 'none' : 'flex';
+
+    if (!isTeacherChecked) {
+      const domain = this.allowedEmailDomain || 'senedu.kr';
+      const suffixEl = document.getElementById('student-email-domain-suffix');
+      if (suffixEl) suffixEl.innerText = '@' + domain;
+      if (emailInput) {
+        emailInput.placeholder = this.allowEmergencyStudentLogin
+          ? '선택 입력 (비상 모드) 또는 학교 아이디'
+          : '예: hong123';
+      }
+      if (pinInput) {
+        pinInput.placeholder = this.allowEmergencyStudentLogin
+          ? '숫자 4자리 (비상 모드에서는 비워도 입장)'
+          : '숫자 4자리 (최초 접속 시 설정)';
+      }
+    }
+
+    const teacherEmergBadge = document.getElementById('teacher-emergency-badge');
+    const btnToggleEmergency = document.getElementById('btn-teacher-toggle-emergency-login');
+    if (teacherEmergBadge) {
+      if (this.allowEmergencyStudentLogin) {
+        teacherEmergBadge.innerText = '🆘 비상 로그인(학번+이름) 허용 중';
+        teacherEmergBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+        teacherEmergBadge.style.borderColor = '#10b981';
+        teacherEmergBadge.style.color = '#34d399';
+      } else {
+        teacherEmergBadge.innerText = '🔐 @senedu.kr 이메일 + 4자리 PIN 모드';
+        teacherEmergBadge.style.background = 'rgba(56, 189, 248, 0.15)';
+        teacherEmergBadge.style.borderColor = '#38bdf8';
+        teacherEmergBadge.style.color = '#38bdf8';
+      }
+    }
+    if (btnToggleEmergency) {
+      btnToggleEmergency.innerText = this.allowEmergencyStudentLogin ? '🔐 이메일+PIN 모드로 전환' : '🆘 비상 로그인 켜기';
+    }
+
+    const teacherRosterBadge = document.getElementById('teacher-roster-badge');
+    const btnToggleRoster = document.getElementById('btn-teacher-toggle-roster-whitelist');
+    if (teacherRosterBadge) {
+      if (this.requireRosterWhitelist) {
+        teacherRosterBadge.innerText = '📋 명단 제한 ON (등록 학생만)';
+        teacherRosterBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+        teacherRosterBadge.style.borderColor = '#f59e0b';
+        teacherRosterBadge.style.color = '#fde047';
+      } else {
+        teacherRosterBadge.innerText = '📋 명단 제한 OFF (자유 가입)';
+        teacherRosterBadge.style.background = 'rgba(148, 163, 184, 0.15)';
+        teacherRosterBadge.style.borderColor = '#64748b';
+        teacherRosterBadge.style.color = '#cbd5e1';
+      }
+    }
+    if (btnToggleRoster) {
+      btnToggleRoster.innerText = this.requireRosterWhitelist ? '📋 명단 제한 끄기' : '📋 명단 제한 켜기';
+    }
   }
 
   initControls() {
@@ -1951,10 +2101,18 @@ class MainApp {
       // 1학년 복도 담임 이상대 선생님 (중앙 엘리베이터 안내 NPC)
       if (npc.id === 'npc_teacher_sangdae' || (npc.name && npc.name.includes('이상대'))) {
         if (!this.isElevatorUnlocked()) {
-          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 비로소 [🪪 엘리베이터 작동권]을 얻어 운동장으로 내려갈 수 있단다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 가죽 골렘 레이드를 준비해보렴!"`);
+          this.showGameDialog(
+            '이상대 선생님',
+            `"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n⚠️ 지금은 중앙 엘리베이터가 고장나서 [점검 중]이라 지상 운동장으로 내려갈 수 없단다!\n\n1학년 2반 교실로 들어가 1차 관문 보스 [👾 가죽 골렘]을 먼저 토벌해야 비로소 [🪪 엘리베이터 작동권]을 얻어 운동장으로 내려갈 수 있단다.\n\n어서 2반 앞의 한강우 선생님을 찾아가 가죽 골렘 레이드를 준비해보렴!"`,
+            '👨‍🏫'
+          );
           return;
         } else {
-          alert(`💬 [이상대 선생님]\n\n"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 1차 관문 보스 [가죽 골렘]을 멋지게 토벌하고 [🪪 엘리베이터 작동권]을 얻었구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터를 다시 가동할 수 있게 되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n인벤토리(I) 장신구 슬롯에 [🪪 엘리베이터 작동권]을 장착한 후 통행료 10G(골드)를 지불하면 운동장으로 내려갈 수 있단다.\n\n운동장 농구장과 풋살장에서 거친 몬스터들을 물리쳐 농구가죽과 풋살가죽을 모으면 2티어 가죽 장비를 제작할 수 있단다!\n\n골드가 충분히 모이고 작동권을 착용했다면 엘리베이터 앞에서 SPACE를 눌러보렴."`);
+          this.showGameDialog(
+            '이상대 선생님',
+            `"안녕! 1학년 1반 담임 이상대 선생님이다. 👨‍🏫\n\n🎉 오오! 1차 관문 보스 [가죽 골렘]을 멋지게 토벌하고 [🪪 엘리베이터 작동권]을 얻었구나! 대단하다! 👏\n덕분에 고장났던 중앙 엘리베이터를 다시 가동할 수 있게 되었단다.\n\n⚠️ [엘리베이터 이용 및 운동장 경고]\n가방(I)에 [🪪 엘리베이터 작동권]을 소지한 상태로 통행료 10G(골드)를 지불하면 운동장으로 내려갈 수 있단다. (장신구 칸에 따로 착용하지 않아도 돼!)\n\n운동장 농구장과 풋살장에서 거친 몬스터들을 물리쳐 농구가죽과 풋살가죽을 모으면 2티어 가죽 장비를 제작할 수 있단다!\n\n골드가 충분히 모이고 작동권을 소지하고 있다면 엘리베이터 앞에서 SPACE를 눌러보렴."`,
+            '👨‍🏫'
+          );
           return;
         }
       }
@@ -2027,7 +2185,7 @@ class MainApp {
       }
       this.quizManager.triggerQuiz(target.name, target.type, target.data);
     } else if (target.type === 'board') {
-      alert('📋 [복도 게시판]\n\n"숭실중학교 학생 공지사항이 게시되어 있습니다."');
+      this.showGameDialog('복도 게시판', '"숭실중학교 학생 공지사항이 게시되어 있습니다."', '📋');
     } else if (target.type === 'craft') {
       const cat = (target.data && target.data.category) || target.category || (target.name && target.name.includes('포션') ? 'potion' : 'equipment');
       this.craftingManager.open(cat);
@@ -2056,12 +2214,26 @@ class MainApp {
     } else if (target.type === 'history_altar') {
       this.handleHistoryAltarInteraction();
     } else if (target.type === 'history_hall') {
+      const playerLv = Number(this.playerData && this.playerData.level) || 1;
+      if (playerLv < 8 && !this.playerData.isTeacher) {
+        this.showGameDialog(
+          '숭실역사관 입장 제한 (Lv.8+)',
+          `"🏛️ 숭실역사관은 Lv.8 이상부터 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${playerLv}\n• 필요 레벨: Lv.8 이상\n\n교내 교실·농구장·풋살장에서 성장해 Lv.8을 달성한 뒤 다시 찾아와 주세요!"`,
+          '🔒'
+        );
+        return;
+      }
       this.engine.triggerFadeWarp(() => {
         this.engine.warpToRoom('room_history', '🏛️ 숭실역사관 (History Hall)', 15 * 32, 13 * 32);
       });
-        } else if (target.type === 'gym_gate') {
-      if (!this.playerData.isTeacher) {
-        alert('🚫 [교직원 전용 시설 관리 구역]\n\n"🚗 숭실 체육관 및 주차장 구역은 현재 교직원 전용 관리 구역입니다.\n(교사 계정으로 로그인 후 출입할 수 있습니다.)"');
+    } else if (target.type === 'gym_gate') {
+      const playerLv = Number(this.playerData && this.playerData.level) || 1;
+      if (playerLv < 12 && !this.playerData.isTeacher) {
+        this.showGameDialog(
+          '숭실 체육관 구역 입장 제한 (Lv.12+)',
+          `"🏛️ 숭실 체육관 및 주차장 구역은 Lv.12 이상부터 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${playerLv}\n• 필요 레벨: Lv.12 이상\n\n운동장·역사관·급식실에서 성장해 Lv.12를 달성한 뒤 다시 찾아와 주세요!"`,
+          '🔒'
+        );
         return;
       }
       this.engine.triggerFadeWarp(() => {
@@ -2072,11 +2244,36 @@ class MainApp {
         this.engine.warpToRoom('playground', '숭실 운동장', 4 * 32, 48 * 32);
       });
     } else if (target.type === 'gym_entrance') {
-      if (window.RPGDialog) {
-        window.RPGDialog.show('숭실 체육관', '현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!', '🏛️');
-      } else {
-        alert('🏛️ [숭실 체육관]\n\n현재 실내 코트는 다음 시즌 업데이트를 위해 시설 정비 중입니다!');
+      const playerLv = Number(this.playerData && this.playerData.level) || 1;
+      if (playerLv < 12 && !this.playerData.isTeacher) {
+        this.showGameDialog(
+          '입장 레벨 제한 (Lv.12+)',
+          `"🏛️ 숭실 체육관 실내는 8단원 (Give Your Hand, Give Your Heart) 심화 구역입니다!\n\n입장 조건: Lv.12 이상 (현재 Lv.${playerLv})\n주변 농구장·풋살장·역사관·급식실에서 5~7단원 실력을 먼저 키워보세요!"`,
+          '🔒'
+        );
+        return;
       }
+      this.engine.triggerFadeWarp(() => {
+        this.engine.warpToRoom('room_gym', '🏛️ 숭실 체육관 (실내)', 29 * 32, 22 * 32);
+      });
+    } else if (target.type === 'gym_stage_podium') {
+      this.showGameDialog(
+        '🎤 체육관 강연 무대 연단',
+        `"농구 코트 정면을 바라보는 아늑한 강연 무대입니다.\n학교 행사나 영어 발표회, 8단원 심화 강연이 진행되는 숭실 체육관의 상징적인 단상입니다."`,
+        '🎤'
+      );
+    } else if (target.type === 'gym_broadcast_storage') {
+      this.showGameDialog(
+        '🎙️ 체육관 방송장비 창고',
+        `"강연 무대 위쪽 창고입니다.\n대형 음향 믹서 콘솔, 무선 마이크 세트, 앰프 랙과 고출력 스피커가 행사에 대비해 깔끔하게 정돈되어 있습니다."`,
+        '🎛️'
+      );
+    } else if (target.type === 'gym_equipment_storage') {
+      this.showGameDialog(
+        '🏀 공 · 체육복 보관창고',
+        `"강연 무대 아래쪽 창고입니다.\n농구공·배구공·피구공 보관함과 팀 조끼(유니폼), 접이식 체조 매트가 종목별로 정갈하게 수납되어 있습니다."`,
+        '🏀'
+      );
     } else if (target.type === 'gym_pe_teacher') {
       this.handlePETeacherInteraction();
     } else if (target.type === 'gym_guard_teacher') {
@@ -2172,7 +2369,11 @@ class MainApp {
         },
         (res) => {
           if (!res || !res.allowed) {
-            alert(res && res.message ? res.message : '🖥️ [컴퓨터실 이용 안내]\n\n현재 1학년 3반 컴퓨터실의 모든 좌석(4석)에서 친구들이 산성비 타자 연습을 진행 중입니다!\n\n다른 친구가 게임을 마칠 때까지 잠시만 기다려주세요!');
+            this.showGameDialog(
+              '컴퓨터실 이용 안내',
+              res && res.message ? res.message : '현재 1학년 3반 컴퓨터실의 모든 좌석(4석)에서 친구들이 산성비 타자 연습을 진행 중입니다!\n\n다른 친구가 게임을 마칠 때까지 잠시만 기다려주세요!',
+              '🖥️'
+            );
             return;
           }
           if (window.AcidRain) {
@@ -2451,7 +2652,7 @@ class MainApp {
     }
   }
 
-  // 1897 헤리티지 세트 착용 검증 (무기는 컴싸봉으로 대체 가능)
+  // 1897 헤리티지 3종 세트 착용 검증 (부츠 제외, 무기는 컴싸봉으로 대체 가능)
   is1897HeritageSetEquipped(allowOmrWand = true) {
     const isHelm = this.isItemEquipped('equip_heritage_helmet');
     const isArmor = this.isItemEquipped('equip_heritage_armor');
@@ -2459,7 +2660,7 @@ class MainApp {
     const isBlade = this.isItemEquipped('equip_heritage_blade');
     const isOmr = !!(allowOmrWand && this.isItemEquipped('equip_omr_wand'));
     const isWep = isBlade || isOmr;
-    const isComplete = isHelm && isArmor && isBoots && isWep;
+    const isComplete = isHelm && isArmor && isWep;
     const weaponName = isOmr ? '컴싸 마법봉' : (isBlade ? '1897 숭실 헤리티지 블레이드' : null);
     return { isComplete, isHelm, isArmor, isBoots, isWep, isOmr, isBlade, weaponName };
   }
@@ -2469,9 +2670,9 @@ class MainApp {
     const pLevel = (this.playerData && this.playerData.level) || 1;
     const isTeacher = !!(this.playerData && this.playerData.isTeacher);
 
-    // 1. 레벨 12 미만 차단
-    if (pLevel < 12 && !isTeacher) {
-      const msg = `🚫 [소회의실 비밀 보관함 - 접근 제한]\n\n"이 보관함은 12레벨 이상부터 조사할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n모험을 더 진행하여 12레벨을 달성한 뒤 다시 조사해주세요."`;
+    // 1. 레벨 10 미만 차단
+    if (pLevel < 10 && !isTeacher) {
+      const msg = `🚫 [소회의실 비밀 보관함 - 접근 제한]\n\n"이 보관함은 10레벨 이상부터 조사할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.10 이상\n\n모험을 더 진행하여 10레벨을 달성한 뒤 다시 조사해주세요."`;
       if (window.RPGDialog) {
         window.RPGDialog.show('🚫 접근 제한', msg, '🔒');
       } else {
@@ -2492,18 +2693,17 @@ class MainApp {
       return;
     }
 
-    // 3. 1897 세트 착용 검증 (무기는 컴싸봉 대체 가능)
+    // 3. 1897 3종 세트 착용 검증 (부츠 제외, 무기는 컴싸봉 대체 가능)
     const check = this.is1897HeritageSetEquipped(true);
 
     if (!check.isComplete) {
       const statusLines = [
         `• 투구: ${check.isHelm ? '✅ [착용 중] 1897 숭실 헤리티지 투구' : '❌ [미착용] 1897 숭실 헤리티지 투구 필요'}`,
         `• 갑옷: ${check.isArmor ? '✅ [착용 중] 1897 숭실 헤리티지 갑옷' : '❌ [미착용] 1897 숭실 헤리티지 갑옷 필요'}`,
-        `• 신발: ${check.isBoots ? '✅ [착용 중] 1897 숭실 헤리티지 부츠' : '❌ [미착용] 1897 숭실 헤리티지 부츠 필요'}`,
         `• 무기: ${check.isWep ? `✅ [착용 중] ${check.weaponName}` : '❌ [미착용] 1897 숭실 헤리티지 블레이드 또는 컴싸 마법봉 필요'}`
       ].join('\n');
 
-      const msg = `🔒 [봉인된 문서 보관함 - 1897 숭실의 문양]\n\n보관함 전면에 1897년 평양 숭실학당의 고대 문양이 마법 결계로 붉게 빛나고 있습니다!\n\n"오직 숭실의 역사와 사명을 온전히 계승한 자(1897 헤리티지 4종 풀세트 착용자)만이 이 보관함을 열 수 있다."\n(※ 무기는 전설의 '컴싸 마법봉'으로 대체 가능합니다!)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 [현재 1897 장비 착용 검증]:\n${statusLines}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💡 힌트: 역사관 제단 제작 및 보스 레이드에서 획득한 1897 장비를 가방(I)에서 모두 [착용]한 후 다시 조사하세요!`;
+      const msg = `🔒 [봉인된 문서 보관함 - 1897 숭실의 문양]\n\n보관함 전면에 1897년 평양 숭실학당의 고대 문양이 마법 결계로 붉게 빛나고 있습니다!\n\n"오직 숭실의 역사와 사명을 온전히 계승한 자(1897 헤리티지 3종 세트[투구·갑옷·무기] 착용자)만이 이 보관함을 열 수 있다."\n(※ 부츠는 제외되며, 무기는 전설의 '컴싸 마법봉'으로 대체 가능합니다!)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 [현재 1897 장비 착용 검증]:\n${statusLines}\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💡 힌트: 역사관 제단 제작 및 보스 레이드에서 획득한 1897 3종 장비를 가방(I)에서 모두 [착용]한 후 다시 조사하세요!`;
 
       if (window.RPGDialog) {
         window.RPGDialog.show('🔒 봉인된 문서 보관함', msg, '🔒');
@@ -2513,42 +2713,74 @@ class MainApp {
       return;
     }
 
-    // 4. 모든 조건 충족: 급식실 열쇠 획득!
+    const onSafeSuccess = () => {
+      if (window.AudioManager) {
+        if (typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        } else if (typeof window.AudioManager.playLevelUp === 'function') {
+          window.AudioManager.playLevelUp();
+        }
+      }
+
+      const usedWep = check.isOmr ? '전설의 컴싸 마법봉' : '1897 숭실 헤리티지 블레이드';
+      const successMsg = `✨ [1897 숭실 헤리티지 결계 해제!]\n\n착용 중인 1897 헤리티지 장비(투구·갑옷 및 ${usedWep})가 보관함의 고대 문양과 장엄하게 공명합니다!\n\n"철컥! 찰칵!"\n\n육중한 잠금장치가 해제되며, 안쪽에서 찬란하게 빛나는 [🔑 급식실 열쇠]를 발견했습니다!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔑 [획득 아이템] 급식실 열쇠 x1\n• 용도: 학생 급식실 정문 개방\n• 위치: 야외 운동장 북동쪽 (중앙 엘리베이터 우측)\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"숭실의 진정한 용사여, 이제 운동장의 학생 급식실로 당당히 나아가세요!"`;
+
+      if (window.RPGDialog) {
+        window.RPGDialog.show('✨ 급식실 열쇠 획득!', successMsg, '🔑');
+      } else {
+        alert(successMsg);
+      }
+      this.showToast('✨ [입장 퀘스트 완료] 1897 세트 공명으로 [급식실 열쇠]를 획득했습니다!', 'success');
+    };
+
+    if (typeof this.canUseAuthoritativeServerApi === 'function' && this.canUseAuthoritativeServerApi()) {
+      this._unlockCafeteriaKeySafeOnServer(onSafeSuccess);
+      return;
+    }
+
+    // 4. 모든 조건 충족: 급식실 열쇠 획득! (오프라인/교사/단위테스트 폴백)
     this.playerData.hasCafeteriaKey = true;
     this.addItem('item_cafeteria_key', '급식실 열쇠', 1, '🔑', {
       type: 'quest',
       effect: '급식실 정문 출입용 황금 열쇠'
     });
     this.saveProgress(true);
-
-    if (window.AudioManager) {
-      if (typeof window.AudioManager.playFanfare === 'function') {
-        window.AudioManager.playFanfare();
-      } else if (typeof window.AudioManager.playLevelUp === 'function') {
-        window.AudioManager.playLevelUp();
-      }
-    }
-
-    const usedWep = check.isOmr ? '전설의 컴싸 마법봉' : '1897 숭실 헤리티지 블레이드';
-    const successMsg = `✨ [1897 숭실 헤리티지 결계 해제!]\n\n착용 중인 1897 헤리티지 장비(투구·갑옷·부츠 및 ${usedWep})가 보관함의 고대 문양과 장엄하게 공명합니다!\n\n"철컥! 찰칵!"\n\n육중한 잠금장치가 해제되며, 안쪽에서 찬란하게 빛나는 [🔑 급식실 열쇠]를 발견했습니다!\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔑 [획득 아이템] 급식실 열쇠 x1\n• 용도: 학생 급식실 정문 개방\n• 위치: 야외 운동장 북동쪽 (중앙 엘리베이터 우측)\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"숭실의 진정한 용사여, 이제 운동장의 학생 급식실로 당당히 나아가세요!"`;
-
-    if (window.RPGDialog) {
-      window.RPGDialog.show('✨ 급식실 열쇠 획득!', successMsg, '🔑');
-    } else {
-      alert(successMsg);
-    }
-    this.showToast('✨ [입장 퀘스트 완료] 1897 세트 공명으로 [급식실 열쇠]를 획득했습니다!', 'success');
+    onSafeSuccess();
   }
 
-  // 야외 운동장: 학생 급식실 정문 상호작용 (12레벨 이상 & 급식실 열쇠 검증)
+  async _unlockCafeteriaKeySafeOnServer(onSuccess) {
+    if (this._safeTxnBusy) return;
+    this._safeTxnBusy = true;
+    try {
+      await this.flushProgressSync();
+      const res = await fetch('/api/safe/cafeteria-key', {
+        method: 'POST',
+        headers: this.getStudentAuthHeaders(),
+        body: JSON.stringify({ studentId: this.playerData.studentId })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        this.showToast((data && data.error) || '보관함 해제 검증에 실패했습니다.', 'warning');
+        return;
+      }
+      this.applyAuthoritativeServerState(data);
+      if (typeof onSuccess === 'function') onSuccess();
+    } catch (err) {
+      this.showToast('서버 통신 오류로 보관함을 열지 못했습니다. 잠시 후 다시 시도하세요.', 'error');
+    } finally {
+      this._safeTxnBusy = false;
+    }
+  }
+
+  // 야외 운동장: 학생 급식실 정문 상호작용 (10레벨 이상 & 급식실 열쇠 검증)
   handleCafeteriaEntranceInteraction() {
     const pLevel = (this.playerData && this.playerData.level) || 1;
     const isTeacher = !!(this.playerData && this.playerData.isTeacher);
     const hasKey = this.hasItem('item_cafeteria_key') || (this.playerData && this.playerData.hasCafeteriaKey);
 
-    // 1. 레벨 12 미만인 경우
-    if (pLevel < 12 && !isTeacher) {
-      const msg = `🚫 [학생 급식실 - 12레벨 출입 제한]\n\n"학생 급식실은 12레벨 이상부터 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.12 이상\n\n더 많은 퀘스트와 몬스터 토벌을 통해 12레벨을 달성하고 다시 찾아오세요!"`;
+    // 1. 레벨 10 미만인 경우
+    if (pLevel < 10 && !isTeacher) {
+      const msg = `🚫 [학생 급식실 - 10레벨 출입 제한]\n\n"학생 급식실은 10레벨 이상부터 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${pLevel}\n• 필요 레벨: Lv.10 이상\n\n더 많은 퀘스트와 몬스터 토벌을 통해 10레벨을 달성하고 다시 찾아오세요!"`;
       if (window.RPGDialog) {
         window.RPGDialog.show('🚫 학생 급식실 입장 불가', msg, '🍱');
       } else {
@@ -2557,7 +2789,7 @@ class MainApp {
       return;
     }
 
-    // 2. 12레벨 이상이지만 열쇠가 없는 경우
+    // 2. 10레벨 이상이지만 열쇠가 없는 경우
     if (!hasKey && !isTeacher) {
       const msg = `🔒 [학생 급식실 - 정문 잠김]\n\n"철컥... 급식실 정문이 굳게 잠겨 있습니다!\n\n급식실에 입장하려면 [🔑 급식실 열쇠]를 찾아야 합니다.\n학교 안 어딘가에 숨겨진 급식실 열쇠를 찾아오세요!"`;
       if (window.RPGDialog) {
@@ -2568,7 +2800,7 @@ class MainApp {
       return;
     }
 
-    // 3. 12레벨 이상이며 열쇠 보유 완료!
+    // 3. 10레벨 이상이며 열쇠 보유 완료!
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
@@ -4241,7 +4473,39 @@ class MainApp {
 
   isElevatorPassEquipped() {
     if (this.playerData.isTeacher) return true;
-    return this.isItemEquipped('equip_elevator_pass');
+    return this.hasItem('equip_elevator_pass') || this.isItemEquipped('equip_elevator_pass');
+  }
+
+  migrateLegacyElevatorPassSlot() {
+    if (!this.playerData) return false;
+    let changed = false;
+    const eq = this.playerData.equipment;
+    if (eq) {
+      for (const slot of ['accessory', 'accessory2']) {
+        if (eq[slot] && eq[slot].item === 'equip_elevator_pass') {
+          eq[slot] = null;
+          changed = true;
+        }
+      }
+    }
+    const invItem = Array.isArray(this.playerData.inventory)
+      ? this.playerData.inventory.find(i => i && i.item === 'equip_elevator_pass')
+      : null;
+    if (invItem) {
+      if (invItem.type !== 'quest') {
+        invItem.type = 'quest';
+        invItem.slot = null;
+        invItem.effect = '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)';
+        changed = true;
+      }
+    } else if (changed) {
+      this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
+        type: 'quest',
+        isQuestItem: true,
+        effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)'
+      });
+    }
+    return changed;
   }
 
   isDragonCleared() {
@@ -4392,56 +4656,18 @@ class MainApp {
       return;
     }
 
-    // 2. 엘리베이터 작동권 장착 여부 검사
-    if (!this.isElevatorPassEquipped()) {
-      if (this.hasItem('equip_elevator_pass')) {
-        if (dialog) {
-          dialog.confirm(
-            '엘리베이터 키 미인식',
-            '가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 [🪪 엘리베이터 작동권]을 장착하고 엘리베이터를 가동하시겠습니까?',
-            '🛗',
-            () => {
-              this.equipItem('equip_elevator_pass');
-              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-              this.openElevatorModal();
-            }
-          );
-        } else {
-          if (confirm('🛗 [엘리베이터 키 미인식]\n\n가방에 [🪪 엘리베이터 작동권]이 있지만 장신구 슬롯에 장착되지 않았습니다!\n\n지금 바로 장착하시겠습니까?')) {
-            this.equipItem('equip_elevator_pass');
-            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-            this.openElevatorModal();
-          }
-        }
-        return;
-      } else {
-        this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
-          type: 'equipment',
-          slot: 'accessory',
-          isQuestItem: true,
-          stats: { atk: 0, def: 0, hp: 0 },
-          effect: '🛗 중앙 엘리베이터 가동 인가증'
-        });
-        if (dialog) {
-          dialog.confirm(
-            '작동권 발급',
-            '골렘 토벌 기록이 확인되어 [🪪 엘리베이터 작동권]이 지급되었습니다!\n\n지금 바로 장착하고 엘리베이터를 가동하시겠습니까?',
-            '🎉',
-            () => {
-              this.equipItem('equip_elevator_pass');
-              this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-              this.openElevatorModal();
-            }
-          );
-        } else {
-          if (confirm('🎉 [작동권 발급]\n\n골렘 토벌 기록이 확인되어 작동권이 지급되었습니다! 지금 바로 장착하시겠습니까?')) {
-            this.equipItem('equip_elevator_pass');
-            this.showToast('🪪 엘리베이터 작동권을 장착했습니다!', 'success');
-            this.openElevatorModal();
-          }
-        }
-        return;
-      }
+    // 2. 엘리베이터 작동권 소지 여부 검사 (장신구 슬롯 착용 불필요 · 소지 시 자동 작동)
+    if (typeof this.migrateLegacyElevatorPassSlot === 'function') {
+      const migrated = this.migrateLegacyElevatorPassSlot();
+      if (migrated) this.saveProgress();
+    }
+    if (!this.hasItem('equip_elevator_pass')) {
+      this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
+        type: 'quest',
+        isQuestItem: true,
+        effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)'
+      });
+      this.showToast('🪪 골렘 토벌 기록이 확인되어 [엘리베이터 작동권]이 지급되었습니다! (소지 시 자동 작동)', 'success');
     }
 
     // 3. 전 층 선택 모달 오픈
@@ -4859,10 +5085,11 @@ class MainApp {
         } else {
           teacherPwdField.classList.add('hidden');
           if (teacherNoticeBanner) teacherNoticeBanner.classList.add('hidden');
-          if (groupStudentId) groupStudentId.style.display = 'block';
-          if (groupStudentNickname) groupStudentNickname.style.display = 'block';
+          if (groupStudentId) groupStudentId.style.display = 'flex';
+          if (groupStudentNickname) groupStudentNickname.style.display = 'flex';
           if (studentCustomBox) studentCustomBox.style.display = 'block';
         }
+        this.updateAuthModeUI();
       });
     }
 
@@ -4875,6 +5102,25 @@ class MainApp {
       }
     };
     if (teacherPwdInput) teacherPwdInput.addEventListener('keydown', handleLoginEnter);
+    const studentEmailInput = document.getElementById('input-student-email');
+    if (studentEmailInput) {
+      studentEmailInput.addEventListener('blur', () => {
+        const domain = (this.allowedEmailDomain || 'senedu.kr').toLowerCase();
+        const suffix = '@' + domain;
+        const val = studentEmailInput.value.trim();
+        if (val.toLowerCase().endsWith(suffix)) {
+          studentEmailInput.value = val.slice(0, -suffix.length);
+        }
+      });
+      studentEmailInput.addEventListener('keydown', handleLoginEnter);
+    }
+    const studentPinInput = document.getElementById('input-student-pin');
+    if (studentPinInput) {
+      studentPinInput.addEventListener('input', () => {
+        studentPinInput.value = studentPinInput.value.replace(/\D/g, '').slice(0, 4);
+      });
+      studentPinInput.addEventListener('keydown', handleLoginEnter);
+    }
 
     // 캐릭터 커스터마이징 (머리색 3종, 옷 색상 3종 & 실시간 미리보기)
     let selectedHair = 'black';
@@ -4974,14 +5220,28 @@ class MainApp {
         updatePreview();
         if (syncBadge) {
           const saveDateStr = saved.updatedAt ? new Date(saved.updatedAt).toLocaleDateString() : '최근';
-          syncBadge.innerHTML = `<span style="color:#4ade80; font-weight:700;">✨ [누적 세이브 확인] Lv.${saved.level || 1} ${saved.name || ''} · ${saved.gold || 0}G (${saveDateStr})</span>`;
+          const pinTag = saved.hasPinSet ? ' · 🔐 PIN 설정됨' : ' · 🔓 PIN 미설정';
+          syncBadge.innerHTML = `<span style="color:#4ade80; font-weight:700;">✨ [누적 세이브 확인] Lv.${saved.level || 1} ${this.escapeHtml(saved.name || '')} · ${saved.gold || 0}G (${saveDateStr}${pinTag})</span>`;
+        }
+        const pinBadge = document.getElementById('student-pin-mode-badge');
+        if (pinBadge) {
+          if (saved.hasPinSet) {
+            pinBadge.innerHTML = `<span style="color:#38bdf8;">🔐 기존 계정의 4자리 PIN을 입력해 주세요. (분실 시 선생님께 PIN 초기화 요청)</span>`;
+          } else {
+            pinBadge.innerHTML = `<span style="color:#fde047;">🔓 PIN 미설정/초기화 상태: 앞으로 사용할 숫자 4자리 PIN을 입력해 등록하세요!</span>`;
+          }
         }
       } else {
         if (syncBadge) {
-          syncBadge.innerHTML = `<span style="color:#60a5fa;">🌱 신규 모험가입니다. (이름을 입력하면 서버에 자동 저장됩니다)</span>`;
+          syncBadge.innerHTML = `<span style="color:#60a5fa;">🌱 신규 모험가입니다. (@${this.allowedEmailDomain || 'senedu.kr'} 이메일 + 4자리 PIN 등록 후 시작)</span>`;
+        }
+        const pinBadge = document.getElementById('student-pin-mode-badge');
+        if (pinBadge) {
+          pinBadge.innerHTML = `<span style="color:#94a3b8;">🆕 최초 접속 시 입력한 숫자 4자리 PIN이 계정에 저장됩니다.</span>`;
         }
       }
     };
+    this._syncStudentIdUI = syncStudentIdUI;
 
     if (studentIdInput) {
       studentIdInput.addEventListener('blur', () => syncStudentIdUI(studentIdInput.value));
@@ -5004,6 +5264,14 @@ class MainApp {
       if (lastStudentId) {
         if (studentIdInput) studentIdInput.value = lastStudentId;
         syncStudentIdUI(lastStudentId);
+      }
+      const lastEmail = localStorage.getItem('soongsil_last_student_email');
+      if (lastEmail && studentEmailInput && !studentEmailInput.value) {
+        const domain = this.allowedEmailDomain || 'senedu.kr';
+        const suffix = '@' + domain.toLowerCase();
+        studentEmailInput.value = lastEmail.toLowerCase().endsWith(suffix)
+          ? lastEmail.slice(0, -suffix.length)
+          : lastEmail;
       }
     } catch (e) {
       console.warn('LocalStorage access warning:', e);
@@ -5063,8 +5331,8 @@ class MainApp {
 
       const pwdInput = document.getElementById('input-teacher-pwd');
       const enteredPwd = (pwdInput ? pwdInput.value : '').trim();
-      // 교사 체크박스가 활성화되었거나, 교사 암호 입력칸에 암호(03220322)가 입력된 경우 교사 접속 판정
-      const isTeacher = (checkIsTeacher && checkIsTeacher.checked) || (enteredPwd === '03220322');
+      // 교사 체크박스 활성화 또는 교사 암호 입력 시 교사 접속 검증 (평문 비밀번호는 서버 API로만 검증)
+      const isTeacher = (checkIsTeacher && checkIsTeacher.checked) || (enteredPwd.length > 0);
       let name = document.getElementById('input-nickname').value.trim();
       let studentId = document.getElementById('input-student-id').value.trim();
       const grade = parseInt(document.querySelector('input[name="server-grade"]:checked').value) || 1;
@@ -5082,13 +5350,36 @@ class MainApp {
       }
 
       if (isTeacher) {
-        if (enteredPwd !== '03220322') {
-          alert('🔒 교사 인증 암호가 일치하지 않습니다.');
-          if (pwdInput) {
-            pwdInput.focus();
-            pwdInput.select();
+        let verifiedToken = '';
+        let verifiedOffline = false;
+        try {
+          const authRes = await fetch('/api/teacher-auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: enteredPwd })
+          });
+          if (authRes.ok) {
+            const authData = await authRes.json();
+            verifiedToken = (authData && authData.token) || '';
+          } else {
+            alert('🔒 교사 인증 암호가 일치하지 않습니다.');
+            if (pwdInput) {
+              pwdInput.focus();
+              pwdInput.select();
+            }
+            return;
           }
-          return;
+        } catch (authErr) {
+          // 서버 오프라인 시에만 SHA-256 다이제스트로 로컬 확인 (평문 미보관)
+          verifiedOffline = await this.verifyTeacherPasswordOffline(enteredPwd);
+          if (!verifiedOffline) {
+            alert('🔒 교사 인증 암호가 일치하지 않습니다.');
+            if (pwdInput) {
+              pwdInput.focus();
+              pwdInput.select();
+            }
+            return;
+          }
         }
 
         // 교사 계정 접속: 학번과 이름을 완전히 무시하고 마스터 프로필('교사', '갓준철') 적용
@@ -5096,7 +5387,8 @@ class MainApp {
         studentId = '교사';
 
         this.playerData.isTeacher = true;
-        this.playerData.teacherPwd = enteredPwd;
+        this.playerData.teacherToken = verifiedToken;
+        this.playerData.teacherPwd = verifiedOffline ? enteredPwd : '';
         this.playerData.baseHp = 9999;
         this.playerData.hp = 9999;
         this.playerData.maxHp = 9999;
@@ -5120,7 +5412,16 @@ class MainApp {
         const gmPanel = document.getElementById('gm-panel');
         if (gmPanel) gmPanel.classList.remove('hidden');
       } else {
-        // 일반 학생 접속: 학번 및 이름 필수 검증
+        // 일반 학생 접속: 학번/이름 + (@senedu.kr 이메일 + 4자리 PIN 또는 비상 모드) 검증
+        const emailInput = document.getElementById('input-student-email');
+        const pinInput = document.getElementById('input-student-pin');
+        const domain = this.allowedEmailDomain || 'senedu.kr';
+        const rawEmailInput = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        const emailVal = rawEmailInput
+          ? (rawEmailInput.includes('@') ? rawEmailInput : `${rawEmailInput}@${domain}`)
+          : '';
+        const pinVal = pinInput ? pinInput.value.trim() : '';
+
         if (!studentId) {
           alert('학번을 입력해 주세요! (예: 10101)');
           document.getElementById('input-student-id').focus();
@@ -5131,6 +5432,66 @@ class MainApp {
           document.getElementById('input-nickname').focus();
           return;
         }
+
+        const shouldUsePinAuth = !this.allowEmergencyStudentLogin || rawEmailInput.length > 0 || pinVal.length > 0;
+        if (shouldUsePinAuth) {
+          if (!rawEmailInput || !emailVal.endsWith('@' + domain) || emailVal.startsWith('@')) {
+            alert(`@${domain} 학교 이메일 아이디를 정확히 입력해 주세요! (예: hong123)`);
+            if (emailInput) emailInput.focus();
+            return;
+          }
+          if (!/^\d{4}$/.test(pinVal)) {
+            alert('4자리 숫자 PIN을 입력해 주세요! (예: 1234)');
+            if (pinInput) pinInput.focus();
+            return;
+          }
+          try {
+            const authRes = await fetch('/api/auth/student-login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                studentId,
+                name,
+                email: emailVal,
+                pin: pinVal,
+                hairColor: selectedHair,
+                outfitColor: selectedOutfit
+              })
+            });
+            const authData = await authRes.json();
+            if (!authRes.ok || !authData || !authData.success) {
+              alert((authData && authData.error) || '학생 로그인 인증에 실패했습니다.');
+              return;
+            }
+            this.playerData.studentAuthToken = authData.studentAuthToken || '';
+            try { localStorage.setItem('soongsil_last_student_email', emailVal); } catch (e) {}
+          } catch (authErr) {
+            alert('학생 인증 중 서버와 통신할 수 없습니다.');
+            return;
+          }
+        } else {
+          // 임시 비상 로그인 모드 (이메일/PIN 생략 시)
+          if (this.isServerOnline) {
+            try {
+              const emRes = await fetch('/api/auth/emergency-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ studentId, name })
+              });
+              const emData = await emRes.json();
+              if (!emRes.ok || !emData || !emData.success) {
+                alert((emData && emData.error) || '임시 로그인 검증에 실패했습니다.');
+                return;
+              }
+              this.playerData.studentAuthToken = emData.studentAuthToken || '';
+            } catch (emErr) {
+              this.playerData.studentAuthToken = '';
+            }
+          } else {
+            this.playerData.studentAuthToken = '';
+          }
+        }
+
         this.playerData.isTeacher = false;
         this.playerData.teacherPwd = '';
         this.engine.player.isTeacher = false;
@@ -5300,15 +5661,18 @@ class MainApp {
           localStorage.setItem('soongsil_last_student_id', studentId);
         } catch (e) {}
 
-        // 골렘 클리어 학생 엘리베이터 작동권 소급 보장
+        this.playerData.hasCafeteriaKey = !!((saved && saved.hasCafeteriaKey) || this.hasItem('item_cafeteria_key'));
+
+        // 골렘 클리어 학생 엘리베이터 작동권 소급 보장 및 기존 장신구 슬롯 점유 해제
         if (this.playerData.hasClearedFirstBoss && !this.hasItem('equip_elevator_pass') && !this.isItemEquipped('equip_elevator_pass')) {
           this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
-            type: 'equipment',
-            slot: 'accessory',
+            type: 'quest',
             isQuestItem: true,
-            stats: { atk: 0, def: 0, hp: 0 },
-            effect: '🛗 중앙 엘리베이터 가동 인가증'
+            effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)'
           });
+        }
+        if (typeof this.migrateLegacyElevatorPassSlot === 'function') {
+          this.migrateLegacyElevatorPassSlot();
         }
       }
 
@@ -5366,6 +5730,8 @@ class MainApp {
               baseHp: this.playerData.baseHp,
               baseAtk: this.playerData.baseAtk,
               baseDef: this.playerData.baseDef,
+              atk: this.playerData.atk,
+              def: this.playerData.def,
               inventory: this.playerData.inventory,
               equipment: this.playerData.equipment,
               isAccessory2Unlocked: this.playerData.isAccessory2Unlocked,
@@ -5381,6 +5747,7 @@ class MainApp {
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
               hasClearedClass704: !!this.playerData.hasClearedClass704,
+        hasCafeteriaKey: !!this.playerData.hasCafeteriaKey,
               job: this.playerData.job || null,
               hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
               careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
@@ -5586,22 +5953,22 @@ class MainApp {
     if (btnRaidNextTurn) {
       btnRaidNextTurn.addEventListener('click', () => this.loadNextBossQuestion());
     }
-    const btnRedPot = document.getElementById('btn-raid-use-red-potion');
-    if (btnRedPot) {
-      btnRedPot.addEventListener('click', () => {
-        if (this.usePotion('item_red_potion')) {
-          this.updateBossRaidUI();
-        }
-      });
-    }
-    const btnOrangePot = document.getElementById('btn-raid-use-orange-potion');
-    if (btnOrangePot) {
-      btnOrangePot.addEventListener('click', () => {
-        if (this.usePotion('item_orange_potion')) {
-          this.updateBossRaidUI();
-        }
-      });
-    }
+    const combatPotions = [
+      { btnSuffix: 'red-potion', itemId: 'item_red_potion' },
+      { btnSuffix: 'orange-potion', itemId: 'item_orange_potion' },
+      { btnSuffix: 'clear-potion', itemId: 'item_clear_potion' },
+      { btnSuffix: 'elixir', itemId: 'item_elixir' }
+    ];
+    combatPotions.forEach(({ btnSuffix, itemId }) => {
+      const btn = document.getElementById(`btn-raid-use-${btnSuffix}`);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (this.usePotion(itemId)) {
+            this.updateBossRaidUI();
+          }
+        });
+      }
+    });
 
     const btnReviveScroll = document.getElementById('btn-raid-use-revive-scroll');
     if (btnReviveScroll) {
@@ -5636,22 +6003,21 @@ class MainApp {
     if (btnBattleNextTurn) {
       btnBattleNextTurn.addEventListener('click', () => this.loadNextFieldBattleQuestion());
     }
-    const btnBattleRedPot = document.getElementById('btn-battle-use-red-potion');
-    if (btnBattleRedPot) {
-      btnBattleRedPot.addEventListener('click', () => {
-        if (this.usePotion('item_red_potion')) {
-          this.updateFieldBattleUI();
-        }
-      });
-    }
-    const btnBattleOrangePot = document.getElementById('btn-battle-use-orange-potion');
-    if (btnBattleOrangePot) {
-      btnBattleOrangePot.addEventListener('click', () => {
-        if (this.usePotion('item_orange_potion')) {
-          this.updateFieldBattleUI();
-        }
-      });
-    }
+    [
+      { btnSuffix: 'red-potion', itemId: 'item_red_potion' },
+      { btnSuffix: 'orange-potion', itemId: 'item_orange_potion' },
+      { btnSuffix: 'clear-potion', itemId: 'item_clear_potion' },
+      { btnSuffix: 'elixir', itemId: 'item_elixir' }
+    ].forEach(({ btnSuffix, itemId }) => {
+      const btn = document.getElementById(`btn-battle-use-${btnSuffix}`);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (this.usePotion(itemId)) {
+            this.updateFieldBattleUI();
+          }
+        });
+      }
+    });
 
     // Leaderboard Modal Close
     const btnCloseLeaderboard = document.getElementById('btn-close-leaderboard');
@@ -5739,7 +6105,7 @@ class MainApp {
 
         if (this.networkManager.socket) {
           this.networkManager.socket.emit('teacher_grant_item', {
-            pwd: this.playerData.teacherPwd || '03220322',
+            token: this.playerData.teacherToken || '',
             targetSocketId,
             itemKey,
             count,
@@ -5865,6 +6231,7 @@ class MainApp {
     if (this.hudAtk) this.hudAtk.innerText = this.playerData.atk;
     if (this.hudDef) this.hudDef.innerText = this.playerData.def;
     this.updateHpBar();
+    this.syncStatsToServer();
   }
 
   updateHpBar() {
@@ -5988,6 +6355,10 @@ class MainApp {
   }
 
   equipItem(itemId) {
+    if (itemId === 'equip_elevator_pass') {
+      this.showToast('🪪 엘리베이터 작동권은 장착하지 않아도 가방에 소지하면 자동 작동합니다!', 'info');
+      return;
+    }
     const invItem = this.playerData.inventory.find(i => i.item === itemId);
     if (!invItem) return;
 
@@ -6126,7 +6497,7 @@ class MainApp {
     }
 
     const getCategoryRank = (item) => {
-      const isEquip = (item.type === 'equipment' || (item.item && item.item.startsWith('equip_')));
+      const isEquip = (item.item !== 'equip_elevator_pass') && (item.type === 'equipment' || (item.item && item.item.startsWith('equip_')));
       const isConsumable = (item.type === 'consumable' || (item.item && (item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'))));
       if (isEquip) return 1;
       if (isConsumable) return 2;
@@ -6200,7 +6571,7 @@ class MainApp {
 
     // Filter items based on current category tab
     const filteredItems = this.playerData.inventory.filter(item => {
-      const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
+      const isEquip = (item.item !== 'equip_elevator_pass') && (item.type === 'equipment' || item.item.startsWith('equip_'));
       const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'));
       const isMaterial = !isEquip && !isPotion;
 
@@ -6225,7 +6596,7 @@ class MainApp {
       this.invGrid.appendChild(emptyMsg);
     } else {
       filteredItems.forEach(item => {
-        const isEquip = (item.type === 'equipment' || item.item.startsWith('equip_'));
+        const isEquip = (item.item !== 'equip_elevator_pass') && (item.type === 'equipment' || item.item.startsWith('equip_'));
         const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'));
         const isScroll = (item.item === 'item_revive_scroll');
         const isReturnScroll = (item.item === 'item_return_scroll');
@@ -6279,15 +6650,12 @@ class MainApp {
           statBadgeHtml = `<span class="inv-item-stat-badge material">📦 ${matDesc}</span>`;
         }
 
-        const iconHtml = isCouragePotion
-          ? `<span class="icon-purple-potion">${item.icon || '🧪'}</span>`
+        const potionCss = isCouragePotion
+          ? 'icon-purple-potion'
           : (isProtectionPotion
-            ? `<span class="icon-blue-potion">${item.icon || '🧪'}</span>`
-            : (isClearPotion
-              ? `<span class="icon-clear-potion">${item.icon || '🧪'}</span>`
-              : (isElixir
-                ? `<span class="icon-elixir">${item.icon || '⚗️'}</span>`
-                : `<span>${item.icon || '📦'}</span>`)));
+            ? 'icon-blue-potion'
+            : (isClearPotion ? 'icon-clear-potion' : ''));
+        const iconHtml = window.renderItemIconHtml(item.item, item.icon || '📦', potionCss);
 
         card.innerHTML = `
           <div class="inv-item-icon-box">
@@ -6655,7 +7023,7 @@ class MainApp {
       if (window.BOSS_CONFIG.isWeakened) {
         weaknessBanner.style.display = 'block';
         weaknessBanner.classList.remove('hidden');
-        weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 1,700 약화되었습니다! (HP 300)';
+        weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘이 대폭 약화되었습니다! (HP 200 · 방어력 5)';
       } else {
         weaknessBanner.style.display = 'none';
         weaknessBanner.classList.add('hidden');
@@ -6717,7 +7085,11 @@ class MainApp {
     if (window.AudioManager) {
       window.AudioManager.playHit();
     }
-    alert(data && data.message ? data.message : '⏳ [레이드 시간 초과] 3분 제한시간이 초과되어 보스가 격노하고 학생들을 복도로 밀어냈습니다!');
+    this.showGameDialog(
+      '레이드 시간 초과',
+      data && data.message ? data.message : '3분 제한시간이 초과되어 보스가 격노하고 학생들을 복도로 밀어냈습니다!',
+      '⏳'
+    );
   }
 
   onBossRaidWiped(data) {
@@ -6741,7 +7113,8 @@ class MainApp {
     }
     window.BOSS_CONFIG = {
       ...window.BOSS_CONFIG,
-      ...state
+      ...state,
+      isWeakened: !!state.isWeakened
     };
     if (this.engine && this.engine.dragonFx) {
       if (!state.active && state.stoppedByTeacher) {
@@ -6828,8 +7201,12 @@ class MainApp {
     if (bName.includes('골렘') || bName.includes('golem')) {
       if (!hasParticipated) {
         if (isModalOpen || isInBossRoom) {
-          alert('👾 [가죽 골렘 토벌 알림]\n\n급우들이 1차 관문 보스 [가죽 골렘]을 격파했습니다!\n\n※ 직접 골렘 레이드에 참가하여 1회 이상 유효 타격을 입혀야 중앙 엘리베이터 점검이 완료되어 운동장으로 갈 수 있습니다.\n(참가하지 못한 학생은 1학년 2반에서 언제든 다시 골렘 레이드에 도전할 수 있습니다!)');
           this.modalBossRaid.classList.add('hidden');
+          this.showGameDialog(
+            '가죽 골렘 토벌 알림',
+            '급우들이 1차 관문 보스 [가죽 골렘]을 격파했습니다!\n\n※ 직접 골렘 레이드에 참가하여 1회 이상 유효 타격을 입혀야 중앙 엘리베이터 점검이 완료되어 운동장으로 갈 수 있습니다.\n(참가하지 못한 학생은 1학년 2반에서 언제든 다시 골렘 레이드에 도전할 수 있습니다!)',
+            '👾'
+          );
         }
         return;
       }
@@ -6873,22 +7250,20 @@ class MainApp {
         }
         this.saveProgress(true);
 
-        // 100% 확정 엘리베이터 작동권 지급 (중복 미소지 시)
+        // 100% 확정 엘리베이터 작동권 지급 (중복 미소지 시, 소지 시 자동 작동)
         if (!this.hasItem('equip_elevator_pass') && !this.isItemEquipped('equip_elevator_pass')) {
           this.addItem('equip_elevator_pass', '엘리베이터 작동권', 1, '🪪', {
-            type: 'equipment',
-            slot: 'accessory',
+            type: 'quest',
             isQuestItem: true,
-            stats: { atk: 0, def: 0, hp: 0 },
-            effect: '🛗 중앙 엘리베이터 가동 인가증'
+            effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)'
           });
-          rewardItemsList.push('🪪 엘리베이터 작동권 (중앙 엘리베이터 가동 필수 장비!)');
+          rewardItemsList.push('🪪 엘리베이터 작동권 (소지 시 중앙 엘리베이터 자동 작동!)');
         }
 
         // 확정 재료 가변 드랍 (1~2개 가죽 장비 제작 핵심)
         const bossLeatherCount = Math.floor(Math.random() * 2) + 1; // 1 or 2개 가변
-        this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🟫', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
-        rewardItemsList.push(`🟫 질긴 보스의 가죽 x${bossLeatherCount}`);
+        this.addItem('item_boss_leather', '질긴 보스의 가죽', bossLeatherCount, '🥋', { type: 'material', effect: '2티어 가죽 장비 핵심 제작 재료' });
+        rewardItemsList.push(`🥋 질긴 보스의 가죽 x${bossLeatherCount}`);
 
         // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (낮은 확률 5%)
         const shoesRoll = Math.random() * 100;
@@ -6927,8 +7302,8 @@ class MainApp {
         this.saveProgress(true);
 
         // 확정 재료 드랍 (3티어 청동 장비 제작 핵심)
-        this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '🥉', { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' });
-        rewardItemsList.push('🥉 청동 드래곤의 심장');
+        this.addItem('item_bronze_heart', '청동 드래곤의 심장', 1, '❤️‍🔥', { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' });
+        rewardItemsList.push('❤️‍🔥 청동 드래곤의 심장');
 
         // 👟 신발 특별 드랍: 삼디다스 실내화 (낮은 확률 15%), 가죽운동화 (25% 확률)
         const dragonShoesRoll = Math.random() * 100;
@@ -7077,7 +7452,7 @@ class MainApp {
 
       let clearNotice = '';
       if (bName.includes('골렘') || bName.includes('golem')) {
-        clearNotice = '\n\n🎉 1차 관문 보스 가죽 골렘을 토벌하여 [🪪 엘리베이터 작동권]을 획득했습니다! 인벤토리(I) 장신구 슬롯에 작동권을 장착하면 중앙 엘리베이터를 가동할 수 있습니다!';
+        clearNotice = '\n\n🎉 1차 관문 보스 가죽 골렘을 토벌하여 [🪪 엘리베이터 작동권]을 획득했습니다! 가방에 소지하기만 하면 중앙 엘리베이터를 가동할 수 있습니다!';
       } else if (bName.includes('드래곤') || bName.includes('dragon')) {
         clearNotice = '\n\n🎉 숭실 청동 드래곤을 토벌하여 3티어 청동 장비의 핵심 재료를 획득했습니다!';
       } else if (bName.includes('케르베로스') || bName.includes('cerberus')) {
@@ -7086,8 +7461,13 @@ class MainApp {
         clearNotice = '\n\n🎆 👑 [SEASON 1 GRAND CLEAR] 방학 직전 나태신을 물리치고 운동장에 진짜 여름방학이 개막했습니다!! 🏖️ 전교생에게 무한 방학의 축포가 쏟아집니다!';
       }
 
-      alert(`🏆 [${data.bossName}] 협동 토벌 성공!\n\n🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}${clearNotice}`);
       this.modalBossRaid.classList.add('hidden');
+      const raidIcon = (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) ? '🎆' : '🏆';
+      this.showGameDialog(
+        `[${data.bossName}] 협동 토벌 성공!`,
+        `🪙 골드 +${data.rewardGold}G, 🌟 경험치 +${data.rewardExp} EXP${dropText}${mvpText}${clearNotice}`,
+        raidIcon
+      );
     }
   }
 
@@ -7102,7 +7482,7 @@ class MainApp {
       if (window.BOSS_CONFIG && window.BOSS_CONFIG.isWeakened) {
         weaknessBanner.style.display = 'block';
         weaknessBanner.classList.remove('hidden');
-        weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘의 체력이 1,700 약화되었습니다! (HP 300)';
+        weaknessBanner.innerText = '✨ [골렘 연화 비책 발동] 한강우 선생님의 비책으로 가죽 골렘이 대폭 약화되었습니다! (HP 200 · 방어력 5)';
       } else {
         weaknessBanner.style.display = 'none';
         weaknessBanner.classList.add('hidden');
@@ -7137,21 +7517,7 @@ class MainApp {
     const playerDefEl = document.getElementById('raid-player-def');
     if (playerDefEl) playerDefEl.innerText = this.playerData.def;
 
-    const redPot = this.playerData.inventory.find(i => i.item === 'item_red_potion');
-    const redCount = redPot ? redPot.count : 0;
-    const btnRed = document.getElementById('btn-raid-use-red-potion');
-    if (btnRed) {
-      btnRed.innerHTML = `<span class="icon-red-potion">🧪</span> 빨간 물약 (+10) ${redCount}개`;
-      btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
-    }
-
-    const orangePot = this.playerData.inventory.find(i => i.item === 'item_orange_potion');
-    const orangeCount = orangePot ? orangePot.count : 0;
-    const btnOrange = document.getElementById('btn-raid-use-orange-potion');
-    if (btnOrange) {
-      btnOrange.innerHTML = `<span class="icon-orange-potion">🧪</span> 주홍 물약 (+25) ${orangeCount}개`;
-      btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
-    }
+    this.updateCombatPotionButtons('raid');
 
     const scroll = this.playerData.inventory.find(i => i.item === 'item_revive_scroll');
     const scrollCount = scroll ? scroll.count : 0;
@@ -7162,6 +7528,32 @@ class MainApp {
     }
 
     this.updateBossRaidTimerOnly();
+  }
+
+  updateCombatPotionButtons(prefix) {
+    const inv = (this.playerData && Array.isArray(this.playerData.inventory)) ? this.playerData.inventory : [];
+    const hpFullOrFallen = !this.playerData || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen;
+    const potionDefs = [
+      { id: 'item_red_potion', suffix: 'red-potion', iconHtml: '<span class="icon-red-potion">🧪</span>', label: '빨간 물약 (+10)' },
+      { id: 'item_orange_potion', suffix: 'orange-potion', iconHtml: '<span class="icon-orange-potion">🧪</span>', label: '주홍 물약 (+25)' },
+      { id: 'item_clear_potion', suffix: 'clear-potion', iconHtml: '<span class="icon-clear-potion">🧪</span>', label: '맑은 물약 (+40)' },
+      {
+        id: 'item_elixir',
+        suffix: 'elixir',
+        iconHtml: (typeof window.renderItemIconHtml === 'function')
+          ? window.renderItemIconHtml('item_elixir', '⚗️')
+          : '<span class="icon-elixir">⚗️</span>',
+        label: '엘릭서 (+60)'
+      }
+    ];
+    potionDefs.forEach(p => {
+      const btn = document.getElementById(`btn-${prefix}-use-${p.suffix}`);
+      if (!btn) return;
+      const entry = inv.find(i => i && i.item === p.id);
+      const count = entry ? (entry.count || 0) : 0;
+      btn.innerHTML = `${p.iconHtml} ${p.label} ${count}개`;
+      btn.disabled = (count <= 0 || hpFullOrFallen);
+    });
   }
 
   loadNextBossQuestion() {
@@ -7180,6 +7572,12 @@ class MainApp {
       } else if (bName.includes('케르베로스') || bName.includes('cerberus') || bName.includes('수행평가')) {
         // 케르베로스: 1~6단원 출제
         uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원', '6단원'];
+      } else if (bName.includes('파멸신') || bName.includes('기말고사') || bName.includes('final_god') || bName.includes('finalgod')) {
+        // 기말고사 파멸신: 5~8단원 출제
+        uFilter = ['5단원', '6단원', '7단원', '8단원'];
+      } else if (bName.includes('나태') || bName.includes('거인') || bName.includes('sloth')) {
+        // 방학 직전 나태신: 1~8단원 전범위 출제
+        uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원', '6단원', '7단원', '8단원'];
       } else {
         uFilter = ['1단원', '2단원', '3단원', '4단원'];
       }
@@ -7189,6 +7587,10 @@ class MainApp {
       uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원'];
     } else if (uFilter === '1~6') {
       uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원', '6단원'];
+    } else if (uFilter === '5~8') {
+      uFilter = ['5단원', '6단원', '7단원', '8단원'];
+    } else if (uFilter === '1~8') {
+      uFilter = ['1단원', '2단원', '3단원', '4단원', '5단원', '6단원', '7단원', '8단원'];
     }
 
     const q = this.quizManager.getRandomQuestion(uFilter);
@@ -7425,37 +7827,35 @@ class MainApp {
       else pHpFill.style.background = 'linear-gradient(90deg, #ef4444, #f87171)';
     }
 
-    const redPot = this.playerData.inventory.find(i => i.item === 'item_red_potion');
-    const redCount = redPot ? redPot.count : 0;
-    const btnRed = document.getElementById('btn-battle-use-red-potion');
-    if (btnRed) {
-      btnRed.innerHTML = `<span class="icon-red-potion">🧪</span> 빨간 물약 (+10) ${redCount}개`;
-      btnRed.disabled = (redCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
-    }
-
-    const orangePot = this.playerData.inventory.find(i => i.item === 'item_orange_potion');
-    const orangeCount = orangePot ? orangePot.count : 0;
-    const btnOrange = document.getElementById('btn-battle-use-orange-potion');
-    if (btnOrange) {
-      btnOrange.innerHTML = `<span class="icon-orange-potion">🧪</span> 주홍 물약 (+25) ${orangeCount}개`;
-      btnOrange.disabled = (orangeCount <= 0 || this.playerData.hp >= this.playerData.maxHp || this.playerData.isFallen);
-    }
+    this.updateCombatPotionButtons('battle');
 
     const isHistory = !!(mob && (mob.court === 'history' || (mob.id && mob.id.startsWith('hist_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_history')));
     const isFutsal = !!(mob && mob.court === 'futsal');
     const isCafeteria = !!(mob && (mob.court === 'cafeteria' || (mob.id && (mob.id.startsWith('caf_') || mob.id.startsWith('battle_'))) || (this.engine && this.engine.player && this.engine.player.room === 'room_cafeteria')));
-    const unitName = isCafeteria ? '7단원 (L7. Tasty World)' : ((isHistory || isFutsal) ? '6단원 (The Beauty of Art)' : '5단원 (Walk into Korea)');
+    const isGym = !!(mob && (mob.court === 'gym' || (mob.id && mob.id.startsWith('gym_mob_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_gym')));
+    const unitName = isGym
+      ? '8단원 (L8. Give Your Hand, Give Your Heart)'
+      : (isCafeteria
+        ? '7단원 (L7. Tasty World)'
+        : (isHistory
+          ? '5~6단원 (Walk into Korea · The Beauty of Art)'
+          : (isFutsal
+            ? '6단원 (L6. The Beauty of Art)'
+            : '5단원 (Walk into Korea)')));
 
     const badgeEl = document.getElementById('battle-quiz-unit-badge');
     const headerEl = document.getElementById('battle-modal-header');
     const cardEl = document.getElementById('battle-modal-card');
 
     if (badgeEl) {
-      if (isCafeteria) {
+      if (isGym) {
+        badgeEl.innerText = '🏛️ 숭실 체육관 1:1 배틀 · 8단원 (L8. Give Your Hand, Give Your Heart)';
+        badgeEl.style.background = '#0284c7';
+      } else if (isCafeteria) {
         badgeEl.innerText = mob.isStudent ? '🍱 식사 예절 1:1 지도 배틀 · 7단원 (L7. Tasty World)' : '🍱 학생 급식실 1:1 배틀 · 7단원 (L7. Tasty World)';
         badgeEl.style.background = '#059669';
       } else if (isHistory) {
-        badgeEl.innerText = '🏛️ 숭실 역사관 1:1 배틀 · 6단원 (L6. The Beauty of Art)';
+        badgeEl.innerText = '🏛️ 숭실 역사관 1:1 배틀 · 5~6단원 (Walk into Korea · The Beauty of Art)';
         badgeEl.style.background = '#7e22ce';
       } else if (isFutsal) {
         badgeEl.innerText = '⚽ 풋살장 1:1 배틀 · 6단원 (L6. The Beauty of Art)';
@@ -7467,7 +7867,10 @@ class MainApp {
     }
 
     if (headerEl) {
-      if (isCafeteria) {
+      if (isGym) {
+        headerEl.style.background = 'linear-gradient(135deg, #0c4a6e, #0369a1)';
+        headerEl.style.borderBottom = '2px solid #38bdf8';
+      } else if (isCafeteria) {
         headerEl.style.background = 'linear-gradient(135deg, #065f46, #047857)';
         headerEl.style.borderBottom = '2px solid #34d399';
       } else if (isHistory) {
@@ -7483,7 +7886,9 @@ class MainApp {
     }
 
     if (cardEl) {
-      if (isCafeteria) {
+      if (isGym) {
+        cardEl.style.border = '2.5px solid #0ea5e9';
+      } else if (isCafeteria) {
         cardEl.style.border = '2.5px solid #10b981';
       } else if (isHistory) {
         cardEl.style.border = '2.5px solid #a855f7';
@@ -7506,7 +7911,14 @@ class MainApp {
     const isHistory = !!(mob && (mob.court === 'history' || (mob.id && mob.id.startsWith('hist_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_history')));
     const isFutsal = !!(mob && mob.court === 'futsal');
     const isCafeteria = !!(mob && (mob.court === 'cafeteria' || (mob.id && (mob.id.startsWith('caf_') || mob.id.startsWith('battle_'))) || (this.engine && this.engine.player && this.engine.player.room === 'room_cafeteria')));
-    const unitFilter = isCafeteria ? '7단원' : ((isHistory || isFutsal) ? '6단원' : '5단원');
+    const isGym = !!(mob && (mob.court === 'gym' || (mob.id && mob.id.startsWith('gym_mob_')) || (this.engine && this.engine.player && this.engine.player.room === 'room_gym')));
+    const unitFilter = isGym
+      ? '8단원'
+      : (isCafeteria
+        ? '7단원'
+        : (isHistory
+          ? ['5단원', '6단원']
+          : (isFutsal ? '6단원' : '5단원')));
 
     const logEl = document.getElementById('battle-action-log');
     if (logEl) {
@@ -7516,7 +7928,8 @@ class MainApp {
 
     const q = this.quizManager.getRandomQuestion(unitFilter);
     if (!q) {
-      alert(`출제할 ${unitFilter} 영어 문제가 없습니다.`);
+      const unitLabel = Array.isArray(unitFilter) ? unitFilter.join(', ') : unitFilter;
+      alert(`출제할 ${unitLabel} 영어 문제가 없습니다.`);
       return;
     }
     this.fieldBattleQuestion = q;
@@ -7669,8 +8082,6 @@ class MainApp {
     if (this.playerData && (this.playerData.job === 'banker' || this.playerData.job === 'scientist')) {
       finalGold += Math.round(finalGold * 0.10); // 뱅커: 모든 골드 +10%
     }
-    const scoutDropBonus = 0; // 스카우트 삭제
-
     this.addGold(finalGold);
     this.addExp(finalExp);
 
@@ -7686,8 +8097,8 @@ class MainApp {
         });
         dropsList.push(`🍱 정제된 영양의 정수 x${essenceCount}개`);
 
-        // 40% chance for stainless shard (+20%p for Scout)
-        if (Math.random() * 100 < (40 + scoutDropBonus)) {
+        // 40% chance for stainless shard
+        if (Math.random() * 100 < 40) {
           this.addItem('item_stainless_shard', '특수 강화 스텐 조각', 1, '✨', {
             type: 'material',
             effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료'
@@ -7726,8 +8137,8 @@ class MainApp {
       });
       dropsList.push(`🏛️ 숭실 역사의 정수 x${essenceCount}개`);
 
-      // 35% chance to drop unyielding stone (+20%p for Scout)
-      if (Math.random() * 100 < (35 + scoutDropBonus)) {
+      // 35% chance to drop unyielding stone
+      if (Math.random() * 100 < 35) {
         this.addItem('item_unyielding_stone', '💎 꺾이지 않는 사명석', 1, '💎', {
           type: 'material',
           effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료'
@@ -7742,8 +8153,8 @@ class MainApp {
       });
       dropsList.push(`⚽ 탄력있는 풋살공 가죽 x${fLeatherCount}개`);
 
-      // Forsythia Petal (15% drop rate for futsal monsters, +20%p for Scout)
-      if (Math.random() * 100 < (15 + scoutDropBonus)) {
+      // Forsythia Petal (15% drop rate for futsal monsters)
+      if (Math.random() * 100 < 15) {
         this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
           type: 'material',
           effect: '개나리 반지 및 주홍 물약 재료'
@@ -7773,7 +8184,7 @@ class MainApp {
         dropsList.push('🗡️ 가죽손잡이 세이버 (5% 대박 완제품 드랍!)');
       }
 
-      // Elite 2-Tier Leather Shoes Drop (거미손 골키퍼 등 풋살장 엘리트 15% 완제품 드랍!)
+      // 2-Tier Leather Shoes Drop (거미손 골키퍼 15% 완제품 드랍)
       if (mob.type === 'elite' && Math.random() * 100 < 15) {
         this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
           type: 'equipment',
@@ -7781,7 +8192,7 @@ class MainApp {
           stats: { atk: 3, def: 3, hp: 10 },
           effect: '2티어 고급 신발'
         });
-        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 15% 완제품 드랍!)');
+        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 15% 완제품 드랍!)');
       }
     } else {
       // Basketball Court Standard Drops
@@ -7792,8 +8203,8 @@ class MainApp {
       });
       dropsList.push(`🏀 농구공 가죽 조각 x${leatherCount}개`);
 
-      // Forsythia Petal (15% drop rate for basketball monsters, +20%p for Scout)
-      if (Math.random() * 100 < (15 + scoutDropBonus)) {
+      // Forsythia Petal (15% drop rate for basketball monsters)
+      if (Math.random() * 100 < 15) {
         this.addItem('item_forsythia', '노란 개나리 꽃잎', 1, '🌼', {
           type: 'material',
           effect: '개나리 반지 및 주홍 물약 재료'
@@ -7801,7 +8212,7 @@ class MainApp {
         dropsList.push('🌼 노란 개나리 꽃잎 1개 (15% 행운 드랍!)');
       }
 
-      // Elite 2-Tier Leather Shoes Drop (림 가디언 등 농구장 엘리트 15% 완제품 드랍!)
+      // 2-Tier Leather Shoes Drop (림 가디언 15% 완제품 드랍)
       if (mob.type === 'elite' && Math.random() * 100 < 15) {
         this.addItem('equip_leather_shoes', '날렵한 가죽 운동화', 1, '👟', {
           type: 'equipment',
@@ -7809,7 +8220,7 @@ class MainApp {
           stats: { atk: 3, def: 3, hp: 10 },
           effect: '2티어 고급 신발'
         });
-        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 엘리트 15% 완제품 드랍!)');
+        dropsList.push('👟 날렵한 가죽 운동화 (2티어 신발 15% 완제품 드랍!)');
       }
 
       if (mob.armorDropRate && Math.random() * 100 < mob.armorDropRate) {
@@ -8541,26 +8952,28 @@ class MainApp {
 
         const summonLabel = document.getElementById('admin-boss-summon-label');
         if (summonLabel) {
-          if (val === 'golem' || val === 'dragon') {
+          if (val === 'golem') {
             summonLabel.innerText = '🚀 접속 중인 학생 전원 1학년 2반으로 즉시 소환';
           } else {
-            summonLabel.innerText = '🚀 접속 중인 학생 전원 축구장 서쪽 골대로 즉시 소환';
+            summonLabel.innerText = '🚀 접속 중인 학생 전원 운동장(축구장 서쪽 골대)으로 즉시 소환';
           }
         }
 
-        if (window.BOSS_CONFIG) {
-          window.BOSS_CONFIG.name = nameEl.value;
-          window.BOSS_CONFIG.maxHp = parseInt(hpEl.value) || 1500;
-          window.BOSS_CONFIG.currentHp = parseInt(hpEl.value) || 1500;
+        const metaPreview = document.getElementById('admin-boss-meta-preview');
+        if (metaPreview) {
+          const unitRangeText = {
+            golem: '1~4단원',
+            dragon: '1~4단원',
+            demon: '1~5단원',
+            cerberus: '1~6단원',
+            final_god: '5~8단원',
+            sloth_titan: '1~8단원 (전범위)',
+            custom: '직접 지정'
+          }[val] || '1~4단원';
+          const spawnLocText = (val === 'golem') ? '1학년 2반 교실' : '운동장 천연잔디 축구장';
+          metaPreview.innerText = `📍 소환 위치: ${spawnLocText}  |  📚 AUTO 기본 출제 범위: ${unitRangeText}`;
         }
       });
-
-      const nameEl = document.getElementById('admin-boss-name');
-      if (nameEl) {
-        nameEl.addEventListener('input', () => {
-          if (window.BOSS_CONFIG) window.BOSS_CONFIG.name = nameEl.value;
-        });
-      }
     }
 
     // 보스레이드 이벤트 시작 버튼
@@ -8607,18 +9020,49 @@ class MainApp {
         const row = document.createElement('div');
         row.className = 'admin-chat-item';
         row.id = `admin_${item.id}`;
-        row.innerHTML = `
-          <div>
-            <span style="color:#60a5fa; font-weight:bold;">[${item.grade}학년 / ${item.floor}F]</span>
-            <b>${item.senderName} (${item.studentId})</b>: ${item.text}
-            <small style="color:#71717a; margin-left:6px;">${item.time}</small>
-          </div>
-          <div class="admin-action-btns">
-            <button class="btn-del" onclick="window.MainApp.deleteChat('${item.id}')">삭제</button>
-            <button class="btn-mute" onclick="window.MainApp.muteStudent('${item.senderName}')">채금</button>
-            <button class="btn-kick" style="background:#dc2626; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="window.MainApp.kickStudent('${item.senderId}', '${item.senderName}')">강퇴</button>
-          </div>
-        `;
+
+        const infoDiv = document.createElement('div');
+        const tagSpan = document.createElement('span');
+        tagSpan.style.color = '#60a5fa';
+        tagSpan.style.fontWeight = 'bold';
+        tagSpan.textContent = `[${item.grade}학년 / ${item.floor}F] `;
+        const senderB = document.createElement('b');
+        senderB.textContent = `${item.senderName} (${item.studentId})`;
+        const msgText = document.createTextNode(`: ${item.text || ''} `);
+        const timeSmall = document.createElement('small');
+        timeSmall.style.color = '#71717a';
+        timeSmall.style.marginLeft = '6px';
+        timeSmall.textContent = item.time || '';
+        infoDiv.appendChild(tagSpan);
+        infoDiv.appendChild(senderB);
+        infoDiv.appendChild(msgText);
+        infoDiv.appendChild(timeSmall);
+
+        const btnsDiv = document.createElement('div');
+        btnsDiv.className = 'admin-action-btns';
+
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn-del';
+        btnDel.textContent = '삭제';
+        btnDel.addEventListener('click', () => this.deleteChat(item.id));
+
+        const btnMute = document.createElement('button');
+        btnMute.className = 'btn-mute';
+        btnMute.textContent = '채금';
+        btnMute.addEventListener('click', () => this.muteStudent(item.senderName));
+
+        const btnKick = document.createElement('button');
+        btnKick.className = 'btn-kick';
+        btnKick.style.cssText = 'background:#dc2626; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:11px; cursor:pointer;';
+        btnKick.textContent = '강퇴';
+        btnKick.addEventListener('click', () => this.kickStudent(item.senderId, item.senderName));
+
+        btnsDiv.appendChild(btnDel);
+        btnsDiv.appendChild(btnMute);
+        btnsDiv.appendChild(btnKick);
+
+        row.appendChild(infoDiv);
+        row.appendChild(btnsDiv);
         chatLogContainer.appendChild(row);
         chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
       });
@@ -8673,6 +9117,32 @@ class MainApp {
       });
     }
 
+    // 학생 누적 백업 JSON 다운로드 (교사 토큰 헤더 인증 적용)
+    const btnExportProgress = document.getElementById('btn-admin-export-progress');
+    if (btnExportProgress) {
+      btnExportProgress.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const res = await fetch('/api/admin/export-progress', { headers: this.getAdminHeaders() });
+          if (!res.ok) {
+            alert('🔒 교사 인증이 필요하거나 백업 다운로드에 실패했습니다.');
+            return;
+          }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'students_progress_backup.json';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert('백업 다운로드 오류: ' + err.message);
+        }
+      });
+    }
+
     // 학생 누적 백업 JSON 파일 복원 (업로드)
     const btnRestore = document.getElementById('btn-trigger-restore-progress');
     const inputRestore = document.getElementById('input-restore-progress');
@@ -8690,7 +9160,7 @@ class MainApp {
           const parsed = JSON.parse(text);
           const res = await fetch('/api/admin/restore-progress', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({ allData: parsed })
           });
           const data = await res.json();
@@ -8724,6 +9194,12 @@ class MainApp {
       if (formEditStudent) formEditStudent.classList.remove('hidden');
 
       document.getElementById('admin-edit-student-id').value = sId;
+      const newIdEl = document.getElementById('admin-edit-new-student-id');
+      if (newIdEl) newIdEl.value = sId;
+      const emailEl = document.getElementById('admin-edit-student-email');
+      if (emailEl) emailEl.value = s.email || '';
+      const newPinEl = document.getElementById('admin-edit-new-pin');
+      if (newPinEl) newPinEl.value = '';
       document.getElementById('admin-edit-student-name').value = s.name || '';
       document.getElementById('admin-edit-student-level').value = s.level || 1;
       document.getElementById('admin-edit-student-gold').value = s.gold !== undefined ? s.gold : 10;
@@ -8744,92 +9220,17 @@ class MainApp {
       if (cerberusEl) cerberusEl.checked = !!s.hasClearedCerberusRaid;
     };
 
-    this.renderSavedStudentsTable = (filterText = '') => {
-      const tableBody = document.getElementById('admin-saved-students-table-body');
-      const badgeCount = document.getElementById('admin-saved-student-count-badge');
-      if (!tableBody) return;
-
-      const all = this._allSavedStudentsData || {};
-      const ids = Object.keys(all).sort();
-
-      if (badgeCount) {
-        badgeCount.innerText = `저장 ${ids.length}명`;
-      }
-
-      if (ids.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:18px; color:#64748b;">서버에 저장된 학생 데이터가 없습니다.</td></tr>';
-        return;
-      }
-
-      const lowerFilter = filterText.trim().toLowerCase();
-      const filteredIds = ids.filter(id => {
-        if (!lowerFilter) return true;
-        const s = all[id];
-        const name = (s.name || '').toLowerCase();
-        return id.toLowerCase().includes(lowerFilter) || name.includes(lowerFilter);
-      });
-
-      if (filteredIds.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:18px; color:#64748b;">검색 조건과 일치하는 학생이 없습니다.</td></tr>';
-        return;
-      }
-
-      tableBody.innerHTML = '';
-      filteredIds.forEach(id => {
-        const s = all[id];
-        const name = s.name || '무명';
-        const lv = s.level || 1;
-        const exp = s.exp !== undefined ? s.exp : 0;
-        const gold = s.gold !== undefined ? s.gold : 0;
-        let dateStr = '-';
-        if (s.updatedAt) {
-          try {
-            const d = new Date(s.updatedAt);
-            dateStr = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-          } catch(e) {}
-        }
-
-        const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid #1e293b';
-        tr.style.transition = 'background 0.15s';
-        tr.onmouseenter = () => { tr.style.background = '#1e293b'; };
-        tr.onmouseleave = () => { tr.style.background = 'transparent'; };
-
-        tr.innerHTML = `
-          <td style="padding:7px 10px; font-weight:800; color:#38bdf8;">${id}</td>
-          <td style="padding:7px 10px; font-weight:700; color:#ffffff;">${name}</td>
-          <td style="padding:7px 10px; color:#fde047; font-weight:700;">Lv.${lv} <span style="font-size:10.5px; color:#94a3b8; font-weight:normal;">(${exp} EXP)</span></td>
-          <td style="padding:7px 10px; color:#fbbf24; font-weight:800;">🪙 ${gold}G</td>
-          <td style="padding:7px 10px; color:#94a3b8; font-size:11px;">${dateStr}</td>
-          <td style="padding:7px 10px; text-align:center;">
-            <button type="button" style="background:#0284c7; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; margin-right:4px;" onclick="window.MainApp.selectStudentForEdit('${id}')">✏️ 상세조회</button>
-            <button type="button" style="background:#dc2626; color:#fff; border:none; padding:3px 6px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;" onclick="window.MainApp.quickDeleteStudent('${id}', '${name}')">🗑️</button>
-          </td>
-        `;
-        tableBody.appendChild(tr);
-      });
-    };
-
-    const searchInput = document.getElementById('admin-saved-search-input');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        this.renderSavedStudentsTable(e.target.value);
-      });
-    }
-
     this.loadSavedStudentsForEditor = async (selectedIdToKeep = null) => {
       if (selectEditStudent) {
         selectEditStudent.innerHTML = '<option value="">-- 불러오는 중... --</option>';
       }
       try {
-        const res = await fetch('/api/admin/all-students-progress');
+        const res = await fetch('/api/admin/all-students-progress', { headers: this.getAdminHeaders() });
         const data = await res.json();
         const all = (data && data.students) || {};
         this._allSavedStudentsData = all;
 
-        // Render saved students table
-        const searchVal = searchInput ? searchInput.value : '';
-        this.renderSavedStudentsTable(searchVal);
+        if (typeof this.loadGoogleSheetsConfigAdmin === 'function') this.loadGoogleSheetsConfigAdmin();
 
         const ids = Object.keys(all).sort();
         if (selectEditStudent) {
@@ -8879,12 +9280,16 @@ class MainApp {
     if (btnSaveEdit) {
       btnSaveEdit.addEventListener('click', async () => {
         const sId = document.getElementById('admin-edit-student-id').value;
+        const newStudentIdEl = document.getElementById('admin-edit-new-student-id');
+        const targetId = (newStudentIdEl ? newStudentIdEl.value.trim() : sId) || sId;
         if (!sId || !this._allSavedStudentsData || !this._allSavedStudentsData[sId]) {
           alert('수정할 학생을 먼저 선택해 주세요.');
           return;
         }
         const prev = this._allSavedStudentsData[sId];
         const newName = document.getElementById('admin-edit-student-name').value.trim() || prev.name || '학생';
+        const emailEditEl = document.getElementById('admin-edit-student-email');
+        const newEmail = emailEditEl ? emailEditEl.value.trim().toLowerCase() : (prev.email || '');
         const newLevel = Math.max(1, parseInt(document.getElementById('admin-edit-student-level').value) || 1);
         const newGold = Math.max(0, parseInt(document.getElementById('admin-edit-student-gold').value) || 0);
         const newExp = Math.max(0, parseInt(document.getElementById('admin-edit-student-exp').value) || 0);
@@ -8903,9 +9308,29 @@ class MainApp {
         const cerberusEl = document.getElementById('admin-edit-cerberus');
         const newCerberus = cerberusEl ? cerberusEl.checked : !!prev.hasClearedCerberusRaid;
 
+        if (targetId !== sId) {
+          try {
+            const renRes = await fetch('/api/admin/rename-student-id', {
+              method: 'POST',
+              headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
+              body: JSON.stringify({ oldStudentId: sId, newStudentId: targetId, newName })
+            });
+            const renData = await renRes.json();
+            if (!renRes.ok || !renData || !renData.success) {
+              alert((renData && renData.error) || '학번 변경에 실패했습니다.');
+              return;
+            }
+          } catch (renErr) {
+            alert('학번 변경 요청 중 오류: ' + renErr.message);
+            return;
+          }
+        }
+
         const updatedProgress = {
           ...prev,
+          studentId: targetId,
           name: newName,
+          email: newEmail,
           level: newLevel,
           gold: newGold,
           exp: newExp,
@@ -8923,18 +9348,19 @@ class MainApp {
         try {
           const res = await fetch('/api/save-progress', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({
-              studentId: sId,
+              studentId: targetId,
               progress: updatedProgress,
               fromAdmin: true
             })
           });
           const data = await res.json();
           if (data && data.success) {
-            this._allSavedStudentsData[sId] = updatedProgress;
-            alert(`✅ [${sId} ${newName}] 학생의 정보가 서버에 성공적으로 저장되었습니다!\n(Lv.${newLevel}, ${newGold}G)`);
-            this.loadSavedStudentsForEditor(sId);
+            if (targetId !== sId) delete this._allSavedStudentsData[sId];
+            this._allSavedStudentsData[targetId] = updatedProgress;
+            alert(`✅ [${targetId} ${newName}] 학생의 정보가 서버에 성공적으로 저장되었습니다!\n(Lv.${newLevel}, ${newGold}G)`);
+            this.loadSavedStudentsForEditor(targetId);
           } else {
             alert('저장 실패: 서버 응답 오류');
           }
@@ -8974,7 +9400,7 @@ class MainApp {
         try {
           const res = await fetch('/api/admin/clear-all-students-progress', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
+            headers: this.getAdminHeaders({ 'Content-Type': 'application/json' })
           });
           const data = await res.json();
           if (data && data.success) {
@@ -9001,7 +9427,7 @@ class MainApp {
         try {
           const res = await fetch('/api/admin/delete-student-progress', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify({ studentId: sId })
           });
           const data = await res.json();
@@ -9015,6 +9441,258 @@ class MainApp {
           }
         } catch (e) {
           alert('삭제 중 오류: ' + e.message);
+        }
+      });
+    }
+
+    const updateStudentPinAdmin = async (newPin = '') => {
+      const sId = document.getElementById('admin-edit-student-id').value;
+      if (!sId) return;
+      const isAssign = /^\d{4}$/.test(newPin);
+      if (newPin && !isAssign) {
+        alert('PIN은 정확히 4자리 숫자(예: 0000)로 입력해 주세요.');
+        return;
+      }
+      const confirmMsg = isAssign
+        ? `🔑 [${sId}] 학생의 PIN을 [${newPin}]으로 직접 변경하시겠습니까?`
+        : `🔓 [${sId}] 학생의 PIN을 초기화하시겠습니까?\n초기화 후 학생이 로그인할 때 새 4자리 PIN을 직접 설정하게 됩니다.`;
+      if (!confirm(confirmMsg)) return;
+      try {
+        const res = await fetch('/api/admin/reset-student-pin', {
+          method: 'POST',
+          headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ studentId: sId, newPin: isAssign ? newPin : '' })
+        });
+        const data = await res.json();
+        if (res.ok && data && data.success) {
+          alert(isAssign ? `🔑 [${sId}] 학생의 PIN이 [${newPin}]으로 설정되었습니다.` : `🔓 [${sId}] 학생의 PIN이 초기화되었습니다.`);
+          const pinInputEl = document.getElementById('admin-edit-new-pin');
+          if (pinInputEl) pinInputEl.value = '';
+          this.loadSavedStudentsForEditor(sId);
+        } else {
+          alert((data && data.error) || 'PIN 변경 실패');
+        }
+      } catch (e) {
+        alert('PIN 변경 중 오류: ' + e.message);
+      }
+    };
+
+    const btnResetStudentPin = document.getElementById('btn-reset-student-pin');
+    if (btnResetStudentPin) {
+      btnResetStudentPin.addEventListener('click', () => updateStudentPinAdmin(''));
+    }
+
+    const btnSetStudentPin = document.getElementById('btn-set-student-pin');
+    if (btnSetStudentPin) {
+      btnSetStudentPin.addEventListener('click', () => {
+        const pinInputEl = document.getElementById('admin-edit-new-pin');
+        const val = pinInputEl ? pinInputEl.value.trim() : '';
+        if (!val) {
+          alert('직접 지정할 4자리 숫자 PIN을 입력해 주세요!');
+          if (pinInputEl) pinInputEl.focus();
+          return;
+        }
+        updateStudentPinAdmin(val);
+      });
+    }
+
+    // 📊 구글 스프레드시트 계정 · 평문 PIN 양방향 연동 컨트롤
+    const sheetsIdEl = document.getElementById('admin-sheets-id-input');
+    const sheetsTabEl = document.getElementById('admin-sheets-tab-input');
+    const sheetsSecretEl = document.getElementById('admin-sheets-secret-input');
+    const sheetsUrlEl = document.getElementById('admin-sheets-webapp-url');
+    const sheetsLoginChk = document.getElementById('admin-sheets-sync-on-login');
+    const sheetsAutoPushChk = document.getElementById('admin-sheets-auto-push');
+    const sheetsBadgeEl = document.getElementById('admin-sheets-status-badge');
+    const sheetsLogEl = document.getElementById('admin-sheets-last-log');
+
+    const applySheetsStatusUi = (cfg, codeGs) => {
+      if (!cfg) return;
+      this._latestAppsScriptCode = codeGs || this._latestAppsScriptCode || '';
+      if (sheetsIdEl) sheetsIdEl.value = cfg.spreadsheetId || '';
+      if (sheetsTabEl) sheetsTabEl.value = cfg.sheetName || '학생계정';
+      if (sheetsSecretEl) sheetsSecretEl.value = cfg.syncSecret || '';
+      if (sheetsUrlEl) sheetsUrlEl.value = cfg.webAppUrl || '';
+      if (sheetsLoginChk) sheetsLoginChk.checked = cfg.syncPinOnLogin !== false;
+      if (sheetsAutoPushChk) sheetsAutoPushChk.checked = cfg.autoPushChanges !== false;
+      if (sheetsBadgeEl) {
+        if (cfg.isReady) {
+          sheetsBadgeEl.innerText = '✅ 연동 설정됨';
+          sheetsBadgeEl.style.background = 'rgba(16, 185, 129, 0.18)';
+          sheetsBadgeEl.style.borderColor = '#10b981';
+          sheetsBadgeEl.style.color = '#4ade80';
+        } else {
+          sheetsBadgeEl.innerText = '미연결 (URL 미설정)';
+          sheetsBadgeEl.style.background = 'rgba(100, 116, 139, 0.2)';
+          sheetsBadgeEl.style.borderColor = '#64748b';
+          sheetsBadgeEl.style.color = '#cbd5e1';
+        }
+      }
+      if (sheetsLogEl) {
+        const timeStr = cfg.lastSyncAt ? new Date(cfg.lastSyncAt).toLocaleString('ko-KR') : '-';
+        sheetsLogEl.innerText = `최근 상태: ${cfg.lastSyncMessage || '대기 중'} (${timeStr})`;
+      }
+    };
+
+    this.loadGoogleSheetsConfigAdmin = async () => {
+      try {
+        const res = await fetch('/api/admin/sheets/config', { headers: this.getAdminHeaders() });
+        const data = await res.json();
+        if (res.ok && data && data.success) {
+          applySheetsStatusUi(data.config, data.codeGs);
+        }
+      } catch (e) {}
+    };
+
+    const callAdminSheetsPost = async (url, bodyPayload = null) => {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
+        ...(bodyPayload !== null ? { body: JSON.stringify(bodyPayload) } : {})
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        throw new Error((data && data.error) || `요청 실패 (${res.status})`);
+      }
+      return data;
+    };
+
+    const saveSheetsSettingsPayload = () => ({
+      spreadsheetId: sheetsIdEl ? sheetsIdEl.value.trim() : '',
+      sheetName: sheetsTabEl ? sheetsTabEl.value.trim() : '학생계정',
+      syncSecret: sheetsSecretEl ? sheetsSecretEl.value.trim() : '',
+      webAppUrl: sheetsUrlEl ? sheetsUrlEl.value.trim() : '',
+      syncPinOnLogin: sheetsLoginChk ? !!sheetsLoginChk.checked : true,
+      autoPushChanges: sheetsAutoPushChk ? !!sheetsAutoPushChk.checked : true
+    });
+
+    const btnSheetsSave = document.getElementById('btn-admin-sheets-save');
+    if (btnSheetsSave) {
+      btnSheetsSave.addEventListener('click', async () => {
+        try {
+          const data = await callAdminSheetsPost('/api/admin/sheets/config', saveSheetsSettingsPayload());
+          applySheetsStatusUi(data.config, data.codeGs);
+          alert('✅ 구글 스프레드시트 연동 설정이 저장되었습니다.');
+        } catch (err) {
+          alert('설정 저장 실패: ' + err.message);
+        }
+      });
+    }
+
+    const btnSheetsTest = document.getElementById('btn-admin-sheets-test');
+    if (btnSheetsTest) {
+      btnSheetsTest.addEventListener('click', async () => {
+        try {
+          await callAdminSheetsPost('/api/admin/sheets/config', saveSheetsSettingsPayload());
+          const data = await callAdminSheetsPost('/api/admin/sheets/test');
+          await this.loadGoogleSheetsConfigAdmin();
+          alert(`✅ 구글 시트 연결 성공!\n시트 탭: ${(data.result && data.result.sheetName) || '학생계정'}`);
+        } catch (err) {
+          await this.loadGoogleSheetsConfigAdmin();
+          alert('❌ 연결 테스트 실패: ' + err.message);
+        }
+      });
+    }
+
+    const btnSheetsCopyCode = document.getElementById('btn-admin-sheets-copy-code');
+    if (btnSheetsCopyCode) {
+      btnSheetsCopyCode.addEventListener('click', async () => {
+        try {
+          const data = await callAdminSheetsPost('/api/admin/sheets/config', saveSheetsSettingsPayload());
+          applySheetsStatusUi(data.config, data.codeGs);
+          const code = data.codeGs || this._latestAppsScriptCode || '';
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(code);
+            alert('📋 Apps Script 코드가 클립보드에 복사되었습니다!\n\n구글 시트 상단 [확장 프로그램] -> [Apps Script]에 붙여넣고 웹 앱으로 배포하세요.');
+          } else {
+            prompt('아래 Apps Script 코드를 전체 복사(Ctrl+C)하세요:', code);
+          }
+        } catch (err) {
+          alert('코드 생성 실패: ' + err.message);
+        }
+      });
+    }
+
+    const btnSheetsPushAll = document.getElementById('btn-admin-sheets-push');
+    if (btnSheetsPushAll) {
+      btnSheetsPushAll.addEventListener('click', async () => {
+        if (!confirm('⬆️ 현재 게임 서버의 모든 학생 계정(학번·이름·이메일·평문 PIN·레벨·골드)을 구글 시트로 내보내시겠습니까?')) return;
+        try {
+          const data = await callAdminSheetsPost('/api/admin/sheets/push-all');
+          await this.loadGoogleSheetsConfigAdmin();
+          alert(`✅ 시트 내보내기 완료!\n총 ${data.pushedCount || 0}명 처리 (기존 갱신 ${data.updatedCount || 0}명 / 신규 추가 ${data.appendedCount || 0}명)`);
+        } catch (err) {
+          await this.loadGoogleSheetsConfigAdmin();
+          alert('❌ 시트 내보내기 실패: ' + err.message);
+        }
+      });
+    }
+
+    const btnSheetsPull = document.getElementById('btn-admin-sheets-pull');
+    if (btnSheetsPull) {
+      btnSheetsPull.addEventListener('click', async () => {
+        try {
+          const data = await callAdminSheetsPost('/api/admin/sheets/sync-from-sheet');
+          await this.loadGoogleSheetsConfigAdmin();
+          this.loadSavedStudentsForEditor();
+          alert(`✅ 구글 시트 동기화 완료!\n• 시트 행: ${data.totalRows || 0}건\n• 신규 계정 생성: ${data.createdCount || 0}명\n• 계정 정보 갱신: ${data.updatedCount || 0}명\n• PIN 변경 반영: ${data.pinUpdatedCount || 0}명\n• PIN 초기화 반영: ${data.pinClearedCount || 0}명`);
+        } catch (err) {
+          await this.loadGoogleSheetsConfigAdmin();
+          alert('❌ 시트 가져오기 실패: ' + err.message);
+        }
+      });
+    }
+
+    const btnToggleEmergencyLogin = document.getElementById('btn-teacher-toggle-emergency-login');
+    if (btnToggleEmergencyLogin) {
+      btnToggleEmergencyLogin.addEventListener('click', async () => {
+        const nextAllow = !this.allowEmergencyStudentLogin;
+        const msg = nextAllow
+          ? '🆘 [임시 비상 로그인 켜기]\n\n이메일/PIN 입력 없이도 학번+이름만으로 임시 접속을 허용하시겠습니까?\n(로그인 장애/수업 시작 직전 비상용)'
+          : '🔐 [@senedu.kr 이메일 + PIN 모드로 전환]\n\n임시 학번+이름 로그인을 끄고 @senedu.kr 이메일과 4자리 PIN을 필수로 요구하시겠습니까?';
+        if (!confirm(msg)) return;
+        try {
+          const res = await fetch('/api/admin/auth-settings', {
+            method: 'POST',
+            headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ allowEmergencyStudentLogin: nextAllow })
+          });
+          const data = await res.json();
+          if (res.ok && data && data.success) {
+            this.applyAuthConfig(data);
+            alert(nextAllow ? '🆘 임시 비상 로그인(학번+이름)이 허용되었습니다.' : '🔐 @senedu.kr 이메일 + 4자리 PIN 필수 모드로 전환되었습니다.');
+          } else {
+            alert((data && data.error) || '설정 변경 실패');
+          }
+        } catch (e) {
+          alert('설정 변경 중 오류: ' + e.message);
+        }
+      });
+    }
+
+    const btnToggleRosterWhitelist = document.getElementById('btn-teacher-toggle-roster-whitelist');
+    if (btnToggleRosterWhitelist) {
+      btnToggleRosterWhitelist.addEventListener('click', async () => {
+        const nextRoster = !this.requireRosterWhitelist;
+        const msg = nextRoster
+          ? '📋 [명단(Whitelist) 제한 켜기]\n\n교사 명단에 등록된 학생(학번/이름/이메일 일치)만 가입·접속할 수 있도록 제한하시겠습니까?\n(명단이 비어 있으면 아무도 신규 접속할 수 없으므로 먼저 명단을 등록해 주세요!)'
+          : '📋 [명단 제한 끄기]\n\n명단에 없어도 @senedu.kr 이메일 + 학번 + 이름 + PIN으로 자유롭게 가입할 수 있게 허용하시겠습니까?';
+        if (!confirm(msg)) return;
+        try {
+          const res = await fetch('/api/admin/auth-settings', {
+            method: 'POST',
+            headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({ requireRosterWhitelist: nextRoster })
+          });
+          const data = await res.json();
+          if (res.ok && data && data.success) {
+            this.applyAuthConfig(data);
+            alert(nextRoster ? '📋 명단(Whitelist) 제한이 활성화되었습니다.' : '📋 명단 제한이 해제되어 자유 가입이 가능합니다.');
+          } else {
+            alert((data && data.error) || '설정 변경 실패');
+          }
+        } catch (e) {
+          alert('설정 변경 중 오류: ' + e.message);
         }
       });
     }
@@ -9155,20 +9833,20 @@ class MainApp {
 
       row.innerHTML = `
         <div>
-          <span style="color:#60a5fa; font-weight:bold;">[${std.studentId}]</span>
-          <b style="color:#fff; margin-left:4px;">${std.name}</b>
-          <span style="color:#a1a1aa; font-size:11.5px; margin-left:6px;">(${locName})</span>
+          <span style="color:#60a5fa; font-weight:bold;">[${this.escapeHtml(std.studentId)}]</span>
+          <b style="color:#fff; margin-left:4px;">${this.escapeHtml(std.name)}</b>
+          <span style="color:#a1a1aa; font-size:11.5px; margin-left:6px;">(${this.escapeHtml(locName)})</span>
           ${muteStatus}
         </div>
         <div style="display:flex; gap:6px;">
-          <button style="background:#0284c7; color:#fff; font-weight:bold; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;" onclick="window.MainApp.selectGrantTarget('${std.id}')">🎁 지급</button>
-          ${std.isMuted 
-            ? `<button style="background:#059669; color:#fff; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;" onclick="window.MainApp.unmuteStudent('${std.name}')">채금 해제</button>`
-            : `<button style="background:#eab308; color:#000; font-weight:bold; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;" onclick="window.MainApp.muteStudent('${std.name}')">채팅 금지</button>`
-          }
-          <button style="background:#dc2626; color:#fff; font-weight:bold; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;" onclick="window.MainApp.kickStudent('${std.id}', '${std.name}')">서버 강퇴</button>
+          <button class="btn-row-grant" style="background:#0284c7; color:#fff; font-weight:bold; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;">🎁 지급</button>
+          <button class="btn-row-mute" style="background:${std.isMuted ? '#059669' : '#eab308'}; color:${std.isMuted ? '#fff' : '#000'}; font-weight:${std.isMuted ? 'normal' : 'bold'}; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;">${std.isMuted ? '채금 해제' : '채팅 금지'}</button>
+          <button class="btn-row-kick" style="background:#dc2626; color:#fff; font-weight:bold; border:none; padding:3px 8px; border-radius:4px; font-size:11.5px; cursor:pointer;">서버 강퇴</button>
         </div>
       `;
+      row.querySelector('.btn-row-grant').addEventListener('click', () => this.selectGrantTarget(std.id));
+      row.querySelector('.btn-row-mute').addEventListener('click', () => std.isMuted ? this.unmuteStudent(std.name) : this.muteStudent(std.name));
+      row.querySelector('.btn-row-kick').addEventListener('click', () => this.kickStudent(std.id, std.name));
       container.appendChild(row);
     });
   }
@@ -9222,7 +9900,7 @@ class MainApp {
     if (confirm(`⚠️ 정말로 학번 [${studentId}] '${name}' 학생의 저장 데이터를 영구 삭제(초기화)하시겠습니까?`)) {
       fetch('/api/admin/delete-student-progress', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ studentId })
       })
       .then(res => res.json())
@@ -9253,13 +9931,7 @@ class MainApp {
       this.engine.addFloatingText(`+${amount} G 🪙`, px, py, '#fbbf24', 16);
     }
     this.saveProgress();
-    if (this.networkManager && this.networkManager.socket) {
-      this.networkManager.socket.emit('player_stats_sync', {
-        level: this.playerData.level,
-        exp: this.playerData.exp,
-        gold: this.playerData.gold
-      });
-    }
+    this.syncStatsToServer();
   }
 
   setGold(amount) {
@@ -9321,14 +9993,7 @@ class MainApp {
 
     this.saveProgress();
     this.updateExpBar();
-
-    if (this.networkManager && this.networkManager.socket) {
-      this.networkManager.socket.emit('player_stats_sync', {
-        level: this.playerData.level,
-        exp: this.playerData.exp,
-        gold: this.playerData.gold
-      });
-    }
+    this.syncStatsToServer();
   }
 
   updateExpBar() {
@@ -9866,6 +10531,8 @@ class MainApp {
         baseHp: this.playerData.baseHp,
         baseAtk: this.playerData.baseAtk,
         baseDef: this.playerData.baseDef,
+        atk: this.playerData.atk,
+        def: this.playerData.def,
         inventory: this.playerData.inventory,
         equipment: this.playerData.equipment,
         isAccessory2Unlocked: !!this.playerData.isAccessory2Unlocked,
@@ -9881,6 +10548,7 @@ class MainApp {
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
         hasClearedClass704: !!this.playerData.hasClearedClass704,
+        hasCafeteriaKey: !!this.playerData.hasCafeteriaKey,
         job: this.playerData.job || null,
         hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
         careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
@@ -9923,30 +10591,101 @@ class MainApp {
       }
 
       // 무료 서버 트래픽 최소화: 데이터 변경 감지 (Dirty Check)
-      // 학생이 아무런 아이템/골드/경험치/장비 변동 없이 단순 이동/대기 중일 때는 서버 POST 요청을 100% 생략!
-      const dataHash = `${saveData.level}_${saveData.exp}_${saveData.gold}_${saveData.hp}_${saveData.isFallen}_${saveData.inventory.length}_${JSON.stringify(saveData.equipment)}_${saveData.hasReceivedSoongsilGift}_${saveData.hasOpenedSecretLocker}_${saveData.hasCheckedMirror}_${saveData.hasOpenedLostBox}_${saveData.hasReadDevNote}_${saveData.hasReadDevNote2}_${saveData.hasClearedFirstBoss}_${saveData.hasClearedDragonRaid}_${saveData.hasClearedClass704}_${(saveData.solvedMoralQuestionIds || []).length}_${saveData.job}_${saveData.hasEscapedCareerRoom}_${(saveData.careerClues || []).join(',')}_${(saveData.historyVitrines || []).join(',')}_${(saveData.titles || []).join(',')}_${saveData.equippedTitle}_${saveData.secretHistoryRoomUnlocked}_${saveData.openedSecretHistoryChest}`;
+      // 인벤토리 개별 수량(item:count) 변경도 정확히 감지해 누적 재료 파밍 누락을 방지합니다.
+      const dataHash = this.computeProgressDataHash(saveData);
       if (!forceServerSync && this._lastSavedDataHash === dataHash) {
         return;
       }
       this._lastSavedDataHash = dataHash;
 
-      this.syncProgressToServer(saveData);
+      this._pendingSyncPromise = this.syncProgressToServer(saveData);
     } catch (e) {
       console.warn('LocalStorage save failed:', e);
     }
   }
 
+  computeProgressDataHash(data) {
+    if (!data) return '';
+    const invSig = (data.inventory || []).map(i => `${i && i.item}:${(i && i.count) || 0}`).join(',');
+    return `${data.level}_${data.exp}_${data.gold}_${data.hp}_${data.isFallen}_${invSig}_${JSON.stringify(data.equipment)}_${data.hasReceivedSoongsilGift}_${data.hasOpenedSecretLocker}_${data.hasCheckedMirror}_${data.hasOpenedLostBox}_${data.hasReadDevNote}_${data.hasReadDevNote2}_${data.hasClearedFirstBoss}_${data.hasClearedDragonRaid}_${data.hasClearedClass704}_${data.hasCafeteriaKey}_${(data.solvedMoralQuestionIds || []).length}_${data.job}_${data.hasEscapedCareerRoom}_${(data.careerClues || []).join(',')}_${(data.historyVitrines || []).join(',')}_${(data.titles || []).join(',')}_${data.equippedTitle}_${data.secretHistoryRoomUnlocked}_${data.openedSecretHistoryChest}_${JSON.stringify(data.quests || {})}`;
+  }
+
+  getStudentAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (this.playerData && this.playerData.studentAuthToken) {
+      headers['X-Student-Token'] = this.playerData.studentAuthToken;
+    }
+    return headers;
+  }
+
+  canUseAuthoritativeServerApi() {
+    return !!(
+      this.playerData &&
+      !this.playerData.isTeacher &&
+      this.playerData.studentId &&
+      this.playerData.studentId !== '교사' &&
+      this.playerData.studentAuthToken &&
+      this.isServerOnline
+    );
+  }
+
+  async flushProgressSync() {
+    if (this._pendingSyncPromise) {
+      try { await this._pendingSyncPromise; } catch (e) {}
+    }
+    this.saveProgress(true);
+    if (this._pendingSyncPromise) {
+      try { await this._pendingSyncPromise; } catch (e) {}
+    }
+  }
+
+  applyAuthoritativeServerState(data) {
+    if (!data || !this.playerData) return;
+    const prevLevel = this.playerData.level || 1;
+    if (typeof data.gold === 'number') this.playerData.gold = data.gold;
+    if (typeof data.level === 'number') this.playerData.level = data.level;
+    if (typeof data.exp === 'number') this.playerData.exp = data.exp;
+    if (Array.isArray(data.inventory)) this.playerData.inventory = data.inventory;
+    if (data.equipment && typeof data.equipment === 'object') this.playerData.equipment = data.equipment;
+    if (data.quests && typeof data.quests === 'object') this.playerData.quests = data.quests;
+    if (data.hasCafeteriaKey !== undefined) this.playerData.hasCafeteriaKey = !!data.hasCafeteriaKey;
+
+    if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
+    if (this.hudLevel) this.hudLevel.innerText = `Lv.${this.playerData.level}`;
+    if (typeof this.recalcCombatStats === 'function') this.recalcCombatStats();
+    if (typeof this.updateExpBar === 'function') this.updateExpBar();
+    if (typeof this.updateHpBar === 'function') this.updateHpBar();
+    if (typeof this.updateQuestTracker === 'function') this.updateQuestTracker();
+    if ((this.playerData.level || 1) > prevLevel && typeof this.showLevelUpBanner === 'function') {
+      this.showLevelUpBanner(this.playerData.level);
+    }
+    try {
+      const sid = this.playerData.studentId;
+      if (sid && sid !== '교사') {
+        const snapshot = { ...(JSON.parse(localStorage.getItem('soongsil_save_' + sid) || '{}')), ...this.playerData, studentAuthToken: undefined, teacherPwd: undefined, teacherToken: undefined, updatedAt: Date.now() };
+        localStorage.setItem('soongsil_save_' + sid, JSON.stringify(snapshot));
+        this._lastSavedDataHash = this.computeProgressDataHash(snapshot);
+        if (this.playerData.quests) {
+          localStorage.setItem('soongsil_quests_' + sid, JSON.stringify(this.playerData.quests));
+        }
+      }
+    } catch (e) {}
+  }
+
   async syncProgressToServer(saveData) {
     if (!saveData || !saveData.studentId || saveData.studentId === '교사') return;
     try {
-      await fetch('/api/save-progress', {
+      const res = await fetch('/api/save-progress', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: this.getStudentAuthHeaders(),
         body: JSON.stringify({
           studentId: saveData.studentId,
           progress: saveData
         })
       });
+      if (!res.ok) {
+        console.warn('[Sync] Server rejected progress sync:', res.status);
+      }
     } catch (err) {
       console.warn('[Sync] Server progress sync failed:', err);
     }
@@ -10137,8 +10876,23 @@ class MainApp {
     }
   }
 
+  syncStatsToServer() {
+    if (!this.networkManager || !this.networkManager.socket || !this.networkManager.socket.connected) return;
+    if (!this.playerData) return;
+    this.networkManager.socket.emit('player_stats_sync', {
+      level: this.playerData.level,
+      exp: this.playerData.exp,
+      gold: this.playerData.gold,
+      baseAtk: this.playerData.baseAtk,
+      baseDef: this.playerData.baseDef,
+      atk: this.playerData.atk,
+      def: this.playerData.def,
+      equipment: this.playerData.equipment
+    });
+  }
+
   // ========================================================
-  // REAL-TIME LEADERBOARD TOP 5 (실시간 랭킹보드)
+  // REAL-TIME LEADERBOARD TOP 10 (ONLINE + OFFLINE)
   // ========================================================
   openLeaderboard() {
     const modal = document.getElementById('modal-leaderboard');
@@ -10147,67 +10901,92 @@ class MainApp {
     if (window.AudioManager) window.AudioManager.playSelect();
 
     const listEl = document.getElementById('leaderboard-list-container');
-    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">⏳ 실시간 랭킹 데이터를 불러오는 중...</div>';
+    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">⏳ 랭킹 데이터를 불러오는 중...</div>';
 
     document.getElementById('my-rank-position').innerText = '-위';
     document.getElementById('my-rank-level').innerText = `Lv.${this.playerData.level || 1}`;
+    const myCombatEl = document.getElementById('my-rank-combat');
+    if (myCombatEl) {
+      myCombatEl.innerText = `⚔️ ${this.playerData.atk || 10} · 🛡️ ${this.playerData.def || 2}`;
+    }
 
-    if (this.networkManager && this.networkManager.socket) {
-      this.networkManager.socket.emit('player_stats_sync', {
-        level: this.playerData.level,
-        exp: this.playerData.exp,
-        gold: this.playerData.gold
-      });
+    if (this.networkManager && this.networkManager.socket && this.networkManager.socket.connected) {
+      this.syncStatsToServer();
       this.networkManager.socket.emit('get_leaderboard');
+    } else if (!this.playerData.isTeacher) {
+      this.onLeaderboardData({
+        list: [{
+          name: this.playerData.name,
+          studentId: this.playerData.studentId,
+          level: this.playerData.level || 1,
+          exp: this.playerData.exp || 0,
+          gold: this.playerData.gold || 0,
+          atk: this.playerData.atk || 10,
+          def: this.playerData.def || 2,
+          isOnline: true
+        }],
+        myRank: 1,
+        totalCount: 1
+      });
     } else {
-      this.onLeaderboardData([{
-        name: this.playerData.name,
-        studentId: this.playerData.studentId,
-        level: this.playerData.level,
-        exp: this.playerData.exp,
-        gold: this.playerData.gold
-      }]);
+      this.onLeaderboardData({ list: [], myRank: -1, totalCount: 0 });
     }
 
     modal.classList.remove('hidden');
   }
 
-  onLeaderboardData(list) {
+  onLeaderboardData(payload) {
     const listEl = document.getElementById('leaderboard-list-container');
     if (!listEl) return;
     listEl.innerHTML = '';
 
-    if (!Array.isArray(list) || list.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">현재 등록된 랭킹 데이터가 없습니다.</div>';
+    const list = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.list) ? payload.list : []);
+    const totalCount = (payload && typeof payload.totalCount === 'number') ? payload.totalCount : list.length;
+
+    if (list.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8;">현재 등록된 학생 랭킹 데이터가 없습니다.</div>';
+      const myRankEl = document.getElementById('my-rank-position');
+      if (myRankEl) myRankEl.innerText = this.playerData.isTeacher ? '교사' : '-위';
       return;
     }
 
-    const rankIcons = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+    const rankIcons = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
 
-    let myRank = -1;
-    list.forEach((entry, idx) => {
-      const isMe = (entry.name === this.playerData.name || entry.studentId === this.playerData.studentId);
-      if (isMe) myRank = idx + 1;
+    let myRank = (payload && typeof payload.myRank === 'number') ? payload.myRank : -1;
+    list.slice(0, 10).forEach((entry, idx) => {
+      const sid = String(entry.studentId || '').trim();
+      const mySid = String(this.playerData.studentId || '').trim();
+      const isMe = !this.playerData.isTeacher && ((mySid && sid === mySid) || (entry.name && entry.name === this.playerData.name));
+      if (isMe && myRank <= 0) myRank = idx + 1;
 
+      const isOnline = entry.isOnline !== false;
       const row = document.createElement('div');
-      row.className = `leaderboard-item rank-${idx + 1}`;
+      row.className = `leaderboard-item rank-${idx + 1}${isOnline ? '' : ' offline'}`;
       if (isMe) {
         row.style.borderColor = '#3b82f6';
         row.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.4)';
       }
 
       const icon = rankIcons[idx] || `${idx + 1}위`;
+      const atkVal = Number.isFinite(Number(entry.atk)) ? Number(entry.atk) : (10 + Math.max(0, (entry.level || 1) - 1));
+      const defVal = Number.isFinite(Number(entry.def)) ? Number(entry.def) : (2 + Math.max(0, (entry.level || 1) - 1));
+      const safeName = this.escapeHtml(entry.name || '학생');
+      const safeSid = this.escapeHtml(sid);
+
       row.innerHTML = `
         <div class="leaderboard-left">
           <span class="leaderboard-rank-badge">${icon}</span>
-          <div style="display:flex; align-items:center; min-width:0; overflow:hidden;">
-            <span class="leaderboard-student-name">${entry.name || '학생'}</span>
-            <span class="leaderboard-student-id">(${entry.studentId || ''})</span>
-            ${isMe ? '<span style="font-size:10px; background:#2563eb; color:#fff; padding:1px 5px; border-radius:4px; margin-left:5px; font-weight:800; flex-shrink:0;">나</span>' : ''}
+          <div style="display:flex; align-items:center; min-width:0; overflow:hidden; flex-wrap:wrap; gap:2px;">
+            <span class="leaderboard-student-name">${safeName}</span>
+            <span class="leaderboard-student-id">(${safeSid})</span>
+            <span class="leaderboard-status-pill ${isOnline ? 'online' : 'offline'}">${isOnline ? '🟢 접속' : '⚫ 비접속'}</span>
+            ${isMe ? '<span style="font-size:10px; background:#2563eb; color:#fff; padding:1px 5px; border-radius:4px; margin-left:4px; font-weight:800; flex-shrink:0;">나</span>' : ''}
           </div>
         </div>
         <div class="leaderboard-right">
           <span class="leaderboard-level-pill">Lv.${entry.level || 1}</span>
+          <span class="leaderboard-atk-pill" title="공격력">⚔️ ${atkVal}</span>
+          <span class="leaderboard-def-pill" title="방어력">🛡️ ${defVal}</span>
           <span class="leaderboard-exp-pill">🪙 ${entry.gold || 0}G</span>
         </div>
       `;
@@ -10216,11 +10995,21 @@ class MainApp {
 
     const myRankEl = document.getElementById('my-rank-position');
     if (myRankEl) {
-      myRankEl.innerText = myRank > 0 ? `${myRank}위` : '순위권 밖';
+      if (this.playerData.isTeacher) {
+        myRankEl.innerText = '교사 (제외)';
+      } else if (myRank > 0) {
+        myRankEl.innerText = totalCount > 0 ? `${myRank}위 / ${totalCount}명` : `${myRank}위`;
+      } else {
+        myRankEl.innerText = totalCount > 0 ? `순위권 밖 (전체 ${totalCount}명)` : '순위권 밖';
+      }
     }
     const myLevelEl = document.getElementById('my-rank-level');
     if (myLevelEl) {
       myLevelEl.innerText = `Lv.${this.playerData.level || 1}`;
+    }
+    const myCombatEl = document.getElementById('my-rank-combat');
+    if (myCombatEl) {
+      myCombatEl.innerText = `⚔️ ${this.playerData.atk || 10} · 🛡️ ${this.playerData.def || 2}`;
     }
   }
 
@@ -10476,6 +11265,11 @@ class MainApp {
       return;
     }
 
+    if (typeof this.canUseAuthoritativeServerApi === 'function' && this.canUseAuthoritativeServerApi()) {
+      this._buyStoreItemOnServer(itemDef, quantity);
+      return;
+    }
+
     this.playerData.gold -= totalCost;
     const catalogItem = (window.ALL_GAME_ITEMS && window.ALL_GAME_ITEMS[itemDef.id]) || {};
     const meta = { ...(catalogItem.meta || {}), ...(itemDef.meta || {}) };
@@ -10495,6 +11289,44 @@ class MainApp {
     const modalInv = document.getElementById('modal-inventory');
     if (modalInv && !modalInv.classList.contains('hidden')) {
       this.openInventory();
+    }
+  }
+
+  async _buyStoreItemOnServer(itemDef, quantity = 1) {
+    if (this._storeTxnBusy) return;
+    this._storeTxnBusy = true;
+    try {
+      await this.flushProgressSync();
+      const res = await fetch('/api/store/buy', {
+        method: 'POST',
+        headers: this.getStudentAuthHeaders(),
+        body: JSON.stringify({
+          studentId: this.playerData.studentId,
+          itemId: itemDef.id,
+          quantity
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        this.showToast((data && data.error) || '매점 구매 검증에 실패했습니다.', 'warning');
+        return;
+      }
+      this.applyAuthoritativeServerState(data);
+      const goldDisplay = document.getElementById('store-gold-display');
+      if (goldDisplay) goldDisplay.innerText = `${this.playerData.gold} G`;
+      const invGoldDisplay = document.getElementById('inv-gold-display');
+      if (invGoldDisplay) invGoldDisplay.innerText = `${this.playerData.gold} G`;
+
+      this.showToast(`🛍️ [매점 구매 완료] ${itemDef.name} x${quantity}개 획득! (-${data.totalCost} G)`, 'success');
+      this.renderStoreModal();
+      const modalInv = document.getElementById('modal-inventory');
+      if (modalInv && !modalInv.classList.contains('hidden')) {
+        this.openInventory();
+      }
+    } catch (err) {
+      this.showToast('서버 통신 오류로 구매를 완료하지 못했습니다.', 'error');
+    } finally {
+      this._storeTxnBusy = false;
     }
   }
 
@@ -10726,6 +11558,11 @@ class MainApp {
       return;
     }
 
+    if (typeof this.canUseAuthoritativeServerApi === 'function' && this.canUseAuthoritativeServerApi()) {
+      this._sellItemOnServer(itemId, count, itemName);
+      return;
+    }
+
     this.removeItem(itemId, count);
     this.playerData.gold = (this.playerData.gold || 0) + totalGold;
     if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
@@ -10739,6 +11576,43 @@ class MainApp {
     const modalInv = document.getElementById('modal-inventory');
     if (modalInv && !modalInv.classList.contains('hidden')) {
       this.openInventory();
+    }
+  }
+
+  async _sellItemOnServer(itemId, count, itemName) {
+    if (this._storeTxnBusy) return;
+    this._storeTxnBusy = true;
+    try {
+      await this.flushProgressSync();
+      const res = await fetch('/api/store/sell', {
+        method: 'POST',
+        headers: this.getStudentAuthHeaders(),
+        body: JSON.stringify({
+          studentId: this.playerData.studentId,
+          itemId,
+          count
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        this.showToast((data && data.error) || '매점 판매 검증에 실패했습니다.', 'warning');
+        return;
+      }
+      this.applyAuthoritativeServerState(data);
+      const invGoldDisplay = document.getElementById('inv-gold-display');
+      if (invGoldDisplay) invGoldDisplay.innerText = `${this.playerData.gold} G`;
+
+      this.showToast(`🪙 ${itemName} x${data.soldCount}개 매각 완료! (+${data.earnedGold} G)`, 'success');
+      this.renderStoreModal();
+
+      const modalInv = document.getElementById('modal-inventory');
+      if (modalInv && !modalInv.classList.contains('hidden')) {
+        this.openInventory();
+      }
+    } catch (err) {
+      this.showToast('서버 통신 오류로 매각을 완료하지 못했습니다.', 'error');
+    } finally {
+      this._storeTxnBusy = false;
     }
   }
 
@@ -11106,11 +11980,21 @@ class MainApp {
   }
 
   startLoop() {
-    // 한 프레임에서 오류가 나도 게임 루프가 멈추지 않도록 보호 (검은 화면/캐릭터 사라짐 방지)
+    if (this._loopRafId) {
+      cancelAnimationFrame(this._loopRafId);
+      this._loopRafId = null;
+    }
+    // 60Hz 기준 델타 타임 정규화 (120Hz/144Hz/240Hz 고주사율 모니터에서도 이동속도 일정 유지)
     let lastErrLog = 0;
-    const loop = () => {
+    let lastTimestamp = 0;
+    const loop = (now) => {
+      const ts = (typeof now === 'number' && now > 0) ? now : performance.now();
+      const dtMs = lastTimestamp ? Math.min(50, Math.max(0, ts - lastTimestamp)) : (1000 / 60);
+      lastTimestamp = ts;
+      const dtScale = Math.min(2.0, Math.max(0.1, dtMs / (1000 / 60)));
+
       try {
-        this.engine.update();
+        this.engine.update(dtScale);
       } catch (err) {
         if (Date.now() - lastErrLog > 3000) { lastErrLog = Date.now(); console.error('[Loop] update error:', err); }
       }
@@ -11127,9 +12011,9 @@ class MainApp {
           }
         } catch (_) { /* ignore */ }
       }
-      requestAnimationFrame(loop);
+      this._loopRafId = requestAnimationFrame(loop);
     };
-    requestAnimationFrame(loop);
+    this._loopRafId = requestAnimationFrame(loop);
   }
 
   updateDashButtonUI() {
@@ -12159,9 +13043,9 @@ class MainApp {
       2: '#be185d',
       3: '#4338ca',
       4: '#15803d',
-      5: '#d97706',
-      6: '#6366f1',
-      7: '#dc2626'
+      5: '#6366f1',
+      6: '#dc2626',
+      7: '#0284c7'
     };
 
     document.querySelectorAll('.roadmap-step-pill').forEach(pill => {
@@ -12268,7 +13152,7 @@ class MainApp {
         return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
       });
     } else if (tab === 'accessory') {
-      filtered = db.filter(item => item.category === 'accessory' || item.subCategory === 'accessory' || item.id.includes('ring') || item.id.includes('talisman') || item.id.includes('pass'));
+      filtered = db.filter(item => item.category === 'accessory' || item.subCategory === 'accessory' || item.id.includes('ring') || item.id.includes('talisman'));
     } else if (tab === 'equip') {
       filtered = db.filter(item => item.category === 'equip' || ['weapon_armor', 'shoes', 'accessory'].includes(item.category));
     } else if (tab === 'material') {
@@ -12298,23 +13182,18 @@ class MainApp {
         position: relative;
       `;
 
-      const isCourage = (item.id === 'item_courage_potion');
-      const isProtection = (item.id === 'item_protection_potion');
-      const isOrange = (item.id === 'item_orange_potion');
-      const isRed = (item.id === 'item_red_potion');
-      const isGreen = (item.id === 'item_green_potion');
-      let iconDisplay = item.icon;
-      if (isCourage) {
-        iconDisplay = `<span class="icon-purple-potion">${item.icon}</span>`;
-      } else if (isProtection) {
-        iconDisplay = `<span class="icon-blue-potion">${item.icon}</span>`;
-      } else if (isOrange) {
-        iconDisplay = `<span class="icon-orange-potion">${item.icon}</span>`;
-      } else if (isRed) {
-        iconDisplay = `<span class="icon-red-potion">${item.icon}</span>`;
-      } else if (isGreen) {
-        iconDisplay = `<span class="icon-green-potion">${item.icon}</span>`;
-      }
+      const potionCss = (item.id === 'item_courage_potion')
+        ? 'icon-purple-potion'
+        : (item.id === 'item_protection_potion')
+          ? 'icon-blue-potion'
+          : (item.id === 'item_orange_potion')
+            ? 'icon-orange-potion'
+            : (item.id === 'item_red_potion')
+              ? 'icon-red-potion'
+              : (item.id === 'item_green_potion')
+                ? 'icon-green-potion'
+                : (item.id === 'item_clear_potion' ? 'icon-clear-potion' : '');
+      const iconDisplay = window.renderItemIconHtml(item.id, item.icon, potionCss);
 
       card.innerHTML = `
         <div>
@@ -12488,6 +13367,7 @@ class MainApp {
     this.isServerOpen = !!data.isOpen;
     if (data.closedMessage) this.serverClosedMessage = data.closedMessage;
     this.updateServerGateUI();
+    this.applyAuthConfig(data);
   }
 
   onServerStateChanged(data) {
@@ -12495,6 +13375,7 @@ class MainApp {
     this.isServerOpen = !!data.isOpen;
     if (data.closedMessage) this.serverClosedMessage = data.closedMessage;
     this.updateServerGateUI();
+    this.applyAuthConfig(data);
     const text = data.isOpen ? '🟢 선생님께서 서버를 개방했습니다! (수업 시작)' : '🔴 선생님께서 서버를 닫았습니다. (수업 종료/점검)';
     if (this.showToast) {
       this.showToast(text, data.isOpen ? 'success' : 'warning');
@@ -12508,7 +13389,7 @@ class MainApp {
     const startBtn = document.getElementById('btn-start-game');
     if (startBtn) {
       startBtn.disabled = false;
-      startBtn.innerText = '숭실 오픈월드 입장하기 🚀';
+      startBtn.innerText = '입장하기 🚀';
     }
   }
 
@@ -13042,6 +13923,11 @@ class MainApp {
       return;
     }
 
+    if (typeof this.canUseAuthoritativeServerApi === 'function' && this.canUseAuthoritativeServerApi()) {
+      this._completeQuestOnServer(questId, qDef);
+      return;
+    }
+
     quest.status = 'done';
     quest.completedAt = Date.now();
 
@@ -13079,6 +13965,43 @@ class MainApp {
       window.AudioManager.playFanfare();
     }
     this.showToast(`🎉 [${qDef.title}] 완료! 특별 보상을 획득했습니다!`, 'success');
+  }
+
+  async _completeQuestOnServer(questId, qDef) {
+    if (this._questTxnBusy) return;
+    this._questTxnBusy = true;
+    try {
+      await this.flushProgressSync();
+      const res = await fetch('/api/quest/complete', {
+        method: 'POST',
+        headers: this.getStudentAuthHeaders(),
+        body: JSON.stringify({
+          studentId: this.playerData.studentId,
+          questId
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        this.showToast((data && data.error) || '의뢰 완료 검증에 실패했습니다.', 'warning');
+        return;
+      }
+      this.applyAuthoritativeServerState(data);
+      this.updatePlayerNameDisplay();
+      this.updateQuestTracker();
+      this.closeQuestDispatchModal();
+
+      if (questId === 'quest_library_missing_books') {
+        this.showToast('📚 [도서관 의뢰 완료] 분실도서 3권을 모두 반납하고 보상을 획득했습니다!', 'success');
+      }
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+      this.showToast(`🎉 [${qDef.title}] 완료! 특별 보상을 획득했습니다!`, 'success');
+    } catch (err) {
+      this.showToast('서버 통신 오류로 의뢰를 완료하지 못했습니다.', 'error');
+    } finally {
+      this._questTxnBusy = false;
+    }
   }
 
   handleQuestSocialBookPickup(itemData) {

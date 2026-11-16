@@ -424,6 +424,184 @@
     "requiredLevel": 5
   },
   {
+    "id": "recipe_immortal_sword",
+    "name": "불멸의 열정 대검 (Immortal Passion Blade)",
+    "category": "equipment",
+    "description": "[5티어 무기] 급식실의 영양·특수 스텐 합금과 기초 목재·허브를 하나로 벼려낸 최강 5티어 대검입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
+    "icon": "⚔️",
+    "gradeLevel": 1,
+    "requiredGold": 1500,
+    "requiredItems": [
+      {
+        "item": "item_nutrition_essence",
+        "name": "🍱 정제된 영양의 정수",
+        "count": 8
+      },
+      {
+        "item": "item_stainless_shard",
+        "name": "✨ 특수 강화 스텐 조각",
+        "count": 5
+      },
+      {
+        "item": "item_wood",
+        "name": "🪵 단단한 목재",
+        "count": 15
+      },
+      {
+        "item": "item_herb",
+        "name": "🌿 향긋한 허브",
+        "count": 10
+      }
+    ],
+    "unscramble": {
+      "korean": "열정과 끈기는 우리가 꿈을 이루도록 도와줍니다.",
+      "words": [
+        "Passion",
+        "and",
+        "perseverance",
+        "help",
+        "us",
+        "achieve",
+        "our",
+        "dreams."
+      ],
+      "correct": "Passion and perseverance help us achieve our dreams."
+    },
+    "result": {
+      "item": "equip_immortal_blade",
+      "name": "불멸의 열정 대검",
+      "icon": "⚔️",
+      "type": "equipment",
+      "slot": "weapon",
+      "stats": {
+        "atk": 60,
+        "def": 0,
+        "hp": 35
+      },
+      "effect": "5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)"
+    },
+    "requiredLevel": 12
+  },
+  {
+    "id": "recipe_immortal_helmet",
+    "name": "불멸의 열정 투구 (Immortal Passion Helmet)",
+    "category": "equipment",
+    "description": "[5티어 투구] 급식실의 영양·특수 스텐 합금과 기초 목재·허브의 가호가 깃든 최상급 5티어 투구입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
+    "icon": "👑",
+    "gradeLevel": 1,
+    "requiredGold": 1000,
+    "requiredItems": [
+      {
+        "item": "item_nutrition_essence",
+        "name": "🍱 정제된 영양의 정수",
+        "count": 6
+      },
+      {
+        "item": "item_stainless_shard",
+        "name": "✨ 특수 강화 스텐 조각",
+        "count": 4
+      },
+      {
+        "item": "item_wood",
+        "name": "🪵 단단한 목재",
+        "count": 10
+      },
+      {
+        "item": "item_herb",
+        "name": "🌿 향긋한 허브",
+        "count": 8
+      }
+    ],
+    "unscramble": {
+      "korean": "균형 잡힌 영양은 우리에게 계속 나아갈 에너지를 줍니다.",
+      "words": [
+        "Balanced",
+        "nutrition",
+        "gives",
+        "us",
+        "the",
+        "energy",
+        "to",
+        "keep",
+        "going."
+      ],
+      "correct": "Balanced nutrition gives us the energy to keep going."
+    },
+    "result": {
+      "item": "equip_immortal_helmet",
+      "name": "불멸의 열정 투구",
+      "icon": "👑",
+      "type": "equipment",
+      "slot": "helmet",
+      "stats": {
+        "atk": 0,
+        "def": 25,
+        "hp": 35
+      },
+      "effect": "5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)"
+    },
+    "requiredLevel": 12
+  },
+  {
+    "id": "recipe_immortal_armor",
+    "name": "불멸의 열정 갑옷 (Immortal Passion Armor)",
+    "category": "equipment",
+    "description": "[5티어 갑옷] 특수 스테인리스 합금과 정제된 영양, 단단한 목재·허브를 엮어 완성한 5티어 불멸의 갑옷입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
+    "icon": "🛡️",
+    "gradeLevel": 1,
+    "requiredGold": 1200,
+    "requiredItems": [
+      {
+        "item": "item_nutrition_essence",
+        "name": "🍱 정제된 영양의 정수",
+        "count": 8
+      },
+      {
+        "item": "item_stainless_shard",
+        "name": "✨ 특수 강화 스텐 조각",
+        "count": 5
+      },
+      {
+        "item": "item_wood",
+        "name": "🪵 단단한 목재",
+        "count": 12
+      },
+      {
+        "item": "item_herb",
+        "name": "🌿 향긋한 허브",
+        "count": 10
+      }
+    ],
+    "unscramble": {
+      "korean": "강한 결심은 모든 어려운 도전으로부터 우리를 지켜줍니다.",
+      "words": [
+        "Strong",
+        "determination",
+        "protects",
+        "us",
+        "from",
+        "every",
+        "difficult",
+        "challenge."
+      ],
+      "correct": "Strong determination protects us from every difficult challenge."
+    },
+    "result": {
+      "item": "equip_immortal_armor",
+      "name": "불멸의 열정 갑옷",
+      "icon": "🛡️",
+      "type": "equipment",
+      "slot": "armor",
+      "stats": {
+        "atk": 0,
+        "def": 30,
+        "hp": 35
+      },
+      "effect": "5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)"
+    },
+    "requiredLevel": 12
+  },
+  {
     "id": "recipe_heritage_sword",
     "name": "1897 숭실 헤리티지 소드 (1897 Heritage Sword)",
     "category": "heritage",

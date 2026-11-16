@@ -4873,5 +4873,680 @@
     ],
     "answer": "but",
     "explanation": "두 오믈렛의 생김새는 다르지만 둘 다 매우 인기 있다는 대조의 의미이므로 역접 접속사 but이 알맞습니다."
+  },
+  {
+    "id": "q8_1",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 영어 단어 'donate'의 알맞은 뜻은?",
+    "options": [
+      "기부하다",
+      "훔치다",
+      "숨기다",
+      "포기하다"
+    ],
+    "answer": "기부하다",
+    "explanation": "'donate'는 돈이나 물건을 도움이 필요한 사람에게 '기부하다'라는 뜻입니다."
+  },
+  {
+    "id": "q8_2",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 영영풀이에 해당하는 8단원 핵심 단어는?\n\"to do helpful work for others without asking for money\"",
+    "options": [
+      "volunteer",
+      "charge",
+      "borrow",
+      "complain"
+    ],
+    "answer": "volunteer",
+    "explanation": "'volunteer'는 대가를 바라지 않고 남을 돕는 '자원봉사하다 / 자원봉사자'라는 뜻입니다."
+  },
+  {
+    "id": "q8_3",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 들어갈 가장 알맞은 말은?\n\"We raised money for a children's _______ to buy warm clothes.\"",
+    "options": [
+      "charity",
+      "traffic",
+      "mistake",
+      "shadow"
+    ],
+    "answer": "charity",
+    "explanation": "'charity'는 자선 단체 또는 자선 행위를 뜻합니다."
+  },
+  {
+    "id": "q8_4",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 '이웃'을 뜻하는 영어 단어는?",
+    "options": [
+      "neighbor",
+      "stranger",
+      "customer",
+      "passenger"
+    ],
+    "answer": "neighbor",
+    "explanation": "'neighbor'는 '이웃(사람)'을 의미합니다. (stranger 낯선 사람, customer 손님, passenger 승객)"
+  },
+  {
+    "id": "q8_5",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 단어는?\n\"Please _______ your snacks with your friends.\"",
+    "options": [
+      "share",
+      "waste",
+      "drop",
+      "lock"
+    ],
+    "answer": "share",
+    "explanation": "'share A with B'는 'A를 B와 나누다(공유하다)'라는 핵심 표현입니다."
+  },
+  {
+    "id": "q8_6",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "'generous'의 뜻으로 가장 알맞은 것은?",
+    "options": [
+      "관대한, 아낌없이 주는",
+      "이기적인, 욕심 많은",
+      "게으른, 느린",
+      "화난, 무서운"
+    ],
+    "answer": "관대한, 아낌없이 주는",
+    "explanation": "'generous'는 남에게 베풀기 좋아하는 '관대한, 후한'이라는 뜻입니다."
+  },
+  {
+    "id": "q8_7",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 문장의 빈칸에 들어갈 겨울 방한용품은?\n\"It is snowing outside. Put this warm wool _______ around your neck.\"",
+    "options": [
+      "scarf",
+      "eraser",
+      "spoon",
+      "ticket"
+    ],
+    "answer": "scarf",
+    "explanation": "목에 두르는 따뜻한 털실 물건은 'scarf(목도리)'입니다."
+  },
+  {
+    "id": "q8_8",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "단어와 뜻의 연결이 잘못된 것은?",
+    "options": [
+      "blanket - 장갑",
+      "glove - 장갑",
+      "coat - 외투, 코트",
+      "present - 선물"
+    ],
+    "answer": "blanket - 장갑",
+    "explanation": "'blanket'은 '담요'라는 뜻입니다. 장갑은 'glove'입니다."
+  },
+  {
+    "id": "q8_9",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 표현은?\n\"These shoes are too expensive. I can't _______ them.\"",
+    "options": [
+      "afford",
+      "forget",
+      "invite",
+      "invent"
+    ],
+    "answer": "afford",
+    "explanation": "'afford'는 '(금전적·시간적) 여유가 되다, ~을 살 형편이 되다'라는 뜻입니다."
+  },
+  {
+    "id": "q8_10",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 '할인, 염가 판매'와 가장 관련이 깊은 단어는?",
+    "options": [
+      "sale",
+      "sail",
+      "salt",
+      "sand"
+    ],
+    "answer": "sale",
+    "explanation": "'on sale'은 '할인 판매 중인'이라는 뜻입니다. (sail 항해하다, salt 소금, sand 모래)"
+  },
+  {
+    "id": "q8_11",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "문맥상 빈칸에 들어갈 알맞은 단어는?\n\"She has a warm _______. She always helps sick animals.\"",
+    "options": [
+      "heart",
+      "knee",
+      "ceiling",
+      "pocket"
+    ],
+    "answer": "heart",
+    "explanation": "'have a warm heart'는 '따뜻한 마음을 가지다'라는 표현입니다."
+  },
+  {
+    "id": "q8_12",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 '가격'을 뜻하는 영어 단어는?",
+    "options": [
+      "price",
+      "prize",
+      "pride",
+      "place"
+    ],
+    "answer": "price",
+    "explanation": "'price'는 가격, 'prize'는 상, 'pride'는 자부심, 'place'는 장소입니다."
+  },
+  {
+    "id": "q8_13",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 대화의 빈칸에 알맞은 말은?\nA: _______________ are these gloves?\nB: They're 12,000 won.",
+    "options": [
+      "How much",
+      "How many",
+      "How old",
+      "How tall"
+    ],
+    "answer": "How much",
+    "explanation": "가격을 물을 때는 'How much is/are ~?'를 사용합니다."
+  },
+  {
+    "id": "q8_14",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "어법에 맞는 가격 대답으로 올바른 것은?\nA: How much are those winter socks?\nB: ______________________",
+    "options": [
+      "They're 5,000 won.",
+      "It's 5,000 won.",
+      "There is 5,000 won.",
+      "Yes, they are."
+    ],
+    "answer": "They're 5,000 won.",
+    "explanation": "질문의 주어가 복수(those winter socks)이므로 'They're ~(금액).'로 답해야 합니다."
+  },
+  {
+    "id": "q8_15",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "가게에서 점원이 손님에게 도움을 제안할 때 건네는 자연스러운 말은?\nA: Welcome! _______________\nB: Yes, I'm looking for a warm scarf.",
+    "options": [
+      "May I help you?",
+      "Where do you live?",
+      "What time is lunch?",
+      "Are you sleepy?"
+    ],
+    "answer": "May I help you?",
+    "explanation": "상점에서 점원이 손님에게 도움을 제안할 때 'May I help you?(도와드릴까요?)'라고 말합니다."
+  },
+  {
+    "id": "q8_16",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 대화에서 손님이 물건을 사겠다고 결정할 때 하는 표현은?\nA: They are 15,000 won.\nB: Good price! ____________",
+    "options": [
+      "I'll take them.",
+      "I'll break them.",
+      "Look at me.",
+      "See you yesterday."
+    ],
+    "answer": "I'll take them.",
+    "explanation": "물건을 구매하겠다고 결정할 때는 'I'll take it/them.(이것으로 살게요.)'라고 말합니다."
+  },
+  {
+    "id": "q8_17",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 대화의 빈칸에 알맞은 말은?\nA: I don't like buying new clothes.\nB: ___________?\nA: Because I want to save money and help others.",
+    "options": [
+      "Why not",
+      "Who is it",
+      "What color",
+      "When did you"
+    ],
+    "answer": "Why not",
+    "explanation": "상대방의 부정문에 대해 '왜 아니니?(왜 싫어하니?)'라고 이유를 되물을 때 'Why not?'을 씁니다."
+  },
+  {
+    "id": "q8_18",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "이유를 묻는 질문에 가장 자연스럽게 답한 것은?\nA: Why do you volunteer every Saturday?\nB: ______________________",
+    "options": [
+      "Because helping neighbors makes me happy.",
+      "In the library at 3 p.m.",
+      "They are 10,000 won.",
+      "I bought two apples."
+    ],
+    "answer": "Because helping neighbors makes me happy.",
+    "explanation": "'Why ~?'로 이유를 물으면 'Because + 주어 + 동사 ~' 형태로 이유를 답합니다."
+  },
+  {
+    "id": "q8_19",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "옷가게에서 '이 코트를 한번 입어 봐도 될까요?'를 영어로 바르게 표현한 것은?",
+    "options": [
+      "Can I try this coat on?",
+      "Can I throw this coat away?",
+      "Did you buy this coat yesterday?",
+      "How heavy is this coat?"
+    ],
+    "answer": "Can I try this coat on?",
+    "explanation": "'try ~ on'은 옷이나 신발을 '(구매 전에) 입어/신어 보다'라는 표현입니다."
+  },
+  {
+    "id": "q8_20",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 빈칸에 알맞은 전치사(접속사)를 고르세요.\nA: Why didn't you go to the flea market?\nB: _______ the heavy rain.",
+    "options": [
+      "Because of",
+      "Because",
+      "So",
+      "However"
+    ],
+    "answer": "Because of",
+    "explanation": "뒤에 주어+동사 문장이 아니라 명사구(the heavy rain)가 왔으므로 전치사구 'Because of'가 알맞습니다."
+  },
+  {
+    "id": "q8_21",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "바자회(flea market)에서 값을 깎아주거나 할인이 있는지 물을 때 쓸 수 있는 말은?",
+    "options": [
+      "Can I get a discount?",
+      "Can I wash the dishes?",
+      "What grade are you in?",
+      "How fast can you run?"
+    ],
+    "answer": "Can I get a discount?",
+    "explanation": "'get a discount'는 '할인을 받다'라는 뜻입니다."
+  },
+  {
+    "id": "q8_22",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 대화의 흐름상 어색한 문장을 고르세요.\n① A: Look at this handmade hat!\n② B: Wow, it's cute. How much is it?\n③ A: I went to Busan last winter.\n④ B: Really? Let's buy one for the charity box.",
+    "options": [
+      "③",
+      "①",
+      "②",
+      "④"
+    ],
+    "answer": "③",
+    "explanation": "가격을 묻는 말(How much is it?)에 지난 겨울 부산 여행 이야기를 한 ③이 흐름상 어색합니다."
+  },
+  {
+    "id": "q8_23",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 대화에서 A가 바자회를 여는 목적은?\nA: Why are you selling your old toys?\nB: Because I want to donate the money to a shelter.",
+    "options": [
+      "모은 돈을 보호소에 기부하려고",
+      "새 게임기를 혼자 사려고",
+      "장난감이 고장 나서 버리려고",
+      "숙제를 대신 해 달라고 하려고"
+    ],
+    "answer": "모은 돈을 보호소에 기부하려고",
+    "explanation": "'donate the money to a shelter'는 '그 돈을 보호소에 기부하다'라는 의미입니다."
+  },
+  {
+    "id": "q8_24",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 형태로 짝지어진 것은?\n\"I gave _______ _______. (나는 스노우맨 아저씨에게 내 목도리를 주었다.)\"",
+    "options": [
+      "Mr. Snowman / my scarf",
+      "my scarf / Mr. Snowman",
+      "for Mr. Snowman / my scarf",
+      "of my scarf / Mr. Snowman"
+    ],
+    "answer": "Mr. Snowman / my scarf",
+    "explanation": "4형식 문장은 '주어 + 동사 + 간접목적어(~에게) + 직접목적어(~을/를)' 어순입니다."
+  },
+  {
+    "id": "q8_25",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 4형식 문장을 3형식으로 바꿀 때 빈칸에 알맞은 전치사는?\n\"Minho showed me his photo.\" = \"Minho showed his photo _______ me.\"",
+    "options": [
+      "to",
+      "for",
+      "of",
+      "with"
+    ],
+    "answer": "to",
+    "explanation": "'show, give, send, teach, tell' 등은 3형식 전환 시 전치사 'to'를 씁니다."
+  },
+  {
+    "id": "q8_26",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 들어갈 알맞은 전치사는?\n\"My dad bought a warm coat _______ my little sister.\"",
+    "options": [
+      "for",
+      "to",
+      "of",
+      "at"
+    ],
+    "answer": "for",
+    "explanation": "'buy, make, cook, get, find' 등은 3형식 전환 시 정성·노력이 들어가므로 전치사 'for'를 씁니다."
+  },
+  {
+    "id": "q8_27",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 전치사는?\n\"She made hot soup _______ the old man.\"",
+    "options": [
+      "for",
+      "to",
+      "of",
+      "on"
+    ],
+    "answer": "for",
+    "explanation": "'make'는 3형식으로 바꿀 때 전치사 'for'를 사용합니다."
+  },
+  {
+    "id": "q8_28",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 전치사는?\n\"Can I ask a favor _______ you?\"",
+    "options": [
+      "of",
+      "for",
+      "to",
+      "by"
+    ],
+    "answer": "of",
+    "explanation": "'ask'는 3형식 전환 시 전치사 'of'를 씁니다. (ask a favor of you: 부탁 하나 하다)"
+  },
+  {
+    "id": "q8_29",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 3형식 전환 시 전치사 'for'를 쓰는 동사끼리만 묶인 것은?",
+    "options": [
+      "buy, make, cook",
+      "give, send, show",
+      "teach, tell, lend",
+      "give, buy, ask"
+    ],
+    "answer": "buy, make, cook",
+    "explanation": "buy, make, cook, get, find는 'for', give/send/show/teach/tell/lend는 'to', ask는 'of'를 씁니다."
+  },
+  {
+    "id": "q8_30",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 어법상 틀린 문장은?",
+    "options": [
+      "He sent a postcard for his grandmother.",
+      "He sent his grandmother a postcard.",
+      "He sent a postcard to his grandmother.",
+      "I taught my friend English."
+    ],
+    "answer": "He sent a postcard for his grandmother.",
+    "explanation": "'send'는 3형식에서 전치사 'for'가 아니라 'to'를 씁니다."
+  },
+  {
+    "id": "q8_31",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "우리말 '그녀는 우리에게 재미있는 이야기를 해 주었다.'를 바르게 영작한 것은?",
+    "options": [
+      "She told us an interesting story.",
+      "She told an interesting story us.",
+      "She told to us an interesting story.",
+      "She made us an interesting story."
+    ],
+    "answer": "She told us an interesting story.",
+    "explanation": "'tell + 간접목적어(us) + 직접목적어(an interesting story)' 어순이 올바릅니다."
+  },
+  {
+    "id": "q8_32",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "두 문장의 뜻이 같도록 빈칸에 알맞은 말을 넣으세요.\n\"Grandma knitted me a sweater.\" = \"Grandma knitted _______ _______ _______.\"",
+    "options": [
+      "a sweater for me",
+      "a sweater to me",
+      "me for a sweater",
+      "a sweater of me"
+    ],
+    "answer": "a sweater for me",
+    "explanation": "직접목적어(a sweater)를 앞으로 옮기면 make/knit 계열은 'for + 사람'이 됩니다."
+  },
+  {
+    "id": "q8_33",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 전치사가 나머지 셋과 다른 하나는?\n① She gave the book ___ Tom.\n② I wrote a letter ___ my teacher.\n③ He cooked dinner ___ his mom.\n④ They passed the ball ___ Kevin.",
+    "options": [
+      "③",
+      "①",
+      "②",
+      "④"
+    ],
+    "answer": "③",
+    "explanation": "give, write, pass는 'to'를 쓰고, ③의 cook은 'for'를 씁니다."
+  },
+  {
+    "id": "q8_34",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 어법상 옳은 문장을 고르세요.",
+    "options": [
+      "Did you lend him your umbrella?",
+      "Did you lend your umbrella for him?",
+      "Did you buy to her a birthday card?",
+      "Did you show for me the map?"
+    ],
+    "answer": "Did you lend him your umbrella?",
+    "explanation": "'lend + 간접목적어(him) + 직접목적어(your umbrella)'는 올바른 4형식 문장입니다. (lend는 3형식에서 to)"
+  },
+  {
+    "id": "q8_35",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "'유나는 나에게 한국어를 가르쳐 준다.'를 3형식으로 바르게 옮긴 것은?",
+    "options": [
+      "Yuna teaches Korean to me.",
+      "Yuna teaches Korean for me.",
+      "Yuna teaches me to Korean.",
+      "Yuna teaches Korean of me."
+    ],
+    "answer": "Yuna teaches Korean to me.",
+    "explanation": "'teach'는 3형식 문장에서 전치사 'to'를 사용합니다."
+  },
+  {
+    "id": "q8_36",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 말은?\n\"Ted is _______ _______ Matt. (테드는 맷보다 더 작다.)\"",
+    "options": [
+      "smaller than",
+      "more small than",
+      "smallest than",
+      "small than"
+    ],
+    "answer": "smaller than",
+    "explanation": "짧은 형용사 'small'의 비교급은 '-er'을 붙여 'smaller than'으로 씁니다."
+  },
+  {
+    "id": "q8_37",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 들어갈 올바른 비교급 표현은?\n\"This wool coat is _______ _______ than that thin jacket.\"",
+    "options": [
+      "more expensive",
+      "expensiver",
+      "most expensive",
+      "expensive"
+    ],
+    "answer": "more expensive",
+    "explanation": "3음절 이상 긴 형용사 'expensive'의 비교급은 앞에 'more'를 붙입니다."
+  },
+  {
+    "id": "q8_38",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 원급과 비교급의 연결이 잘못된 것은?",
+    "options": [
+      "good - gooder",
+      "big - bigger",
+      "heavy - heavier",
+      "helpful - more helpful"
+    ],
+    "answer": "good - gooder",
+    "explanation": "'good(좋은)'은 불규칙 변화를 하므로 비교급이 'better'입니다."
+  },
+  {
+    "id": "q8_39",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "단모음+단자음으로 끝나 자음을 하나 더 쓰고 '-er'을 붙이는 단어는?",
+    "options": [
+      "hot",
+      "warm",
+      "cold",
+      "nice"
+    ],
+    "answer": "hot",
+    "explanation": "'hot'은 단모음+단자음으로 끝나므로 마지막 자음 t를 한 번 더 써서 'hotter'가 됩니다."
+  },
+  {
+    "id": "q8_40",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 들어갈 알맞은 말은?\n\"Sharing with others makes our town _______ _______ than before.\"",
+    "options": [
+      "much warmer",
+      "very warmer",
+      "many warmer",
+      "warmest"
+    ],
+    "answer": "much warmer",
+    "explanation": "비교급을 강조하여 '훨씬 더 ~한'을 나타낼 때는 'much, far, a lot, even, still'을 쓰며 'very'는 쓸 수 없습니다."
+  },
+  {
+    "id": "q8_41",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 불규칙 비교급은?\n\"Helping people together is _______ than doing it alone.\"",
+    "options": [
+      "better",
+      "more good",
+      "best",
+      "well"
+    ],
+    "answer": "better",
+    "explanation": "'good'의 비교급은 'better'이며 'than'과 함께 쓰여 '~보다 더 좋다'는 뜻이 됩니다."
+  },
+  {
+    "id": "q8_42",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 중 어법상 어색한(틀린) 문장은?",
+    "options": [
+      "My bag is more heavier than yours.",
+      "Winter in Seoul is colder than in Busan.",
+      "This scarf is softer than that one.",
+      "Health is more important than money."
+    ],
+    "answer": "My bag is more heavier than yours.",
+    "explanation": "'more'와 '-er'은 중복 사용할 수 없습니다. 'heavier than'이라고 써야 맞습니다."
+  },
+  {
+    "id": "q8_43",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "다음 우리말을 바르게 영작한 것은?\n'이 담요는 저 담요보다 더 넓고 더 가볍다.'",
+    "options": [
+      "This blanket is wider and lighter than that one.",
+      "This blanket is wide and light than that one.",
+      "This blanket is more wide and more light than that one.",
+      "This blanket is widest and lightest than that one."
+    ],
+    "answer": "This blanket is wider and lighter than that one.",
+    "explanation": "'wide'는 -e로 끝나므로 'wider', 'light'는 'lighter'가 됩니다."
+  },
+  {
+    "id": "q8_44",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "'bad(나쁜)'의 비교급으로 알맞은 것은?",
+    "options": [
+      "worse",
+      "badder",
+      "more bad",
+      "worst"
+    ],
+    "answer": "worse",
+    "explanation": "'bad'의 비교급은 불규칙 형태인 'worse(더 나쁜)', 최상급은 'worst'입니다."
+  },
+  {
+    "id": "q8_45",
+    "grade": 1,
+    "unit": "8단원 (L8. Give Your Hand, Give Your Heart)",
+    "category": "curriculum",
+    "question": "빈칸에 알맞은 말은?\n\"Which bag is _______, the red one or the green one?\"",
+    "options": [
+      "prettier",
+      "prettyer",
+      "more pretty",
+      "prettiest"
+    ],
+    "answer": "prettier",
+    "explanation": "'자음+y'로 끝나는 형용사 'pretty'는 y를 i로 고치고 '-er'을 붙여 'prettier'가 됩니다."
   }
 ]

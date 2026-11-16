@@ -196,9 +196,9 @@ try {
 console.log('\n8. Checking Live Server Endpoints (http://localhost:3000)...');
 const http = require('http');
 
-function testEndpoint(pathUrl) {
+function testEndpoint(pathUrl, headers = {}) {
   return new Promise((resolve) => {
-    http.get(`http://127.0.0.1:3000${pathUrl}`, (res) => {
+    http.get(`http://127.0.0.1:3000${pathUrl}`, { headers }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
@@ -207,6 +207,36 @@ function testEndpoint(pathUrl) {
     }).on('error', (err) => {
       resolve({ error: err.message });
     });
+  });
+}
+
+function getTeacherToken() {
+  return new Promise((resolve) => {
+    const payload = JSON.stringify({ password: process.env.TEACHER_PASSWORD || '03220322' });
+    const req = http.request({
+      hostname: '127.0.0.1',
+      port: 3000,
+      path: '/api/teacher-auth',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          resolve(parsed.token || '');
+        } catch (e) {
+          resolve('');
+        }
+      });
+    });
+    req.on('error', () => resolve(''));
+    req.write(payload);
+    req.end();
   });
 }
 
@@ -226,19 +256,27 @@ function testEndpoint(pathUrl) {
     }
   }
 
+  const teacherToken = await getTeacherToken();
+  if (!teacherToken) {
+    console.error('  [FAIL] POST /api/teacher-auth failed to issue token');
+    pass = false;
+  }
+
   const endpoints = [
     { url: '/', expectStatus: 200 },
     { url: '/api/quiz?grade=1', expectStatus: 200 },
-    { url: '/api/admin/all-students-progress', expectStatus: 200 },
+    { url: '/api/admin/all-students-progress', expectStatus: 401, label: '/api/admin/all-students-progress (unauthenticated)' },
+    { url: '/api/admin/all-students-progress', headers: { 'X-Teacher-Token': teacherToken }, expectStatus: 200, label: '/api/admin/all-students-progress (authenticated)' },
     { url: '/api/admin/download-item-drops-excel', expectStatus: 200 }
   ];
 
   for (const ep of endpoints) {
-    const res = await testEndpoint(ep.url);
+    const res = await testEndpoint(ep.url, ep.headers || {});
+    const label = ep.label || ep.url;
     if (res.status === ep.expectStatus) {
-      console.log(`  [OK] ${ep.url} -> HTTP ${res.status} (${res.contentType || 'unknown'})`);
+      console.log(`  [OK] ${label} -> HTTP ${res.status} (${res.contentType || 'unknown'})`);
     } else {
-      console.error(`  [FAIL] ${ep.url} -> ${res.error || 'HTTP ' + res.status}`);
+      console.error(`  [FAIL] ${label} -> ${res.error || 'HTTP ' + res.status} (expected ${ep.expectStatus})`);
       pass = false;
     }
   }

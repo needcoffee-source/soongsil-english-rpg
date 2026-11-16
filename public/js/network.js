@@ -102,6 +102,10 @@ class NetworkManager {
       if (selfData.isTeacher !== undefined) {
         this.engine.player.isTeacher = selfData.isTeacher;
       }
+      if (selfData.teacherToken && window.MainApp && window.MainApp.playerData) {
+        window.MainApp.playerData.teacherToken = selfData.teacherToken;
+        window.MainApp.playerData.teacherPwd = '';
+      }
     });
 
     this.socket.on('current_room_players', (playersList) => {
@@ -168,8 +172,21 @@ class NetworkManager {
       if (el) el.remove();
     });
 
+    this.socket.on('chat_message', (data) => {
+      if (!data) return;
+      if (data.system || !data.senderName) {
+        if (data.message) this.addSystemChat(data.message);
+      } else {
+        this.renderChat(data);
+      }
+    });
+
     this.socket.on('chat_muted', ({ message }) => {
-      alert(`⚠️ ${message}`);
+      if (window.RPGDialog && typeof window.RPGDialog.show === 'function') {
+        window.RPGDialog.show('채팅 제한 안내', message, '⚠️');
+      } else {
+        alert(`⚠️ ${message}`);
+      }
     });
 
     // Teacher Announcements
@@ -521,10 +538,21 @@ class NetworkManager {
     row.className = 'chat-bubble-row';
     row.id = item.id;
     const isTeacher = item.isTeacher || item.senderName === '교사' || item.senderName === '갓준철';
-    const senderTag = isTeacher 
-      ? `<span class="chat-sender" style="color:#f59e0b; font-weight:bold;">[교사 ${item.senderName || '갓준철'}]:</span>`
-      : `<span class="chat-sender">[${item.senderName}]:</span>`;
-    row.innerHTML = `${senderTag} <span class="chat-text">${item.text}</span>`;
+    const senderSpan = document.createElement('span');
+    senderSpan.className = 'chat-sender';
+    if (isTeacher) {
+      senderSpan.style.color = '#f59e0b';
+      senderSpan.style.fontWeight = 'bold';
+      senderSpan.textContent = `[교사 ${item.senderName || '갓준철'}]:`;
+    } else {
+      senderSpan.textContent = `[${item.senderName || '학생'}]:`;
+    }
+    const textSpan = document.createElement('span');
+    textSpan.className = 'chat-text';
+    textSpan.textContent = item.text || '';
+    row.appendChild(senderSpan);
+    row.appendChild(document.createTextNode(' '));
+    row.appendChild(textSpan);
     this.chatMessagesEl.appendChild(row);
     this.chatMessagesEl.scrollTop = this.chatMessagesEl.scrollHeight;
   }
@@ -541,7 +569,12 @@ class NetworkManager {
 
   // 1:1 Trade Methods (Disabled per teacher policy)
   requestTrade(targetId, targetName) {
-    alert('🤝 학생 간 1:1 교환 기능은 현재 비활성화되어 있습니다.\n아이템이나 골드가 필요하면 선생님께 요청하세요!');
+    const msg = '학생 간 1:1 교환 기능은 현재 비활성화되어 있습니다.\n아이템이나 골드가 필요하면 선생님께 요청하세요!';
+    if (window.RPGDialog && typeof window.RPGDialog.show === 'function') {
+      window.RPGDialog.show('거래 안내', msg, '🤝');
+    } else {
+      alert(`🤝 ${msg}`);
+    }
     return;
   }
 
@@ -690,7 +723,7 @@ class NetworkManager {
       this.socket.emit('teacher_toggle_server_state', {
         isOpen,
         message,
-        pwd: '03220322'
+        token: (window.MainApp && window.MainApp.playerData && window.MainApp.playerData.teacherToken) || ''
       });
     }
   }

@@ -111,23 +111,23 @@ console.log('✔ [2/5] Engine warpToRoom defensive safeguard maps playground_* t
 engine.player.room = 'room_staff_office';
 engine.player.x = 23 * 32;
 engine.player.y = 12 * 32; // outside meeting room (y >= 11)
-engine.player.level = 5; // Level < 12
+engine.player.level = 8; // Level < 10
 
 // Attempt to step into meeting room (tx: 23, ty: 9)
 const blockedForLowLevel = engine.checkCollision(23 * 32, 9 * 32);
 assert.strictEqual(blockedForLowLevel, true, 'checkCollision should block Level 5 student from entering meeting room');
 
-// Level 12 student stepping into meeting room
-engine.player.level = 12;
+// Level 10 student stepping into meeting room
+engine.player.level = 10;
 const openForHighLevel = engine.checkCollision(23 * 32, 9 * 32);
-assert.strictEqual(openForHighLevel, false, 'checkCollision should allow Level 12 student to enter meeting room doorway');
+assert.strictEqual(openForHighLevel, false, 'checkCollision should allow Level 10 student to enter meeting room doorway');
 
 // Teacher stepping into meeting room even if level 1
 engine.player.level = 1;
 engine.player.isTeacher = true;
 const openForTeacher = engine.checkCollision(23 * 32, 9 * 32);
 assert.strictEqual(openForTeacher, false, 'checkCollision should allow teacher to enter meeting room');
-console.log('✔ [3/5] Engine meeting room access control verified (Lv < 12 blocked, Lv >= 12 & Teacher allowed)');
+console.log('✔ [3/5] Engine meeting room access control verified (Lv < 10 blocked, Lv >= 10 & Teacher allowed)');
 
 // 3. Load other required scripts then main.js
 const files = [
@@ -218,19 +218,19 @@ app.handleCafeteriaKeySafeInteraction();
 assert(window.RPGDialog.lastMsg.includes('봉인된 문서 보관함'), 'Should show sealed safe prompt');
 assert(!app.hasItem('item_cafeteria_key'), 'Should NOT grant key when unequipped');
 
-// Equip standard 1897 set with sword
+// Equip standard 1897 3-piece set with sword (shoes/boots excluded!)
 app.playerData.equipment.helmet = { item: 'equip_heritage_helmet' };
 app.playerData.equipment.armor = { item: 'equip_heritage_armor' };
-app.playerData.equipment.shoes = { item: 'equip_heritage_boots' };
+app.playerData.equipment.shoes = null;
 app.playerData.equipment.weapon = { item: 'equip_heritage_blade' };
 
 check = app.is1897HeritageSetEquipped(true);
-assert.strictEqual(check.isComplete, true, '1897 blade set should be complete');
+assert.strictEqual(check.isComplete, true, '1897 3-piece blade set (without boots) should be complete');
 assert.strictEqual(check.weaponName, '1897 숭실 헤리티지 블레이드');
 
-// Interact with safe with 1897 blade
+// Interact with safe with 1897 3-piece blade set
 app.handleCafeteriaKeySafeInteraction();
-assert(app.hasItem('item_cafeteria_key'), 'Should grant item_cafeteria_key with full 1897 set');
+assert(app.hasItem('item_cafeteria_key'), 'Should grant item_cafeteria_key with 1897 3-piece set (without boots)');
 assert.strictEqual(app.playerData.hasCafeteriaKey, true, 'hasCafeteriaKey flag should be set');
 assert(window.RPGDialog.lastMsg.includes('결계 해제'), 'Should show seal broken success message');
 
@@ -248,14 +248,14 @@ assert(app.hasItem('item_cafeteria_key'), 'Should grant item_cafeteria_key with 
 assert(window.RPGDialog.lastMsg.includes('전설의 컴싸 마법봉'), 'Success message should mention 컴싸 마법봉');
 
 // 6. Test Cafeteria Entrance
-// Case A: Level < 12
-app.playerData.level = 10;
+// Case A: Level < 10
+app.playerData.level = 8;
 window.RPGDialog.lastMsg = null;
 app.handleCafeteriaEntranceInteraction();
-assert(window.RPGDialog.lastMsg.includes('12레벨 이상부터 입장할 수 있습니다'), 'Should deny Level < 12');
+assert(window.RPGDialog.lastMsg.includes('10레벨 이상부터 입장할 수 있습니다'), 'Should deny Level < 10');
 
-// Case B: Level >= 12 but no key
-app.playerData.level = 12;
+// Case B: Level >= 10 but no key
+app.playerData.level = 10;
 app.playerData.inventory = app.playerData.inventory.filter(i => i.item !== 'item_cafeteria_key');
 app.playerData.hasCafeteriaKey = false;
 window.RPGDialog.lastMsg = null;
@@ -264,12 +264,12 @@ assert(window.RPGDialog.lastMsg.includes('급식실에 입장하려면 [🔑 급
 assert(!window.RPGDialog.lastMsg.includes('1897'), 'Should NOT spoil 1897 set requirements at the door');
 assert(!window.RPGDialog.lastMsg.includes('소회의실'), 'Should NOT spoil meeting room safe location at the door');
 
-// Case C: Level >= 12 AND has key
+// Case C: Level >= 10 AND has key
 app.playerData.inventory.push({ item: 'item_cafeteria_key', count: 1 });
 app.playerData.hasCafeteriaKey = true;
 window.RPGDialog.lastMsg = null;
 app.handleCafeteriaEntranceInteraction();
-assert(window.RPGDialog.lastMsg.includes('정문 개방 성공'), 'Should open door when level >= 12 and key held');
+assert(window.RPGDialog.lastMsg.includes('정문 개방 성공'), 'Should open door when level >= 10 and key held');
 assert(!window.RPGDialog.lastMsg.includes('대규모 급식 콘텐츠가 곧 오픈됩니다'), 'Should delete deprecated opening notice');
 
 // Verify warp into cafeteria room
@@ -330,11 +330,11 @@ document.getElementById = (id) => {
 app.quizManager.questions = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/questions_grade1.json'), 'utf8'));
 
 app.startFieldMonsterBattle(historyMob);
-assert(badgeEl.innerText.includes('6단원'), 'History monster battle badge must indicate 6단원');
+assert(badgeEl.innerText.includes('5~6단원'), 'History monster battle badge must indicate 5~6단원');
 assert(badgeEl.innerText.includes('숭실 역사관'), 'History monster battle badge must mention 숭실 역사관');
 assert.strictEqual(logEl.innerHTML, '', 'Initial action log guide banner should be empty/hidden');
-assert(app.fieldBattleQuestion && app.fieldBattleQuestion.unit.includes('6단원'), 'Loaded question must be from 6단원 (The Beauty of Art)');
-console.log('✔ [6/6] Soongsil History Hall monsters verified to quiz 6단원 questions!');
+assert(app.fieldBattleQuestion && (app.fieldBattleQuestion.unit.includes('5단원') || app.fieldBattleQuestion.unit.includes('6단원')), 'Loaded question must be from 5단원 or 6단원');
+console.log('✔ [6/6] Soongsil History Hall monsters verified to quiz 5~6단원 questions!');
 
 console.log('\n========================================');
 console.log('🎉 ALL TESTS PASSED SUCCESSFULLY! (6/6)');

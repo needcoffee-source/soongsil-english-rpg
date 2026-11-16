@@ -220,8 +220,8 @@ app.playerData.equippedTitle = '📚 지혜의 탐구자';
 app.updatePlayerNameDisplay();
 assert(app.playerData.equippedTitle === null, 'updatePlayerNameDisplay purges 📚 지혜의 탐구자 from equipped title');
 
-// Test Missing Books Quest (3번 구현 - Lv.4 이상 수락 가능)
-app.playerData.level = 4;
+// Test Missing Books Quest (3번 구현 - Lv.8 이상 수락 가능)
+app.playerData.level = 8;
 app.acceptQuest('quest_library_missing_books');
 const q = app.playerData.quests['quest_library_missing_books'];
 assert(q && q.status === 'in_progress', 'Quest quest_library_missing_books is in progress');

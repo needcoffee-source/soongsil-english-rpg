@@ -3,7 +3,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-function postJson(urlPath, data) {
+function postJson(urlPath, data, headers = {}) {
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify(data);
     const req = http.request({
@@ -13,7 +13,8 @@ function postJson(urlPath, data) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload)
+        'Content-Length': Buffer.byteLength(payload),
+        ...headers
       }
     }, res => {
       let body = '';
@@ -29,9 +30,9 @@ function postJson(urlPath, data) {
   });
 }
 
-function getJson(urlPath) {
+function getJson(urlPath, headers = {}) {
   return new Promise((resolve, reject) => {
-    http.get(`http://127.0.0.1:3000${urlPath}`, res => {
+    http.get(`http://127.0.0.1:3000${urlPath}`, { headers }, res => {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
@@ -61,8 +62,22 @@ async function runTests() {
   }
 
   try {
-    console.log('🧪 [TEST 1] GET /api/admin/all-students-progress');
-  const res1 = await getJson('/api/admin/all-students-progress');
+    console.log('🧪 [TEST 0] Unauthenticated /api/admin/all-students-progress check & POST /api/teacher-auth');
+    const unauthRes = await getJson('/api/admin/all-students-progress');
+    if (unauthRes.status !== 401) {
+      throw new Error(`Expected HTTP 401 for unauthenticated admin request, got ${unauthRes.status}`);
+    }
+    const authRes = await postJson('/api/teacher-auth', { password: process.env.TEACHER_PASSWORD || '03220322' });
+    if (authRes.status !== 200 || !authRes.data || !authRes.data.token) {
+      throw new Error(`Teacher auth failed: ${authRes.status}`);
+    }
+    const authHeaders = { 'X-Teacher-Token': authRes.data.token };
+
+    console.log('\n🧪 [TEST 1] GET /api/admin/all-students-progress');
+  const res1 = await getJson('/api/admin/all-students-progress', authHeaders);
+  if (res1.status !== 200 || !res1.data || !res1.data.students) {
+    throw new Error(`TEST 1 failed: HTTP ${res1.status}`);
+  }
   console.log('Result 1:', res1.status, Object.keys(res1.data.students || {}));
 
   console.log('\n🧪 [TEST 2] POST /api/save-progress (Create / Update student 99999)');
@@ -91,7 +106,10 @@ async function runTests() {
   }
 
   console.log('\n🧪 [TEST 4] POST /api/admin/delete-student-progress (Delete student 99999)');
-  const res4 = await postJson('/api/admin/delete-student-progress', { studentId: '99999' });
+  const res4 = await postJson('/api/admin/delete-student-progress', { studentId: '99999' }, authHeaders);
+  if (res4.status !== 200) {
+    throw new Error(`TEST 4 failed: HTTP ${res4.status}`);
+  }
   console.log('Result 4:', res4.status, res4.data);
 
   console.log('\n🧪 [TEST 5] GET /api/load-progress?studentId=99999 (Verify deleted with tombstone)');

@@ -795,12 +795,53 @@ body, html {
   color: #a1a1aa;
 }
 .input-group input {
+  width: 100%;
+  box-sizing: border-box;
   background: #27272a;
   border: 1px solid #52525b;
   border-radius: 8px;
   padding: 10px 12px;
   color: #fff;
   font-size: 15px;
+}
+#student-id-sync-badge:empty,
+#student-pin-mode-badge:empty {
+  display: none;
+}
+.email-domain-input-wrap {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+  background: #27272a;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+.email-domain-input-wrap:focus-within {
+  border-color: #38bdf8;
+}
+.input-group .email-domain-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  outline: none;
+}
+.email-domain-suffix {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: #18181b;
+  color: #38bdf8;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-left: 1px solid #3f3f46;
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
 }
 
 .server-options {
@@ -1257,6 +1298,8 @@ body, html {
 
 /* High-Contrast Inputs for Teacher Control Tower */
 .teacher-card input[type="text"],
+.teacher-card input[type="url"],
+.teacher-card input[type="email"],
 .teacher-card input[type="number"],
 .teacher-card select,
 .teacher-card textarea {
@@ -1273,6 +1316,8 @@ body, html {
 }
 
 .teacher-card input[type="text"]:focus,
+.teacher-card input[type="url"]:focus,
+.teacher-card input[type="email"]:focus,
 .teacher-card input[type="number"]:focus,
 .teacher-card select:focus,
 .teacher-card textarea:focus {
@@ -2036,8 +2081,8 @@ body, html {
 .leaderboard-list {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  max-height: 270px;
+  gap: 6px;
+  max-height: min(56vh, 440px);
   overflow-y: auto;
   overflow-x: hidden !important;
   width: 100%;
@@ -2047,15 +2092,21 @@ body, html {
 
 .leaderboard-item {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  gap: 6px 10px;
+  padding: 8px 11px;
   background: rgba(30, 41, 59, 0.85);
   border: 1.5px solid #334155;
   border-radius: 8px;
   width: 100%;
   box-sizing: border-box;
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.leaderboard-item.offline {
+  opacity: 0.88;
 }
 
 .leaderboard-item:hover {
@@ -2111,9 +2162,32 @@ body, html {
 
 .leaderboard-right {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
+}
+
+.leaderboard-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 5px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.leaderboard-status-pill.online {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.6);
+  color: #34d399;
+}
+
+.leaderboard-status-pill.offline {
+  background: rgba(100, 116, 139, 0.22);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  color: #94a3b8;
 }
 
 .leaderboard-level-pill {
@@ -2122,7 +2196,29 @@ body, html {
   color: #34d399;
   font-size: 11.5px;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.leaderboard-atk-pill {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(248, 113, 113, 0.65);
+  color: #fca5a5;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.leaderboard-def-pill {
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(96, 165, 250, 0.65);
+  color: #93c5fd;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -3006,5 +3102,73 @@ body, html {
   }
   .quest-tracker-quest-name {
     font-size: 11.5px;
+  }
+}
+
+/* ========================================================
+   TEACHER BOSS META PREVIEW & RESPONSIVE LAYOUT (v284 UX)
+   ======================================================== */
+.admin-boss-meta-preview {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid #38bdf8;
+  color: #bae6fd;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 6px 0 8px;
+}
+
+@media (max-width: 960px), (max-aspect-ratio: 4/5) {
+  #game-container {
+    flex-direction: column;
+  }
+  #game-viewport-col {
+    flex: none;
+    width: 100%;
+    height: 58vh;
+    border-right: none;
+    border-bottom: 3px solid #2d3036;
+  }
+  #game-sidebar-col {
+    flex: 1;
+    width: 100%;
+    height: 42vh;
+    min-width: 0;
+    overflow-y: auto;
+  }
+  #canvas-header-bar {
+    height: auto;
+    min-height: 40px;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 10px;
+  }
+  .location-tag {
+    font-size: 12.5px;
+    padding: 2px 10px;
+  }
+  .btn-top-quick {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  #dpad-container {
+    bottom: 12px;
+    left: 12px;
+    transform: scale(0.86);
+    transform-origin: bottom left;
+  }
+  #mobile-actions-container {
+    transform: scale(0.86);
+    transform-origin: bottom right;
+  }
+  .modal-card {
+    width: 95%;
+    max-height: 90vh;
+  }
+  .admin-chat-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }

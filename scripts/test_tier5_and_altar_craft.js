@@ -41,12 +41,15 @@ assert.ok(equipIds.includes('recipe_leather_armor'), 'Equipment station must hav
 assert.ok(equipIds.includes('recipe_bronze_sword'), 'Equipment station must have bronze sword');
 assert.ok(equipIds.includes('recipe_bronze_helmet'), 'Equipment station must have bronze helmet');
 assert.ok(equipIds.includes('recipe_bronze_armor'), 'Equipment station must have bronze armor');
+assert.ok(equipIds.includes('recipe_immortal_sword'), 'Equipment station must have Tier 5 immortal sword');
+assert.ok(equipIds.includes('recipe_immortal_helmet'), 'Equipment station must have Tier 5 immortal helmet');
+assert.ok(equipIds.includes('recipe_immortal_armor'), 'Equipment station must have Tier 5 immortal armor');
 
 // Assert 1897 Heritage set is NOT in equipment station
 assert.ok(!equipIds.includes('recipe_heritage_sword'), '1897 sword must be REMOVED from corridor equipment station');
 assert.ok(!equipIds.includes('recipe_heritage_helmet'), '1897 helmet must be REMOVED from corridor equipment station');
 assert.ok(!equipIds.includes('recipe_heritage_armor'), '1897 armor must be REMOVED from corridor equipment station');
-console.log('✅ Check 1 Passed: Corridor equipment station has wood/leather/bronze only (1897 removed).');
+console.log('✅ Check 1 Passed: Corridor equipment station has wood/leather/bronze/immortal (1897 removed).');
 
 // Test History Altar Crafting (역사관 제단)
 cm.currentCategory = 'heritage';
@@ -69,7 +72,7 @@ const vm = require('vm');
 const clientSandbox = {};
 vm.runInNewContext(mainJs.slice(mainJs.indexOf('const ALL_GAME_ITEMS = {'), mainJs.indexOf('window.ALL_GAME_ITEMS = ALL_GAME_ITEMS;')) + '\nthis.clientItems = ALL_GAME_ITEMS;', clientSandbox);
 const serverSandbox = {};
-vm.runInNewContext(serverJs.slice(serverJs.indexOf('const ALL_GAME_ITEMS = {'), serverJs.indexOf('const BAD_WORDS =')) + '\nthis.serverItems = ALL_GAME_ITEMS;', serverSandbox);
+vm.runInNewContext(serverJs.slice(serverJs.indexOf('const ALL_GAME_ITEMS = {'), serverJs.indexOf('function computeStudentCombatStats(')) + '\nthis.serverItems = ALL_GAME_ITEMS;', serverSandbox);
 const clientItems = clientSandbox.clientItems;
 const serverItems = serverSandbox.serverItems;
 
@@ -77,19 +80,30 @@ const tier5Ids = ['equip_immortal_blade', 'equip_immortal_helmet', 'equip_immort
 tier5Ids.forEach(id => {
   assert.ok(clientItems[id], `Client ALL_GAME_ITEMS must contain ${id}`);
   assert.ok(serverItems[id], `Server ALL_GAME_ITEMS must contain ${id}`);
-  assert.strictEqual(clientItems[id].meta.requiredLevel, 13, `${id} must have requiredLevel 13`);
-  assert.strictEqual(serverItems[id].meta.requiredLevel, 13, `${id} must have requiredLevel 13`);
+  assert.strictEqual(clientItems[id].meta.requiredLevel, 12, `${id} must have requiredLevel 12`);
+  assert.strictEqual(serverItems[id].meta.requiredLevel, 12, `${id} must have requiredLevel 12`);
 });
 
 // Check exact stats
 assert.strictEqual(JSON.stringify(clientItems['equip_immortal_blade'].meta.stats), JSON.stringify({ atk: 60, def: 0, hp: 35 }));
 assert.strictEqual(JSON.stringify(clientItems['equip_immortal_helmet'].meta.stats), JSON.stringify({ atk: 0, def: 25, hp: 35 }));
 assert.strictEqual(JSON.stringify(clientItems['equip_immortal_armor'].meta.stats), JSON.stringify({ atk: 0, def: 30, hp: 35 }));
-console.log('✅ Check 4 Passed: 5-tier Immortal Set stats (+60/35, +25/35, +35/35, Lv.13) verified.');
+console.log('✅ Check 4 Passed: 5-tier Immortal Set stats (+60/35, +25/35, +35/35, Lv.12) verified.');
 
-// Check 5: Crafting of Tier 5 is currently disabled (not in craft_recipes.json)
-assert.ok(!craftRecipes.some(r => r.id.includes('immortal')), '5-tier Immortal set must NOT be craftable yet in craft_recipes.json');
-console.log('✅ Check 5 Passed: 5-tier Immortal set is not in recipes (crafting locked).');
+// Check 5: Crafting of Tier 5 is unlocked with cafeteria materials + wood + herb (Lv.12)
+const immortalRecipes = ['recipe_immortal_sword', 'recipe_immortal_helmet', 'recipe_immortal_armor'].map(id => {
+  const r = craftRecipes.find(x => x.id === id);
+  assert.ok(r, `craft_recipes.json must include ${id}`);
+  assert.strictEqual(r.requiredLevel, 12, `${id} must require Lv.12`);
+  const reqIds = r.requiredItems.map(x => x.item);
+  ['item_nutrition_essence', 'item_stainless_shard', 'item_wood', 'item_herb'].forEach(mat => {
+    assert.ok(reqIds.includes(mat), `${id} must require ${mat}`);
+  });
+  assert.strictEqual(r.unscramble.words.join(' '), r.unscramble.correct, `${id} unscramble words must match correct sentence`);
+  return r;
+});
+assert.strictEqual(immortalRecipes.length, 3, 'All 3 Tier 5 Immortal recipes verified');
+console.log('✅ Check 5 Passed: 5-tier Immortal set crafting recipes (cafeteria + wood + herb, Lv.12) verified.');
 
 // Check 6: Sloth God preset in index.html & main.js
 assert.ok(indexHtml.includes('🦥 방학 직전 나태신 (축구장 서쪽 골대 · HP 15000 / ATK 120 / DEF 35)'), 'index.html sloth preset updated');
