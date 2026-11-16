@@ -516,6 +516,34 @@ function saveServerGateState() {
   }
 }
 
+function applyServerGateStateChange(isOpen, message = '', updatedBy = '교사') {
+  serverGateState.isOpen = !!isOpen;
+  if (message) serverGateState.closedMessage = message;
+  serverGateState.updatedAt = Date.now();
+  serverGateState.updatedBy = updatedBy || '교사';
+  saveServerGateState();
+
+  io.emit('server_state_changed', getPublicServerGatePayload());
+
+  if (!serverGateState.isOpen) {
+    const studentIds = Object.keys(players).filter(id => !players[id].isTeacher);
+    for (const sId of studentIds) {
+      const studentSocket = io.sockets.sockets.get(sId);
+      if (studentSocket) {
+        studentSocket.emit('force_save_and_exit', {
+          message: '선생님께서 수업을 종료하여 서버를 닫았습니다.\n지금까지의 모든 진행 상황이 안전하게 저장되었습니다.'
+        });
+      }
+      delete players[sId];
+    }
+    broadcastStudentList();
+  }
+
+  const statusText = serverGateState.isOpen ? '🟢 서버 개방 (수업 시작)' : '🔴 서버 닫힘 (수업 종료)';
+  io.emit('teacher_action_alert', { message: `[알림] 선생님에 의해 ${statusText} 상태로 전환되었습니다.` });
+  return getPublicServerGatePayload();
+}
+
 let plantWaterCount = 0;
 if (fs.existsSync(PLANT_FILE)) {
   try {
@@ -688,6 +716,14 @@ app.get('/api/auth-config', (req, res) => {
 });
 
 app.post('/api/auth/student-login', async (req, res) => {
+  if (!serverGateState.isOpen) {
+    const closedMsg = serverGateState.closedMessage || '지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!';
+    return res.status(403).json({
+      success: false,
+      serverClosed: true,
+      error: `🔒 [서버 닫힘 안내]\n\n${closedMsg}`
+    });
+  }
   const body = parseJsonBody(req.body);
   const studentId = String(body.studentId || '').trim();
   const name = String(body.name || '').trim();
@@ -938,6 +974,14 @@ app.post('/api/auth/student-login', async (req, res) => {
 });
 
 app.post('/api/auth/emergency-student', (req, res) => {
+  if (!serverGateState.isOpen) {
+    const closedMsg = serverGateState.closedMessage || '지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!';
+    return res.status(403).json({
+      success: false,
+      serverClosed: true,
+      error: `🔒 [서버 닫힘 안내]\n\n${closedMsg}`
+    });
+  }
   if (!serverGateState.allowEmergencyStudentLogin) {
     return res.status(403).json({
       success: false,
@@ -1120,6 +1164,15 @@ app.post('/api/admin/restore-progress', requireTeacherHttp, (req, res) => {
 
 app.get('/api/server-status', (req, res) => {
   res.json(getPublicServerGatePayload());
+});
+
+app.post('/api/admin/server-gate', requireTeacherHttp, (req, res) => {
+  const body = parseJsonBody(req.body);
+  if (typeof body.isOpen !== 'boolean') {
+    return res.status(400).json({ success: false, error: 'isOpen 값이 필요합니다.' });
+  }
+  const payload = applyServerGateStateChange(body.isOpen, body.message || '', '교사');
+  return res.json({ success: true, ...payload });
 });
 
 app.post('/api/admin/auth-settings', requireTeacherHttp, (req, res) => {
@@ -2722,6 +2775,7 @@ io.on('connection', (socket) => {
         reason: 'server_closed',
         message: serverGateState.closedMessage || "지금은 서버 점검 및 수업 준비 중입니다.\n선생님께서 서버를 개방하실 때까지 잠시 대기해주세요!"
       });
+      setTimeout(() => { try { socket.disconnect(true); } catch (_) {} }, 150);
       return;
     }
 
@@ -3019,37 +3073,12 @@ io.on('connection', (socket) => {
   // 🔒 Teacher Server Open/Close Toggle (수업 시작 / 종료 제어)
   socket.on('teacher_toggle_server_state', (payload = {}) => {
     if (!isAuthorizedTeacherSocket(socket, payload)) {
-      socket.emit('teacher_action_alert', { message: '⚠️ 교사 권한이 없어 서버 상태를 변경할 수 없습니다.' });
+      socket.emit('teacher_action_alert', { message: '⚠️ 교사 권한이 없어 서버 상태를 변경할 수 없습니다. (새로고침 후 재로그인 필요)' });
       return;
     }
     const { isOpen, message } = payload;
-
-    serverGateState.isOpen = !!isOpen;
-    if (message) serverGateState.closedMessage = message;
-    serverGateState.updatedAt = Date.now();
-    serverGateState.updatedBy = (players[socket.id] && players[socket.id].name) || '교사';
-    saveServerGateState();
-
-    // Broadcast state change to all clients
-    io.emit('server_state_changed', getPublicServerGatePayload());
-
-    // When closing server, safely save & exit all current student players
-    if (!serverGateState.isOpen) {
-      const studentIds = Object.keys(players).filter(id => !players[id].isTeacher);
-      for (const sId of studentIds) {
-        const studentSocket = io.sockets.sockets.get(sId);
-        if (studentSocket) {
-          studentSocket.emit('force_save_and_exit', {
-            message: '선생님께서 수업을 종료하여 서버를 닫았습니다.\n지금까지의 모든 진행 상황이 안전하게 저장되었습니다.'
-          });
-        }
-        delete players[sId];
-      }
-      broadcastStudentList();
-    }
-
-    const statusText = serverGateState.isOpen ? '🟢 서버 개방 (수업 시작)' : '🔴 서버 닫힘 (수업 종료)';
-    io.emit('teacher_action_alert', { message: `[알림] 선생님에 의해 ${statusText} 상태로 전환되었습니다.` });
+    const actor = (players[socket.id] && players[socket.id].name) || '교사';
+    applyServerGateStateChange(!!isOpen, message || '', actor);
   });
 
   // Teacher Moderation Tools

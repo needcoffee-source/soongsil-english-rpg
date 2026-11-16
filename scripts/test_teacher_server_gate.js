@@ -237,5 +237,113 @@ assert(domElements['btn-teacher-toggle-server'].innerText.includes('서버 열�
 assert(domElements['btn-teacher-hud-server-toggle'].innerText.includes('서버 닫힘'), 'HUD button must show 서버 닫힘');
 console.log('  ✓ UI rendered correctly for CLOSED server state');
 
-console.log('\n🎉 ALL TEACHER SERVER GATE TESTS COMPLETED SUCCESSFULLY!');
-process.exit(0);
+// Check new server-side & client-side enforcement guards
+assert(serverJs.includes('/api/admin/server-gate'), 'server.js must expose /api/admin/server-gate');
+assert(serverJs.includes('serverClosed: true'), 'server.js login endpoints must reject with serverClosed when closed');
+assert(mainJs.includes('if (this._loopRafId)') && mainJs.includes('onServerEntryRejected'), 'main.js must stop loop & disconnect on rejected entry');
+
+// -----------------------------------------------------------------------------
+// 4. Live Server HTTP Gate Enforcement Verification
+// -----------------------------------------------------------------------------
+async function runLiveHttpGateTest() {
+  const { spawn } = require('child_process');
+  const statePath = path.join(__dirname, '../data/server_state.json');
+  const origState = fs.existsSync(statePath) ? fs.readFileSync(statePath, 'utf8') : null;
+  const reqJson = (port, method, urlPath, data, headers = {}) => new Promise((resolve, reject) => {
+    const payload = data ? JSON.stringify(data) : '';
+    const req = http.request({
+      hostname: '127.0.0.1',
+      port,
+      path: urlPath,
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(payload ? { 'Content-Length': Buffer.byteLength(payload) } : {}),
+        ...headers
+      }
+    }, res => {
+      let body = '';
+      res.on('data', c => body += c);
+      res.on('end', () => {
+        try { resolve({ status: res.statusCode, data: JSON.parse(body) }); }
+        catch (_) { resolve({ status: res.statusCode, raw: body }); }
+      });
+    });
+    req.on('error', reject);
+    if (payload) req.write(payload);
+    req.end();
+  });
+
+  let proc = null;
+  const testPort = 3456;
+  try {
+    proc = spawn(process.execPath, ['server.js'], {
+      cwd: path.join(__dirname, '..'),
+      env: { ...process.env, PORT: String(testPort) },
+      stdio: 'ignore'
+    });
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 200));
+      try {
+        const ping = await reqJson(testPort, 'GET', '/api/health');
+        if (ping.status === 200) break;
+      } catch (_) {}
+    }
+
+    const teacherPwd = process.env.TEACHER_PASSWORD || '03220322';
+    const adminHeaders = { 'X-Teacher-Pwd': teacherPwd };
+
+    // Close server via HTTP gate API
+    const closeRes = await reqJson(testPort, 'POST', '/api/admin/server-gate', { isOpen: false }, adminHeaders);
+    assert.strictEqual(closeRes.status, 200);
+    assert.strictEqual(closeRes.data.isOpen, false);
+
+    // Public /api/server-status reflects closed
+    const statusRes = await reqJson(testPort, 'GET', '/api/server-status');
+    assert.strictEqual(statusRes.status, 200);
+    assert.strictEqual(statusRes.data.isOpen, false);
+
+    // Student login MUST return 403 serverClosed: true
+    const stuLogin = await reqJson(testPort, 'POST', '/api/auth/student-login', {
+      studentId: '10199',
+      name: '차단테스트',
+      email: 'block@senedu.kr',
+      pin: '1234'
+    });
+    assert.strictEqual(stuLogin.status, 403, 'Closed server must reject /api/auth/student-login with 403');
+    assert.strictEqual(stuLogin.data.serverClosed, true);
+
+    // Emergency student login MUST return 403 serverClosed: true
+    const emLogin = await reqJson(testPort, 'POST', '/api/auth/emergency-student', {
+      studentId: '10199',
+      name: '차단테스트'
+    });
+    assert.strictEqual(emLogin.status, 403, 'Closed server must reject /api/auth/emergency-student with 403');
+    assert.strictEqual(emLogin.data.serverClosed, true);
+
+    // Teacher login STILL works when server is closed
+    const teacherAuth = await reqJson(testPort, 'POST', '/api/teacher-auth', { password: teacherPwd });
+    assert.strictEqual(teacherAuth.status, 200);
+    assert(teacherAuth.data.token);
+
+    // Re-open server
+    const openRes = await reqJson(testPort, 'POST', '/api/admin/server-gate', { isOpen: true }, adminHeaders);
+    assert.strictEqual(openRes.status, 200);
+    assert.strictEqual(openRes.data.isOpen, true);
+    console.log('  ✓ Live HTTP /api/admin/server-gate + student-login 403 blocking verified');
+  } finally {
+    if (proc) proc.kill();
+    if (origState !== null) fs.writeFileSync(statePath, origState, 'utf8');
+    else if (fs.existsSync(statePath)) fs.unlinkSync(statePath);
+  }
+}
+
+runLiveHttpGateTest()
+  .then(() => {
+    console.log('\n🎉 ALL TEACHER SERVER GATE TESTS COMPLETED SUCCESSFULLY!');
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error('❌ Live HTTP server gate test failed:', err);
+    process.exit(1);
+  });

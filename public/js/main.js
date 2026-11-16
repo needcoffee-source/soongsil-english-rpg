@@ -5337,6 +5337,19 @@ class MainApp {
       let studentId = document.getElementById('input-student-id').value.trim();
       const grade = parseInt(document.querySelector('input[name="server-grade"]:checked').value) || 1;
 
+      if (!isTeacher) {
+        try {
+          const gateRes = await fetch('/api/server-status', { method: 'GET', cache: 'no-store' });
+          if (gateRes.ok) {
+            this.isServerOnline = true;
+            const gateData = await gateRes.json();
+            if (gateData && typeof gateData.isOpen === 'boolean') {
+              this.onServerStateSync(gateData);
+            }
+          }
+        } catch (_) {}
+      }
+
       if (!this.isServerOnline && !isTeacher) {
         const proceed = confirm('⚠️ 현재 서버 응답이 지연되거나 오프라인 상태입니다.\n\n계속 입장하시겠습니까?');
         if (!proceed) return;
@@ -5460,6 +5473,11 @@ class MainApp {
             });
             const authData = await authRes.json();
             if (!authRes.ok || !authData || !authData.success) {
+              if (authData && authData.serverClosed) {
+                this.isServerOpen = false;
+                this.serverClosedMessage = authData.error || '';
+                this.updateServerGateUI();
+              }
               alert((authData && authData.error) || '학생 로그인 인증에 실패했습니다.');
               return;
             }
@@ -5480,6 +5498,11 @@ class MainApp {
               });
               const emData = await emRes.json();
               if (!emRes.ok || !emData || !emData.success) {
+                if (emData && emData.serverClosed) {
+                  this.isServerOpen = false;
+                  this.serverClosedMessage = emData.error || '';
+                  this.updateServerGateUI();
+                }
                 alert((emData && emData.error) || '임시 로그인 검증에 실패했습니다.');
                 return;
               }
@@ -13026,16 +13049,33 @@ class MainApp {
   // =========================================================================
   // 🔒 교사 전용 서버 개방/차단 게이트 시스템 (Server Gate System)
   // =========================================================================
-  handleTeacherToggleServer() {
-    if (this.isServerOpen) {
-      const confirmClose = confirm("🔴 정말로 서버를 닫고 수업을 종료하시겠습니까?\n\n• 현재 접속 중인 모든 학생의 경험치/아이템/진행도가 안전하게 저장됩니다.\n• 학생들은 대기 화면으로 이동되며 추가 입장이 차단됩니다.\n• 교사는 계속 서버에 남아 맵 점검 및 수업 준비를 진행할 수 있습니다.");
-      if (confirmClose) {
-        this.networkManager.toggleServerState(false);
+  async handleTeacherToggleServer() {
+    const nextOpen = !this.isServerOpen;
+    const promptMsg = nextOpen
+      ? "🟢 서버를 개방하고 수업을 시작하시겠습니까?\n\n• 대기 중인 모든 학생이 즉시 입장할 수 있게 됩니다."
+      : "🔴 정말로 서버를 닫고 수업을 종료하시겠습니까?\n\n• 현재 접속 중인 모든 학생의 경험치/아이템/진행도가 안전하게 저장됩니다.\n• 학생들은 대기 화면으로 이동되며 추가 입장이 차단됩니다.\n• 교사는 계속 서버에 남아 맵 점검 및 수업 준비를 진행할 수 있습니다.";
+    if (!confirm(promptMsg)) return;
+
+    try {
+      const res = await fetch('/api/admin/server-gate', {
+        method: 'POST',
+        headers: this.getAdminHeaders(),
+        body: JSON.stringify({ isOpen: nextOpen })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        alert('🔒 교사 인증이 만료되었습니다. 새로고침(F5) 후 교사로 다시 로그인해 주세요.');
+        return;
       }
-    } else {
-      const confirmOpen = confirm("🟢 서버를 개방하고 수업을 시작하시겠습니까?\n\n• 대기 중인 모든 학생이 즉시 입장할 수 있게 됩니다.");
-      if (confirmOpen) {
-        this.networkManager.toggleServerState(true);
+      if (!res.ok || !data || !data.success) {
+        throw new Error((data && data.error) || '서버 상태 변경 실패');
+      }
+      this.onServerStateSync(data);
+    } catch (err) {
+      if (this.networkManager && this.networkManager.socket && this.networkManager.socket.connected) {
+        this.networkManager.toggleServerState(nextOpen);
+      } else {
+        alert('❌ 서버 상태를 변경할 수 없습니다: ' + (err && err.message ? err.message : '연결 끊김'));
       }
     }
   }
@@ -13173,14 +13213,30 @@ class MainApp {
   }
 
   onServerEntryRejected(data) {
+    if (this._loopRafId) {
+      cancelAnimationFrame(this._loopRafId);
+      this._loopRafId = null;
+    }
+    if (this.autoSaveInterval) {
+      clearInterval(this.autoSaveInterval);
+      this.autoSaveInterval = null;
+    }
+    if (this.networkManager && this.networkManager.socket) {
+      try { this.networkManager.socket.disconnect(); } catch (_) {}
+    }
     const msg = (data && data.message) ? data.message : '현재 서버가 닫혀 있습니다.';
-    alert('🔒 [서버 닫힘 안내]\n\n' + msg);
+    if (data && data.reason === 'server_closed') {
+      this.isServerOpen = false;
+      this.serverClosedMessage = msg;
+      this.updateServerGateUI();
+    }
     if (this.modalLogin) this.modalLogin.classList.remove('hidden');
     const startBtn = document.getElementById('btn-start-game');
     if (startBtn) {
       startBtn.disabled = false;
       startBtn.innerText = '입장하기 🚀';
     }
+    alert('🔒 [서버 닫힘 안내]\n\n' + msg);
   }
 
   onForceSaveAndExit(data) {
