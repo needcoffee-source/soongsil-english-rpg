@@ -1249,12 +1249,15 @@ body, html {
 .teacher-card {
   max-width: 860px;
   width: 95vw;
+  box-sizing: border-box;
 }
 
 .teacher-body {
   padding: 16px 20px;
   max-height: 75vh;
   overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .teacher-tab-row {
@@ -1339,12 +1342,42 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.teacher-card label > input[type="text"],
+.teacher-card label > input[type="url"],
+.teacher-card label > input[type="email"],
+.teacher-card label > input[type="number"],
+.teacher-card label > select,
+.teacher-card label > textarea {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.teacher-card select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .teacher-card .input-row {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.teacher-card .input-row > * {
+  min-width: 0;
 }
 
 .teacher-card .quiz-manage-box {
@@ -1352,6 +1385,15 @@ body, html {
   border: 1.5px solid #334155;
   border-radius: 12px;
   padding: 18px 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.teacher-body > div {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 /* Broadcast Announcement Tab Styling */
@@ -1363,6 +1405,9 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .broadcast-header-row {
