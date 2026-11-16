@@ -6033,14 +6033,6 @@ class MainApp {
       });
     }
 
-    // Pop Quiz Modal Close
-    const btnClosePopQuiz = document.getElementById('btn-close-pop-quiz');
-    if (btnClosePopQuiz) {
-      btnClosePopQuiz.addEventListener('click', () => {
-        document.getElementById('modal-pop-quiz').classList.add('hidden');
-      });
-    }
-
     // Teacher GM Panel
     const btnNoclip = document.getElementById('btn-gm-noclip');
     if (btnNoclip) {
@@ -9227,10 +9219,18 @@ class MainApp {
       try {
         const res = await fetch('/api/admin/all-students-progress', { headers: this.getAdminHeaders() });
         const data = await res.json();
-        const all = (data && data.students) || {};
-        this._allSavedStudentsData = all;
-
         if (typeof this.loadGoogleSheetsConfigAdmin === 'function') this.loadGoogleSheetsConfigAdmin();
+        if (!res.ok || !data || !data.success) {
+          if (selectEditStudent) {
+            selectEditStudent.innerHTML = (res.status === 401)
+              ? '<option value="">🔒 교사 인증이 만료되었습니다 (새로고침 후 교사 재로그인 필요)</option>'
+              : `<option value="">❌ 목록 불러오기 실패 (${(data && data.error) || res.status})</option>`;
+          }
+          if (formEditStudent) formEditStudent.classList.add('hidden');
+          return;
+        }
+        const all = data.students || {};
+        this._allSavedStudentsData = all;
 
         const ids = Object.keys(all).sort();
         if (selectEditStudent) {
@@ -9694,87 +9694,6 @@ class MainApp {
         } catch (e) {
           alert('설정 변경 중 오류: ' + e.message);
         }
-      });
-    }
-
-    // ========================================================
-    // TEACHER POP QUIZ CONTROLS (돌발 퀴즈 발령)
-    // ========================================================
-    const btnLoadRandomQuiz = document.getElementById('btn-admin-load-random-quiz');
-    if (btnLoadRandomQuiz) {
-      btnLoadRandomQuiz.addEventListener('click', () => {
-        const q = this.quizManager.getRandomQuestion();
-        if (q) {
-          const qEl = document.getElementById('admin-pop-question');
-          if (qEl) qEl.value = q.question;
-          const opts = q.options || [];
-          const o1 = document.getElementById('admin-pop-opt-1'); if (o1) o1.value = opts[0] || '';
-          const o2 = document.getElementById('admin-pop-opt-2'); if (o2) o2.value = opts[1] || '';
-          const o3 = document.getElementById('admin-pop-opt-3'); if (o3) o3.value = opts[2] || '';
-          const o4 = document.getElementById('admin-pop-opt-4'); if (o4) o4.value = opts[3] || '';
-          const correctIdx = opts.indexOf(q.answer) + 1;
-          const aIdx = document.getElementById('admin-pop-answer-index');
-          if (aIdx) aIdx.value = correctIdx > 0 ? String(correctIdx) : '1';
-          const expEl = document.getElementById('admin-pop-explanation');
-          if (expEl) expEl.value = q.explanation || '';
-          alert('🎲 기존 단원 퀴즈가 자동으로 입력되었습니다!\n보상 설정과 제한시간을 확인한 뒤 [발령]을 누르세요.');
-        } else {
-          alert('불러올 수 있는 퀴즈가 없습니다.');
-        }
-      });
-    }
-
-    const btnBroadcastPopQuiz = document.getElementById('btn-admin-broadcast-pop-quiz');
-    if (btnBroadcastPopQuiz) {
-      btnBroadcastPopQuiz.addEventListener('click', () => {
-        const question = (document.getElementById('admin-pop-question').value || '').trim();
-        const opt1 = (document.getElementById('admin-pop-opt-1').value || '').trim();
-        const opt2 = (document.getElementById('admin-pop-opt-2').value || '').trim();
-        const opt3 = (document.getElementById('admin-pop-opt-3').value || '').trim();
-        const opt4 = (document.getElementById('admin-pop-opt-4').value || '').trim();
-        const answerIdx = parseInt(document.getElementById('admin-pop-answer-index').value) || 1;
-        const duration = parseInt(document.getElementById('admin-pop-duration').value) || 30;
-        const explanation = (document.getElementById('admin-pop-explanation').value || '').trim();
-
-        if (!question || !opt1 || !opt2) {
-          alert('문제 내용과 최소 2개 이상의 보기를 입력해 주세요.');
-          return;
-        }
-
-        const options = [opt1, opt2, opt3, opt4].filter(Boolean);
-        const answer = options[answerIdx - 1] || options[0];
-
-        const rewardItemKey = document.getElementById('admin-pop-reward-item').value;
-        const rewardQty = parseInt(document.getElementById('admin-pop-reward-qty').value) || 1;
-        const rewardGold = parseInt(document.getElementById('admin-pop-reward-gold').value) || 0;
-        const rewardExp = parseInt(document.getElementById('admin-pop-reward-exp').value) || 0;
-
-        let rewardItemName = '';
-        let rewardItemIcon = '🎁';
-        if (rewardItemKey !== 'none' && ALL_GAME_ITEMS[rewardItemKey]) {
-          rewardItemName = ALL_GAME_ITEMS[rewardItemKey].name;
-          rewardItemIcon = ALL_GAME_ITEMS[rewardItemKey].icon || '🎁';
-        }
-
-        const quizData = {
-          question,
-          options,
-          answer,
-          explanation,
-          duration,
-          rewardItemKey,
-          rewardItemName,
-          rewardItemIcon,
-          rewardQty,
-          rewardGold,
-          rewardExp
-        };
-
-        if (this.networkManager.socket) {
-          this.networkManager.socket.emit('teacher_start_pop_quiz', quizData);
-        }
-
-        alert(`📢 전교생 돌발 퀴즈가 성공적으로 발령되었습니다!\n(제한시간: ${duration}초)`);
       });
     }
   }
@@ -11011,135 +10930,6 @@ class MainApp {
     if (myCombatEl) {
       myCombatEl.innerText = `⚔️ ${this.playerData.atk || 10} · 🛡️ ${this.playerData.def || 2}`;
     }
-  }
-
-  // ========================================================
-  // TEACHER POP QUIZ CLIENT HANDLER (돌발 퀴즈 모달 & 타이머)
-  // ========================================================
-  onPopQuizStarted(data) {
-    if (!data) return;
-
-    const modal = document.getElementById('modal-pop-quiz');
-    if (!modal) return;
-
-    if (window.AudioManager) {
-      window.AudioManager.playFanfare();
-    }
-
-    // Set reward description
-    const rewardDescEl = document.getElementById('pop-quiz-reward-desc');
-    const rewardParts = [];
-    if (data.rewardItemKey && data.rewardItemKey !== 'none' && data.rewardItemName) {
-      rewardParts.push(`${data.rewardItemIcon || '🎁'} ${data.rewardItemName} x${data.rewardQty || 1}개`);
-    }
-    if (data.rewardGold > 0) rewardParts.push(`🪙 ${data.rewardGold}G`);
-    if (data.rewardExp > 0) rewardParts.push(`🌟 ${data.rewardExp} EXP`);
-    const rewardSummary = rewardParts.length > 0 ? rewardParts.join(' + ') : '명예의 영광';
-    if (rewardDescEl) rewardDescEl.innerText = rewardSummary;
-
-    // Set question
-    document.getElementById('pop-quiz-question').innerText = data.question;
-
-    // Reset feedback & close button
-    const feedbackBox = document.getElementById('pop-quiz-feedback');
-    feedbackBox.classList.add('hidden');
-    const btnClose = document.getElementById('btn-close-pop-quiz');
-    btnClose.classList.add('hidden');
-
-    const optionsGrid = document.getElementById('pop-quiz-options');
-    optionsGrid.innerHTML = '';
-
-    const timerText = document.getElementById('pop-quiz-timer-text');
-    const timerFill = document.getElementById('pop-quiz-timer-fill');
-
-    let timeLeft = data.duration || 30;
-    const totalTime = timeLeft;
-    if (timerText) timerText.innerText = timeLeft;
-    if (timerFill) timerFill.style.width = '100%';
-
-    let answered = false;
-
-    if (this.popQuizTimer) clearInterval(this.popQuizTimer);
-
-    const allButtons = [];
-
-    this.popQuizTimer = setInterval(() => {
-      timeLeft--;
-      if (timerText) timerText.innerText = Math.max(0, timeLeft);
-      if (timerFill) {
-        const pct = Math.max(0, Math.min(100, (timeLeft / totalTime) * 100));
-        timerFill.style.width = `${pct}%`;
-      }
-
-      if (timeLeft <= 0) {
-        clearInterval(this.popQuizTimer);
-        if (!answered) {
-          answered = true;
-          allButtons.forEach(b => b.disabled = true);
-          if (window.AudioManager) window.AudioManager.playWrong();
-          feedbackBox.classList.remove('hidden');
-          document.getElementById('pop-quiz-feedback-icon').innerText = '⏰';
-          document.getElementById('pop-quiz-feedback-text').innerText = '제한시간 초과!';
-          document.getElementById('pop-quiz-feedback-exp').innerText = `정답: '${data.answer}'\n${data.explanation || ''}`;
-          btnClose.classList.remove('hidden');
-        }
-      }
-    }, 1000);
-
-    data.options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-opt-btn';
-      btn.innerText = opt;
-      allButtons.push(btn);
-
-      btn.addEventListener('click', () => {
-        if (answered) return;
-        answered = true;
-        clearInterval(this.popQuizTimer);
-        allButtons.forEach(b => b.disabled = true);
-
-        const isCorrect = (opt === data.answer);
-        if (isCorrect) {
-          btn.classList.add('correct');
-          if (window.AudioManager) {
-            window.AudioManager.playCorrect();
-            setTimeout(() => { if (window.AudioManager) window.AudioManager.playFanfare(); }, 120);
-          }
-
-          // Grant Rewards!
-          if (data.rewardItemKey && data.rewardItemKey !== 'none' && data.rewardItemName) {
-            this.addItem(data.rewardItemKey, data.rewardItemName, data.rewardQty || 1, data.rewardItemIcon || '🎁');
-          }
-          if (data.rewardGold > 0) this.addGold(data.rewardGold);
-          if (data.rewardExp > 0) this.addExp(data.rewardExp);
-
-          if (this.networkManager.socket) {
-            this.networkManager.socket.emit('pop_quiz_solved', {
-              studentName: this.playerData.name,
-              rewardText: rewardSummary
-            });
-          }
-
-          feedbackBox.classList.remove('hidden');
-          document.getElementById('pop-quiz-feedback-icon').innerText = '🎉';
-          document.getElementById('pop-quiz-feedback-text').innerText = '정답입니다! 특별 보상 획득!';
-          document.getElementById('pop-quiz-feedback-exp').innerText = `${data.explanation || ''}\n\n🎁 획득 보상: ${rewardSummary}`;
-        } else {
-          btn.classList.add('wrong');
-          if (window.AudioManager) window.AudioManager.playWrong();
-          feedbackBox.classList.remove('hidden');
-          document.getElementById('pop-quiz-feedback-icon').innerText = '😢';
-          document.getElementById('pop-quiz-feedback-text').innerText = '오답입니다!';
-          document.getElementById('pop-quiz-feedback-exp').innerText = `정답: '${data.answer}'\n${data.explanation || ''}`;
-        }
-
-        btnClose.classList.remove('hidden');
-      });
-
-      optionsGrid.appendChild(btn);
-    });
-
-    modal.classList.remove('hidden');
   }
 
   selectGrantTarget(socketId) {

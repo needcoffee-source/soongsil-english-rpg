@@ -430,13 +430,6 @@ class NetworkManager {
       }
     });
 
-    // Pop Quiz from Teacher
-    this.socket.on('pop_quiz_started', (data) => {
-      if (window.MainApp && window.MainApp.onPopQuizStarted) {
-        window.MainApp.onPopQuizStarted(data);
-      }
-    });
-
     // Plant Water Count Synchronization
     this.socket.on('plant_water_sync', (data) => {
       if (this.engine && this.engine.setPlantWaterCount) {

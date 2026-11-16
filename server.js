@@ -1312,122 +1312,128 @@ app.post('/api/admin/sheets/push-all', requireTeacherHttp, async (req, res) => {
   }
 });
 
+async function syncAllFromGoogleSheet({ quiet = false } = {}) {
+  const result = await callGoogleAppsScript({ action: 'getAll' }, 8000);
+  const sheetRows = Array.isArray(result.rows) ? result.rows : [];
+  const all = getStudentsProgress() || {};
+  const now = Date.now();
+
+  let createdCount = 0;
+  let updatedCount = 0;
+  let pinUpdatedCount = 0;
+  let pinClearedCount = 0;
+  let skippedInvalidPinCount = 0;
+
+  for (const row of sheetRows) {
+    const sid = String((row && row.studentId) || '').trim();
+    if (!sid || sid === '교사' || sid === '학번' || sid.length < 2) continue;
+
+    const sName = String((row && row.name) || '').trim();
+    const sEmail = String((row && row.email) || '').trim().toLowerCase();
+    const sPin = String((row && row.pin) || '').trim();
+    const isPin4 = /^\d{4}$/.test(sPin);
+    const isResetCmd = /^(초기화|reset)$/i.test(sPin);
+    if (sPin && !isPin4 && !isResetCmd) {
+      skippedInvalidPinCount++;
+    }
+
+    const revokeStudentSessions = () => {
+      for (const [tok, sess] of activeStudentSessions.entries()) {
+        if (sess.studentId === sid) activeStudentSessions.delete(tok);
+      }
+    };
+
+    if (all[sid]) {
+      const rec = { ...all[sid] };
+      let changed = false;
+      if (sName && rec.name !== sName) {
+        rec.name = sName;
+        changed = true;
+      }
+      if (sEmail && rec.email !== sEmail) {
+        rec.email = sEmail;
+        changed = true;
+      }
+      const sLv = Number(row && row.level);
+      if (Number.isFinite(sLv) && sLv >= 1 && rec.level !== Math.floor(sLv)) {
+        rec.level = Math.floor(sLv);
+        changed = true;
+      }
+      const sGold = (row && row.gold !== undefined && row.gold !== '') ? Number(row.gold) : NaN;
+      if (Number.isFinite(sGold) && sGold >= 0 && rec.gold !== Math.floor(sGold)) {
+        rec.gold = Math.floor(sGold);
+        changed = true;
+      }
+      if (isPin4 && rec.pinPlain !== sPin) {
+        const { salt, hash } = hashStudentPin(sPin);
+        rec.pinSalt = salt;
+        rec.pinHash = hash;
+        rec.pinPlain = sPin;
+        rec.authProvider = 'pin';
+        revokeStudentSessions();
+        pinUpdatedCount++;
+        changed = true;
+      } else if (isResetCmd && (rec.pinHash || rec.pinPlain)) {
+        delete rec.pinHash;
+        delete rec.pinSalt;
+        delete rec.pinPlain;
+        revokeStudentSessions();
+        pinClearedCount++;
+        changed = true;
+      }
+      if (changed) {
+        rec.updatedAt = now;
+        all[sid] = rec;
+        updatedCount++;
+      }
+    } else {
+      const newRec = {
+        name: sName || `학생_${sid}`,
+        studentId: sid,
+        grade: /^[123]/.test(sid) ? Number(sid[0]) : 1,
+        level: Math.max(1, Number(row.level) || 1),
+        exp: 0,
+        gold: row.gold !== undefined && row.gold !== '' ? Math.max(0, Number(row.gold) || 0) : 10,
+        email: sEmail || '',
+        authProvider: 'pin',
+        registeredAt: now,
+        updatedAt: now
+      };
+      if (isPin4) {
+        const { salt, hash } = hashStudentPin(sPin);
+        newRec.pinSalt = salt;
+        newRec.pinHash = hash;
+        newRec.pinPlain = sPin;
+        pinUpdatedCount++;
+      }
+      all[sid] = newRec;
+      createdCount++;
+    }
+  }
+
+  if (createdCount > 0 || updatedCount > 0) {
+    saveStudentsProgress(all, true);
+  }
+  googleSheetsConfig.lastSyncAt = Date.now();
+  googleSheetsConfig.lastSyncMessage = `시트 가져오기 완료 (신규 ${createdCount}, 갱신 ${updatedCount}, PIN 변경 ${pinUpdatedCount})`;
+  saveGoogleSheetsConfig();
+  if (!quiet || createdCount > 0 || updatedCount > 0) {
+    console.log(`[Google Sheets Sync] rows=${sheetRows.length}, created=${createdCount}, updated=${updatedCount}, pinUpdated=${pinUpdatedCount}`);
+  }
+  return {
+    totalRows: sheetRows.length,
+    createdCount,
+    updatedCount,
+    pinUpdatedCount,
+    pinClearedCount,
+    skippedInvalidPinCount
+  };
+}
+
 app.post('/api/admin/sheets/sync-from-sheet', requireTeacherHttp, async (req, res) => {
   try {
-    const result = await callGoogleAppsScript({ action: 'getAll' }, 8000);
-    const sheetRows = Array.isArray(result.rows) ? result.rows : [];
-    const all = getStudentsProgress() || {};
-    const now = Date.now();
-
-    let createdCount = 0;
-    let updatedCount = 0;
-    let pinUpdatedCount = 0;
-    let pinClearedCount = 0;
-    let skippedInvalidPinCount = 0;
-
-    for (const row of sheetRows) {
-      const sid = String((row && row.studentId) || '').trim();
-      if (!sid || sid === '교사' || sid === '학번' || sid.length < 2) continue;
-
-      const sName = String((row && row.name) || '').trim();
-      const sEmail = String((row && row.email) || '').trim().toLowerCase();
-      const sPin = String((row && row.pin) || '').trim();
-      const isPin4 = /^\d{4}$/.test(sPin);
-      const isResetCmd = /^(초기화|reset)$/i.test(sPin);
-      if (sPin && !isPin4 && !isResetCmd) {
-        skippedInvalidPinCount++;
-      }
-
-      const revokeStudentSessions = () => {
-        for (const [tok, sess] of activeStudentSessions.entries()) {
-          if (sess.studentId === sid) activeStudentSessions.delete(tok);
-        }
-      };
-
-      if (all[sid]) {
-        const rec = { ...all[sid] };
-        let changed = false;
-        if (sName && rec.name !== sName) {
-          rec.name = sName;
-          changed = true;
-        }
-        if (sEmail && rec.email !== sEmail) {
-          rec.email = sEmail;
-          changed = true;
-        }
-        const sLv = Number(row && row.level);
-        if (Number.isFinite(sLv) && sLv >= 1 && rec.level !== Math.floor(sLv)) {
-          rec.level = Math.floor(sLv);
-          changed = true;
-        }
-        const sGold = (row && row.gold !== undefined && row.gold !== '') ? Number(row.gold) : NaN;
-        if (Number.isFinite(sGold) && sGold >= 0 && rec.gold !== Math.floor(sGold)) {
-          rec.gold = Math.floor(sGold);
-          changed = true;
-        }
-        if (isPin4 && rec.pinPlain !== sPin) {
-          const { salt, hash } = hashStudentPin(sPin);
-          rec.pinSalt = salt;
-          rec.pinHash = hash;
-          rec.pinPlain = sPin;
-          rec.authProvider = 'pin';
-          revokeStudentSessions();
-          pinUpdatedCount++;
-          changed = true;
-        } else if (isResetCmd && (rec.pinHash || rec.pinPlain)) {
-          delete rec.pinHash;
-          delete rec.pinSalt;
-          delete rec.pinPlain;
-          revokeStudentSessions();
-          pinClearedCount++;
-          changed = true;
-        }
-        if (changed) {
-          rec.updatedAt = now;
-          all[sid] = rec;
-          updatedCount++;
-        }
-      } else {
-        const newRec = {
-          name: sName || `학생_${sid}`,
-          studentId: sid,
-          grade: /^[123]/.test(sid) ? Number(sid[0]) : 1,
-          level: Math.max(1, Number(row.level) || 1),
-          exp: 0,
-          gold: row.gold !== undefined && row.gold !== '' ? Math.max(0, Number(row.gold) || 0) : 10,
-          email: sEmail || '',
-          authProvider: 'pin',
-          registeredAt: now,
-          updatedAt: now
-        };
-        if (isPin4) {
-          const { salt, hash } = hashStudentPin(sPin);
-          newRec.pinSalt = salt;
-          newRec.pinHash = hash;
-          newRec.pinPlain = sPin;
-          pinUpdatedCount++;
-        }
-        all[sid] = newRec;
-        createdCount++;
-      }
-    }
-
-    if (createdCount > 0 || updatedCount > 0) {
-      saveStudentsProgress(all, true);
-    }
-    googleSheetsConfig.lastSyncAt = Date.now();
-    googleSheetsConfig.lastSyncMessage = `시트 가져오기 완료 (신규 ${createdCount}, 갱신 ${updatedCount}, PIN 변경 ${pinUpdatedCount})`;
-    saveGoogleSheetsConfig();
-
-    return res.json({
-      success: true,
-      totalRows: sheetRows.length,
-      createdCount,
-      updatedCount,
-      pinUpdatedCount,
-      pinClearedCount,
-      skippedInvalidPinCount
-    });
+    const summary = await syncAllFromGoogleSheet({ quiet: false });
+    return res.json({ success: true, ...summary });
   } catch (err) {
     googleSheetsConfig.lastSyncMessage = `가져오기 실패: ${err.message}`;
     saveGoogleSheetsConfig();
@@ -1470,8 +1476,15 @@ app.post('/api/admin/delete-students-by-grade', requireTeacherHttp, (req, res) =
   return res.json({ success: true, deletedCount: deletedIds.length, deletedIds });
 });
 
-app.get('/api/admin/all-students-progress', requireTeacherHttp, (req, res) => {
-  res.json({ success: true, students: getStudentsProgress() });
+app.get('/api/admin/all-students-progress', requireTeacherHttp, async (req, res) => {
+  let all = getStudentsProgress() || {};
+  if (Object.keys(all).length === 0 && isGoogleSheetsReady()) {
+    try {
+      await syncAllFromGoogleSheet({ quiet: true });
+      all = getStudentsProgress() || {};
+    } catch (e) {}
+  }
+  res.json({ success: true, students: all });
 });
 
 app.post('/api/admin/clear-all-students-progress', requireTeacherHttp, (req, res) => {
@@ -3121,23 +3134,6 @@ setInterval(() => {
 }, 1000);
 
   // ========================================================
-  // TEACHER POP QUIZ & REWARD BROADCAST
-  // ========================================================
-  socket.on('teacher_start_pop_quiz', (quizData = {}) => {
-    if (!isAuthorizedTeacherSocket(socket, quizData)) return rejectUnauthorizedTeacherSocket(socket);
-    io.emit('pop_quiz_started', quizData);
-    io.emit('teacher_action_alert', {
-      message: `📢 [돌발 퀴즈] 선생님이 전교생 돌발 퀴즈를 출제했습니다! (제한시간 ${quizData.duration || 30}초)`
-    });
-  });
-
-  socket.on('pop_quiz_solved', ({ studentName, rewardText }) => {
-    io.emit('teacher_action_alert', {
-      message: `🎉 [돌발 퀴즈 정답] '${studentName || '학생'}'이(가) 정답을 맞혀 [${rewardText || '특별 보상'}]을(를) 획득했습니다!`
-    });
-  });
-
-  // ========================================================
   // REAL-TIME LEADERBOARD TOP 10 (ONLINE + OFFLINE) & STATS SYNC
   // ========================================================
   socket.on('get_leaderboard', () => {
@@ -3545,4 +3541,9 @@ server.listen(PORT, () => {
   console.log(`🏫 Soongsil Middle School English RPG Server Running!`);
   console.log(`👉 Access URL: http://localhost:${PORT}`);
   console.log(`===================================================`);
+  if (isGoogleSheetsReady()) {
+    syncAllFromGoogleSheet({ quiet: true }).catch((err) => {
+      console.warn('[Google Sheets Startup Sync Warning]', err && err.message ? err.message : err);
+    });
+  }
 });
