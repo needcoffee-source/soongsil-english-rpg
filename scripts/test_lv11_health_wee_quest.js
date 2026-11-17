@@ -43,8 +43,8 @@ async function runTests() {
     assert(serverJs.includes(`'${qid}'`), `server.js missing ${qid}`);
     assert(mainJs.includes(`'${qid}'`), `main.js missing ${qid}`);
   }
-  assert(serverJs.includes("'equip_healing_brooch'") && mainJs.includes("'equip_healing_brooch'"), 'equip_healing_brooch must exist in server & client');
-  assert(mainJs.includes("'title_heart_guardian'"), 'title_heart_guardian must exist in TITLE_DEFINITIONS');
+  assert(!serverJs.includes("'equip_healing_brooch'") && !mainJs.includes("'equip_healing_brooch'"), 'equip_healing_brooch must be removed');
+  assert(!mainJs.includes("'title_heart_guardian'"), 'title_heart_guardian must be removed');
   assert(worldJs.includes('questId: "quest_health_emergency"'), 'npc_nurse must have questId');
   assert(worldJs.includes('questId: "quest_wee_heart_signal"'), 'npc_counselor_wee must have questId');
   assert(engineJs.includes("'npc_nurse', 'npc_counselor_wee'"), 'engine.js must lookup chained NPC quest status');
@@ -162,31 +162,56 @@ async function runTests() {
       questId: 'quest_health_emergency'
     }, authHeaders);
     assert.strictEqual(act1Ok.status, 200, JSON.stringify(act1Ok));
-    assert.strictEqual(act1Ok.data.gold, 200);
-    assert(act1Ok.data.inventory.some(i => i.item === 'item_elixir' && i.count >= 2));
+    assert.strictEqual(act1Ok.data.gold, 50, 'Act 1 rewards only orange potion x2');
+    assert.strictEqual(act1Ok.data.exp, 0);
+    assert(act1Ok.data.inventory.some(i => i.item === 'item_orange_potion' && i.count === 2));
 
-    // 2d. Complete Act 2 cleanly
+    // 2d. Complete Act 2 cleanly (EXP 350, courage x1, protection x1)
     const act2Ok = await reqJson(testPort, 'POST', '/api/quest/complete', {
       studentId: sid,
       questId: 'quest_wee_heart_signal'
     }, authHeaders);
     assert.strictEqual(act2Ok.status, 200, JSON.stringify(act2Ok));
-    assert.strictEqual(act2Ok.data.gold, 400);
-    assert(act2Ok.data.inventory.some(i => i.item === 'item_courage_potion' && i.count >= 2));
-    assert(act2Ok.data.inventory.some(i => i.item === 'item_protection_potion' && i.count >= 2));
+    assert.strictEqual(act2Ok.data.gold, 50);
+    assert.strictEqual(act2Ok.data.exp, 350);
+    assert.strictEqual(act2Ok.data.level, 11);
+    assert(act2Ok.data.inventory.some(i => i.item === 'item_courage_potion' && i.count === 1));
+    assert(act2Ok.data.inventory.some(i => i.item === 'item_protection_potion' && i.count === 1));
 
-    // 2e. Complete Act 3 Finale cleanly -> brooch + shard + title
+    // 2e. Act 3 MUST require Lv.12 (blocked at Lv.11)
+    const lv11FailAct3 = await reqJson(testPort, 'POST', '/api/quest/complete', {
+      studentId: sid,
+      questId: 'quest_wee_hope_broadcast'
+    }, authHeaders);
+    assert.strictEqual(lv11FailAct3.status, 403, 'Act 3 must require Lv.12');
+
+    // Raise to Lv.12 and complete Act 3 cleanly -> exp 300, gold 200, stainless_shard x2, nutrition_essence x4 (no brooch, no title)
+    await reqJson(testPort, 'POST', '/api/save-progress', {
+      studentId: sid,
+      studentAuthToken: token,
+      progress: {
+        studentId: sid,
+        name: '장편테스터',
+        level: 12,
+        exp: 0,
+        gold: 50,
+        inventory: act2Ok.data.inventory,
+        quests: act2Ok.data.quests
+      }
+    });
     const act3Ok = await reqJson(testPort, 'POST', '/api/quest/complete', {
       studentId: sid,
       questId: 'quest_wee_hope_broadcast'
     }, authHeaders);
     assert.strictEqual(act3Ok.status, 200, JSON.stringify(act3Ok));
-    assert.strictEqual(act3Ok.data.gold, 750);
-    assert(act3Ok.data.inventory.some(i => i.item === 'equip_healing_brooch'), 'Must reward Lv.11 accessory equip_healing_brooch');
-    assert(act3Ok.data.inventory.some(i => i.item === 'item_stainless_shard'), 'Must reward Tier 5 material');
-    assert(Array.isArray(act3Ok.data.titles) && act3Ok.data.titles.includes('🩺🕊️ 숭실 심신 수호자'), 'Must unlock title');
+    assert.strictEqual(act3Ok.data.gold, 250);
+    assert.strictEqual(act3Ok.data.exp, 300);
+    assert(!act3Ok.data.inventory.some(i => i.item === 'equip_healing_brooch'), 'Brooch must NOT be rewarded');
+    assert(act3Ok.data.inventory.some(i => i.item === 'item_stainless_shard' && i.count === 2), 'Must reward 2 stainless shards');
+    assert(act3Ok.data.inventory.some(i => i.item === 'item_nutrition_essence' && i.count === 4), 'Must reward 4 nutrition essences');
+    assert(!Array.isArray(act3Ok.data.titles) || !act3Ok.data.titles.includes('🩺🕊️ 숭실 심신 수호자'), 'Title must NOT be unlocked');
 
-    console.log('✅ Lv.11 3-Act Health Office & Wee Class Feature-Length Quest Suite PASSED!');
+    console.log('✅ Lv.11~12 3-Act Health Office & Wee Class Feature-Length Quest Suite PASSED!');
   } finally {
     if (proc) proc.kill();
     if (backups.progress !== null) fs.writeFileSync(progressPath, backups.progress, 'utf8');
