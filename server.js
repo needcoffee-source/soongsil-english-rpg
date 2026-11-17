@@ -2024,7 +2024,7 @@ const ALL_GAME_ITEMS = {
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', meta: { type: 'quest', effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
   'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
-
+  'equip_healing_brooch': { name: '💖 조화와 치유의 뱃지', icon: '💖', meta: { type: 'equipment', slot: 'accessory', requiredLevel: 11, stats: { atk: 18, def: 10, hp: 40 }, effect: '보건실·Wee클래스 합동 유물 · 공격력 +18, 방어력 +10, 체력 +40 (Lv.11 이상)' } }
 };
 
 function computeStudentCombatStats(record = {}) {
@@ -2270,6 +2270,41 @@ const SERVER_QUEST_DEFINITIONS = {
       { type: 'exp', amount: 200 },
       { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 2, icon: '🍱' },
       { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨' }
+    ]
+  },
+  'quest_health_emergency': {
+    minLevel: 11,
+    isComplete: (q, inv) => (!!q.cabinetChecked && !!q.libRecipeFound && Math.max(getServerInventoryCount(inv, 'item_herb'), Number(q.herbCount) || 0) >= 5),
+    cleanupItems: [],
+    rewards: [
+      { type: 'gold', amount: 150 },
+      { type: 'exp', amount: 350 },
+      { type: 'item', itemKey: 'item_elixir', itemName: '엘릭서', count: 2, icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '사용 시 체력(HP) +60 초대량 즉시 회복' } }
+    ]
+  },
+  'quest_wee_heart_signal': {
+    minLevel: 11,
+    requiresDone: 'quest_health_emergency',
+    isComplete: (q) => (!!q.mailboxChecked && !!q.storageClueFound && !!q.broadcastFixed),
+    cleanupItems: [],
+    rewards: [
+      { type: 'gold', amount: 200 },
+      { type: 'exp', amount: 450 },
+      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기의 물약', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
+      { type: 'item', itemKey: 'item_protection_potion', itemName: '수호의 물약', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } }
+    ]
+  },
+  'quest_wee_hope_broadcast': {
+    minLevel: 11,
+    requiresDone: 'quest_wee_heart_signal',
+    unlockTitle: '🩺🕊️ 숭실 심신 수호자',
+    isComplete: (q) => (!!q.nurseCoopConfirmed && !!q.stageSpeechDone && !!q.teaCeremonyDone),
+    cleanupItems: [],
+    rewards: [
+      { type: 'gold', amount: 350 },
+      { type: 'exp', amount: 700 },
+      { type: 'item', itemKey: 'equip_healing_brooch', itemName: '💖 조화와 치유의 뱃지', count: 1, icon: '💖', meta: { type: 'equipment', slot: 'accessory', requiredLevel: 11, stats: { atk: 18, def: 10, hp: 40 }, effect: '보건실·Wee클래스 합동 유물 · 공격력 +18, 방어력 +10, 체력 +40 (Lv.11 이상)' } },
+      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료' } }
     ]
   }
 };
@@ -2598,6 +2633,12 @@ app.post('/api/quest/complete', (req, res) => {
   if (!auth.isTeacher && qDef.minLevel && pLevel < qDef.minLevel) {
     return res.status(403).json({ success: false, error: `최소 레벨 Lv.${qDef.minLevel} 이상이 필요합니다.` });
   }
+  if (qDef.requiresDone) {
+    const prereq = record.quests[qDef.requiresDone];
+    if (!prereq || prereq.status !== 'done') {
+      return res.status(400).json({ success: false, error: '이전 연계 퀘스트를 먼저 완료해야 합니다.' });
+    }
+  }
 
   record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
   record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
@@ -2616,6 +2657,12 @@ app.post('/api/quest/complete', (req, res) => {
       addServerInventoryItem(record.inventory, r.itemKey, r.itemName, r.count || 1, r.icon || '📦', r.meta || { type: 'material' });
     }
   }
+  if (qDef.unlockTitle) {
+    record.titles = Array.isArray(record.titles) ? [...record.titles] : [];
+    if (!record.titles.includes(qDef.unlockTitle)) {
+      record.titles.push(qDef.unlockTitle);
+    }
+  }
   for (const cleanupId of (qDef.cleanupItems || [])) {
     record.inventory = removeServerInventoryItem(record.inventory, record.equipment, cleanupId, 1);
   }
@@ -2631,7 +2678,8 @@ app.post('/api/quest/complete', (req, res) => {
     exp: record.exp,
     gold: record.gold,
     inventory: record.inventory,
-    quests: record.quests
+    quests: record.quests,
+    titles: record.titles
   });
 });
 

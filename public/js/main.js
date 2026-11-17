@@ -691,7 +691,8 @@ const ALL_GAME_ITEMS = {
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
-  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } }
+  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
+  'equip_healing_brooch': { name: '💖 조화와 치유의 뱃지', icon: '💖', count: 1, meta: { type: 'equipment', slot: 'accessory', requiredLevel: 11, stats: { atk: 18, def: 10, hp: 40 }, effect: '보건실·Wee클래스 합동 유물 · 공격력 +18, 방어력 +10, 체력 +40 (Lv.11 이상)' } }
 
 };
 
@@ -1050,6 +1051,13 @@ const TITLE_DEFINITIONS = [
     id: 'title_time_connector',
     name: '🕰️ 시간을 잇는 자',
     desc: '야외 스탠드 관람석 틈새에 숨겨진 2004년 선배들의 타임캡슐 4단계 추리 퍼즐을 모두 풀고 감동의 편지를 발굴한 모험가!',
+    costType: 'quest',
+    costAmount: 0
+  },
+  {
+    id: 'title_heart_guardian',
+    name: '🩺🕊️ 숭실 심신 수호자',
+    desc: 'Lv.11 장편 모험 [보건실 · Wee클래스 · 체육관 연합 대작전] 3부작을 완결하고 숭실 친구들의 몸과 마음을 지켜낸 전설의 수호자!',
     costType: 'quest',
     costAmount: 0
   }
@@ -1457,6 +1465,196 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' },
       { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 2, icon: '🍱', label: '🍱 정제된 영양의 정수 x2' },
       { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨', label: '✨ 특수 강화 스텐 조각 x1' }
+    ]
+  },
+  'quest_health_emergency': {
+    id: 'quest_health_emergency',
+    minLevel: 11,
+    teacherId: 'npc_nurse',
+    teacherName: '보건 선생님',
+    teacherRole: '3층 보건실',
+    teacherSeat: '보건실 진료석',
+    teacherAvatar: '🩺',
+    category: '🩺 장편 모험 제1막 (Lv.11)',
+    title: '[장편 1막] 보건실 긴급 처방: 사라진 활력의 비약',
+    story: `어서 오렴, Lv.11 이상의 든든한 숭실 탐험가여! 🩺✨
+
+사실 최근 수행평가와 시험 시즌이 겹치며 교내 학생들 사이에 원인 모를 '무기력 졸음 바이러스' 징후가 번지고 있단다.
+임시 처방이 아니라 몸과 마음의 활력을 되살릴 **특제 비약**을 만들어야 하는데, 3가지 핵심 준비물이 학교 곳곳에 흩어져 있어!
+
+1. 💊 **보건실 [응급 구급약 & 약초 캐비닛]**에서 오래된 약초 처방 암호 해독하기
+2. 🔬 **2층 도서관 [자연과학·연금 서가]**에서 '고대 활력 비약 조제법' 찾아내기
+3. 🌿 가방에 **[향긋한 허브] 5개** 모아오기 (1학년 1반 채집 가능)
+
+준비되면 바로 수락하고 학교를 탐험해 다오! (이 모험은 맞은편 Wee클래스로 이어지는 대장정의 시작이란다!)`,
+    inProgressStory: `아직 활력의 비약 재료와 단서가 다 모이지 않았구나!
+
+1. 💊 보건실 [응급 구급약 & 약초 캐비닛] 조사 & 처방전 해독
+2. 🔬 2층 도서관 [자연과학·연금 서가] 조사 & 조제법 해독
+3. 🌿 [향긋한 허브] 5개 이상 소지
+
+모두 준비되면 나에게 다시 보고하렴! 🩺`,
+    completeStory: `대단하구나! 오래된 처방전과 도서관의 비전 조제법, 신선한 허브까지 모두 완벽하게 모았어! 👏✨
+
+덕분에 신체 활력 비약의 기본 토대가 완성되었단다!
+하지만... 진짜 원인은 단순한 피로가 아니라 시험 압박에 지친 학생들의 **'마음'** 속에 있는 것 같아.
+
+복도 맞은편 **🕊️ [3층 Wee클래스 전문상담 선생님]**께 가서 이 진단서를 전하고 **[장편 2막]** 모험을 이어가 주렴!`,
+    doneStory: `네가 찾아낸 조제법 덕분에 학생들의 건강 수치가 쑥쑥 올라가고 있단다! 🩺
+언제든 체력이 떨어지면 보건실 회복 침대에서 100% 쉬어가렴!`,
+    objectives: [
+      {
+        id: 'cabinet_check',
+        text: '3층 보건실 [응급 구급약 & 약초 캐비닛] 조사 & 처방 해독',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.cabinetChecked ? 1 : 0)
+      },
+      {
+        id: 'lib_recipe',
+        text: '2층 도서관 [자연과학·연금 서가]에서 고대 조제법 찾기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.libRecipeFound ? 1 : 0)
+      },
+      {
+        id: 'collect_herbs',
+        text: '가방에 [🌿 향긋한 허브] 5개 이상 모으기 (1-1반 채집)',
+        targetCount: 5,
+        unit: '개',
+        getCount: (quest) => {
+          const invCount = (window.MainApp && typeof window.MainApp.getItemCount === 'function')
+            ? window.MainApp.getItemCount('item_herb')
+            : 0;
+          return Math.min(5, Math.max(invCount, (quest && quest.herbCount) || 0));
+        }
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 150, label: '🪙 150 G (골드)' },
+      { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_elixir', itemName: '엘릭서', count: 2, icon: '⚗️', meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '사용 시 체력(HP) +60 초대량 즉시 회복' }, label: '⚗️ 엘릭서 x2개' }
+    ]
+  },
+  'quest_wee_heart_signal': {
+    id: 'quest_wee_heart_signal',
+    minLevel: 11,
+    requiresDone: 'quest_health_emergency',
+    teacherId: 'npc_counselor_wee',
+    teacherName: 'Wee클래스 전문상담 선생님',
+    teacherRole: '3층 Wee클래스',
+    teacherSeat: '상담실',
+    teacherAvatar: '🕊️',
+    category: '🕊️ 장편 모험 제2막 (Lv.11)',
+    title: '[장편 2막] Wee클래스의 비밀 쪽지와 체육관의 신호',
+    story: `보건 선생님 소개로 왔구나! 정말 반갑단다. 🕊️💖
+
+보건실에서 물리적 피로를 막아주었지만, 오늘 아침 Wee클래스 익명 우체통에서 마음이 꺾여버린 친구의 찢어진 비밀 편지 조각을 발견했어.
+편지에는 **"체육관 창고 구석에 포기한 꿈을 두고 왔다... 방송실 소리마저 끊겼네"**라는 슬픈 단서가 적혀 있더구나!
+
+함께 체육관 안쪽으로 모험을 떠나 친구들의 용기를 되살릴 단서를 찾아줄 수 있겠니?
+
+1. 📬 **3층 Wee클래스 [우체통]**을 열어 비밀 편지 단서 확인하기
+2. 📦 **야외 체육관 [창고]**을 조사해 잃어버린 꿈의 메모 찾기
+3. 🎛️ **야외 체육관 [체육관 방송실]** 콘솔을 수리해 희망 주파수 복구하기`,
+    inProgressStory: `아직 체육관과 상담실의 마음 단서가 모두 모이지 않았어! 🕊️
+
+1. 📬 3층 Wee클래스 [익명 응원 우체통] 단서 읽기
+2. 📦 체육관 [창고] 조사 & 용기 암호 풀기
+3. 🎛️ 체육관 [체육관 방송실] 콘솔 주파수 복구하기
+
+세 곳의 탐험을 모두 마치면 나에게 돌아와 보고해 주렴!`,
+    completeStory: `해냈구나! 체육관 창고 깊숙한 곳의 잃어버린 꿈과, 방송실의 희망 주파수까지 모두 복구했어! 🎉🕊️
+
+이제 마지막 피날레 단계만 남았단다.
+보건 선생님의 신체 활력 비약과 우리 Wee클래스의 희망 스피치를 전교생에게 울려 퍼지게 할 **[장편 완결 3막]** 준비가 되었니?`,
+    doneStory: `자네가 되살려 놓은 체육관 방송실의 주파수에서 지금도 잔잔한 희망의 음률이 흐르고 있단다! 🎛️✨`,
+    objectives: [
+      {
+        id: 'wee_mailbox',
+        text: '3층 Wee클래스 [📬 우체통]에서 찢어진 비밀 편지 확인',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.mailboxChecked ? 1 : 0)
+      },
+      {
+        id: 'gym_storage',
+        text: '체육관 내부 [📦 창고]에서 잃어버린 꿈의 메모 해독',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.storageClueFound ? 1 : 0)
+      },
+      {
+        id: 'gym_broadcast',
+        text: '체육관 내부 [🎛️ 체육관 방송실] 콘솔 주파수 수리하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.broadcastFixed ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 200, label: '🪙 200 G (골드)' },
+      { type: 'exp', amount: 450, label: '🌟 450 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기의 물약', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' }, label: '🧪 용기의 물약 x2' },
+      { type: 'item', itemKey: 'item_protection_potion', itemName: '수호의 물약', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' }, label: '🧪 수호의 물약 x2' }
+    ]
+  },
+  'quest_wee_hope_broadcast': {
+    id: 'quest_wee_hope_broadcast',
+    minLevel: 11,
+    requiresDone: 'quest_wee_heart_signal',
+    unlockTitle: '🩺🕊️ 숭실 심신 수호자',
+    teacherId: 'npc_counselor_wee',
+    teacherName: 'Wee클래스 전문상담 선생님',
+    teacherRole: '3층 Wee클래스 · 연합 완결',
+    teacherSeat: '상담실',
+    teacherAvatar: '💖',
+    category: '💖 장편 모험 완결 3막 (Lv.11)',
+    title: '[장편 완결 3막] 숭실 희망의 종소리: 몸과 마음의 공명',
+    story: `드디어 장편 모험의 대단원, **제3막 피날레**란다! 💖🌟
+
+보건 선생님의 활력 비약과 우리가 복구한 체육관 방송 시스템을 하나로 연결해, 학교 전체에 희망의 종소리를 울려 퍼지게 할 시간이야!
+
+1. 🩺 **3층 보건실 [보건 선생님]**께 1·2막 결과를 보고하고 **[합동 치유 비약 결정]** 인증받기
+2. 🎤 **체육관 [강연 무대]** 단상에 올라 전교생에게 희망의 영어 스피치 선포하기
+3. 🫖 **3층 Wee클래스 [따뜻한 캐모마일 허브차 테이블]**에서 평온의 다과 의식 마치기
+
+모두 마치고 돌아오면 전설의 **Lv.11 합동 유물 장신구**와 **5티어 핵심 제작 재료**, 그리고 영광스러운 특별 칭호를 수여하마!`,
+    inProgressStory: `숭실 희망의 종소리 대작전이 한창 진행 중이란다! 💖
+
+1. 🩺 3층 보건실 [보건 선생님]과 대화해 합동 치유 인증받기
+2. 🎤 체육관 [강연 무대]에서 희망의 영어 스피치 성공하기
+3. 🫖 Wee클래스 [캐모마일 허브차 테이블]에서 다과 의식 마무리하기
+
+마지막 관문을 넘어 전설의 수호자가 되어보렴!`,
+    completeStory: `와... 정말 경이롭구나!! 🎉💖🌟
+
+체육관 강연 무대에서 울려 퍼진 너의 희망 스피치가 숭실중학교 온 교정과 학생들의 마음에 따뜻하게 스며들었단다!
+몸의 건강(보건실)과 마음의 평온(Wee클래스)이 완벽하게 공명하는 순간이야!
+
+약속대로 **Lv.11 전용 최고급 장신구 [💖 조화와 치유의 뱃지]**와 **5티어 제작 핵심 재료 [✨ 특수 강화 스텐 조각]**, 그리고 영예로운 칭호 **[🩺🕊️ 숭실 심신 수호자]**를 선물하마!`,
+    doneStory: `너는 이제 명실상부한 **🩺🕊️ 숭실 심신 수호자**란다!
+언제든 지치거나 따뜻한 차가 생각날 때면 보건실과 Wee클래스에 편히 놀러 오렴! 💖`,
+    objectives: [
+      {
+        id: 'nurse_coop',
+        text: '3층 보건실 [🩺 보건 선생님]에게 합동 치유 인증받기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.nurseCoopConfirmed ? 1 : 0)
+      },
+      {
+        id: 'gym_stage',
+        text: '체육관 [🎤 강연 무대]에서 희망의 영어 스피치 선포하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.stageSpeechDone ? 1 : 0)
+      },
+      {
+        id: 'wee_tea',
+        text: '3층 Wee클래스 [🫖 허브차 테이블]에서 마음 마무리 다과 갖기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.teaCeremonyDone ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 350, label: '🪙 350 G (골드)' },
+      { type: 'exp', amount: 700, label: '🌟 700 EXP (경험치)' },
+      { type: 'item', itemKey: 'equip_healing_brooch', itemName: '💖 조화와 치유의 뱃지', count: 1, icon: '💖', meta: { type: 'equipment', slot: 'accessory', requiredLevel: 11, stats: { atk: 18, def: 10, hp: 40 }, effect: '보건실·Wee클래스 합동 유물 · 공격력 +18, 방어력 +10, 체력 +40 (Lv.11 이상)' }, label: '💖 조화와 치유의 뱃지 (Lv.11 악세 · ATK+18/DEF+10/HP+40)' },
+      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨', meta: { type: 'material', effect: '5티어 불멸의 열정 장비 제작 핵심 재료' }, label: '✨ 특수 강화 스텐 조각 x1 (5티어 재료)' }
     ]
   }
 };
@@ -2257,18 +2455,81 @@ class MainApp {
         this.engine.warpToRoom('room_gym', '🏛️ 숭실 체육관 (실내)', 29 * 32, 22 * 32);
       });
     } else if (target.type === 'gym_stage_podium') {
+      const q3 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_hope_broadcast'];
+      if (q3 && q3.status === 'in_progress' && !q3.stageSpeechDone) {
+        if (!q3.nurseCoopConfirmed) {
+          this.showGameDialog(
+            '🎤 강연 무대 (스피치 준비 중)',
+            '아직 3층 보건실 [보건 선생님]의 합동 치유 비약 결정을 인증받지 못했습니다!\n먼저 3층 보건실로 가서 보건 선생님의 인증을 받아온 뒤 무대에 올라주세요. 🩺',
+            '🎤'
+          );
+          return;
+        }
+        this.openAdventureQuizModal({
+          title: '🎤 [장편 3막] 강연 무대 — 전교생 희망 스피치',
+          question: '방송 마이크가 켜졌습니다! 전교생에게 용기를 전할 핵심 영어 문장을 완성하세요!\n\n"Never lose _____, because every challenge makes you stronger!"\n(절대 희망을 잃지 마세요, 모든 도전은 여러분을 더 강하게 만드니까요!)',
+          options: ['1. Sleep (잠)', '2. Hope (희망)', '3. Homework (숙제)', '4. Doubt (의심)'],
+          answerPrefix: '2. Hope',
+          successFeedback: '🎤 ✨ "Never lose HOPE!"\n전교생의 마음속에 따뜻한 희망의 종소리가 울려 퍼졌습니다!\n이제 3층 Wee클래스로 돌아가 [🫖 허브차 테이블]에서 마무리 다과를 가지세요!',
+          onSolved: () => {
+            q3.stageSpeechDone = true;
+            this.saveProgress();
+            this.updateQuestTracker();
+            if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') window.AudioManager.playFanfare();
+            if (this.engine && typeof this.engine.addFloatingText === 'function') {
+              this.engine.addFloatingText('🎤✨ HOPE BROADCAST ON AIR!', this.engine.player.x + 16, this.engine.player.y - 24, '#facc15', 16);
+            }
+            this.showToast('🎉 [3막 목표 달성] 강연 무대 희망 영어 스피치 선포 완료!', 'success');
+          }
+        });
+        return;
+      }
       this.showGameDialog(
         '🎤 강연 무대',
         `"농구 코트 정면을 바라보는 아늑한 강연 무대입니다.\n학교 행사나 영어 발표회, 8단원 심화 강연이 진행되는 숭실 체육관의 상징적인 단상입니다."`,
         '🎤'
       );
     } else if (target.type === 'gym_broadcast_storage') {
+      const q2 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_heart_signal'];
+      if (q2 && q2.status === 'in_progress' && !q2.broadcastFixed) {
+        this.openAdventureQuizModal({
+          title: '🎛️ [장편 2막] 체육관 방송실 콘솔 복구',
+          question: '음향 믹서 콘솔의 잠금 해제 비밀번호를 입력하세요!\n"마음을 다독이고 다시 시작하게 해주는 \'격려\'를 뜻하는 영어 단어는?"',
+          options: ['1. Criticism (비판)', '2. Encouragement (격려)', '3. Silence (침묵)', '4. Argument (다툼)'],
+          answerPrefix: '2. Encouragement',
+          successFeedback: '🎛️ ⚡ 콘솔의 녹색 신호등이 점등되며 희망 주파수가 복구되었습니다!\n전교 방송 라인이 무대 마이크와 정상 연결되었습니다!',
+          onSolved: () => {
+            q2.broadcastFixed = true;
+            this.saveProgress();
+            this.updateQuestTracker();
+            this.showToast('🎛️ [2막 목표 달성] 체육관 방송실 희망 주파수 복구 완료!', 'success');
+          }
+        });
+        return;
+      }
       this.showGameDialog(
         '🎛️ 체육관 방송실',
         `"강연 무대 위쪽 체육관 방송실입니다.\n대형 음향 믹서 콘솔, 무선 마이크 세트, 앰프 랙과 고출력 스피커가 행사에 대비해 깔끔하게 정돈되어 있습니다."`,
         '🎛️'
       );
     } else if (target.type === 'gym_equipment_storage') {
+      const q2 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_heart_signal'];
+      if (q2 && q2.status === 'in_progress' && !q2.storageClueFound) {
+        this.openAdventureQuizModal({
+          title: '📦 [장편 2막] 체육관 창고 — 잃어버린 꿈의 메모',
+          question: '공 보관 카트 구석에서 땀방울이 밴 연습공과 메모를 발견했습니다!\n메모 속 지워진 영어 단어를 채워 용기를 되찾아주세요:\n\n"Don\'t give up! Have _____ and try one more time." (포기하지 마! 용기를 내어 한 번 더 도전해 봐.)',
+          options: ['1. Fear (두려움)', '2. Regret (후회)', '3. Courage (용기)', '4. Fatigue (피로)'],
+          answerPrefix: '3. Courage',
+          successFeedback: '📦 💖 메모 속 지워진 단어 [Courage(용기)]를 복원했습니다!\n누군가 숨겨뒀던 소중한 꿈의 쪽지를 회수했습니다!',
+          onSolved: () => {
+            q2.storageClueFound = true;
+            this.saveProgress();
+            this.updateQuestTracker();
+            this.showToast('📦 [2막 목표 달성] 체육관 창고 잃어버린 꿈의 메모 해독 완료!', 'success');
+          }
+        });
+        return;
+      }
       this.showGameDialog(
         '📦 창고',
         `"강연 무대 아래쪽 창고입니다.\n농구공·배구공·피구공 보관함과 팀 조끼(유니폼), 접이식 체조 매트가 종목별로 정갈하게 수납되어 있습니다."`,
@@ -2542,13 +2803,32 @@ class MainApp {
       } else {
         alert(msg);
       }
+      return;
+    }
+
+    const q1 = this.playerData && this.playerData.quests && this.playerData.quests['quest_health_emergency'];
+    if (q1 && q1.status === 'in_progress' && !q1.cabinetChecked) {
+      this.openAdventureQuizModal({
+        title: '💊 [장편 1막] 약초 캐비닛의 낡은 처방전 해독',
+        question: '캐비닛 안쪽 서랍에서 1897년부터 내려온 낡은 의학 처방전을 발견했습니다!\n질병과 피로로부터 우리 몸을 지켜주는 \'면역력\'을 뜻하는 영어 단어는 무엇일까요?',
+        options: ['1. Exhaustion (탈진)', '2. Immunity (면역력)', '3. Obstacle (장애물)', '4. Mystery (신비)'],
+        answerPrefix: '2. Immunity',
+        successFeedback: '💊 📜 "Immunity — 몸을 지키는 방패"\n처방전의 핵심 암호를 정확히 해독했습니다!\n이제 2층 도서관 [🔬 자연과학·연금 서가]에서 고대 조제법을 확인해 보세요!',
+        onSolved: () => {
+          q1.cabinetChecked = true;
+          this.saveProgress();
+          this.updateQuestTracker();
+          this.showToast('💊 [1막 목표 달성] 보건실 구급약 캐비닛 처방 해독 완료!', 'success');
+        }
+      });
+      return;
+    }
+
+    const msg = "💊 [응급 구급약 & 약초 캐비닛]\n\n상처 소독약, 멸균 거즈, 체온계와 비상약들이 상시 구비되어 있습니다.\n\n\"몸이 아프거나 다쳤을 때는 언제든 보건 선생님께 말씀드리세요!\"";
+    if (window.RPGDialog) {
+      window.RPGDialog.show('💊 보건실 구급약장', msg, '💊');
     } else {
-      const msg = "💊 [응급 구급약 & 약초 캐비닛]\n\n상처 소독약, 멸균 거즈, 체온계와 비상약들이 상시 구비되어 있습니다.\n\n\"몸이 아프거나 다쳤을 때는 언제든 보건 선생님께 말씀드리세요!\"";
-      if (window.RPGDialog) {
-        window.RPGDialog.show('💊 보건실 구급약장', msg, '💊');
-      } else {
-        alert(msg);
-      }
+      alert(msg);
     }
   }
 
@@ -3077,6 +3357,29 @@ class MainApp {
       window.AudioManager.playSelect();
     }
 
+    // 장편 제3막 진행 중: 보건 선생님 합동 치유 비약 결정 인증 단계
+    const q3 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_hope_broadcast'];
+    if (q3 && q3.status === 'in_progress' && !q3.nurseCoopConfirmed) {
+      q3.nurseCoopConfirmed = true;
+      this.saveProgress();
+      this.updateQuestTracker();
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+        window.AudioManager.playFanfare();
+      }
+      if (this.engine && typeof this.engine.addFloatingText === 'function') {
+        this.engine.addFloatingText('💖 합동 치유 비약 결정 획득!', this.engine.player.x + 16, this.engine.player.y - 20, '#f472b6', 16);
+      }
+      const coopMsg = `"오오! Wee클래스 상담 선생님과 체육관 방송실 주파수를 모두 복구해 왔구나! 👏✨\n\n네가 1막에서 찾아온 활력 비약과 상담실의 치유 에너지를 하나로 엮은 **[💖 합동 치유 비약 결정]**을 인증해 주마!\n\n이제 야외 체육관으로 내려가 **[🎤 강연 무대]** 단상에 올라 전교생에게 희망의 영어 스피치를 선포하고 오렴!"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🩺 보건 선생님 (장편 3막 합동 인증)', coopMsg, '💖');
+      } else {
+        alert(coopMsg);
+      }
+      this.showToast('💖 [3막 목표 달성] 보건 선생님 합동 치유 인증 완료! 체육관 [강연 무대]로 이동하세요!', 'success');
+      return;
+    }
+
+    const q1Status = this.getTeacherQuestStatus('quest_health_emergency');
     const curHp = this.playerData.hp || 0;
     const maxHp = this.playerData.maxHp || 100;
 
@@ -3084,7 +3387,11 @@ class MainApp {
     if (curHp < maxHp) {
       greeting += `지금 체력이 ${curHp}/${maxHp}로 지쳐 보이는구나. 보건실 침대에 누워 잠시 쉬면 체력이 100% 완전 회복된단다!\n\n`;
     }
-    greeting += `간단한 건강 영단어 퀴즈를 풀어볼래? 맞히면 응급 물약을 선물로 줄게!"`;
+    if (q1Status === 'available' || q1Status === 'in_progress' || q1Status === 'completed') {
+      greeting += `Lv.11 장편 모험 의뢰 **[보건실·Wee클래스 합동 대작전]**을 확인하거나, 간단한 건강 영단어 퀴즈에 도전해 볼래?"`;
+    } else {
+      greeting += `장편 모험 의뢰(Lv.11) 정보를 확인하거나, 간단한 건강 영단어 퀴즈를 풀어볼래? 맞히면 응급 물약을 선물로 줄게!"`;
+    }
 
     const dialog = window.RPGDialog;
     if (dialog) {
@@ -3093,17 +3400,83 @@ class MainApp {
         greeting,
         '🩺',
         () => {
+          this.openQuestDispatchModal('quest_health_emergency');
+        },
+        () => {
           this.openNurseQuiz();
         },
-        () => {},
-        '🩺 건강 영단어 퀴즈 풀기',
-        '다음에 하기'
+        '📜 장편 모험 의뢰 열기 (Lv.11)',
+        '🩺 건강 영단어 퀴즈 풀기'
       );
     } else {
-      if (confirm(greeting)) {
-        this.openNurseQuiz();
-      }
+      this.openQuestDispatchModal('quest_health_emergency');
     }
+  }
+
+  openAdventureQuizModal({ title, question, options, answerPrefix, successFeedback, onSolved }) {
+    const modal = document.getElementById('modal-career-clue');
+    if (!modal) return;
+    const titleEl = document.getElementById('career-clue-title');
+    const descEl = document.getElementById('career-clue-desc');
+    const optsEl = document.getElementById('career-clue-options');
+    const feedEl = document.getElementById('career-clue-feedback');
+    const feedTextEl = document.getElementById('career-clue-feedback-text');
+    const btnConfirm = document.getElementById('btn-confirm-career-clue');
+    const btnCloseX = document.getElementById('btn-close-career-clue-x');
+
+    if (titleEl) titleEl.innerText = title || '🗺️ 모험 탐험 단서';
+    if (descEl) descEl.innerHTML = String(question || '').replace(/\n/g, '<br>');
+    if (feedEl) feedEl.classList.add('hidden');
+    if (btnCloseX && !btnCloseX._bound) {
+      btnCloseX._bound = true;
+      btnCloseX.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (btnConfirm && !btnConfirm._bound) {
+      btnConfirm._bound = true;
+      btnConfirm.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    let solvedOnce = false;
+    if (optsEl) {
+      optsEl.innerHTML = '';
+      (options || []).forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.style.cssText = 'width: 100%; font-size: 13px; font-weight: 800; padding: 10px 6px; background: #0284c7; border-color: #0369a1; text-align: center;';
+        btn.innerText = opt;
+        btn.addEventListener('click', () => {
+          if (solvedOnce) return;
+          const isCorrect = String(opt).startsWith(String(answerPrefix || ''));
+          if (isCorrect) {
+            solvedOnce = true;
+            if (window.AudioManager && typeof window.AudioManager.playCorrect === 'function') {
+              window.AudioManager.playCorrect();
+            }
+            btn.style.background = '#16a34a';
+            btn.style.borderColor = '#15803d';
+            if (feedEl && feedTextEl) {
+              feedEl.classList.remove('hidden');
+              feedEl.style.borderColor = '#22c55e';
+              feedEl.style.background = '#f0fdf4';
+              feedTextEl.innerHTML = String(successFeedback || '🎉 정답입니다!').replace(/\n/g, '<br>');
+            }
+            if (typeof onSolved === 'function') onSolved();
+          } else {
+            if (window.AudioManager && typeof window.AudioManager.playWrong === 'function') {
+              window.AudioManager.playWrong();
+            }
+            if (feedEl && feedTextEl) {
+              feedEl.classList.remove('hidden');
+              feedEl.style.borderColor = '#ef4444';
+              feedEl.style.background = '#fef2f2';
+              feedTextEl.innerHTML = '💔 아쉽네요! 힌트를 다시 읽고 정답을 골라보세요! (패널티 없음 😊)';
+            }
+          }
+        });
+        optsEl.appendChild(btn);
+      });
+    }
+    modal.classList.remove('hidden');
   }
 
   openNurseQuiz() {
@@ -3161,6 +3534,17 @@ class MainApp {
     }
     const maxHp = this.playerData.maxHp || 100;
     this.playerData.hp = Math.min(maxHp, this.playerData.hp + 15);
+
+    const q3 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_hope_broadcast'];
+    let extraNote = '';
+    if (q3 && q3.status === 'in_progress' && !q3.teaCeremonyDone) {
+      q3.teaCeremonyDone = true;
+      if (typeof this.updateQuestTracker === 'function') this.updateQuestTracker();
+      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') window.AudioManager.playFanfare();
+      this.showToast('🫖 [3막 목표 달성] 캐모마일 허브차 마음 마무리 다과 완료!', 'success');
+      extraNote = '\n\n✨ [장편 3막 목표 완료!]\n따뜻한 캐모마일 차와 함께 모험의 여운이 마음 깊이 스며들었습니다. 이제 상담 선생님께 보고하세요!';
+    }
+
     this.saveProgress();
     this.updateHUD();
 
@@ -3168,7 +3552,7 @@ class MainApp {
       this.engine.addFloatingText('🫖 따뜻한 차 한 모금 (+15 HP) 🍵', this.engine.player.x, this.engine.player.y - 25, '#f59e0b');
     }
 
-    const msg = "🫖 [따뜻한 캐모마일 허브차]\n\n상담 선생님께서 은은한 사과 향이 감도는 따뜻한 캐모마일 차를 찻잔에 따라주셨습니다.\n\n조심스레 한 모금 마시자 향긋한 온기가 온몸 구석구석 퍼져나갑니다. 🍵\n\n\"몸도 마음도 따뜻해졌으니, 남은 하루도 힘차게 보낼 수 있을 것 같습니다!\"\n(체력 +15 회복)";
+    const msg = `🫖 [따뜻한 캐모마일 허브차]\n\n상담 선생님께서 은은한 사과 향이 감도는 따뜻한 캐모마일 차를 찻잔에 따라주셨습니다.\n\n조심스레 한 모금 마시자 향긋한 온기가 온몸 구석구석 퍼져나갑니다. 🍵\n\n"몸도 마음도 따뜻해졌으니, 남은 하루도 힘차게 보낼 수 있을 것 같습니다!"\n(체력 +15 회복)${extraNote}`;
     if (window.RPGDialog) {
       window.RPGDialog.show('🫖 따뜻한 허브차 테이블', msg, '🫖');
     } else {
@@ -3181,6 +3565,22 @@ class MainApp {
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
+    const q2 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_heart_signal'];
+    if (q2 && q2.status === 'in_progress' && !q2.mailboxChecked) {
+      q2.mailboxChecked = true;
+      this.saveProgress();
+      if (typeof this.updateQuestTracker === 'function') this.updateQuestTracker();
+      if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') window.AudioManager.playCollect();
+      this.showToast('📬 [2막 목표 달성] 우체통에서 찢어진 비밀 편지 단서 발견!', 'success');
+      const clueMsg = `📬 [우체통 비밀 편지 발견 — 장편 2막]\n\n우체통 맨 아래에서 찢어진 편지 조각 하나를 조심스레 꺼냈습니다.\n\n📜 "힘들 때마다 혼자 울다가... 체육관 아래쪽 [📦 창고] 구석에 내 잃어버린 연습공과 꿈을 숨겨두었어. 위쪽 [🎛️ 체육관 방송실] 소리마저 꺼져버린 지금, 누군가 희망의 소리를 다시 켜줄 수 있을까?"\n\n✨ 단서 획득! 야외 [체육관] 실내로 들어가 **[📦 창고]**와 **[🎛️ 체육관 방송실]**을 조사하세요!`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('📬 비밀 편지 단서 발견!', clueMsg, '📜');
+      } else {
+        alert(clueMsg);
+      }
+      return;
+    }
+
     const notes = [
       "💌 \"시험 점수가 조금 아쉽더라도 너무 자책하지 마. 네가 흘린 땀방울과 노력은 절대 사라지지 않고 더 큰 너를 만드는 밑거름이 될 거야!\" - 3학년 선배가",
       "💌 \"친구와 다퉈서 마음이 무거웠는데, 먼저 솔직하게 '미안해'라고 말했더니 더 단단한 우정이 되었어. 용기를 내봐!\" - 2학년 친구가",
@@ -3229,11 +3629,22 @@ class MainApp {
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
-    const msg = `"안녕 학생! Wee클래스에 잘 왔단다. 🕊️\n\n학교생활을 하다 보면 학업, 교우 관계, 진로 때문에 마음이 무겁고 지칠 때가 있지.\n\n언제든 기댈 곳이 필요하거나 따뜻한 대화가 고플 땐 주저 말고 찾아오렴. 너의 이야기는 항상 비밀이 보장되고, 온 마음을 다해 들어줄게.\n\n폭신한 빈백에 기대어 잠시 쉬어가거나 따뜻한 허브차 한 잔 마시고 가렴! 💖"`;
-    if (window.RPGDialog) {
-      window.RPGDialog.show('🕊️ Wee클래스 전문상담 선생님', msg, '🕊️');
+    const q1 = this.playerData && this.playerData.quests && this.playerData.quests['quest_health_emergency'];
+    if (!q1 || q1.status !== 'done') {
+      const msg = `"안녕 학생! Wee클래스에 잘 왔단다. 🕊️\n\n학교생활을 하다 보면 학업, 교우 관계, 진로 때문에 마음이 무겁고 지칠 때가 있지.\n\n언제든 기댈 곳이 필요하거나 따뜻한 대화가 고플 땐 주저 말고 찾아오렴. 폭신한 빈백에 기대어 쉬거나 따뜻한 허브차 한 잔 마시고 가렴! 💖\n\n💡 [Lv.11 장편 모험 연계 안내]\n먼저 3층 복도 건너편 **🏥 [보건실]**의 보건 선생님과 **[장편 1막: 사라진 활력의 비약]** 모험을 마친 뒤 다시 찾아오면 Wee클래스의 특별한 장편 의뢰가 열립니다!"`;
+      if (window.RPGDialog) {
+        window.RPGDialog.show('🕊️ Wee클래스 전문상담 선생님', msg, '🕊️');
+      } else {
+        alert(msg);
+      }
+      return;
+    }
+
+    const q2 = this.playerData && this.playerData.quests && this.playerData.quests['quest_wee_heart_signal'];
+    if (!q2 || q2.status !== 'done') {
+      this.openQuestDispatchModal('quest_wee_heart_signal');
     } else {
-      alert(msg);
+      this.openQuestDispatchModal('quest_wee_hope_broadcast');
     }
   }
 
@@ -10263,6 +10674,24 @@ class MainApp {
       window.AudioManager.playSelect();
     }
 
+    const q1 = this.playerData && this.playerData.quests && this.playerData.quests['quest_health_emergency'];
+    if (q1 && q1.status === 'in_progress' && !q1.libRecipeFound) {
+      this.openAdventureQuizModal({
+        title: '🔬 [장편 1막] 자연과학 서가 — 고대 활력 비약 조제법',
+        question: '두툼한 연금술 실험일지 사이에서 [1897 활력 비약 조제법] 페이지를 찾아냈습니다!\n자연의 치유와 활력을 다시 회복시키는 \'생기 · 활력\'을 뜻하는 영어 단어는?',
+        options: ['1. Drowsiness (졸음)', '2. Vitality (활력)', '3. Confusion (혼란)', '4. Hunger (허기)'],
+        answerPrefix: '2. Vitality',
+        successFeedback: '🔬 ✨ "Vitality — 꺼지지 않는 생명의 불꽃!"\n고대 약초 조제법을 완벽하게 기록했습니다!\n([🌿 향긋한 허브] 5개 이상을 모아 3층 보건실로 돌아가세요!)',
+        onSolved: () => {
+          q1.libRecipeFound = true;
+          this.saveProgress();
+          this.updateQuestTracker();
+          this.showToast('🔬 [1막 목표 달성] 도서관 자연과학 서가 고대 조제법 발견 완료!', 'success');
+        }
+      });
+      return;
+    }
+
     const story = `🔬 [자연과학·연금 대형 서가]\n\n"1학년 5반 과학 졍경슉 선생님께서 정성껏 작성하신 <신비한 과학 실험 비전서>와 두툼한 백과사전들이 꽂혀 있습니다!\n\n손글씨로 적힌 연구 일지에는 주홍 물약과 용기 물약의 핵심 촉매 반응비, 화학 주기율표의 비밀, 그리고 중간고사 과학 시험에 꼭 출제될 주요 실험 법칙들이 흥미진진하게 정리되어 있습니다!"\n\n🧪 [과학 선생님의 비전 메모]:\n'관찰하고 의문을 품어라! 과학은 자연이 들려주는 가장 아름다운 규칙이란다. - 졍경슉 선생님'`;
 
     if (window.RPGDialog) {
@@ -10590,6 +11019,7 @@ class MainApp {
     if (Array.isArray(data.inventory)) this.playerData.inventory = data.inventory;
     if (data.equipment && typeof data.equipment === 'object') this.playerData.equipment = data.equipment;
     if (data.quests && typeof data.quests === 'object') this.playerData.quests = data.quests;
+    if (Array.isArray(data.titles)) this.playerData.titles = data.titles;
     if (data.hasCafeteriaKey !== undefined) this.playerData.hasCafeteriaKey = !!data.hasCafeteriaKey;
 
     if (this.hudGold) this.hudGold.innerText = this.playerData.gold;
@@ -11594,6 +12024,8 @@ class MainApp {
           progressText = `(도서관 7대 서가 완독: ${visitedCount}/7)`;
         } else if (t.id && t.id.startsWith('title_job_')) {
           progressText = '(5층 진로상담실 방탈출 & 전직)';
+        } else if (t.id === 'title_heart_guardian') {
+          progressText = '(Lv.11 장편 3부작 완결: 보건실·Wee클래스·체육관)';
         } else {
           progressText = '(특별 퀘스트 달성 시 자동 지급)';
         }
@@ -13259,6 +13691,21 @@ class MainApp {
         questId = 'quest_cafeteria_manners';
       }
     }
+    if (id === 'npc_nurse') {
+      const q3 = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_wee_hope_broadcast'] : null;
+      if (q3 && q3.status === 'in_progress' && !q3.nurseCoopConfirmed) {
+        return 'completed';
+      }
+      questId = 'quest_health_emergency';
+    }
+    if (id === 'npc_counselor_wee') {
+      const q2 = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_wee_heart_signal'] : null;
+      if (!q2 || q2.status !== 'done') {
+        questId = 'quest_wee_heart_signal';
+      } else {
+        questId = 'quest_wee_hope_broadcast';
+      }
+    }
     if (id === 'npc_teacher_joshua') questId = 'quest_joshua_intro';
     if (id === 'npc_teacher_okchohan') questId = 'quest_okchohan_social';
     if (id === 'npc_teacher_kimmijin') questId = 'quest_kimmijin_art';
@@ -13279,6 +13726,10 @@ class MainApp {
       const pLevel = (this.playerData && this.playerData.level) || 1;
       const minLevel = qDef.minLevel || 1;
       if (pLevel < minLevel) return 'locked';
+      if (qDef.requiresDone) {
+        const pre = this.playerData.quests[qDef.requiresDone];
+        if (!pre || pre.status !== 'done') return 'locked';
+      }
       return 'available';
     }
     if (quest.status === 'done') return 'done';
@@ -13717,6 +14168,14 @@ class MainApp {
         return;
       }
     }
+    if (qDef && qDef.requiresDone) {
+      const pre = this.playerData.quests && this.playerData.quests[qDef.requiresDone];
+      if (!pre || pre.status !== 'done') {
+        if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
+        this.showToast('🔒 이전 연계 모험 의뢰를 먼저 완료해야 수락할 수 있습니다!', 'warning');
+        return;
+      }
+    }
     if (!this.playerData.quests) this.playerData.quests = {};
     this.playerData.quests[questId] = {
       status: 'in_progress',
@@ -13752,6 +14211,12 @@ class MainApp {
       this.showToast('🌟 [귐즨숑 선생님의 진로 의뢰] 수락 완료! 5층 진로상담실(안내서 회수) 후 6층 창가의 학생에게 전달하세요.', 'success');
     } else if (questId === 'quest_library_missing_books') {
       this.showToast('📚 [사서 선생님의 의뢰] 수락 완료! 운동장 스탠드, 교무실, 역사관의 분실도서 3권을 찾아오세요.', 'success');
+    } else if (questId === 'quest_health_emergency') {
+      this.showToast('🩺 [장편 1막] 수락 완료! 보건실 구급약 캐비닛 → 2층 도서관 자연과학 서가 → 허브 5개를 모아오세요.', 'success');
+    } else if (questId === 'quest_wee_heart_signal') {
+      this.showToast('🕊️ [장편 2막] 수락 완료! Wee클래스 우체통 → 체육관 [📦 창고] & [🎛️ 체육관 방송실]을 탐험하세요.', 'success');
+    } else if (questId === 'quest_wee_hope_broadcast') {
+      this.showToast('💖 [장편 3막] 수락 완료! 보건 선생님 인증 → 체육관 [🎤 강연 무대] 스피치 → Wee클래스 허브차 다과!', 'success');
     } else {
       this.showToast(`📜 [${(qDef && qDef.title) ? qDef.title : '의뢰'}] 수락 완료!`, 'success');
     }
@@ -13800,13 +14265,32 @@ class MainApp {
       this.showToast('📚 [도서관 의뢰 완료] 분실도서 3권을 모두 반납하고 보상을 획득했습니다!', 'success');
     }
 
+    if (qDef.unlockTitle) {
+      if (!Array.isArray(this.playerData.titles)) this.playerData.titles = [];
+      if (!this.playerData.titles.includes(qDef.unlockTitle)) {
+        this.playerData.titles.push(qDef.unlockTitle);
+      }
+    }
+
     this.recalcCombatStats();
     this.updatePlayerNameDisplay();
 
     this.saveProgress();
     this.updateQuestTracker();
     this.closeQuestDispatchModal();
+    this._notifyQuestCompleted(questId, qDef);
+  }
 
+  _notifyQuestCompleted(questId, qDef) {
+    if (questId === 'quest_library_missing_books') {
+      this.showToast('📚 [도서관 의뢰 완료] 분실도서 3권을 모두 반납하고 보상을 획득했습니다!', 'success');
+    } else if (questId === 'quest_health_emergency') {
+      this.showToast('🩺 [장편 1막 완수!] 복도 맞은편 [🕊️ Wee클래스 전문상담 선생님]에게 [장편 2막]을 이어가세요!', 'success');
+    } else if (questId === 'quest_wee_heart_signal') {
+      this.showToast('🕊️ [장편 2막 완수!] 상담 선생님과 대화를 이어 [장편 3막: 피날레]를 시작해 보세요!', 'success');
+    } else if (questId === 'quest_wee_hope_broadcast') {
+      this.showToast('💖 [장편 3부작 대완결!] [💖 조화와 치유의 뱃지] & 칭호 [🩺🕊️ 숭실 심신 수호자]를 획득했습니다!', 'success');
+    }
     if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
       window.AudioManager.playFanfare();
     }
@@ -13835,14 +14319,7 @@ class MainApp {
       this.updatePlayerNameDisplay();
       this.updateQuestTracker();
       this.closeQuestDispatchModal();
-
-      if (questId === 'quest_library_missing_books') {
-        this.showToast('📚 [도서관 의뢰 완료] 분실도서 3권을 모두 반납하고 보상을 획득했습니다!', 'success');
-      }
-      if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
-        window.AudioManager.playFanfare();
-      }
-      this.showToast(`🎉 [${qDef.title}] 완료! 특별 보상을 획득했습니다!`, 'success');
+      this._notifyQuestCompleted(questId, qDef);
     } catch (err) {
       this.showToast('서버 통신 오류로 의뢰를 완료하지 못했습니다.', 'error');
     } finally {

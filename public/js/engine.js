@@ -6690,8 +6690,11 @@ class GameEngine {
 
         // 8-C-1. 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
         if (npc.questId) {
+          const statusLookupId = ['npc_nurse', 'npc_counselor_wee', 'npc_cafeteria_teacher'].includes(npc.id)
+            ? npc.id
+            : (npc.questId || npc.id);
           const qStatus = (window.MainApp && typeof window.MainApp.getTeacherQuestStatus === 'function')
-            ? window.MainApp.getTeacherQuestStatus(npc.questId || npc.id)
+            ? window.MainApp.getTeacherQuestStatus(statusLookupId)
             : 'available';
           if (qStatus && qStatus !== 'done') {
             this.drawFloatingQuestMarker(px + 16, py - 18, qStatus);

@@ -242,6 +242,7 @@ const WORLD_DATA = {
         x: 6,
         y: 5,
         avatar: "teacher",
+        questId: "quest_health_emergency",
         dialogue: "어디 아픈 곳은 없니? 숭실의 모험도 건강이 최우선이란다! 아프거나 지쳤을 땐 언제든 보건실 침대에서 쉬어가렴. (침대에서 휴식 시 HP 100% 완전 회복!)"
       }
     ],
@@ -280,6 +281,7 @@ const WORLD_DATA = {
         x: 6,
         y: 5,
         avatar: "teacher",
+        questId: "quest_wee_heart_signal",
         dialogue: "안녕! 마음에 무거운 짐이나 걱정거리가 있다면 언제든 편하게 털어놓으렴. 너는 이미 존재 자체로 소중하고 빛나는 사람이란다. ✨"
       }
     ],
