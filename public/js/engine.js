@@ -11997,6 +11997,12 @@ class GameEngine {
       height: 20
     });
 
+    // 4. Overhead Quest Exclamation Marker (! — 체력장 미완료 시)
+    const hasClearedPE = !!(window.MainApp && window.MainApp.playerData && window.MainApp.playerData.hasClearedPEJump);
+    if (!hasClearedPE) {
+      this.drawFloatingQuestMarker(px + 16, py - 18, 'available');
+    }
+
     this.ctx.restore();
   }
 

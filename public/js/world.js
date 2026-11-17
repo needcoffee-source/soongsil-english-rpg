@@ -1038,7 +1038,7 @@ const WORLD_DATA = {
       x: 46.5,
       y: 10,
       name: "🏛️ 숭실 체육관 메인 로비",
-      prompt: "🏛️ 체육관 입장 (Lv.12+ · SPACE)"
+      prompt: "🏛️ 체육관 입장 (SPACE)"
     },
     teacherCar: {
       id: "gym_teacher_car",

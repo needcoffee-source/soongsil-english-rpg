@@ -1526,14 +1526,14 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   },
   'quest_wee_heart_signal': {
     id: 'quest_wee_heart_signal',
-    minLevel: 11,
+    minLevel: 12,
     requiresDone: 'quest_health_emergency',
     teacherId: 'npc_counselor_wee',
     teacherName: 'Wee클래스 전문상담 선생님',
     teacherRole: '3층 Wee클래스',
     teacherSeat: '상담실',
     teacherAvatar: '🕊️',
-    category: '🕊️ 장편 모험 제2막 (Lv.11)',
+    category: '🕊️ 장편 모험 제2막 (Lv.12)',
     title: '[장편 2막] Wee클래스의 비밀 쪽지와 체육관의 신호',
     story: `보건 선생님 소개로 왔구나! 정말 반갑단다. 🕊️💖
 

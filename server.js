@@ -2280,7 +2280,7 @@ const SERVER_QUEST_DEFINITIONS = {
     ]
   },
   'quest_wee_heart_signal': {
-    minLevel: 11,
+    minLevel: 12,
     requiresDone: 'quest_health_emergency',
     isComplete: (q) => (!!q.mailboxChecked && !!q.storageClueFound && !!q.broadcastFixed),
     cleanupItems: [],

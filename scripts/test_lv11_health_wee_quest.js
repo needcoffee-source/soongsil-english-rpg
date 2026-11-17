@@ -47,7 +47,9 @@ async function runTests() {
   assert(!mainJs.includes("'title_heart_guardian'"), 'title_heart_guardian must be removed');
   assert(worldJs.includes('questId: "quest_health_emergency"'), 'npc_nurse must have questId');
   assert(worldJs.includes('questId: "quest_wee_heart_signal"'), 'npc_counselor_wee must have questId');
+  assert(worldJs.includes('prompt: "🏛️ 체육관 입장 (SPACE)"'), 'gym_entrance prompt must omit Lv.12+ badge');
   assert(engineJs.includes("'npc_nurse', 'npc_counselor_wee'"), 'engine.js must lookup chained NPC quest status');
+  assert(engineJs.includes("hasClearedPEJump") && engineJs.includes("drawFloatingQuestMarker(px + 16, py - 18, 'available')"), 'PE Teacher must show floating quest marker');
   console.log('✓ Static quest/item/title/NPC parity verified');
 
   // 2. Live authoritative /api/quest/complete progression test
@@ -108,14 +110,14 @@ async function runTests() {
     }, authHeaders);
     assert.strictEqual(lv10Fail.status, 403, 'Lv.10 student must not complete Lv.11 quest');
 
-    // 2b. Raise to Lv.11, but try skipping Act 1 directly to Act 2 -> blocked by requiresDone
+    // 2b. Raise to Lv.12 to test requiresDone skip guard, plus verify incomplete Act 1 is blocked
     await reqJson(testPort, 'POST', '/api/save-progress', {
       studentId: sid,
       studentAuthToken: token,
       progress: {
         studentId: sid,
         name: '장편테스터',
-        level: 11,
+        level: 12,
         exp: 0,
         gold: 50,
         inventory: [{ item: 'item_herb', name: '향긋한 허브', count: 5, icon: '🌿' }],
@@ -166,7 +168,27 @@ async function runTests() {
     assert.strictEqual(act1Ok.data.exp, 0);
     assert(act1Ok.data.inventory.some(i => i.item === 'item_orange_potion' && i.count === 2));
 
-    // 2d. Complete Act 2 cleanly (EXP 350, courage x1, protection x1)
+    // 2d. Act 2 MUST require Lv.12 (blocked at Lv.11)
+    const lv11FailAct2 = await reqJson(testPort, 'POST', '/api/quest/complete', {
+      studentId: sid,
+      questId: 'quest_wee_heart_signal'
+    }, authHeaders);
+    assert.strictEqual(lv11FailAct2.status, 403, 'Act 2 must require Lv.12');
+
+    // Raise to Lv.12 -> Complete Act 2 cleanly (EXP 350, courage x1, protection x1)
+    await reqJson(testPort, 'POST', '/api/save-progress', {
+      studentId: sid,
+      studentAuthToken: token,
+      progress: {
+        studentId: sid,
+        name: '장편테스터',
+        level: 12,
+        exp: 0,
+        gold: 50,
+        inventory: act1Ok.data.inventory,
+        quests: act1Ok.data.quests
+      }
+    });
     const act2Ok = await reqJson(testPort, 'POST', '/api/quest/complete', {
       studentId: sid,
       questId: 'quest_wee_heart_signal'
@@ -174,18 +196,11 @@ async function runTests() {
     assert.strictEqual(act2Ok.status, 200, JSON.stringify(act2Ok));
     assert.strictEqual(act2Ok.data.gold, 50);
     assert.strictEqual(act2Ok.data.exp, 350);
-    assert.strictEqual(act2Ok.data.level, 11);
+    assert.strictEqual(act2Ok.data.level, 12);
     assert(act2Ok.data.inventory.some(i => i.item === 'item_courage_potion' && i.count === 1));
     assert(act2Ok.data.inventory.some(i => i.item === 'item_protection_potion' && i.count === 1));
 
-    // 2e. Act 3 MUST require Lv.12 (blocked at Lv.11)
-    const lv11FailAct3 = await reqJson(testPort, 'POST', '/api/quest/complete', {
-      studentId: sid,
-      questId: 'quest_wee_hope_broadcast'
-    }, authHeaders);
-    assert.strictEqual(lv11FailAct3.status, 403, 'Act 3 must require Lv.12');
-
-    // Raise to Lv.12 and complete Act 3 cleanly -> exp 300, gold 200, stainless_shard x2, nutrition_essence x4 (no brooch, no title)
+    // 2e. Complete Act 3 cleanly at Lv.12 -> exp 300, gold 200, stainless_shard x2, nutrition_essence x4 (no brooch, no title)
     await reqJson(testPort, 'POST', '/api/save-progress', {
       studentId: sid,
       studentAuthToken: token,
