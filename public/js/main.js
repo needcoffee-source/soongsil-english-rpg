@@ -284,7 +284,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'consumable',
     tierBadge: '경험치 물약',
     tierColor: '#f59e0b',
-    effect: '사용 시 경험치(EXP) +10 즉시 상승',
+    effect: '사용 시 경험치(EXP) +50 즉시 상승',
     source: 'Lv.10+ 퀘스트 보상 (체육선생님의 심부름 등)'
   },
   {
@@ -703,7 +703,7 @@ const ALL_GAME_ITEMS = {
   'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
 
   // 7. Legendary Season Boss Artifacts & Rewards & New Potions
-  'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', expGain: 10, effect: '사용 시 경험치(EXP) +10 상승' } },
+  'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
   'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } },
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
@@ -1687,7 +1687,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     ],
     rewards: [
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
-      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 10, effect: '사용 시 경험치(EXP) +10 상승' }, label: '🧪 초소형 경험치 물약 x3 (개당 EXP +10)' }
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x3 (개당 EXP +50)' }
     ]
   }
 };
@@ -7086,7 +7086,7 @@ class MainApp {
           } else if (isProtectionPotion) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;"><span class="icon-blue-potion">🧪</span> 1분간 방어력(DEF) +3</span>`;
           } else if (isTinyExpPotion) {
-            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#fbbf24;">✨ 경험치(EXP) +10 즉시 상승</span>`;
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#fbbf24;">✨ 경험치(EXP) +50 즉시 상승</span>`;
           } else {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
@@ -9269,9 +9269,9 @@ class MainApp {
 
     if (this.playerData.isTeacher || this.playerData.studentId === '교사' || !this.playerData.studentId) {
       this.removeItem(itemId, 1);
-      this.addExp(10);
+      this.addExp(50);
       if (this.engine && typeof this.engine.addFloatingText === 'function') {
-        this.engine.addFloatingText('+10 EXP ✨', px, py, '#fbbf24', 18);
+        this.engine.addFloatingText('+50 EXP ✨', px, py, '#fbbf24', 18);
       }
       this.saveProgress(true);
       if (!this.modalInventory.classList.contains('hidden')) {
@@ -9300,7 +9300,7 @@ class MainApp {
       this.applyAuthoritativeServerState(data);
       this.updatePlayerNameDisplay();
       if (typeof this.updateStatsUI === 'function') this.updateStatsUI();
-      const gained = Number(data.expGained) || 10;
+      const gained = Number(data.expGained) || 50;
       if (this.engine && typeof this.engine.addFloatingText === 'function') {
         this.engine.addFloatingText(`+${gained} EXP ✨`, px, py, '#fbbf24', 18);
       }

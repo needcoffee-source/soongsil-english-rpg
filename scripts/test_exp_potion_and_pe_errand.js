@@ -159,18 +159,18 @@ async function runTests() {
     assert(expPotAfter && expPotAfter.count === 3, 'quest_pe_errand must reward 3x item_tiny_exp_potion');
     console.log('✓ Live PE Errand Quest Lv.12 gate + completion rewards (100G + 3x Tiny EXP Potion) passed.');
 
-    // 2c. Use Tiny EXP Potion -> +10 EXP triggers level up 12 (1195/1200) -> Lv.13 (exp: 5) and consumes 1 potion
+    // 2c. Use Tiny EXP Potion -> +50 EXP triggers level up 12 (1195/1200) -> Lv.13 (exp: 45) and consumes 1 potion
     const usePotRes = await reqJson(testPort, 'POST', '/api/item/use-exp-potion', {
       studentId: sid,
       itemId: 'item_tiny_exp_potion'
     }, authHeaders);
     assert.strictEqual(usePotRes.status, 200);
-    assert.strictEqual(usePotRes.data.expGained, 10);
-    assert.strictEqual(usePotRes.data.level, 13, '1195 + 10 = 1205 EXP at Lv.12 must level up to Lv.13');
-    assert.strictEqual(usePotRes.data.exp, 5, 'Remaining EXP after Lv.12->13 rollover must be 5');
+    assert.strictEqual(usePotRes.data.expGained, 50);
+    assert.strictEqual(usePotRes.data.level, 13, '1195 + 50 = 1245 EXP at Lv.12 must level up to Lv.13');
+    assert.strictEqual(usePotRes.data.exp, 45, 'Remaining EXP after Lv.12->13 rollover must be 45');
     const expPotRemaining = (usePotRes.data.inventory || []).find(i => i.item === 'item_tiny_exp_potion');
     assert(expPotRemaining && expPotRemaining.count === 2, 'Using 1 Tiny EXP Potion must leave 2 in inventory');
-    console.log('✓ Live /api/item/use-exp-potion (+10 EXP + level-up + inventory consumption) passed.');
+    console.log('✓ Live /api/item/use-exp-potion (+50 EXP + level-up + inventory consumption) passed.');
   } finally {
     if (proc) {
       try { proc.kill(); } catch (_) {}
