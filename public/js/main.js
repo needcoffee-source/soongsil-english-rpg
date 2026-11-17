@@ -263,7 +263,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 물약',
     tierColor: '#9333ea',
     effect: '사용 시 1분간 공격력(ATK) +5 증가',
-    source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
   {
@@ -274,7 +274,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '특수 물약',
     tierColor: '#0284c7',
     effect: '사용 시 1분간 방어력(DEF) +3 증가',
-    source: '소비품 제작대(C)에서 제작 [매점 구매 불가]',
+    source: '소비품 제작대(C)에서 제작',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
   {
@@ -285,7 +285,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '경험치 물약',
     tierColor: '#f59e0b',
     effect: '사용 시 경험치(EXP) +50 즉시 상승',
-    source: 'Lv.10+ 퀘스트 보상 (체육선생님의 심부름 등)'
+    source: '퀘스트 보상'
   },
   {
     id: 'item_revive_scroll',
