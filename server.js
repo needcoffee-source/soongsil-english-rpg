@@ -2078,6 +2078,7 @@ const ALL_GAME_ITEMS = {
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_nutrition_essence': { name: '정제된 영양의 정수', icon: '🍱', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료' } },
   'item_stainless_shard': { name: '특수 강화 스텐 조각', icon: '✨', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료' } },
+  'item_golden_laurel': { name: '황금 월계수 잎', icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
@@ -2109,6 +2110,8 @@ const ALL_GAME_ITEMS = {
   'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 12, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 12, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
+  'equip_immortal_shoes': { name: '불멸의 에어 농구화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', requiredLevel: 15, stats: { atk: 8, def: 6, hp: 15 }, effect: '5티어 신발 · 공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 질주 (Lv.15 이상)' } },
+  'equip_victory_medal': { name: '승리의 월계관 메달', icon: '🏅', meta: { type: 'equipment', slot: 'accessory', requiredLevel: 15, stats: { atk: 20, def: 5, hp: 30 }, effect: '공격력 +20, 방어력 +5, 체력 +30 (Lv.15 이상)' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'quest', isQuestItem: true, effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', meta: { type: 'quest', effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
@@ -2268,6 +2271,7 @@ const SERVER_ITEM_SELL_PRICES = {
   'equip_bronze_sword': 100, 'equip_bronze_helmet': 60, 'equip_bronze_armor': 60, 'equip_ginkgo_talisman': 100,
   'item_history_essence': 5, 'item_unyielding_stone': 10,
   'equip_heritage_blade': 160, 'equip_heritage_helmet': 100, 'equip_heritage_armor': 100, 'equip_bronze_shoes': 16, 'equip_heritage_boots': 30,
+  'equip_immortal_shoes': 50, 'equip_victory_medal': 200, 'item_golden_laurel': 5,
   'equip_omr_wand': 20, 'equip_vintage_armband': 0, 'equip_elevator_pass': 0
 };
 

@@ -245,8 +245,8 @@ class GameEngine {
     const equippedShoes = window.MainApp && window.MainApp.playerData && window.MainApp.playerData.equipment && window.MainApp.playerData.equipment.shoes;
     let dashSpeed = 3.68; // 기본 1티어 실내화 (+15% 속도)
     if (equippedShoes) {
-      if (equippedShoes.item === 'equip_heritage_boots') {
-        dashSpeed = 4.0; // 4티어 헤리티지 부츠 (+25% 고속 질주)
+      if (equippedShoes.item === 'equip_immortal_shoes' || equippedShoes.item === 'equip_heritage_boots') {
+        dashSpeed = 4.0; // 4티어 헤리티지 부츠 & 5티어 불멸의 에어 농구화 (+25% 고속 질주)
       } else if (equippedShoes.item === 'equip_bronze_shoes') {
         dashSpeed = 4.0; // 3티어 청동 스파이크 (+25% 고속 질주)
       } else if (equippedShoes.item === 'equip_leather_shoes') {

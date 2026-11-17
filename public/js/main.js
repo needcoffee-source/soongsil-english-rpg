@@ -198,6 +198,17 @@ window.ITEM_CODEX_DATABASE = [
     source: '학생 급식실 바닥 음식물 몬스터 처치 시 40% 행운 드랍',
     recipe: '급식실 몬스터 처치 전리품'
   },
+  {
+    id: 'item_golden_laurel',
+    name: '황금 월계수 잎',
+    icon: '🏵️',
+    category: 'material',
+    tierBadge: '야외 전리품',
+    tierColor: '#eab308',
+    effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
+    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍',
+    recipe: '체육관 실내 농구장 전투 드랍'
+  },
 
   // 2. Consumables (소비품 10종 - craft_recipes.json 공식 레시피)
   {
@@ -546,6 +557,17 @@ window.ITEM_CODEX_DATABASE = [
     effect: '공격력 +6, 방어력 +6, 체력 +15',
     source: '기말고사 파멸신 레이드 토벌 시 드랍'
   },
+  {
+    id: 'equip_immortal_shoes',
+    name: '불멸의 에어 농구화 (Immortal Air Shoes)',
+    icon: '👟',
+    category: 'shoes',
+    subCategory: 'shoes',
+    tierBadge: '5티어 신발',
+    tierColor: '#ef4444',
+    effect: '공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 질주 (Lv.15 이상)',
+    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍 (10~15%)'
+  },
 
   // 5. Special School Accessories (장신구)
   {
@@ -570,6 +592,18 @@ window.ITEM_CODEX_DATABASE = [
     source: '복도 식물존 옆 악세서리 세공대에서 제작 (5레벨 이상)',
     recipe: '황금 은행잎 10개 + 500G',
     stats: { atk: 15, def: 5, hp: 30 }
+  },
+  {
+    id: 'equip_victory_medal',
+    name: '승리의 월계관 메달 (Victory Laurel Medal)',
+    icon: '🏅',
+    category: 'accessory', subCategory: 'accessory',
+    tierBadge: '영광 장신구',
+    tierColor: '#eab308',
+    effect: '공격력 +20, 방어력 +5, 체력 +30 증가 (Lv.15 이상)',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작 (15레벨 이상)',
+    recipe: '황금 월계수 잎 12개 + 1,000G',
+    stats: { atk: 20, def: 5, hp: 30 }
   },
   {
     id: 'equip_vintage_armband',
@@ -701,6 +735,9 @@ const ALL_GAME_ITEMS = {
   'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 12, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 12, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
+  'equip_immortal_shoes': { name: '불멸의 에어 농구화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', requiredLevel: 15, stats: { atk: 8, def: 6, hp: 15 }, effect: '5티어 신발 · 공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 질주 (Lv.15 이상)' } },
+  'equip_victory_medal': { name: '승리의 월계관 메달', icon: '🏅', count: 9999, meta: { type: 'equipment', slot: 'accessory', requiredLevel: 15, stats: { atk: 20, def: 5, hp: 30 }, effect: '공격력 +20, 방어력 +5, 체력 +30 (Lv.15 이상)' } },
+  'item_golden_laurel': { name: '황금 월계수 잎', icon: '🏵️', count: 9999, meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } },
 
   // 7. Legendary Season Boss Artifacts & Rewards & New Potions
   'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
@@ -762,6 +799,9 @@ const ITEM_SELL_PRICES = {
   'equip_heritage_armor': 100, // 제작비 500G -> 20% = 100G
   'equip_bronze_shoes': 16, // 3티어 청동 신발 매각가
   'equip_heritage_boots': 30, // 4티어 헤리티지 신발 매각가
+  'equip_immortal_shoes': 50, // 5티어 불멸의 에어 농구화 매각가
+  'equip_victory_medal': 200, // 제작비 1000G -> 20% = 200G
+  'item_golden_laurel': 5, // 체육관 실내 농구장 Lv.15 재료
 
   // 7. 최상위 엔드 레이드 전리품
   'equip_omr_wand': 20,
@@ -8583,38 +8623,58 @@ class MainApp {
         }
       }
     } else if (mob.court === 'gym') {
-      const shardCount = mob.type === 'elite' ? (Math.floor(Math.random() * 2) + 1) : 1;
-      this.addItem('item_stainless_shard', '특수 강화 스텐 조각', shardCount, '✨', {
+      // 1. Lv.15 장신구 제작 재료 (완제품 미드랍)
+      const laurelCount = mob.type === 'elite' ? 2 : 1;
+      this.addItem('item_golden_laurel', '황금 월계수 잎', laurelCount, '🏵️', {
         type: 'material',
-        effect: '5티어 불멸 세트 제작 핵심 재료'
+        effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료'
       });
-      dropsList.push(`✨ 특수 강화 스텐 조각 x${shardCount}개`);
+      dropsList.push(`🏵️ 황금 월계수 잎 x${laurelCount}개`);
 
-      const essenceCount = mob.type === 'elite' ? 2 : 1;
-      this.addItem('item_nutrition_essence', '정제된 영양의 정수', essenceCount, '🍱', {
-        type: 'material',
-        effect: '5티어 불멸 세트 및 엘릭서 제작 필수 재료'
-      });
-      dropsList.push(`🍱 정제된 영양의 정수 x${essenceCount}개`);
-
-      if (Math.random() * 100 < (mob.type === 'elite' ? 40 : 25)) {
+      // 2. 초소형 경험치 물약 (50% 확률)
+      if (Math.random() * 100 < 50) {
         this.addItem('item_tiny_exp_potion', '초소형 경험치 물약', 1, '🧪', {
           type: 'consumable',
           slot: 'consumable',
           expGain: 50,
           effect: '사용 시 경험치(EXP) +50 상승'
         });
-        dropsList.push('🧪 초소형 경험치 물약 1개 (행운 드랍!)');
+        dropsList.push('🧪 초소형 경험치 물약 1개 (50% 드랍!)');
       }
 
-      if (mob.type === 'elite' && Math.random() * 100 < 20) {
+      // 3. 맑은 물약 (높은 확률: 일반 45% / 엘리트 65%)
+      if (Math.random() * 100 < (mob.type === 'elite' ? 65 : 45)) {
+        this.addItem('item_clear_potion', '맑은 물약', 1, '🧪', {
+          type: 'consumable',
+          slot: 'consumable',
+          heal: 40,
+          effect: '사용 시 체력(HP) +40 대량 즉시 회복'
+        });
+        dropsList.push('🧪 맑은 물약 1개 (높은 확률 드랍!)');
+      }
+
+      // 4. 엘릭서 (낮은 확률: 일반 10% / 엘리트 18%)
+      if (Math.random() * 100 < (mob.type === 'elite' ? 18 : 10)) {
         this.addItem('item_elixir', '엘릭서', 1, '⚗️', {
           type: 'consumable',
           slot: 'consumable',
           heal: 80,
-          effect: '체력 +80 초대량 즉시 회복'
+          effect: '사용 시 체력(HP) +80 초대량 즉시 회복'
         });
-        dropsList.push('⚗️ 엘릭서 1개 (엘리트 20% 대박 드랍!)');
+        dropsList.push('⚗️ 엘릭서 1개 (희귀 드랍!)');
+      }
+
+      // 5. 5티어 신발 완제품 (10~15% 확률: 일반 10% / 엘리트 15%)
+      const shoeDropRate = mob.type === 'elite' ? 15 : 10;
+      if (Math.random() * 100 < shoeDropRate) {
+        this.addItem('equip_immortal_shoes', '불멸의 에어 농구화', 1, '👟', {
+          type: 'equipment',
+          slot: 'shoes',
+          requiredLevel: 15,
+          stats: { atk: 8, def: 6, hp: 15 },
+          effect: '5티어 신발 · 공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 질주 (Lv.15 이상)'
+        });
+        dropsList.push(`👟 불멸의 에어 농구화 (5티어 신발 ${shoeDropRate}% 대박 완제품 드랍!)`);
       }
     } else if (mob.court === 'history') {
       const essenceCount = Math.floor(Math.random() * 2) + 1; // 1~2개
@@ -13527,7 +13587,7 @@ class MainApp {
       filtered = db.filter(item => item.category === 'weapon_armor' || item.subCategory === 'weapon_armor' || (item.category === 'equip' && !item.id.includes('shoes') && !item.id.includes('boots') && !item.id.includes('ring') && !item.id.includes('talisman') && !item.id.includes('pass')));
     } else if (tab === 'shoes') {
       filtered = db.filter(item => item.category === 'shoes' || item.subCategory === 'shoes' || item.id.includes('shoes') || item.id.includes('boots'));
-      const shoeOrder = ['equip_shoes_samdidas', 'equip_leather_shoes', 'equip_bronze_shoes', 'equip_heritage_boots'];
+      const shoeOrder = ['equip_shoes_samdidas', 'equip_leather_shoes', 'equip_bronze_shoes', 'equip_heritage_boots', 'equip_immortal_shoes'];
       filtered.sort((a, b) => {
         const idxA = shoeOrder.indexOf(a.id);
         const idxB = shoeOrder.indexOf(b.id);

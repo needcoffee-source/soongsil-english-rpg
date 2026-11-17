@@ -837,6 +837,50 @@
     "requiredLevel": 5
   },
   {
+    "id": "recipe_victory_medal",
+    "name": "승리의 월계관 메달 (Victory Laurel Medal)",
+    "category": "accessory",
+    "description": "[영광 장신구] 체육관 실내 농구장(Lv.15)에서 모은 황금 월계수 잎을 엮어 만든 최고급 승리 메달입니다. (Lv.15 이상)",
+    "icon": "🏅",
+    "gradeLevel": 1,
+    "requiredLevel": 15,
+    "requiredGold": 1000,
+    "requiredItems": [
+      {
+        "item": "item_golden_laurel",
+        "name": "황금 월계수 잎",
+        "count": 12
+      }
+    ],
+    "unscramble": {
+      "korean": "승리의 메달은 명예와 영광으로 빛난다.",
+      "words": [
+        "The",
+        "victory",
+        "medal",
+        "shines",
+        "with",
+        "honor",
+        "and",
+        "glory."
+      ],
+      "correct": "The victory medal shines with honor and glory."
+    },
+    "result": {
+      "item": "equip_victory_medal",
+      "name": "승리의 월계관 메달",
+      "icon": "🏅",
+      "type": "equipment",
+      "slot": "accessory",
+      "stats": {
+        "atk": 20,
+        "def": 5,
+        "hp": 30
+      },
+      "effect": "공격력(ATK) +20, 방어력(DEF) +5, 최대체력 +30 (Lv.15 이상)"
+    }
+  },
+  {
     "id": "recipe_red_potion",
     "name": "빨간 물약",
     "category": "potion",
