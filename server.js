@@ -2035,7 +2035,8 @@ function endBrawlMatch(winnerTeam, reason = '경기 종료') {
 // Boss Raid Event State (Teacher Controlled)
 let bossRaidEvent = {
   active: false,
-  name: '👾 가죽 골렘',
+  stoppedByTeacher: true,
+  name: '🐲 고대 청동 드래곤',
   level: 10,
   mode: 'coop',       // 'coop' (협동 공유 체력) or 'solo' (개인별 레이드)
   unitFilter: 'ALL',  // 'ALL', 'L1', 'L2', 'L3', 'L4'
@@ -3421,6 +3422,7 @@ setInterval(() => {
   if (bossRaidEvent.expiresAt && now >= bossRaidEvent.expiresAt) {
     if (bossRaidEvent.currentHp > 0) {
       bossRaidEvent.active = false;
+      bossRaidEvent.stoppedByTeacher = true;
       bossRaidEvent.currentHp = bossRaidEvent.maxHp;
       bossRaidEvent.participants = {};
       io.emit('boss_raid_timeout', {
@@ -3521,6 +3523,7 @@ setInterval(() => {
 
     if (bossRaidEvent.currentHp <= 0) {
       bossRaidEvent.active = false;
+      bossRaidEvent.stoppedByTeacher = true;
       const list = Object.values(bossRaidEvent.participants).sort((a, b) => b.damage - a.damage);
       const mvp = list.length > 0 ? list[0] : { name: pName, damage: dmg };
 

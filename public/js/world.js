@@ -803,6 +803,28 @@ const WORLD_DATA = {
         respawnSec: 15
       },
       {
+        id: "gym_mob_dunk_3",
+        name: "불멸의 덩크 머신",
+        court: "gym",
+        zone: "right_court",
+        type: "regular",
+        avatar: "gym_dunk_machine",
+        icon: "🏀",
+        x: 35,
+        y: 9,
+        spawnX: 35,
+        spawnY: 9,
+        roam: true,
+        hp: 420,
+        maxHp: 420,
+        atk: 65,
+        def: 26,
+        counterDmg: 58,
+        goldReward: 55,
+        expReward: 135,
+        respawnSec: 15
+      },
+      {
         id: "gym_mob_dunk_2",
         name: "불멸의 백보드 분쇄기",
         court: "gym",

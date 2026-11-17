@@ -46,7 +46,9 @@ const sandbox = {
 vm.runInNewContext(worldJs + '\n' + engineJs, sandbox);
 const WD = sandbox.window.WORLD_DATA;
 const Gym = WD.classroom_gym;
-assert(Array.isArray(Gym.gymMonsters) && Gym.gymMonsters.length >= 4, 'classroom_gym must have >= 4 Lv.15 monsters');
+assert(Array.isArray(Gym.gymMonsters) && Gym.gymMonsters.length >= 5, 'classroom_gym must have >= 5 Lv.15 monsters');
+const dunkMachines = Gym.gymMonsters.filter(m => m.avatar === 'gym_dunk_machine');
+assert.strictEqual(dunkMachines.length, 2, 'classroom_gym must have 2 불멸의 덩크 머신 monsters');
 
 for (const mob of Gym.gymMonsters) {
   assert.strictEqual(mob.court, 'gym', `${mob.id} court must be gym`);
@@ -113,5 +115,7 @@ assert(gymDropBlock.includes("'item_tiny_exp_potion'") && gymDropBlock.includes(
 assert(gymDropBlock.includes("'item_clear_potion'"), 'Gym monsters drop clear potion');
 assert(gymDropBlock.includes("'item_elixir'"), 'Gym monsters drop elixir at low rate');
 assert(gymDropBlock.includes("'equip_immortal_shoes'") && gymDropBlock.includes("'elite' ? 15 : 10"), 'Gym monsters drop Tier 5 shoes at 10~15%');
+assert(serverJs.includes("let bossRaidEvent = {\r\n  active: false,\r\n  stoppedByTeacher: true") || serverJs.includes("let bossRaidEvent = {\n  active: false,\n  stoppedByTeacher: true"), 'Default server bossRaidEvent must have active: false, stoppedByTeacher: true');
+assert(mainJs.includes("window.BOSS_CONFIG = {\r\n  active: false,\r\n  stoppedByTeacher: true") || mainJs.includes("window.BOSS_CONFIG = {\n  active: false,\n  stoppedByTeacher: true"), 'Default client BOSS_CONFIG must have active: false, stoppedByTeacher: true');
 
-console.log(`✓ 3. Indoor Gym (${Gym.gymMonsters.length} Lv.15 monsters, Unit 8 pool ${u8.length} questions, drops, Tier 5 shoes & Lv.15 accessory) verified.`);
+console.log(`✓ 3. Indoor Gym (${Gym.gymMonsters.length} Lv.15 monsters, Unit 8 pool ${u8.length} questions, drops, Tier 5 shoes, Lv.15 accessory & Dragon Raid default closed) verified.`);

@@ -1119,7 +1119,8 @@ const TITLE_DEFINITIONS = [
 
 window.BOSS_CONFIG = {
   active: false,
-  name: '👾 가죽 골렘',
+  stoppedByTeacher: true,
+  name: '🐲 고대 청동 드래곤',
   level: 10,
   mode: 'coop',
   unitFilter: 'ALL',
