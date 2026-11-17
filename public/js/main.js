@@ -240,7 +240,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'consumable',
     tierBadge: '최고급 회복 물약',
     tierColor: '#8b5cf6',
-    effect: '사용 시 체력(HP) +60 초대량 즉시 회복',
+    effect: '사용 시 체력(HP) +80 초대량 즉시 회복',
     source: '소비품 제작대(C)에서 조제 (15레벨 이상)',
     recipe: '정제된 영양의 정수 1개 + 향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 50G'
   },
@@ -664,7 +664,7 @@ const ALL_GAME_ITEMS = {
   'item_red_potion': { name: '빨간 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
   'item_orange_potion': { name: '주홍 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
   'item_clear_potion': { name: '맑은 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 40, effect: '체력 +40 대량 즉시 회복' } },
-  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 60, effect: '체력 +60 초대량 즉시 회복' } },
+  'item_elixir': { name: '엘릭서', icon: '⚗️', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 80, effect: '체력 +80 초대량 즉시 회복' } },
   'item_green_potion': { name: '초록 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
   'item_courage_potion': { name: '용기의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' } },
   'item_protection_potion': { name: '수호의 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' } },
@@ -1615,7 +1615,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherSeat: '상담실',
     teacherAvatar: '💖',
     category: '💖 장편 모험 완결 3막 (Lv.12)',
-    title: '[장편 완결 3막] 숭실 희망의 종소리: 몸과 마음의 공명',
+    title: '[장편 완결 3막] 희망의 종소리: 몸과 마음의 공명',
     story: `드디어 장편 모험의 대단원, 제3막 피날레(Lv.12 이상)란다! 💖🌟
 
 보건 선생님의 활력 비약과 우리가 복구한 체육관 방송 시스템을 하나로 연결해, 학교 전체에 희망의 종소리를 울려 퍼지게 할 시간이야!
@@ -1625,7 +1625,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
 3. 🫖 3층 Wee클래스 [따뜻한 캐모마일 허브차 테이블]에서 평온의 다과 의식 마치기
 
 모두 마치고 돌아오면 5티어 최고급 장비 제작에 쓰이는 [✨ 특수 강화 스텐 조각 x2]와 [🍱 정제된 영양의 정수 x4], 그리고 경험치·골드 보상을 수여하마!`,
-    inProgressStory: `숭실 희망의 종소리 대작전이 한창 진행 중이란다! 💖
+    inProgressStory: `희망의 종소리 대작전이 한창 진행 중이란다! 💖
 
 1. 🩺 3층 보건실 [보건 선생님]과 대화해 합동 치유 인증받기
 2. 🎤 체육관 [강연 무대]에서 희망의 영어 스피치 성공하기
@@ -7996,7 +7996,7 @@ class MainApp {
         iconHtml: (typeof window.renderItemIconHtml === 'function')
           ? window.renderItemIconHtml('item_elixir', '⚗️')
           : '<span class="icon-elixir">⚗️</span>',
-        label: '엘릭서 (+60)'
+        label: '엘릭서 (+80)'
       }
     ];
     potionDefs.forEach(p => {
@@ -8582,6 +8582,40 @@ class MainApp {
           }
         }
       }
+    } else if (mob.court === 'gym') {
+      const shardCount = mob.type === 'elite' ? (Math.floor(Math.random() * 2) + 1) : 1;
+      this.addItem('item_stainless_shard', '특수 강화 스텐 조각', shardCount, '✨', {
+        type: 'material',
+        effect: '5티어 불멸 세트 제작 핵심 재료'
+      });
+      dropsList.push(`✨ 특수 강화 스텐 조각 x${shardCount}개`);
+
+      const essenceCount = mob.type === 'elite' ? 2 : 1;
+      this.addItem('item_nutrition_essence', '정제된 영양의 정수', essenceCount, '🍱', {
+        type: 'material',
+        effect: '5티어 불멸 세트 및 엘릭서 제작 필수 재료'
+      });
+      dropsList.push(`🍱 정제된 영양의 정수 x${essenceCount}개`);
+
+      if (Math.random() * 100 < (mob.type === 'elite' ? 40 : 25)) {
+        this.addItem('item_tiny_exp_potion', '초소형 경험치 물약', 1, '🧪', {
+          type: 'consumable',
+          slot: 'consumable',
+          expGain: 50,
+          effect: '사용 시 경험치(EXP) +50 상승'
+        });
+        dropsList.push('🧪 초소형 경험치 물약 1개 (행운 드랍!)');
+      }
+
+      if (mob.type === 'elite' && Math.random() * 100 < 20) {
+        this.addItem('item_elixir', '엘릭서', 1, '⚗️', {
+          type: 'consumable',
+          slot: 'consumable',
+          heal: 80,
+          effect: '체력 +80 초대량 즉시 회복'
+        });
+        dropsList.push('⚗️ 엘릭서 1개 (엘리트 20% 대박 드랍!)');
+      }
     } else if (mob.court === 'history') {
       const essenceCount = Math.floor(Math.random() * 2) + 1; // 1~2개
       this.addItem('item_history_essence', '🏛️ 숭실 역사의 정수', essenceCount, '🏛️', {
@@ -8705,7 +8739,8 @@ class MainApp {
     const now = Date.now();
     const allMobs = [
       ...(WORLD_DATA.playground.basketballMonsters || []),
-      ...(WORLD_DATA.playground.futsalMonsters || [])
+      ...(WORLD_DATA.playground.futsalMonsters || []),
+      ...((WORLD_DATA.classroom_gym && WORLD_DATA.classroom_gym.gymMonsters) || [])
     ];
     allMobs.forEach(m => {
       if (state[m.id] && now < state[m.id]) {
@@ -8719,7 +8754,8 @@ class MainApp {
     if (!data || !data.mobId || !window.WORLD_DATA || !WORLD_DATA.playground) return;
     const allMobs = [
       ...(WORLD_DATA.playground.basketballMonsters || []),
-      ...(WORLD_DATA.playground.futsalMonsters || [])
+      ...(WORLD_DATA.playground.futsalMonsters || []),
+      ...((WORLD_DATA.classroom_gym && WORLD_DATA.classroom_gym.gymMonsters) || [])
     ];
     const targetMob = allMobs.find(m => m.id === data.mobId);
     if (targetMob) {

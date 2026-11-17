@@ -1008,8 +1008,8 @@
       "icon": "⚗️",
       "type": "consumable",
       "slot": "consumable",
-      "heal": 60,
-      "effect": "사용 시 체력(HP) +60 초대량 즉시 회복"
+      "heal": 80,
+      "effect": "사용 시 체력(HP) +80 초대량 즉시 회복"
     }
   },
   {

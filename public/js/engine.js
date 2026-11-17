@@ -421,6 +421,7 @@ class GameEngine {
     this.updateFutsalMonsters();
     this.updateHistoryMonsters();
     this.updateCafeteriaMonsters();
+    this.updateGymMonsters();
 
     // 3v3 Brawl Ball Logic Update
     if (window.BrawlBall) {
@@ -1668,6 +1669,23 @@ class GameEngine {
             }
           }
         }
+      }
+      if (this.player.room === 'room_gym' && cr.gymMonsters) {
+        for (const mob of cr.gymMonsters) {
+          if (mob.defeated) continue;
+          const mDist = Math.hypot(mob.x * 32 - this.player.x, (mob.y + 0.5) * 32 - this.player.y);
+          if (mDist < 48 && mDist < minDist) {
+            closest = {
+              type: 'field_monster',
+              data: mob,
+              name: `${mob.icon} ${mob.name}`,
+              prompt: '1:1 퀴즈 배틀 (Lv.15 · 8단원)'
+            };
+            minDist = mDist;
+          }
+        }
+      }
+      if (this.player.room === 'room_history') {
         if (cr.interactive) {
           for (const item of cr.interactive) {
             const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
@@ -2100,6 +2118,14 @@ class GameEngine {
           if (Math.hypot((item.x + 0.5) * 32 - x, (item.y + 0.5) * 32 - y) < tapDist) {
               return { type: item.type, data: item, name: item.name };
             }
+          }
+        }
+      }
+      if (this.player.room === 'room_gym' && cr.gymMonsters) {
+        for (const mob of cr.gymMonsters) {
+          if (mob.defeated) continue;
+          if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
+            return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀 (Lv.15 · 8단원)' };
           }
         }
       }
@@ -6596,6 +6622,7 @@ class GameEngine {
       this.renderCafeteriaMonsters();
     } else if (this.player.room === 'room_gym') {
       this.renderGymInterior(cr);
+      this.renderGymMonsters();
     } else if (this.player.floor === 5) {
       // 5층 잠긴 교실들: 깨끗한 빈 공간 연출
     } else {
@@ -13512,6 +13539,138 @@ class GameEngine {
     }
   }
 
+  // Roaming & Respawn Logic for Indoor Gym Basketball Court Monsters (Lv.15)
+  updateGymMonsters() {
+    if (!this.player || this.player.room !== 'room_gym') return;
+    const cr = this.getCurrentClassroomData();
+    if (!cr || !cr.gymMonsters) return;
+
+    const now = Date.now();
+    for (const mob of cr.gymMonsters) {
+      if (mob.defeated) {
+        if (mob.respawnAt && now >= mob.respawnAt) {
+          mob.defeated = false;
+          mob.hp = mob.maxHp;
+          mob.x = mob.spawnX !== undefined ? mob.spawnX : 29;
+          mob.y = mob.spawnY !== undefined ? mob.spawnY : 13;
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+        }
+        continue;
+      }
+
+      if (mob.inBattle) continue;
+
+      if (mob.roam) {
+        if (mob.targetX === undefined || mob.targetY === undefined) {
+          mob.targetX = mob.x;
+          mob.targetY = mob.y;
+          mob.nextMoveTime = now + 1000 + Math.random() * 1800;
+        }
+
+        const dx = mob.targetX - mob.x;
+        const dy = mob.targetY - mob.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 0.1) {
+          mob.x = mob.targetX;
+          mob.y = mob.targetY;
+          if (now >= (mob.nextMoveTime || 0)) {
+            if (mob.zone === 'left_court') {
+              mob.targetX = Math.round((20 + Math.random() * 7) * 10) / 10;
+              mob.targetY = Math.round((7 + Math.random() * 12) * 10) / 10;
+            } else if (mob.zone === 'right_court') {
+              mob.targetX = Math.round((32 + Math.random() * 7) * 10) / 10;
+              mob.targetY = Math.round((7 + Math.random() * 12) * 10) / 10;
+            } else if (mob.zone === 'mid_top') {
+              mob.targetX = Math.round((25 + Math.random() * 9) * 10) / 10;
+              mob.targetY = Math.round((6.5 + Math.random() * 4.5) * 10) / 10;
+            } else {
+              // center_court elite patrols near center circle
+              mob.targetX = Math.round((27.5 + Math.random() * 4) * 10) / 10;
+              mob.targetY = Math.round((11.5 + Math.random() * 4) * 10) / 10;
+            }
+            mob.nextMoveTime = now + 2200 + Math.random() * 2800;
+          }
+        } else {
+          const step = mob.type === 'elite' ? 0.018 : 0.016;
+          mob.x += (dx / dist) * Math.min(step, dist);
+          mob.y += (dy / dist) * Math.min(step, dist);
+        }
+      }
+    }
+  }
+
+  renderGymMonsters() {
+    const cr = this.getCurrentClassroomData();
+    if (!cr || !cr.gymMonsters) return;
+
+    const now = Date.now();
+    for (const mob of cr.gymMonsters) {
+      if (mob.defeated) continue;
+
+      const isElite = (mob.type === 'elite');
+      const floatY = Math.sin((now + mob.x * 200) / (isElite ? 170 : 210)) * (isElite ? 4 : 3);
+      const px = mob.x * 32;
+      const py = mob.y * 32 + floatY;
+
+      // Drop shadow on gym hardwood
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      this.ctx.beginPath();
+      this.ctx.ellipse(px + 16, mob.y * 32 + 28, isElite ? 17 : 14, isElite ? 7 : 6, 0, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Lv.15 Immortal Aura
+      this.ctx.save();
+      const pulse = 0.25 + Math.sin(now / 180) * 0.1;
+      this.ctx.fillStyle = isElite
+        ? `rgba(245, 158, 11, ${pulse + 0.08})`
+        : `rgba(14, 165, 233, ${pulse})`;
+      this.ctx.beginPath();
+      this.ctx.arc(px + 16, py + 12, isElite ? 22 : 18, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      if (isElite) {
+        this.ctx.strokeStyle = '#fbbf24';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.arc(px + 16, py + 12, 22, 0, Math.PI * 2);
+        this.ctx.stroke();
+      }
+
+      // Main Icon
+      this.ctx.font = isElite ? '26px sans-serif' : '22px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(mob.icon || '🏀', px + 16, py + 12);
+      this.ctx.restore();
+
+      // HP Bar
+      const hpW = isElite ? 50 : 42;
+      const hpH = 6;
+      const hpX = px + 16 - hpW / 2;
+      const hpY = py - (isElite ? 18 : 14);
+      const hpPct = Math.max(0, Math.min(1, mob.hp / mob.maxHp));
+
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      this.ctx.fillRect(hpX - 1, hpY - 1, hpW + 2, hpH + 2);
+      this.ctx.fillStyle = '#dc2626';
+      this.ctx.fillRect(hpX, hpY, hpW, hpH);
+      this.ctx.fillStyle = hpPct > 0.5 ? '#16a34a' : (hpPct > 0.25 ? '#f59e0b' : '#ef4444');
+      this.ctx.fillRect(hpX, hpY, hpW * hpPct, hpH);
+
+      // Name Label below
+      this.drawSharpLabel(px + 16, py + 38, `${mob.icon} ${mob.name}`, {
+        bgColor: isElite ? 'rgba(69, 10, 10, 0.95)' : 'rgba(12, 74, 110, 0.95)',
+        borderColor: isElite ? '#fbbf24' : '#38bdf8',
+        textColor: isElite ? '#fef08a' : '#e0f2fe',
+        fontSize: 11,
+        paddingX: 8,
+        height: 20
+      });
+    }
+  }
+
   // Draw History Guardian Monster Sprite
   drawHistoryMonsterSprite(px, py, mob, now) {
     this.ctx.save();
@@ -19312,7 +19471,7 @@ class GameEngine {
     drawHoop(17 * 32 + 16, true);
     drawHoop(41 * 32 + 16, false);
 
-    this.drawSharpLabel(midX, 4.4 * 32, '🏀 숭실 실내 농구 코트 (8단원 예정)', {
+    this.drawSharpLabel(midX, 4.4 * 32, '🏀 숭실 실내 농구 코트 (8단원 · Lv.15)', {
       bgColor: '#1e3a8a',
       borderColor: '#facc15',
       textColor: '#ffffff',

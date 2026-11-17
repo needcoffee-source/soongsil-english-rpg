@@ -85,7 +85,7 @@ const elixir = recipes.find(r => r.id === 'recipe_elixir');
 assert(elixir, 'recipe_elixir must exist');
 assert.strictEqual(elixir.requiredLevel, 15, 'recipe_elixir requiredLevel === 15');
 assert.strictEqual(elixir.requiredGold, 50, 'recipe_elixir requiredGold === 50');
-assert.strictEqual(elixir.result.heal, 60, 'recipe_elixir heal === 60');
+assert.strictEqual(elixir.result.heal, 80, 'recipe_elixir heal === 80');
 assert.strictEqual(elixir.icon, '⚗️', 'recipe_elixir icon === ⚗️');
 
 // Verify neither is sold in canteen store
