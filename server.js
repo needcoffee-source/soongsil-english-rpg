@@ -18,9 +18,46 @@ const TEACHER_PASSWORD = process.env.TEACHER_PASSWORD || '03220322';
 const ALLOWED_EMAIL_DOMAIN = (process.env.ALLOWED_EMAIL_DOMAIN || 'senedu.kr').trim().toLowerCase();
 const activeTeacherTokens = new Set();
 const activeStudentSessions = new Map(); // token -> { studentId, email, name, expiresAt }
+const revokedStudentBefore = new Map(); // studentId -> timestamp
+const SESSION_HMAC_SECRET = crypto.createHash('sha256')
+  .update(String(process.env.AUTH_SECRET || TEACHER_PASSWORD) + ':soongsil-session-v1')
+  .digest();
+const IDLE_AUTO_CLOSE_MS = Math.max(1000, Number(process.env.IDLE_AUTO_CLOSE_MS) || (20 * 60 * 1000));
+let lastOccupiedAt = Date.now();
+
+function signSessionPayload(payloadObj) {
+  const encoded = Buffer.from(JSON.stringify(payloadObj), 'utf8').toString('base64url');
+  const sig = crypto.createHmac('sha256', SESSION_HMAC_SECRET).update(encoded).digest('hex');
+  return `${encoded}.${sig}`;
+}
+
+function verifySessionPayload(token) {
+  if (!token || typeof token !== 'string') return null;
+  const dotIdx = token.indexOf('.');
+  if (dotIdx <= 0) return null;
+  const encoded = token.slice(0, dotIdx);
+  const sigHex = token.slice(dotIdx + 1);
+  if (!encoded || !sigHex) return null;
+  try {
+    const expectedHex = crypto.createHmac('sha256', SESSION_HMAC_SECRET).update(encoded).digest('hex');
+    const a = Buffer.from(sigHex, 'hex');
+    const b = Buffer.from(expectedHex, 'hex');
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+    const payload = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8'));
+    if (!payload || typeof payload !== 'object' || !payload.exp || Date.now() > payload.exp) return null;
+    return payload;
+  } catch (_) {
+    return null;
+  }
+}
 
 function issueTeacherToken() {
-  const token = crypto.randomBytes(24).toString('hex');
+  const exp = Date.now() + 24 * 3600 * 1000;
+  const token = signSessionPayload({
+    k: 'teacher',
+    exp,
+    n: crypto.randomBytes(8).toString('hex')
+  });
   if (activeTeacherTokens.size >= 32) {
     const oldest = activeTeacherTokens.values().next().value;
     activeTeacherTokens.delete(oldest);
@@ -29,11 +66,22 @@ function issueTeacherToken() {
   return token;
 }
 
+function isValidTeacherToken(token) {
+  if (!token || typeof token !== 'string') return false;
+  if (activeTeacherTokens.has(token)) return true;
+  const payload = verifySessionPayload(token);
+  if (payload && payload.k === 'teacher') {
+    activeTeacherTokens.add(token);
+    return true;
+  }
+  return false;
+}
+
 function isAuthorizedTeacherHttp(req) {
   const token = req.headers['x-teacher-token'] || (req.query && req.query.token);
   const pwd = req.headers['x-teacher-pwd'];
   return !!(
-    (typeof token === 'string' && activeTeacherTokens.has(token)) ||
+    isValidTeacherToken(token) ||
     (typeof pwd === 'string' && pwd === TEACHER_PASSWORD)
   );
 }
@@ -521,6 +569,9 @@ function applyServerGateStateChange(isOpen, message = '', updatedBy = '교사') 
   if (message) serverGateState.closedMessage = message;
   serverGateState.updatedAt = Date.now();
   serverGateState.updatedBy = updatedBy || '교사';
+  if (serverGateState.isOpen) {
+    lastOccupiedAt = Date.now();
+  }
   saveServerGateState();
 
   io.emit('server_state_changed', getPublicServerGatePayload());
@@ -667,19 +718,55 @@ function verifyStudentPin(pin, saltHex, expectedHashHex) {
 }
 
 function issueTimedToken(storeMap, data, ttlMs) {
-  const token = crypto.randomBytes(24).toString('hex');
+  const iat = Date.now();
+  const expiresAt = iat + ttlMs;
+  let pv = '';
+  if (data && data.studentId) {
+    const allRecs = getStudentsProgress() || {};
+    const rec = allRecs[data.studentId];
+    if (rec && rec.pinHash) {
+      pv = String(rec.pinHash).slice(0, 8);
+    }
+  }
+  const token = (data && data.studentId)
+    ? signSessionPayload({
+        k: 'student',
+        studentId: data.studentId,
+        email: data.email || '',
+        name: data.name || '',
+        pv,
+        iat,
+        exp: expiresAt
+      })
+    : crypto.randomBytes(24).toString('hex');
   if (storeMap.size >= 500) {
     const oldest = storeMap.keys().next().value;
     storeMap.delete(oldest);
   }
-  storeMap.set(token, { ...data, expiresAt: Date.now() + ttlMs });
+  storeMap.set(token, { ...data, expiresAt });
   return token;
 }
 
 function consumeValidToken(storeMap, token, remove = false) {
   if (!token || typeof token !== 'string') return null;
-  const entry = storeMap.get(token);
-  if (!entry) return null;
+  let entry = storeMap.get(token);
+  if (!entry) {
+    const payload = verifySessionPayload(token);
+    if (!payload || payload.k !== 'student' || !payload.studentId) return null;
+    const revokedAt = revokedStudentBefore.get(payload.studentId) || 0;
+    if (payload.iat && payload.iat < revokedAt) return null;
+    if (payload.pv) {
+      const rec = (getStudentsProgress() || {})[payload.studentId];
+      if (!rec || String(rec.pinHash || '').slice(0, 8) !== payload.pv) return null;
+    }
+    entry = {
+      studentId: payload.studentId,
+      email: payload.email || '',
+      name: payload.name || '',
+      expiresAt: payload.exp
+    };
+    if (!remove) storeMap.set(token, entry);
+  }
   if (Date.now() > entry.expiresAt) {
     storeMap.delete(token);
     return null;
@@ -1272,6 +1359,7 @@ app.post('/api/admin/reset-student-pin', requireTeacherHttp, async (req, res) =>
     await pushSingleStudentToSheet(studentId, { clearPin: !newPin });
   }
 
+  revokedStudentBefore.set(studentId, Date.now());
   for (const [tok, sess] of activeStudentSessions.entries()) {
     if (sess.studentId === studentId) activeStudentSessions.delete(tok);
   }
@@ -1673,6 +1761,10 @@ app.post('/api/admin/delete-student-progress', requireTeacherHttp, (req, res) =>
   if (all[studentId]) {
     delete all[studentId];
     saveStudentsProgress(all, true);
+  }
+  revokedStudentBefore.set(studentId, Date.now());
+  for (const [tok, sess] of activeStudentSessions.entries()) {
+    if (sess.studentId === studentId) activeStudentSessions.delete(tok);
   }
   if (isGoogleSheetsReady() && googleSheetsConfig.autoPushChanges) {
     callGoogleAppsScript({ action: 'deleteOne', studentId }, 4000).catch(() => {});
@@ -2841,7 +2933,7 @@ function isAuthorizedTeacherSocket(socket, payload = {}) {
   return !!(
     socket.isTeacher ||
     (player && player.isTeacher) ||
-    (typeof token === 'string' && activeTeacherTokens.has(token)) ||
+    isValidTeacherToken(token) ||
     (typeof pwd === 'string' && pwd === TEACHER_PASSWORD)
   );
 }
@@ -2860,12 +2952,12 @@ io.on('connection', (socket) => {
   socket.on('player_join', (data) => {
     const { name, grade, studentId, avatar, isTeacher, teacherPwd, teacherToken, studentAuthToken } = data || {};
     const isVerifiedTeacher = !!isTeacher && (
-      (typeof teacherToken === 'string' && activeTeacherTokens.has(teacherToken)) ||
+      isValidTeacherToken(teacherToken) ||
       teacherPwd === TEACHER_PASSWORD
     );
     socket.isTeacher = isVerifiedTeacher;
     if (isVerifiedTeacher) {
-      socket.teacherToken = (typeof teacherToken === 'string' && activeTeacherTokens.has(teacherToken))
+      socket.teacherToken = isValidTeacherToken(teacherToken)
         ? teacherToken
         : issueTeacherToken();
     } else {
@@ -2933,6 +3025,7 @@ io.on('connection', (socket) => {
       equippedTitle: data.equippedTitle || null,
       inventory: []
     };
+    lastOccupiedAt = Date.now();
 
     const currentRoom = `server_${players[socket.id].grade}_f${players[socket.id].floor}_${players[socket.id].room}`;
     socket.join(currentRoom);
@@ -3761,11 +3854,40 @@ setInterval(() => {
       const room = `server_${player.grade}_f${player.floor}_${player.room}`;
       socket.to(room).emit('player_left', socket.id);
       delete players[socket.id];
+      if (Object.keys(players).length === 0) {
+        lastOccupiedAt = Date.now();
+      }
       broadcastStudentList();
     }
     console.log(`[Disconnect] Socket ID: ${socket.id}`);
   });
 });
+
+function checkIdleServerAutoClose() {
+  if (Object.keys(players).length > 0) {
+    lastOccupiedAt = Date.now();
+    return false;
+  }
+  if (!serverGateState.isOpen) return false;
+  if (Date.now() - lastOccupiedAt >= IDLE_AUTO_CLOSE_MS) {
+    applyServerGateStateChange(
+      false,
+      '장시간(20분 이상) 접속자가 없어 서버가 자동으로 닫혔습니다.\n선생님께서 다시 서버를 열어주실 때까지 잠시 대기해주세요!',
+      '시스템(20분 미접속 자동닫힘)'
+    );
+    console.log(`[Server Gate] Auto-closed after ${Math.round(IDLE_AUTO_CLOSE_MS / 1000)}s with 0 connected players.`);
+    return true;
+  }
+  return false;
+}
+
+const idleAutoCloseTimer = setInterval(
+  checkIdleServerAutoClose,
+  Math.min(60000, Math.max(200, Math.floor(IDLE_AUTO_CLOSE_MS / 4)))
+);
+if (typeof idleAutoCloseTimer.unref === 'function') {
+  idleAutoCloseTimer.unref();
+}
 
 server.listen(PORT, () => {
   console.log(`===================================================`);

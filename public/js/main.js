@@ -6165,6 +6165,11 @@ class MainApp {
       if (!this.autoSaveInterval) {
         this.autoSaveInterval = setInterval(() => this.saveProgress(), 60000);
       }
+      if (!this.keepAliveInterval) {
+        this.keepAliveInterval = setInterval(() => {
+          fetch('/api/health').catch(() => {});
+        }, 4 * 60 * 1000);
+      }
       if (!window.__soongsilBeforeUnloadBound) {
         window.__soongsilBeforeUnloadBound = true;
         window.addEventListener('beforeunload', () => {
@@ -13749,11 +13754,16 @@ class MainApp {
       clearInterval(this.autoSaveInterval);
       this.autoSaveInterval = null;
     }
+    if (this.keepAliveInterval) {
+      clearInterval(this.keepAliveInterval);
+      this.keepAliveInterval = null;
+    }
     if (this.networkManager && this.networkManager.socket) {
       try { this.networkManager.socket.disconnect(); } catch (_) {}
     }
     const msg = (data && data.message) ? data.message : '현재 서버가 닫혀 있습니다.';
-    if (data && data.reason === 'server_closed') {
+    const isServerClosedReason = !!(data && data.reason === 'server_closed');
+    if (isServerClosedReason) {
       this.isServerOpen = false;
       this.serverClosedMessage = msg;
       this.updateServerGateUI();
@@ -13764,10 +13774,15 @@ class MainApp {
       startBtn.disabled = false;
       startBtn.innerText = '입장하기 🚀';
     }
-    alert('🔒 [서버 닫힘 안내]\n\n' + msg);
+    const rejectTitle = isServerClosedReason ? '🔒 [서버 닫힘 안내]' : '🔐 [인증 세션 안내]';
+    alert(`${rejectTitle}\n\n${msg}`);
   }
 
   onForceSaveAndExit(data) {
+    if (this.keepAliveInterval) {
+      clearInterval(this.keepAliveInterval);
+      this.keepAliveInterval = null;
+    }
     this.saveProgress();
     const msg = (data && data.message) ? data.message : '선생님께서 수업을 종료하여 서버를 닫았습니다.\n모든 진행 상황이 안전하게 저장되었습니다.';
     alert('📢 [수업 종료 안내]\n\n' + msg);
