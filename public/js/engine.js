@@ -1679,7 +1679,7 @@ class GameEngine {
               type: 'field_monster',
               data: mob,
               name: `${mob.icon} ${mob.name}`,
-              prompt: '1:1 퀴즈 배틀 (Lv.15 · 8단원)'
+              prompt: '1:1 퀴즈 배틀'
             };
             minDist = mDist;
           }
@@ -2125,7 +2125,7 @@ class GameEngine {
         for (const mob of cr.gymMonsters) {
           if (mob.defeated) continue;
           if (Math.hypot(mob.x * 32 - x, (mob.y + 0.5) * 32 - y) < 48) {
-            return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀 (Lv.15 · 8단원)' };
+            return { type: 'field_monster', data: mob, name: `${mob.icon} ${mob.name}`, prompt: '1:1 퀴즈 배틀' };
           }
         }
       }
@@ -13610,40 +13610,26 @@ class GameEngine {
       if (mob.defeated) continue;
 
       const isElite = (mob.type === 'elite');
-      const floatY = Math.sin((now + mob.x * 200) / (isElite ? 170 : 210)) * (isElite ? 4 : 3);
+      const floatY = Math.sin((now + mob.x * 200) / (isElite ? 160 : 200)) * (isElite ? 3.5 : 2.5);
       const px = mob.x * 32;
       const py = mob.y * 32 + floatY;
 
-      // Drop shadow on gym hardwood
-      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      // Ground shadow
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
       this.ctx.beginPath();
-      this.ctx.ellipse(px + 16, mob.y * 32 + 28, isElite ? 17 : 14, isElite ? 7 : 6, 0, 0, Math.PI * 2);
+      this.ctx.ellipse(px + 16, mob.y * 32 + 29, isElite ? 18 : 14, isElite ? 7 : 5.5, 0, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Lv.15 Immortal Aura
-      this.ctx.save();
-      const pulse = 0.25 + Math.sin(now / 180) * 0.1;
-      this.ctx.fillStyle = isElite
-        ? `rgba(245, 158, 11, ${pulse + 0.08})`
-        : `rgba(14, 165, 233, ${pulse})`;
-      this.ctx.beginPath();
-      this.ctx.arc(px + 16, py + 12, isElite ? 22 : 18, 0, Math.PI * 2);
-      this.ctx.fill();
-
-      if (isElite) {
-        this.ctx.strokeStyle = '#fbbf24';
-        this.ctx.lineWidth = 2;
-        this.ctx.beginPath();
-        this.ctx.arc(px + 16, py + 12, 22, 0, Math.PI * 2);
-        this.ctx.stroke();
+      // Custom High-Res Character Sprite by Monster Type
+      if (mob.avatar === 'gym_court_king' || isElite) {
+        this.drawGymCourtKingSprite(px, py, now);
+      } else if (mob.avatar === 'gym_referee_golem') {
+        this.drawGymRefereeGolemSprite(px, py, now);
+      } else if (mob.avatar === 'gym_backboard_crusher') {
+        this.drawGymBackboardCrusherSprite(px, py, now);
+      } else {
+        this.drawGymDunkMachineSprite(px, py, now);
       }
-
-      // Main Icon
-      this.ctx.font = isElite ? '26px sans-serif' : '22px sans-serif';
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.fillText(mob.icon || '🏀', px + 16, py + 12);
-      this.ctx.restore();
 
       // HP Bar
       const hpW = isElite ? 50 : 42;
@@ -13652,7 +13638,7 @@ class GameEngine {
       const hpY = py - (isElite ? 18 : 14);
       const hpPct = Math.max(0, Math.min(1, mob.hp / mob.maxHp));
 
-      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
       this.ctx.fillRect(hpX - 1, hpY - 1, hpW + 2, hpH + 2);
       this.ctx.fillStyle = '#dc2626';
       this.ctx.fillRect(hpX, hpY, hpW, hpH);
@@ -13660,15 +13646,288 @@ class GameEngine {
       this.ctx.fillRect(hpX, hpY, hpW * hpPct, hpH);
 
       // Name Label below
-      this.drawSharpLabel(px + 16, py + 38, `${mob.icon} ${mob.name}`, {
-        bgColor: isElite ? 'rgba(69, 10, 10, 0.95)' : 'rgba(12, 74, 110, 0.95)',
+      this.drawSharpLabel(px + 16, mob.y * 32 + 40, `${mob.icon} ${mob.name}`, {
+        bgColor: isElite ? 'rgba(69, 10, 10, 0.96)' : 'rgba(15, 23, 42, 0.94)',
         borderColor: isElite ? '#fbbf24' : '#38bdf8',
-        textColor: isElite ? '#fef08a' : '#e0f2fe',
-        fontSize: 11,
+        textColor: isElite ? '#fef08a' : '#f8fafc',
+        fontSize: isElite ? 11.5 : 11,
         paddingX: 8,
         height: 20
       });
     }
+  }
+
+  // 1) 🏀 불멸의 덩크 머신: 크림슨 강철 메카-골렘 & 마그마 농구공 드리블
+  drawGymDunkMachineSprite(px, py, now) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Shoulder Heavy Pauldrons
+    ctx.fillStyle = '#7f1d1d';
+    ctx.fillRect(px + 2, py + 12, 7, 9);
+    ctx.fillRect(px + 23, py + 12, 7, 9);
+    ctx.strokeStyle = '#f87171';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(px + 2, py + 12, 7, 9);
+    ctx.strokeRect(px + 23, py + 12, 7, 9);
+
+    // Armored Torso (Dark Steel + Crimson Jersey #23)
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(px + 7, py + 12, 18, 15);
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(px + 9, py + 14, 14, 12);
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('23', px + 16, py + 23);
+
+    // Mecha Helmet Head & Horns
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 8, 8.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Glowing Crimson-Gold Visor Eyes
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(px + 10, py + 6.5, 5, 3);
+    ctx.fillRect(px + 17, py + 6.5, 5, 3);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(px + 11.5, py + 7, 2, 2);
+    ctx.fillRect(px + 18.5, py + 7, 2, 2);
+
+    // Legs & High-Top Basketball Shoes
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(px + 9, py + 26, 5, 4);
+    ctx.fillRect(px + 18, py + 26, 5, 4);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(px + 8, py + 29, 6, 3);
+    ctx.fillRect(px + 18, py + 29, 6, 3);
+
+    // Blazing Magma Basketball Dribbling
+    const bounce = Math.abs(Math.sin((now + px) / 110)) * 7;
+    const bx = px + 28;
+    const by = py + 17 + bounce;
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(bx, by, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  // 2) 🏀 불멸의 백보드 분쇄기: 자수정 중장갑 타이탄 & 강화유리 백보드 실드
+  drawGymBackboardCrusherSprite(px, py, now) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Heavy Obsidian-Violet Titan Body
+    ctx.fillStyle = '#1e1b4b';
+    ctx.fillRect(px + 5, py + 10, 22, 17);
+    ctx.fillStyle = '#5b21b6';
+    ctx.fillRect(px + 8, py + 12, 16, 13);
+
+    // Glowing Tempered-Glass Backboard Shield on Chest/Shoulders
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(px + 6, py + 11, 20, 12);
+    ctx.strokeStyle = '#f43f5e';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(px + 12, py + 15, 8, 6);
+
+    // Horned Titan Helm
+    ctx.fillStyle = '#312e81';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 8, 8.5, 0, Math.PI * 2);
+    ctx.fill();
+    // Steel Horns
+    ctx.fillStyle = '#cbd5e1';
+    ctx.beginPath();
+    ctx.moveTo(px + 8, py + 7);
+    ctx.lineTo(px + 2, py + 2);
+    ctx.lineTo(px + 10, py + 4);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(px + 24, py + 7);
+    ctx.lineTo(px + 30, py + 2);
+    ctx.lineTo(px + 22, py + 4);
+    ctx.fill();
+
+    // Cyan Glowing Eyes
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(px + 11, py + 6.5, 3.5, 3);
+    ctx.fillRect(px + 17.5, py + 6.5, 3.5, 3);
+
+    // Heavy Stompers
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(px + 8, py + 27, 6, 5);
+    ctx.fillRect(px + 18, py + 27, 6, 5);
+
+    // Electrified Blue-Purple Basketball
+    const bounce = Math.abs(Math.cos((now + px) / 115)) * 7;
+    ctx.fillStyle = '#7c3aed';
+    ctx.beginPath();
+    ctx.arc(px + 3, py + 18 + bounce, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  // 3) 📯 심연의 심판 골렘: 흑백 스트라이프 심판 갑옷 + 레드카드 & 황금 호루라기 파동
+  drawGymRefereeGolemSprite(px, py, now) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Sonic Whistle Pulse Ring
+    const ringR = 14 + ((now / 60) % 10);
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.45)';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 16, ringR, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Referee Black & White Vertical Striped Armor Torso
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(px + 7, py + 12, 18, 15);
+    ctx.fillStyle = '#f8fafc';
+    for (let sx = px + 9; sx <= px + 21; sx += 4) {
+      ctx.fillRect(sx, py + 12, 2, 15);
+    }
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(px + 7, py + 12, 18, 15);
+
+    // Dark Shadow Hood / Visor Head
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 8, 8, 0, Math.PI * 2);
+    ctx.fill();
+    // Referee Cap Visor
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(px + 8, py + 4, 16, 3);
+    // Glowing Judgment Eyes
+    ctx.fillStyle = '#f43f5e';
+    ctx.fillRect(px + 11, py + 7.5, 3, 2.5);
+    ctx.fillRect(px + 18, py + 7.5, 3, 2.5);
+
+    // Golden Whistle on Chest
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 16, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Raised Penalty Red Card in Left Hand
+    const cardWave = Math.sin(now / 150) * 2;
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(px + 1, py + 5 + cardWave, 6, 9);
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(px + 1, py + 5 + cardWave, 6, 9);
+
+    // Boots
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(px + 9, py + 27, 5, 4);
+    ctx.fillRect(px + 18, py + 27, 5, 4);
+
+    ctx.restore();
+  }
+
+  // 4) 🏆 불멸의 실내 코트 제왕 (엘리트): 황금 왕관·망토·쌍둥이 화염 농구공 궤도 회전
+  drawGymCourtKingSprite(px, py, now) {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Floor Royal Golden Crest
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.75)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(px + 16, py + 28, 18, 7, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Flowing Royal Crimson Cape
+    const capeSway = Math.sin(now / 180) * 2;
+    ctx.fillStyle = '#991b1b';
+    ctx.beginPath();
+    ctx.moveTo(px + 6, py + 11);
+    ctx.lineTo(px + 26, py + 11);
+    ctx.lineTo(px + 30 + capeSway, py + 29);
+    ctx.lineTo(px + 2 + capeSway, py + 29);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Golden-Obsidian Champion Armor Torso
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(px + 6, py + 11, 20, 16);
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(px + 6, py + 11, 20, 16);
+
+    // Golden Trophy Emblem on Chest
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(px + 12, py + 15, 8, 6);
+    ctx.fillRect(px + 14, py + 21, 4, 3);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(px + 14.5, py + 16.5, 3, 3);
+
+    // Champion Head & Blazing Eyes
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(px + 16, py + 7, 8.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(px + 11, py + 6, 3.5, 3);
+    ctx.fillRect(px + 17.5, py + 6, 3.5, 3);
+
+    // 3-Pointed Golden Champion Crown with Ruby
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath();
+    ctx.moveTo(px + 8, py + 2);
+    ctx.lineTo(px + 9, py - 5);
+    ctx.lineTo(px + 13, py - 1);
+    ctx.lineTo(px + 16, py - 7);
+    ctx.lineTo(px + 19, py - 1);
+    ctx.lineTo(px + 23, py - 5);
+    ctx.lineTo(px + 24, py + 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(px + 15, py - 3, 2.5, 2.5);
+
+    // Golden Greaves (Boots)
+    ctx.fillStyle = '#d97706';
+    ctx.fillRect(px + 9, py + 27, 5, 5);
+    ctx.fillRect(px + 18, py + 27, 5, 5);
+
+    // Twin Orbiting Flame Basketballs
+    const angle = now / 180;
+    for (let i = 0; i < 2; i++) {
+      const a = angle + i * Math.PI;
+      const ox = px + 16 + Math.cos(a) * 19;
+      const oy = py + 16 + Math.sin(a) * 7;
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath();
+      ctx.arc(ox, oy, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    ctx.restore();
   }
 
   // Draw History Guardian Monster Sprite
@@ -19471,7 +19730,7 @@ class GameEngine {
     drawHoop(17 * 32 + 16, true);
     drawHoop(41 * 32 + 16, false);
 
-    this.drawSharpLabel(midX, 4.4 * 32, '🏀 숭실 실내 농구 코트 (8단원 · Lv.15)', {
+    this.drawSharpLabel(midX, 4.4 * 32, '🏀 숭실 실내 농구 코트', {
       bgColor: '#1e3a8a',
       borderColor: '#facc15',
       textColor: '#ffffff',

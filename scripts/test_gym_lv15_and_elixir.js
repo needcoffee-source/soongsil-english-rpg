@@ -50,6 +50,7 @@ assert(Array.isArray(Gym.gymMonsters) && Gym.gymMonsters.length >= 4, 'classroom
 
 for (const mob of Gym.gymMonsters) {
   assert.strictEqual(mob.court, 'gym', `${mob.id} court must be gym`);
+  assert(!mob.name.includes('(') && !mob.name.includes('Lv.') && !mob.name.includes('Elite'), `${mob.id} name must not contain parenthetical level or Elite: ${mob.name}`);
   assert(mob.hp >= 420 && mob.def >= 26 && mob.counterDmg >= 58, `${mob.id} must have Lv.15 high stats (hp>=420, def>=26, counterDmg>=58)`);
   assert(mob.x >= 18 && mob.x <= 40 && mob.y >= 6 && mob.y <= 21, `${mob.id} must spawn inside indoor basketball court`);
 }
