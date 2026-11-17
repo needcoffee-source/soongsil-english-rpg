@@ -106,7 +106,7 @@ assert(serverJs.includes("'item_golden_laurel'") && mainJs.includes("'item_golde
 assert(engineJs.includes("equippedShoes.item === 'equip_immortal_shoes'"), 'Immortal shoes dash speed matched to Tier 4 (4.0)');
 
 const gymDropBlock = mainJs.slice(mainJs.indexOf("} else if (mob.court === 'gym') {"), mainJs.indexOf("} else if (mob.court === 'history') {"));
-assert(gymDropBlock.includes("'item_golden_laurel'"), 'Gym monsters drop item_golden_laurel crafting material');
+assert(gymDropBlock.includes("'item_golden_laurel'") && gymDropBlock.includes("'elite' ? 60 : 45"), 'Gym monsters drop item_golden_laurel at 45~60%');
 assert(!gymDropBlock.includes("'equip_victory_medal'"), 'Gym monsters must NOT drop finished Lv.15 accessory');
 assert(gymDropBlock.includes("'item_tiny_exp_potion'") && gymDropBlock.includes('< 50'), 'Gym monsters drop tiny exp potion at 50%');
 assert(gymDropBlock.includes("'item_clear_potion'"), 'Gym monsters drop clear potion');

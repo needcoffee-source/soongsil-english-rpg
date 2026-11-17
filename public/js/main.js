@@ -206,7 +206,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '야외 전리품',
     tierColor: '#eab308',
     effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
-    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍',
+    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍 (45~60%)',
     recipe: '체육관 실내 농구장 전투 드랍'
   },
 
@@ -8623,13 +8623,16 @@ class MainApp {
         }
       }
     } else if (mob.court === 'gym') {
-      // 1. Lv.15 장신구 제작 재료 (완제품 미드랍)
-      const laurelCount = mob.type === 'elite' ? 2 : 1;
-      this.addItem('item_golden_laurel', '황금 월계수 잎', laurelCount, '🏵️', {
-        type: 'material',
-        effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료'
-      });
-      dropsList.push(`🏵️ 황금 월계수 잎 x${laurelCount}개`);
+      // 1. Lv.15 장신구 제작 재료 (일반 45% 1개 / 엘리트 60% 1~2개, 완제품 미드랍)
+      const laurelRate = mob.type === 'elite' ? 60 : 45;
+      if (Math.random() * 100 < laurelRate) {
+        const laurelCount = mob.type === 'elite' ? (Math.floor(Math.random() * 2) + 1) : 1;
+        this.addItem('item_golden_laurel', '황금 월계수 잎', laurelCount, '🏵️', {
+          type: 'material',
+          effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료'
+        });
+        dropsList.push(`🏵️ 황금 월계수 잎 x${laurelCount}개 (${laurelRate}% 드랍!)`);
+      }
 
       // 2. 초소형 경험치 물약 (50% 확률)
       if (Math.random() * 100 < 50) {
