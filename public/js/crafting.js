@@ -47,12 +47,12 @@ class CraftingManager {
     if (!this.recipes) return [];
     if (!this.currentCategory) return this.recipes;
     if (this.currentCategory === 'heritage' || this.currentCategory === 'history_altar') {
-      // 🏛️ 숭실 역사관 신비한 제단: 오직 1897 헤리티지 세트만 제작 가능
-      return this.recipes.filter(r => r.category === 'heritage' || r.id.startsWith('recipe_heritage_'));
+      // 🏛️ 숭실 역사관 신비한 제단: 1897 헤리티지(4티어) & 불멸의 열정(5티어) 세트 제작
+      return this.recipes.filter(r => r.category === 'heritage' || r.id.startsWith('recipe_heritage_') || r.id.startsWith('recipe_immortal_'));
     }
     if (this.currentCategory === 'equipment') {
-      // 🔨 복도 장비 제작대: 1897세트 제외 (나무, 가죽, 청동 장비만 제작 가능)
-      return this.recipes.filter(r => (r.category === 'equipment' || r.category === 'heritage') && !r.id.startsWith('recipe_heritage_'));
+      // 🔨 복도 장비 제작대: 나무, 가죽, 청동 장비(1~3티어)만 제작 가능
+      return this.recipes.filter(r => (r.category === 'equipment' || r.category === 'heritage') && !r.id.startsWith('recipe_heritage_') && !r.id.startsWith('recipe_immortal_'));
     }
     return this.recipes.filter(r => r.category === this.currentCategory);
   }
@@ -64,7 +64,7 @@ class CraftingManager {
       if (category === 'equipment') {
         headerTitle.innerHTML = '🔨 숭실 장비 제작대 (Equipment Crafting)';
       } else if (category === 'heritage' || category === 'history_altar') {
-        headerTitle.innerHTML = '🏛️ 숭실 역사관 신비한 제단 (1897 Heritage Altar)';
+        headerTitle.innerHTML = '🏛️ 숭실 역사관 신비한 제단 (헤리티지 & 5티어 불멸 세트)';
       } else if (category === 'potion') {
         headerTitle.innerHTML = '🧪 숭실 소비품 제작대 (Consumable Crafting Station)';
       } else if (category === 'accessory') {

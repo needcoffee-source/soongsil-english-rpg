@@ -41,29 +41,32 @@ assert.ok(equipIds.includes('recipe_leather_armor'), 'Equipment station must hav
 assert.ok(equipIds.includes('recipe_bronze_sword'), 'Equipment station must have bronze sword');
 assert.ok(equipIds.includes('recipe_bronze_helmet'), 'Equipment station must have bronze helmet');
 assert.ok(equipIds.includes('recipe_bronze_armor'), 'Equipment station must have bronze armor');
-assert.ok(equipIds.includes('recipe_immortal_sword'), 'Equipment station must have Tier 5 immortal sword');
-assert.ok(equipIds.includes('recipe_immortal_helmet'), 'Equipment station must have Tier 5 immortal helmet');
-assert.ok(equipIds.includes('recipe_immortal_armor'), 'Equipment station must have Tier 5 immortal armor');
 
-// Assert 1897 Heritage set is NOT in equipment station
+// Assert 1897 Heritage & Tier 5 Immortal sets are NOT in corridor equipment station
 assert.ok(!equipIds.includes('recipe_heritage_sword'), '1897 sword must be REMOVED from corridor equipment station');
 assert.ok(!equipIds.includes('recipe_heritage_helmet'), '1897 helmet must be REMOVED from corridor equipment station');
 assert.ok(!equipIds.includes('recipe_heritage_armor'), '1897 armor must be REMOVED from corridor equipment station');
-console.log('✅ Check 1 Passed: Corridor equipment station has wood/leather/bronze/immortal (1897 removed).');
+assert.ok(!equipIds.includes('recipe_immortal_sword'), 'Tier 5 immortal sword must be REMOVED from corridor equipment station');
+assert.ok(!equipIds.includes('recipe_immortal_helmet'), 'Tier 5 immortal helmet must be REMOVED from corridor equipment station');
+assert.ok(!equipIds.includes('recipe_immortal_armor'), 'Tier 5 immortal armor must be REMOVED from corridor equipment station');
+console.log('✅ Check 1 Passed: Corridor equipment station has wood/leather/bronze (1897 & Tier 5 removed).');
 
 // Test History Altar Crafting (역사관 제단)
 cm.currentCategory = 'heritage';
 const heritageRecipes = cm.getFilteredRecipes();
 const heritageIds = heritageRecipes.map(r => r.id);
 
-assert.strictEqual(heritageIds.length, 3, 'History altar must have exactly 3 recipes (1897 set only)');
+assert.strictEqual(heritageIds.length, 6, 'History altar must have exactly 6 recipes (1897 Heritage 3 + Tier 5 Immortal 3)');
 assert.ok(heritageIds.includes('recipe_heritage_sword'), 'Altar must have 1897 sword');
 assert.ok(heritageIds.includes('recipe_heritage_helmet'), 'Altar must have 1897 helmet');
 assert.ok(heritageIds.includes('recipe_heritage_armor'), 'Altar must have 1897 armor');
-console.log('✅ Check 2 Passed: History altar contains 1897 Heritage set exclusively.');
+assert.ok(heritageIds.includes('recipe_immortal_sword'), 'Altar must have Tier 5 immortal sword');
+assert.ok(heritageIds.includes('recipe_immortal_helmet'), 'Altar must have Tier 5 immortal helmet');
+assert.ok(heritageIds.includes('recipe_immortal_armor'), 'Altar must have Tier 5 immortal armor');
+console.log('✅ Check 2 Passed: History altar contains 1897 Heritage & Tier 5 Immortal sets.');
 
 // Check 3: World.js history altar interaction prompt & Main.js altar handler
-assert.ok(worldJs.includes('1897 헤리티지 세트 제작 (SPACE)'), 'world.js altar prompt updated');
+assert.ok(worldJs.includes('헤리티지 · 5티어 불멸 세트 제작 (SPACE)'), 'world.js altar prompt updated');
 assert.ok(mainJs.includes("this.craftingManager.open('heritage');"), 'main.js opens altar with heritage category');
 console.log('✅ Check 3 Passed: History altar prompt and open handler verified.');
 

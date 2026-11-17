@@ -274,9 +274,11 @@ assert(pg.libraryBook.x === 38, 'Library book moved to x: 38 on bleachers');
 assert(Math.abs(pg.libraryBook.x - pg.sketchbook.x) >= 20, 'Items on bleachers are spaced far apart (>= 20 tiles)');
 
 const gym = WORLD_DATA.playground_gym;
-assert(!!gym.devNote4, 'devNote4 exists in playground_gym');
-assert(gym.devNote4.x === 31 && gym.devNote4.y === 33, 'devNote4 placed at x: 31, y: 33 where 갓준철 stands');
-assert(gym.devNote4.type === 'dev_note_4', 'devNote4 has type dev_note_4');
+assert(!gym.devNote4, 'devNote4 removed from playground_gym');
+const f3 = WORLD_DATA.floors[3];
+const hallwayDevNote4 = (f3.interactive || []).find(i => i.type === 'dev_note_4');
+assert(!!hallwayDevNote4, 'devNote4 moved to floors[3].interactive');
+assert(hallwayDevNote4.x === 2 && hallwayDevNote4.y === 13, 'devNote4 placed at far-left corner (x: 2, y: 13) of 3rd floor hallway');
 assert(typeof app.handleDevNote4Interaction === 'function', 'handleDevNote4Interaction exists on MainApp');
 const mainSrc = fs.readFileSync('public/js/main.js', 'utf8');
 assert(mainSrc.includes('매일 아침 숭실 정문 급경사 언덕길을 올려다보며'), 'Developer note 4 contains revised opening line');

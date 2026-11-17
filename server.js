@@ -2023,7 +2023,9 @@ const ALL_GAME_ITEMS = {
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', meta: { type: 'quest', effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
   'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', meta: { type: 'quest', effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
-  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } }
+  'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
+  'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 10, effect: '사용 시 경험치(EXP) +10 상승' } },
+  'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } }
 };
 
 function computeStudentCombatStats(record = {}) {
@@ -2300,6 +2302,15 @@ const SERVER_QUEST_DEFINITIONS = {
       { type: 'gold', amount: 200 },
       { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 2, icon: '✨', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료' } },
       { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 4, icon: '🍱', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료' } }
+    ]
+  },
+  'quest_pe_errand': {
+    minLevel: 12,
+    isComplete: (q, inv) => (!!q.keyCollected || getServerInventoryCount(inv, 'item_gym_key') >= 1),
+    cleanupItems: ['item_gym_key'],
+    rewards: [
+      { type: 'gold', amount: 100 },
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 10, effect: '사용 시 경험치(EXP) +10 상승' } }
     ]
   }
 };
@@ -2675,6 +2686,55 @@ app.post('/api/quest/complete', (req, res) => {
     inventory: record.inventory,
     quests: record.quests,
     titles: record.titles
+  });
+});
+
+app.post('/api/item/use-exp-potion', (req, res) => {
+  const body = parseJsonBody(req.body);
+  const auth = authorizeStudentAction(req, res, body.studentId);
+  if (!auth) return;
+
+  const itemId = String(body.itemId || 'item_tiny_exp_potion').trim();
+  const EXP_POTION_VALUES = {
+    'item_tiny_exp_potion': 10
+  };
+  const expGainBase = EXP_POTION_VALUES[itemId];
+  if (!expGainBase) {
+    return res.status(400).json({ success: false, error: '유효하지 않은 경험치 물약입니다.' });
+  }
+
+  const all = getStudentsProgress() || {};
+  const record = all[auth.studentId];
+  if (!record) {
+    return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  const curLv = Math.max(1, Number(record.level) || 1);
+  if (curLv >= SERVER_MAX_LEVEL) {
+    return res.status(400).json({ success: false, error: `이미 최고 레벨(Lv.${SERVER_MAX_LEVEL})에 도달하여 경험치 물약을 사용할 수 없습니다!` });
+  }
+
+  record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
+  record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
+
+  if (getServerInventoryCount(record.inventory, itemId) < 1) {
+    return res.status(400).json({ success: false, error: '인벤토리에 해당 경험치 물약이 없습니다.' });
+  }
+
+  record.inventory = removeServerInventoryItem(record.inventory, record.equipment, itemId, 1);
+  const expGained = applyServerExpAndLevelUp(record, expGainBase);
+  record.updatedAt = Date.now();
+  all[auth.studentId] = record;
+  saveStudentsProgress(all, true);
+  syncActivePlayerAfterMutation(auth.studentId, record);
+
+  return res.json({
+    success: true,
+    level: record.level,
+    exp: record.exp,
+    expGained,
+    gold: record.gold,
+    inventory: record.inventory
   });
 });
 

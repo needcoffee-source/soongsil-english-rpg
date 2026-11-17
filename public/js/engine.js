@@ -1353,18 +1353,6 @@ class GameEngine {
             minDist = gDist;
           }
         }
-        // 8. 📜 떨어진 개발자노트 (제4편) (tx: 31, ty: 33)
-        if (gymData.devNote4) {
-          const dnDist = Math.hypot((gymData.devNote4.x + 0.5) * 32 - this.player.x, (gymData.devNote4.y + 0.5) * 32 - this.player.y);
-          if (dnDist < 56 && dnDist < minDist) {
-            closest = {
-              type: 'dev_note_4',
-              name: gymData.devNote4.name || '📜 떨어진 개발자노트 (제4편)',
-              prompt: gymData.devNote4.prompt || '개발자노트 4편 읽기 (SPACE)'
-            };
-            minDist = dnDist;
-          }
-        }
       }
     } else if (this.player.room === 'playground') {
       const pg = WORLD_DATA.playground;
@@ -1722,8 +1710,13 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_gym_key') {
+            if (window.MainApp && typeof window.MainApp.isQuestGymKeyCollected === 'function' && window.MainApp.isQuestGymKeyCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
-          const maxDist = (item.type === 'cafeteria_key_safe' || item.type === 'quest_library_book_of') ? 80 : 64;
+          const maxDist = (item.type === 'cafeteria_key_safe' || item.type === 'quest_library_book_of' || item.type === 'quest_gym_key') ? 80 : 64;
           if (dist < maxDist && dist < minDist) {
             let promptText = item.prompt || '조사하기 (SPACE)';
             if (item.type === 'door_secret_history') {
@@ -2046,9 +2039,6 @@ class GameEngine {
         }
         if (gymData.guardTeacher && Math.hypot(gymData.guardTeacher.x * 32 - x, (gymData.guardTeacher.y + 0.5) * 32 - y) < 56) {
           return { type: 'gym_guard_teacher', name: gymData.guardTeacher.name, prompt: gymData.guardTeacher.prompt };
-        }
-        if (gymData.devNote4 && Math.hypot((gymData.devNote4.x + 0.5) * 32 - x, (gymData.devNote4.y + 0.5) * 32 - y) < 48) {
-          return { type: 'dev_note_4', name: gymData.devNote4.name, prompt: gymData.devNote4.prompt };
         }
       }
     } else {
@@ -6477,8 +6467,8 @@ class GameEngine {
           this.drawHighResClubBoard(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'plant_zone') {
           this.drawHighResHallwayPlant(obj.x * 32, obj.y * 32, obj.subType || 'monstera', this.getPlantStage(), this.plantWaterCount);
-        } else if (obj.type === 'dev_note' || obj.type === 'dev_note_2') {
-          this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || (obj.type === 'dev_note_2' ? '📜 떨어진 개발자노트 (제2편)' : '📜 떨어진 개발자노트 (제1편)'));
+        } else if (obj.type === 'dev_note' || obj.type === 'dev_note_2' || obj.type === 'dev_note_4') {
+          this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || (obj.type === 'dev_note_4' ? '📜 떨어진 개발자노트 (제4편)' : (obj.type === 'dev_note_2' ? '📜 떨어진 개발자노트 (제2편)' : '📜 떨어진 개발자노트 (제1편)')));
         } else if (obj.type === 'dibut_repair_box' || obj.type === 'diba_repair_box') {
           this.drawHighResDibutCabinet(obj.x * 32, obj.y * 32);
         } else if (obj.type === 'recycle_bin') {
@@ -6670,23 +6660,25 @@ class GameEngine {
           this.ctx.fillStyle = '#f43f5e';
           this.ctx.fillRect(px + 15, py + 23, 2, 2);
         } else {
-          // 교사 NPC (조슈아, 옥촣한, 김진믜 등) - 단정한 딥블루 교사 스프라이트
-          this.ctx.fillStyle = isTeacherNpc ? '#1e3a8a' : '#047857';
+          // 교사 NPC (조슈아, 옥촣한, 김진믜 등) 및 일반 학생 NPC
+          this.ctx.fillStyle = npc.shirtColor || (isTeacherNpc ? '#1e3a8a' : '#047857');
           this.ctx.beginPath();
           this.ctx.arc(px + 16, py + 12, 10, 0, Math.PI * 2);
           this.ctx.fill();
           this.ctx.fillRect(px + 8, py + 18, 16, 14);
         }
 
-        const labelText = `${isKyungsook ? '⚗️' : (isOyesook ? '👩‍🏫' : (isTeacherNpc ? '👨‍🏫' : (npc.icon || '💬')))} ${npc.name}`;
-        this.drawSharpLabel(px + 16, py + 38, labelText, {
-          bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isOyesook ? 'rgba(159, 18, 57, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)')),
-          borderColor: isKyungsook ? '#c084fc' : (isOyesook ? '#fb7185' : (isTeacherNpc ? '#60a5fa' : '#34d399')),
-          textColor: '#fef08a',
-          fontSize: 12,
-          paddingX: 8,
-          height: 20
-        });
+        if (!npc.noNameplate) {
+          const labelText = `${isKyungsook ? '⚗️' : (isOyesook ? '👩‍🏫' : (isTeacherNpc ? '👨‍🏫' : (npc.icon || '💬')))} ${npc.name}`;
+          this.drawSharpLabel(px + 16, py + 38, labelText, {
+            bgColor: isKyungsook ? 'rgba(88, 28, 135, 0.95)' : (isOyesook ? 'rgba(159, 18, 57, 0.95)' : (isTeacherNpc ? 'rgba(30, 58, 138, 0.95)' : 'rgba(6, 78, 59, 0.95)')),
+            borderColor: isKyungsook ? '#c084fc' : (isOyesook ? '#fb7185' : (isTeacherNpc ? '#60a5fa' : '#34d399')),
+            textColor: '#fef08a',
+            fontSize: 12,
+            paddingX: 8,
+            height: 20
+          });
+        }
 
         // 8-C-1. 머리 위 플로팅 퀘스트 상태 마커 (! / ?)
         if (npc.questId) {
@@ -14352,6 +14344,8 @@ class GameEngine {
           }
         } else if (obj.type === 'cafeteria_key_safe') {
           this.drawStaffOfficeCafeteriaSafe(obj.x * 32, obj.y * 32);
+        } else if (obj.type === 'quest_gym_key') {
+          this.drawStaffOfficeGymKey(obj.x * 32, obj.y * 32);
         }
       }
     }
@@ -14774,6 +14768,57 @@ class GameEngine {
       height: 18
     });
 
+    ctx.restore();
+  }
+
+  // 6층 교무실 20번 자리(2학년 체육선생님 자리)에 놓인 체육관 열쇠 렌더링
+  drawStaffOfficeGymKey(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestGymKeyCollected === 'function' && window.MainApp.isQuestGymKeyCollected()) {
+      return;
+    }
+    const ctx = this.ctx;
+    ctx.save();
+    const bob = Math.sin(Date.now() / 220) * 2;
+    const by = y + bob;
+
+    // 바닥 그림자
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 25, 11, 4.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 황금빛 반짝임 오라
+    const pulse = 0.25 + Math.sin(Date.now() / 180) * 0.12;
+    ctx.fillStyle = `rgba(250, 204, 21, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 13, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 열쇠 고리 + 몸체
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.arc(x + 11, by + 13, 5.5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x + 11, by + 13, 5.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(x + 16, by + 11.5, 12, 3);
+    ctx.fillRect(x + 22, by + 14.5, 2.5, 4);
+    ctx.fillRect(x + 26, by + 14.5, 2.5, 3);
+
+    this.drawSharpLabel(x + 16, by - 4, '🔑 체육관 열쇠', {
+      bgColor: 'rgba(120, 53, 15, 0.92)',
+      borderColor: '#facc15',
+      textColor: '#fef08a',
+      fontSize: 10,
+      paddingX: 6,
+      height: 16
+    });
     ctx.restore();
   }
 
@@ -16439,10 +16484,6 @@ class GameEngine {
     // 8. Main Gate Barrier is rendered at the start of Uphill Road (tx: 0..8, ty: 31..33)
     // 8-B. 👮 배움터 지킴이 선생님 (숭실중학교 정문 오른쪽: tx: 10, ty: 33)
     this.drawHighResGuardTeacher(10 * 32, 33 * 32);
-
-    // 8-C. 📜 떨어진 개발자노트 제4편 (tx: 31, ty: 33 - 갓준철 선생님 자리)
-    const gymDevNote4 = (WORLD_DATA.playground_gym && WORLD_DATA.playground_gym.devNote4) || { x: 31, y: 33 };
-    this.drawHighResDevNote(gymDevNote4.x * 32, gymDevNote4.y * 32, '📜 떨어진 개발자노트 (제4편)');
 
     // 9. East Exit Gate to Soccer Field (tx: 50..55, ty: 28..32)
     const exitX = 51 * 32;

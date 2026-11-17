@@ -426,7 +426,7 @@
   {
     "id": "recipe_immortal_sword",
     "name": "불멸의 열정 대검 (Immortal Passion Blade)",
-    "category": "equipment",
+    "category": "heritage",
     "description": "[5티어 무기] 급식실의 영양·특수 스텐 합금과 기초 목재·허브를 하나로 벼려낸 최강 5티어 대검입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
     "icon": "⚔️",
     "gradeLevel": 1,
@@ -485,7 +485,7 @@
   {
     "id": "recipe_immortal_helmet",
     "name": "불멸의 열정 투구 (Immortal Passion Helmet)",
-    "category": "equipment",
+    "category": "heritage",
     "description": "[5티어 투구] 급식실의 영양·특수 스텐 합금과 기초 목재·허브의 가호가 깃든 최상급 5티어 투구입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
     "icon": "👑",
     "gradeLevel": 1,
@@ -545,7 +545,7 @@
   {
     "id": "recipe_immortal_armor",
     "name": "불멸의 열정 갑옷 (Immortal Passion Armor)",
-    "category": "equipment",
+    "category": "heritage",
     "description": "[5티어 갑옷] 특수 스테인리스 합금과 정제된 영양, 단단한 목재·허브를 엮어 완성한 5티어 불멸의 갑옷입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
     "icon": "🛡️",
     "gradeLevel": 1,

@@ -278,6 +278,16 @@ window.ITEM_CODEX_DATABASE = [
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
   },
   {
+    id: 'item_tiny_exp_potion',
+    name: '초소형 경험치 물약',
+    icon: '🧪',
+    category: 'consumable',
+    tierBadge: '경험치 물약',
+    tierColor: '#f59e0b',
+    effect: '사용 시 경험치(EXP) +10 즉시 상승',
+    source: 'Lv.10+ 퀘스트 보상 (체육선생님의 심부름 등)'
+  },
+  {
     id: 'item_revive_scroll',
     name: '부활 주문서',
     icon: '📜',
@@ -465,7 +475,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '5티어 무기',
     tierColor: '#ef4444',
     effect: '공격력 +60, 체력 +35 (Lv.12 이상)',
-    source: '장비 제작대(C)에서 제작 (12레벨 이상)',
+    source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
     recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 15개 + 향긋한 허브 10개 + 1,500G'
   },
   {
@@ -476,7 +486,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '5티어 투구',
     tierColor: '#ef4444',
     effect: '방어력 +25, 체력 +35 (Lv.12 이상)',
-    source: '장비 제작대(C)에서 제작 (12레벨 이상)',
+    source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
     recipe: '정제된 영양의 정수 6개 + 특수 강화 스텐 조각 4개 + 단단한 목재 10개 + 향긋한 허브 8개 + 1,000G'
   },
   {
@@ -487,7 +497,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '5티어 갑옷',
     tierColor: '#ef4444',
     effect: '방어력 +30, 체력 +35 (Lv.12 이상)',
-    source: '장비 제작대(C)에서 제작 (12레벨 이상)',
+    source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
     recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 12개 + 향긋한 허브 10개 + 1,200G'
   },
 
@@ -595,6 +605,16 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#f59e0b',
     effect: '급식실 정문 출입용 황금 열쇠',
     source: '6층 교무실'
+  },
+  {
+    id: 'item_gym_key',
+    name: '2학년 체육관 열쇠',
+    icon: '🔑',
+    category: 'quest',
+    tierBadge: '입장 열쇠',
+    tierColor: '#f59e0b',
+    effect: '체육관 출입문 개방 및 2학년 체육선생님 전달용 열쇠',
+    source: '6층 교무실 20번 자리 (Lv.12 이상)'
   }
 ];
 
@@ -677,12 +697,14 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
 
-  // 6. Tier 5 Immortal Equipment (5티어 불멸세트 · 12레벨 락 · 현재 제작 잠김)
+  // 6. Tier 5 Immortal Equipment (5티어 불멸세트 · 12레벨 락 · 숭실 역사관 신비한 제단 제작)
   'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 12, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', count: 9999, meta: { type: 'equipment', slot: 'helmet', requiredLevel: 12, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
 
-  // 7. Legendary Season Boss Artifacts & Rewards
+  // 7. Legendary Season Boss Artifacts & Rewards & New Potions
+  'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', expGain: 10, effect: '사용 시 경험치(EXP) +10 상승' } },
+  'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } },
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
@@ -1644,6 +1666,29 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 2, icon: '✨', meta: { type: 'material', effect: '5티어 불멸의 열정 장비 제작 핵심 재료' }, label: '✨ 특수 강화 스텐 조각 x2 (5티어 재료)' },
       { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 4, icon: '🍱', meta: { type: 'material', effect: '5티어 최고급 장비 제작 필수 재료' }, label: '🍱 정제된 영양의 정수 x4 (5티어 재료)' }
     ]
+  },
+  'quest_pe_errand': {
+    id: 'quest_pe_errand',
+    teacherId: 'npc_teacher_pe_grade2',
+    teacherName: '2학년 체육선생님',
+    teacherRole: '2학년 체육 담당 · 체육관 무대 위',
+    teacherAvatar: '👨‍🏫',
+    teacherSeat: '체육관 무대 위',
+    minLevel: 12,
+    title: '🔑 체육선생님의 심부름 (Gym Key Delivery)',
+    story: '교무실 20번 자리(2학년 체육선생님 자리)에 선생님이 깜빡하고 두고 가신 체육관 열쇠를 발견했다!\n이 열쇠로 체육관 문을 열고 들어가, 체육관 안쪽 강연 무대 위에 계신 2학년 체육선생님께 직접 열쇠를 전해드리자!',
+    objectives: [
+      {
+        id: 'pe_key_collect',
+        text: '교무실 20번 자리에서 🔑 [2학년 체육관 열쇠] 챙기기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.keyCollected ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 10, effect: '사용 시 경험치(EXP) +10 상승' }, label: '🧪 초소형 경험치 물약 x3 (개당 EXP +10)' }
+    ]
   }
 };
 window.QUEST_DEFINITIONS = QUEST_DEFINITIONS;
@@ -2319,9 +2364,34 @@ class MainApp {
         return;
       }
 
-      // 6층 교무실 3학년 영어 Joshua 선생님 (입문 퀘스트)
+      // 6층 교무실 3학년 영어 Joshua 선생님 및 교사 퀘스트
+      if (npc.id === 'npc_teacher_pe_grade2') {
+        const qErrand = this.playerData && this.playerData.quests && this.playerData.quests['quest_pe_errand'];
+        if (!qErrand) {
+          this.showGameDialog(
+            '👨‍🏫 2학년 체육선생님',
+            '반갑다! 체육관 안쪽 강연 무대 위를 관리하고 있는 2학년 체육선생님이란다.\n\n혹시 6층 교무실 20번 자리 내 책상에 두고 온 체육관 열쇠를 발견하면 꼭 챙겨서 가져다주렴! (Lv.12+)',
+            '👨‍🏫'
+          );
+          return;
+        }
+        this.openQuestDispatchModal('quest_pe_errand');
+        return;
+      }
+
       if (npc.id === 'npc_teacher_joshua' || npc.questId || (npc.name && npc.name.includes('Joshua'))) {
         this.openQuestDispatchModal(npc.questId || 'quest_joshua_intro');
+        return;
+      }
+
+      if (npc.id && npc.id.startsWith('npc_eating_student_')) {
+        const eatingLines = [
+          '오늘 급식 반찬 진짜 맛있다! 냠냠 🍱',
+          '밥풀 골렘들이 식탁 근처까지 와서 조금 무섭긴 하지만 밥은 포기 못 해! 🍚',
+          '점심시간이 학교에서 제일 행복한 시간이야~ 😋'
+        ];
+        const idx = parseInt(npc.id.replace('npc_eating_student_', ''), 10) || 1;
+        this.showGameDialog('🍱 급식 먹는 학생', eatingLines[(idx - 1) % eatingLines.length], '🍱');
         return;
       }
 
@@ -2431,13 +2501,28 @@ class MainApp {
       });
     } else if (target.type === 'gym_entrance') {
       const playerLv = Number(this.playerData && this.playerData.level) || 1;
-      if (playerLv < 12 && !this.playerData.isTeacher) {
+      const isTeacher = !!(this.playerData && (this.playerData.isTeacher || this.playerData.studentId === '교사'));
+      if (playerLv < 12 && !isTeacher) {
         this.showGameDialog(
           '입장 레벨 제한 (Lv.12+)',
-          `"🏛️ 숭실 체육관 실내는 8단원 (Give Your Hand, Give Your Heart) 심화 구역입니다!\n\n입장 조건: Lv.12 이상 (현재 Lv.${playerLv})\n주변 농구장·풋살장·역사관·급식실에서 5~7단원 실력을 먼저 키워보세요!"`,
+          `"🏛️ 숭실 체육관 실내는 8단원 (Give Your Hand, Give Your Heart) 심화 구역입니다!\n\n입장 조건: Lv.12 이상 & 체육관 열쇠 보유 (현재 Lv.${playerLv})\n먼저 12레벨을 달성하고 교무실 20번 자리에서 체육관 열쇠를 찾아오세요!"`,
           '🔒'
         );
         return;
+      }
+      const hasGymKey = typeof this.hasItem === 'function' && this.hasItem('item_gym_key');
+      const qErrand = this.playerData && this.playerData.quests && this.playerData.quests['quest_pe_errand'];
+      const isErrandDone = !!(qErrand && qErrand.status === 'done');
+      if (!isTeacher && !hasGymKey && !isErrandDone) {
+        this.showGameDialog(
+          '🔒 체육관 문 잠김',
+          '체육관 출입문이 굳게 잠겨 있습니다!\n\n6층 교무실 20번 자리(2학년 체육선생님 자리)에 선생님이 두고 가신 🔑 [2학년 체육관 열쇠]를 먼저 챙겨오세요!',
+          '🔑'
+        );
+        return;
+      }
+      if (!isTeacher && hasGymKey && !isErrandDone) {
+        this.showToast('🔑 2학년 체육관 열쇠로 체육관 문을 열었습니다! 무대 위의 선생님께 열쇠를 전해드리세요.', 'success');
       }
       this.engine.triggerFadeWarp(() => {
         this.engine.warpToRoom('room_gym', '🏛️ 숭실 체육관 (실내)', 29 * 32, 22 * 32);
@@ -2666,6 +2751,8 @@ class MainApp {
       this.handleQuestUsbPickup(target.data || target);
     } else if (target.type === 'quest_career_book') {
       this.handleQuestCareerBookPickup(target.data || target);
+    } else if (target.type === 'quest_gym_key') {
+      this.handleStaffGymKeyInteraction(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     } else if (target.type === 'desk_sangdae') {
@@ -6961,6 +7048,7 @@ class MainApp {
         const isGreenPotion = (item.item === 'item_green_potion');
         const isCouragePotion = (item.item === 'item_courage_potion');
         const isProtectionPotion = (item.item === 'item_protection_potion');
+        const isTinyExpPotion = (item.item === 'item_tiny_exp_potion');
         const isClearPotion = (item.item === 'item_clear_potion');
         const isElixir = (item.item === 'item_elixir');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
@@ -6997,6 +7085,8 @@ class MainApp {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#c084fc;"><span class="icon-purple-potion">🧪</span> 1분간 공격력(ATK) +5</span>`;
           } else if (isProtectionPotion) {
             statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#38bdf8;"><span class="icon-blue-potion">🧪</span> 1분간 방어력(DEF) +3</span>`;
+          } else if (isTinyExpPotion) {
+            statBadgeHtml = `<span class="inv-item-stat-badge potion" style="color:#fbbf24;">✨ 경험치(EXP) +10 즉시 상승</span>`;
           } else {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
@@ -7078,6 +7168,7 @@ class MainApp {
             else if (isGreenPotion) this.useGreenPotion();
             else if (isCouragePotion) this.useCouragePotion();
             else if (isProtectionPotion) this.useProtectionPotion();
+            else if (isTinyExpPotion) this.useExpPotion('item_tiny_exp_potion');
             else this.usePotion(item.item);
           };
 
@@ -9158,6 +9249,82 @@ class MainApp {
     this.updateBossRaidUI();
     this.updateFieldBattleUI();
     return true;
+  }
+
+  async useExpPotion(itemId = 'item_tiny_exp_potion') {
+    if (!this.playerData || !Array.isArray(this.playerData.inventory)) return false;
+    const pot = this.playerData.inventory.find(i => i.item === itemId);
+    if (!pot || pot.count <= 0) {
+      this.showToast('보유 중인 경험치 물약이 없습니다.', 'warning');
+      return false;
+    }
+    const prevLv = Number(this.playerData.level) || 1;
+    if (prevLv >= MAX_LEVEL) {
+      this.showToast(`이미 최고 레벨(Lv.${MAX_LEVEL})에 도달하여 경험치 물약을 사용할 수 없습니다!`, 'info');
+      return false;
+    }
+
+    const px = this.engine && this.engine.player ? this.engine.player.x + 16 : undefined;
+    const py = this.engine && this.engine.player ? this.engine.player.y - 14 : undefined;
+
+    if (this.playerData.isTeacher || this.playerData.studentId === '교사' || !this.playerData.studentId) {
+      this.removeItem(itemId, 1);
+      this.addExp(10);
+      if (this.engine && typeof this.engine.addFloatingText === 'function') {
+        this.engine.addFloatingText('+10 EXP ✨', px, py, '#fbbf24', 18);
+      }
+      this.saveProgress(true);
+      if (!this.modalInventory.classList.contains('hidden')) {
+        this.openInventory();
+      }
+      return true;
+    }
+
+    if (this._expPotionBusy) return false;
+    this._expPotionBusy = true;
+    try {
+      await this.flushProgressSync();
+      const res = await fetch('/api/item/use-exp-potion', {
+        method: 'POST',
+        headers: this.getStudentAuthHeaders(),
+        body: JSON.stringify({
+          studentId: this.playerData.studentId,
+          itemId
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.success) {
+        this.showToast((data && data.error) || '경험치 물약을 사용하지 못했습니다.', 'warning');
+        return false;
+      }
+      this.applyAuthoritativeServerState(data);
+      this.updatePlayerNameDisplay();
+      if (typeof this.updateStatsUI === 'function') this.updateStatsUI();
+      const gained = Number(data.expGained) || 10;
+      if (this.engine && typeof this.engine.addFloatingText === 'function') {
+        this.engine.addFloatingText(`+${gained} EXP ✨`, px, py, '#fbbf24', 18);
+      }
+      if ((Number(data.level) || prevLv) > prevLv) {
+        if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+          window.AudioManager.playFanfare();
+        }
+        this.showToast(`🎉 레벨 업! Lv.${data.level} 달성! (경험치 물약 +${gained} EXP)`, 'success');
+      } else {
+        if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+          window.AudioManager.playCollect();
+        }
+        this.showToast(`🧪 초소형 경험치 물약 사용! 경험치 +${gained} EXP 상승`, 'success');
+      }
+      if (!this.modalInventory.classList.contains('hidden')) {
+        this.openInventory();
+      }
+      return true;
+    } catch (err) {
+      this.showToast('서버 통신 오류로 경험치 물약을 사용하지 못했습니다.', 'error');
+      return false;
+    } finally {
+      this._expPotionBusy = false;
+    }
   }
 
   onPlayerReviveOffered(data) {
@@ -13641,6 +13808,7 @@ class MainApp {
     if (id === 'npc_teacher_yosunyu') questId = 'quest_yosunyu_info';
     if (id === 'npc_teacher_kwimjinsyong') questId = 'quest_kwimjinsyong_career';
     if (id === 'npc_librarian') questId = 'quest_library_missing_books';
+    if (id === 'npc_teacher_pe_grade2') questId = 'quest_pe_errand';
     if (!QUEST_DEFINITIONS[questId]) {
       const found = Object.values(QUEST_DEFINITIONS).find(q => q.teacherId === id);
       if (found) questId = found.id;
@@ -13650,6 +13818,10 @@ class MainApp {
 
     if (!this.playerData.quests) this.playerData.quests = {};
     const quest = this.playerData.quests[questId];
+
+    if (questId === 'quest_pe_errand' && !quest) {
+      return null;
+    }
 
     if (!quest) {
       const pLevel = (this.playerData && this.playerData.level) || 1;
@@ -13692,6 +13864,57 @@ class MainApp {
     const q = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!q) return false;
     return !!q.guidebookCollected;
+  }
+
+  isQuestGymKeyCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_gym_key')) return true;
+    const q = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_pe_errand'] : null;
+    return !!(q && (q.keyCollected || q.status === 'done'));
+  }
+
+  handleStaffGymKeyInteraction() {
+    if (!this.playerData) return;
+    if (!this.playerData.quests) this.playerData.quests = {};
+
+    const existingQuest = this.playerData.quests['quest_pe_errand'];
+    if (this.isQuestGymKeyCollected() || (existingQuest && existingQuest.status === 'done')) {
+      this.showToast('이미 2학년 체육관 열쇠를 챙겼습니다.', 'info');
+      return;
+    }
+
+    const playerLv = Number(this.playerData.level) || 1;
+    const isTeacher = !!(this.playerData.isTeacher || this.playerData.studentId === '교사');
+    if (playerLv < 12 && !isTeacher) {
+      this.showGameDialog(
+        '🔑 2학년 체육관 열쇠 (교무실 20번 자리)',
+        `교무실 20번 자리(2학년 체육선생님 자리) 위에 선생님이 두고 가신 체육관 열쇠가 놓여 있습니다.\n\n습득 가능 레벨: Lv.12 이상 (현재 Lv.${playerLv})\n먼저 12레벨을 달성한 뒤 다시 찾아와 주세요!`,
+        '🔒'
+      );
+      return;
+    }
+
+    this.playerData.quests['quest_pe_errand'] = {
+      status: 'in_progress',
+      keyCollected: true,
+      acceptedAt: Date.now()
+    };
+    this.addItem('item_gym_key', '2학년 체육관 열쇠', 1, '🔑', {
+      type: 'quest',
+      isQuestItem: true,
+      effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠'
+    });
+    this.saveProgress(true);
+    this.updateQuestTracker();
+
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+
+    this.showGameDialog(
+      '🔑 체육선생님의 심부름 퀘스트 시작!',
+      '교무실 20번 자리(2학년 체육선생님 자리)에서 🔑 [2학년 체육관 열쇠]를 챙겼습니다!\n\n이제 체육관 문을 열고 들어가, 체육관 안쪽 강연 무대 위에 계신 👨‍🏫 [2학년 체육선생님]께 열쇠를 가져다 드리세요!',
+      '🔑'
+    );
   }
 
   handleQuestCareerBookPickup(itemData) {

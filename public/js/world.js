@@ -73,7 +73,8 @@ const WORLD_DATA = {
       ],
       elevator: { x: 25, y: 3 },
       interactive: [
-        { id: "water_purifier_hallway_3", type: "water_purifier", x: 21, y: 12, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" }
+        { id: "water_purifier_hallway_3", type: "water_purifier", x: 21, y: 12, name: "🚰 복도 정수기", prompt: "시원한 물 마시기 (체력 50% 회복)" },
+        { id: "note_developer_uphill", type: "dev_note_4", x: 2, y: 13, name: "📜 떨어진 개발자노트 (제4편)", prompt: "개발자노트 4편 읽기 (SPACE)" }
       ],
       npcs: []
     },
@@ -313,7 +314,7 @@ const WORLD_DATA = {
       { id: "hist_vitrine_2", type: "history_vitrine", vitrineIndex: 2, x: 6, y: 13, name: "🕊️ [제2전시관] 1938 민족신앙 수호관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_3", type: "history_vitrine", vitrineIndex: 3, x: 24, y: 7, name: "🌱 [제3전시관] 1954 서울 재건관", prompt: "전시관 관람 (SPACE)" },
       { id: "hist_vitrine_4", type: "history_vitrine", vitrineIndex: 4, x: 24, y: 13, name: "🌟 [제4전시관] 숭실의 위인관", prompt: "전시관 관람 (SPACE)" },
-      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "1897 헤리티지 세트 제작 (SPACE)" },
+      { id: "hist_craft_altar", type: "history_altar", x: 15, y: 4, name: "✨ 숭실 역사관 신비한 제단", prompt: "헤리티지 · 5티어 불멸 세트 제작 (SPACE)" },
       { id: "quest_library_book_history", type: "quest_library_book_hi", x: 10, y: 5, name: "📕 [대출도서] 숭실역사관에 놓인 고문서 도록", prompt: "고문서 도록 회수하기 (SPACE)" }
     ],
     historyMonsters: [
@@ -528,7 +529,8 @@ const WORLD_DATA = {
       { id: "desk_teacher_kyungsuk", type: "desk_kyungsuk", x: 75, y: 17.5, name: "🧪 졍경슉 선생님 연구석", prompt: "과학 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_hunihuni", type: "desk_hunihuni", x: 88, y: 17.5, name: "🥁 후니후니 선생님 연구석", prompt: "도덕 연구석 살펴보기 (SPACE)" },
       { id: "desk_teacher_oyesook", type: "desk_oyesook", x: 91, y: 17.5, name: "🧵 오예슉 선생님 연구석", prompt: "가정 연구석 살펴보기 (SPACE)" },
-      { id: "quest_library_book_office", type: "quest_library_book_of", x: 76, y: 15.5, name: "📗 [대출도서] 교무실 연구석에 놓인 과학 잡지", prompt: "과학 잡지 회수하기 (SPACE)" }
+      { id: "quest_library_book_office", type: "quest_library_book_of", x: 76, y: 15.5, name: "📗 [대출도서] 교무실 연구석에 놓인 과학 잡지", prompt: "과학 잡지 회수하기 (SPACE)" },
+      { id: "quest_staff_gym_key", type: "quest_gym_key", x: 73, y: 15.5, name: "🔑 2학년 체육관 열쇠", prompt: "2학년 체육관 열쇠 챙기기 (SPACE)" }
     ],
     // 1 ~ 33번 좌석 정의 (교사 NPC 배치용 - 좌측 1번부터 우측 33번까지 순차 정리)
     seats: [
@@ -587,7 +589,13 @@ const WORLD_DATA = {
     npcs: [
       { id: "npc_cafeteria_teacher", name: "급식지도 선생님", avatar: "teacher", role: "영양 및 급식지도", x: 14, y: 19.3, questId: "quest_cafeteria_order" },
       { id: "npc_demanding_student", name: "반찬 더 달라는 학생", avatar: "student", icon: "🍖", x: 6, y: 18, prompt: "대화하기 (SPACE)" },
-      { id: "npc_noisy_student", name: "식탁에서 떠드는 학생", avatar: "student", icon: "🗣️", x: 28, y: 6, prompt: "대화하기 (SPACE)" }
+      { id: "npc_noisy_student", name: "식탁에서 떠드는 학생", avatar: "student", icon: "🗣️", x: 28, y: 6, prompt: "대화하기 (SPACE)" },
+      { id: "npc_eating_student_1", name: "급식 먹는 학생", avatar: "student", icon: "🍱", x: 13.1, y: 5.1, noNameplate: true, shirtColor: "#0f766e", prompt: "대화하기 (SPACE)" },
+      { id: "npc_eating_student_2", name: "급식 먹는 학생", avatar: "student", icon: "🍱", x: 15.7, y: 7.9, noNameplate: true, shirtColor: "#0369a1", prompt: "대화하기 (SPACE)" },
+      { id: "npc_eating_student_3", name: "급식 먹는 학생", avatar: "student", icon: "🍱", x: 13.1, y: 10.7, noNameplate: true, shirtColor: "#6d28d9", prompt: "대화하기 (SPACE)" },
+      { id: "npc_eating_student_4", name: "급식 먹는 학생", avatar: "student", icon: "🍱", x: 21.7, y: 6.5, noNameplate: true, shirtColor: "#b45309", prompt: "대화하기 (SPACE)" },
+      { id: "npc_eating_student_5", name: "급식 먹는 학생", avatar: "student", icon: "🍱", x: 19.1, y: 9.3, noNameplate: true, shirtColor: "#be123c", prompt: "대화하기 (SPACE)" },
+      { id: "npc_eating_student_6", name: "급식 먹는 학생", avatar: "student", icon: "🍱", x: 25.1, y: 10.7, noNameplate: true, shirtColor: "#15803d", prompt: "대화하기 (SPACE)" }
     ],
     cafeteriaMonsters: [
       {
@@ -768,7 +776,9 @@ const WORLD_DATA = {
     teacherDesk: null,
     gatherSpots: [],
     desks: [],
-    npcs: [],
+    npcs: [
+      { id: "npc_teacher_pe_grade2", name: "2학년 체육선생님", avatar: "teacher", role: "2학년 체육 담당", x: 8, y: 12, questId: "quest_pe_errand", prompt: "대화하기 (SPACE)" }
+    ],
     gymMonsters: [],
     interactive: [
       { id: "gym_stage_podium", type: "gym_stage_podium", x: 11, y: 13, name: "🎤 강연 무대", prompt: "강연 무대 살펴보기 (SPACE)" },
@@ -1081,14 +1091,6 @@ const WORLD_DATA = {
       role: "숭실 정문 지킴이",
       avatar: "teacher",
       prompt: "언덕길 오르기 (SPACE)"
-    },
-    devNote4: {
-      id: "note_developer_uphill",
-      type: "dev_note_4",
-      x: 31,
-      y: 33,
-      name: "📜 떨어진 개발자노트 (제4편)",
-      prompt: "개발자노트 4편 읽기 (SPACE)"
     }
   },
   playground: {
