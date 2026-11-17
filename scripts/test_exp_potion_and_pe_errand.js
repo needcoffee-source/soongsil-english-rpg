@@ -66,8 +66,13 @@ async function runTests() {
   assert(gymPeTeacher && gymPeTeacher.questId === 'quest_pe_errand', '2학년 체육선생님 must stand inside Gym stage with quest_pe_errand');
   assert(gymPeTeacher.x >= 1 && gymPeTeacher.x <= 13 && gymPeTeacher.y >= 10 && gymPeTeacher.y <= 16, '2학년 체육선생님 must be on Gym stage');
 
+  const gymPeTeacher3 = (WD.classroom_gym.npcs || []).find(n => n.id === 'npc_teacher_pe_grade3');
+  assert(gymPeTeacher3 && gymPeTeacher3.name === '3학년 체육선생님', '3학년 체육선생님 must be placed in classroom_gym.npcs');
+  assert(gymPeTeacher3.x >= 1 && gymPeTeacher3.x <= 13 && gymPeTeacher3.y >= 18 && gymPeTeacher3.y <= 23, '3학년 체육선생님 must be inside Gym ball/equipment storage');
+
   assert(serverJs.includes("'item_tiny_exp_potion'") && mainJs.includes("'item_tiny_exp_potion'"), 'item_tiny_exp_potion registered on client & server');
   assert(serverJs.includes("'quest_pe_errand'") && mainJs.includes("'quest_pe_errand'"), 'quest_pe_errand registered on client & server');
+  assert(serverJs.includes("'quest_pe_court_clear'") && mainJs.includes("'quest_pe_court_clear'"), 'quest_pe_court_clear registered on client & server');
   assert(indexHtml.includes('value="item_tiny_exp_potion"'), 'Admin grant dropdown includes item_tiny_exp_potion');
   assert(mainJs.includes('handleStaffGymKeyInteraction') && mainJs.includes("hasItem('item_gym_key')"), 'Gym key pickup & door lock check exist');
   console.log('✓ Static checks passed (Cafeteria eating students, 3F Dev Note 4, Seat 20 Key, Gym PE Teacher, Tiny EXP Potion).');
@@ -171,6 +176,35 @@ async function runTests() {
     const expPotRemaining = (usePotRes.data.inventory || []).find(i => i.item === 'item_tiny_exp_potion');
     assert(expPotRemaining && expPotRemaining.count === 2, 'Using 1 Tiny EXP Potion must leave 2 in inventory');
     console.log('✓ Live /api/item/use-exp-potion (+50 EXP + level-up + inventory consumption) passed.');
+
+    // 2d. Complete 2nd PE Teacher Quest (quest_pe_court_clear, Lv.13, requiresDone: quest_pe_errand, gymKillCount: 3)
+    await reqJson(testPort, 'POST', '/api/save-progress', {
+      studentId: sid,
+      studentAuthToken: token,
+      progress: {
+        studentId: sid,
+        name: '체육심부름테스터',
+        level: 13,
+        exp: 45,
+        gold: 100,
+        inventory: [{ item: 'item_tiny_exp_potion', name: '초소형 경험치 물약', count: 2, icon: '🧪', type: 'consumable' }],
+        quests: {
+          quest_pe_errand: { status: 'done', keyCollected: true },
+          quest_pe_court_clear: { status: 'in_progress', gymKillCount: 3 }
+        }
+      }
+    });
+    const courtClearOk = await reqJson(testPort, 'POST', '/api/quest/complete', {
+      studentId: sid,
+      questId: 'quest_pe_court_clear'
+    }, authHeaders);
+    assert.strictEqual(courtClearOk.status, 200);
+    assert.strictEqual(courtClearOk.data.quests.quest_pe_court_clear.status, 'done');
+    assert.strictEqual(courtClearOk.data.gold, 100, 'quest_pe_court_clear must grant NO Gold');
+    assert.strictEqual(courtClearOk.data.exp, 345, 'quest_pe_court_clear must grant +300 EXP (45 -> 345)');
+    const expPotAfter2 = (courtClearOk.data.inventory || []).find(i => i.item === 'item_tiny_exp_potion');
+    assert(expPotAfter2 && expPotAfter2.count === 32, 'quest_pe_court_clear must reward 30x item_tiny_exp_potion (2 + 30 = 32)');
+    console.log('✓ Live 2nd PE Quest (quest_pe_court_clear, Lv.13, +300 EXP + 30x Tiny EXP Potion, 0G) passed.');
   } finally {
     if (proc) {
       try { proc.kill(); } catch (_) {}

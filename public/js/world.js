@@ -777,7 +777,8 @@ const WORLD_DATA = {
     gatherSpots: [],
     desks: [],
     npcs: [
-      { id: "npc_teacher_pe_grade2", name: "2학년 체육선생님", avatar: "teacher", role: "2학년 체육 담당", x: 8, y: 12, questId: "quest_pe_errand", prompt: "대화하기 (SPACE)" }
+      { id: "npc_teacher_pe_grade2", name: "2학년 체육선생님", avatar: "teacher", role: "2학년 체육 담당", x: 8, y: 12, questId: "quest_pe_errand", prompt: "대화하기 (SPACE)" },
+      { id: "npc_teacher_pe_grade3", name: "3학년 체육선생님", avatar: "teacher", role: "3학년 체육 담당 · 용구창고 관리", x: 10, y: 19.5, prompt: "대화하기 (SPACE)", dialogue: "체육관 공·체육복 창고에 온 걸 환영한다! 🏀🏐\n지금 다음 체육 수업을 앞두고 체육관 정돈 일손이 부족하던 참인데, 14레벨이 되면 내 특별한 정돈 임무를 도와주렴!" }
     ],
     gymMonsters: [
       {

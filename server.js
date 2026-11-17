@@ -2409,6 +2409,16 @@ const SERVER_QUEST_DEFINITIONS = {
       { type: 'gold', amount: 100 },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } }
     ]
+  },
+  'quest_pe_court_clear': {
+    minLevel: 13,
+    requiresDone: 'quest_pe_errand',
+    isComplete: (q) => ((Number(q.gymKillCount) || 0) >= 3),
+    cleanupItems: [],
+    rewards: [
+      { type: 'exp', amount: 300 },
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 30, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } }
+    ]
   }
 };
 

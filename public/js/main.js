@@ -1730,6 +1730,32 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x3 (개당 EXP +50)' }
     ]
+  },
+  'quest_pe_court_clear': {
+    id: 'quest_pe_court_clear',
+    teacherId: 'npc_teacher_pe_grade2',
+    teacherName: '2학년 체육선생님',
+    teacherRole: '2학년 체육 담당 · 체육관 무대 위',
+    teacherAvatar: '👨‍🏫',
+    teacherSeat: '체육관 무대 위',
+    minLevel: 13,
+    requiresDone: 'quest_pe_errand',
+    title: '🏀 실내 농구장을 점거한 폭주 농구 몬스터 토벌 & 8단원 테스트',
+    story: '덕분에 체육관 문을 열고 무사히 들어왔는데 큰일이란다!\n실내 농구 코트를 폭주 농구 몬스터들이 점거해버려서 2학년 체육 수업을 시작할 수가 없구나.\n\n실내 농구장에서 8단원 영어 퀴즈 배틀로 폭주 농구 몬스터 3마리를 토벌하고 실력을 증명해 주렴!',
+    inProgressStory: '실내 농구 코트를 배회하는 폭주 농구 몬스터(불멸의 덩크 머신, 백보드 분쇄기, 심판 골렘, 실내 코트 제왕) 중 3마리를 8단원 퀴즈 대결로 토벌하고 돌아오렴!',
+    completeStory: '오오! 그 강력한 실내 농구장 몬스터들을 8단원 실력으로 단숨에 제압하다니 정말 놀랍구나!\n덕분에 코트 질서가 완전히 회복되었단다. 약속한 특급 보상으로 [🧪 초소형 경험치 물약 30개]와 [🌟 300 EXP]를 수여하마!',
+    objectives: [
+      {
+        id: 'gym_mob_hunt',
+        text: '체육관 실내 농구장 몬스터 3마리 토벌 & 8단원 테스트 통과',
+        targetCount: 3,
+        getCount: (quest) => Math.min(3, Number(quest && quest.gymKillCount) || 0)
+      }
+    ],
+    rewards: [
+      { type: 'exp', amount: 300, label: '🌟 300 EXP (경험치)' },
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 30, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x30 (개당 EXP +50)' }
+    ]
   }
 };
 window.QUEST_DEFINITIONS = QUEST_DEFINITIONS;
@@ -2414,6 +2440,10 @@ class MainApp {
             '반갑다! 체육관 안쪽 강연 무대 위를 관리하고 있는 2학년 체육선생님이란다.\n\n혹시 6층 교무실 20번 자리 내 책상에 두고 온 체육관 열쇠를 발견하면 꼭 챙겨서 가져다주렴! (Lv.12+)',
             '👨‍🏫'
           );
+          return;
+        }
+        if (qErrand.status === 'done') {
+          this.openQuestDispatchModal('quest_pe_court_clear');
           return;
         }
         this.openQuestDispatchModal('quest_pe_errand');
@@ -8680,6 +8710,23 @@ class MainApp {
         });
         dropsList.push(`👟 불멸의 에어 농구화 (5티어 신발 ${shoeDropRate}% 대박 완제품 드랍!)`);
       }
+
+      // 6. 2학년 체육선생님 2차 본 퀘스트 (quest_pe_court_clear) 토벌 카운트 반영
+      if (this.playerData && this.playerData.quests && this.playerData.quests['quest_pe_court_clear']) {
+        const qCourt = this.playerData.quests['quest_pe_court_clear'];
+        if (qCourt.status === 'in_progress') {
+          const prevKills = Number(qCourt.gymKillCount) || 0;
+          qCourt.gymKillCount = prevKills + 1;
+          this.updateQuestTracker();
+          if (qCourt.gymKillCount >= 3 && prevKills < 3) {
+            setTimeout(() => {
+              this.showToast('🎉 [2학년 체육선생님 퀘스트] 폭주 농구 몬스터 3마리 토벌 완료! 무대 위 선생님께 보고하세요!', 'success');
+            }, 400);
+          } else if (qCourt.gymKillCount < 3) {
+            this.showToast(`🏀 [폭주 농구 몬스터 토벌] 진행도: ${qCourt.gymKillCount} / 3`, 'info');
+          }
+        }
+      }
     } else if (mob.court === 'history') {
       const essenceCount = Math.floor(Math.random() * 2) + 1; // 1~2개
       this.addItem('item_history_essence', '🏛️ 숭실 역사의 정수', essenceCount, '🏛️', {
@@ -13923,7 +13970,14 @@ class MainApp {
     if (id === 'npc_teacher_yosunyu') questId = 'quest_yosunyu_info';
     if (id === 'npc_teacher_kwimjinsyong') questId = 'quest_kwimjinsyong_career';
     if (id === 'npc_librarian') questId = 'quest_library_missing_books';
-    if (id === 'npc_teacher_pe_grade2') questId = 'quest_pe_errand';
+    if (id === 'npc_teacher_pe_grade2') {
+      const q1 = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_pe_errand'] : null;
+      if (!q1 || q1.status !== 'done') {
+        questId = 'quest_pe_errand';
+      } else {
+        questId = 'quest_pe_court_clear';
+      }
+    }
     if (!QUEST_DEFINITIONS[questId]) {
       const found = Object.values(QUEST_DEFINITIONS).find(q => q.teacherId === id);
       if (found) questId = found.id;
