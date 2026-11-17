@@ -81,9 +81,11 @@ async function runTests() {
   const dataDir = path.join(cwd, 'data');
   const progressPath = path.join(dataDir, 'students_progress.json');
   const deletedPath = path.join(dataDir, 'deleted_students.json');
+  const statePath = path.join(dataDir, 'server_state.json');
   const backups = {
     progress: fs.existsSync(progressPath) ? fs.readFileSync(progressPath, 'utf8') : null,
-    deleted: fs.existsSync(deletedPath) ? fs.readFileSync(deletedPath, 'utf8') : null
+    deleted: fs.existsSync(deletedPath) ? fs.readFileSync(deletedPath, 'utf8') : null,
+    state: fs.existsSync(statePath) ? fs.readFileSync(statePath, 'utf8') : null
   };
 
   let proc = null;
@@ -101,6 +103,8 @@ async function runTests() {
         if (ping.status === 200) break;
       } catch (_) {}
     }
+
+    await reqJson(testPort, 'POST', '/api/admin/server-gate', { isOpen: true }, { 'x-teacher-pwd': process.env.TEACHER_PASSWORD || '03220322' });
 
     const sid = '12999';
     const loginRes = await reqJson(testPort, 'POST', '/api/auth/student-login', {
@@ -212,6 +216,7 @@ async function runTests() {
     }
     if (backups.progress !== null) fs.writeFileSync(progressPath, backups.progress, 'utf8');
     if (backups.deleted !== null) fs.writeFileSync(deletedPath, backups.deleted, 'utf8');
+    if (backups.state !== null) fs.writeFileSync(statePath, backups.state, 'utf8');
   }
 }
 
