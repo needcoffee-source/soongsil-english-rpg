@@ -1354,10 +1354,10 @@ class GameEngine {
             minDist = gDist;
           }
         }
-        // 8. 🏀 분실된 수업용 농구공 (죠스동 선생님 Lv.14 정돈 퀘스트 - 축구부 버스 오른쪽)
+        // 8. 🏀 분실된 수업용 농구공 (죠스동 선생님 Lv.14 정돈 퀘스트 - 축구부 버스 오른쪽: 버스 히트박스보다 우선 인식)
         if (gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
           const lbDist = Math.hypot((gymData.lostGymBall.x + 0.5) * 32 - this.player.x, (gymData.lostGymBall.y + 0.5) * 32 - this.player.y);
-          if (lbDist < 96 && lbDist < minDist) {
+          if (lbDist < 96 && (lbDist < minDist || (closest && closest.type === 'gym_school_bus'))) {
             closest = {
               type: 'quest_lost_gym_ball',
               data: gymData.lostGymBall,
@@ -2058,6 +2058,11 @@ class GameEngine {
         if (gymData.gymEntrance && Math.hypot(gymData.gymEntrance.x * 32 - x, (gymData.gymEntrance.y + 1) * 32 - y) < 64) {
           return { type: 'gym_entrance', name: gymData.gymEntrance.name, prompt: gymData.gymEntrance.prompt };
         }
+        if (gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
+          if (Math.hypot((gymData.lostGymBall.x + 0.5) * 32 - x, (gymData.lostGymBall.y + 0.5) * 32 - y) < 56) {
+            return { type: 'quest_lost_gym_ball', data: gymData.lostGymBall, name: gymData.lostGymBall.name, prompt: gymData.lostGymBall.prompt };
+          }
+        }
         if (gymData.schoolBus && Math.abs(x - 53.3 * 32) < 2.5 * 32 && Math.abs(y - 15.75 * 32) < 3.5 * 32) {
           const distToPlayer = Math.hypot(this.player.x - 53.3 * 32, this.player.y - 15.75 * 32);
           if (distToPlayer < 140) {
@@ -2075,11 +2080,6 @@ class GameEngine {
         }
         if (gymData.guardTeacher && Math.hypot(gymData.guardTeacher.x * 32 - x, (gymData.guardTeacher.y + 0.5) * 32 - y) < 56) {
           return { type: 'gym_guard_teacher', name: gymData.guardTeacher.name, prompt: gymData.guardTeacher.prompt };
-        }
-        if (gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
-          if (Math.hypot((gymData.lostGymBall.x + 0.5) * 32 - x, (gymData.lostGymBall.y + 0.5) * 32 - y) < 56) {
-            return { type: 'quest_lost_gym_ball', data: gymData.lostGymBall, name: gymData.lostGymBall.name, prompt: gymData.lostGymBall.prompt };
-          }
         }
       }
     } else {
@@ -6564,13 +6564,14 @@ class GameEngine {
     // 2. High-Res Classroom Blackboard & School Motto
     const isCareerRoom = (this.player.room === 'room_career');
     const isStaffOffice = (this.player.room === 'room_staff_office');
+    const isHistoryRoom = (this.player.room === 'room_history');
     const isSecretHistory = (this.player.room === 'room_secret_history');
     const isHealthRoom = (this.player.room === 'room_health');
     const isWeeRoom = (this.player.room === 'room_wee');
     const isCafeteria = (this.player.room === 'room_cafeteria');
     const isGymRoom = (this.player.room === 'room_gym');
     const centerTileX = isStaffOffice ? 45 : (isCareerRoom ? 30 : ((isHealthRoom || isWeeRoom) ? 10 : 15));
-    if (!isStaffOffice && !isSecretHistory && !isCafeteria && !isGymRoom) {
+    if (!isStaffOffice && !isHistoryRoom && !isSecretHistory && !isCafeteria && !isGymRoom) {
       this.drawHighResBlackboard(cr, centerTileX);
       this.drawHighResWallClock(centerTileX * 32, 16);
     }
@@ -19490,6 +19491,13 @@ class GameEngine {
     // 4. 우측 대형 실내 농구 코트 & 관람석 & 골대
     this.drawGymBasketballCourt();
     this.drawQuestGymTeamVests(29 * 32, 4.5 * 32);
+    if (cr && cr.interactive) {
+      for (const obj of cr.interactive) {
+        if (obj.type === 'dev_note_5') {
+          this.drawHighResDevNote(obj.x * 32, obj.y * 32, obj.name || '📜 떨어진 개발자노트 (제5편)');
+        }
+      }
+    }
 
     // 5. 하단 광장 연결 유리 출입문 프레임
     this.drawGymEntranceDoor();

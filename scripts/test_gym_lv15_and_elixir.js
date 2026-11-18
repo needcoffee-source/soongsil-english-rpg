@@ -118,4 +118,13 @@ assert(gymDropBlock.includes("'equip_immortal_shoes'") && gymDropBlock.includes(
 assert(serverJs.includes("let bossRaidEvent = {\r\n  active: false,\r\n  stoppedByTeacher: true") || serverJs.includes("let bossRaidEvent = {\n  active: false,\n  stoppedByTeacher: true"), 'Default server bossRaidEvent must have active: false, stoppedByTeacher: true');
 assert(mainJs.includes("window.BOSS_CONFIG = {\r\n  active: false,\r\n  stoppedByTeacher: true") || mainJs.includes("window.BOSS_CONFIG = {\n  active: false,\n  stoppedByTeacher: true"), 'Default client BOSS_CONFIG must have active: false, stoppedByTeacher: true');
 
-console.log(`✓ 3. Indoor Gym (${Gym.gymMonsters.length} Lv.15 monsters, Unit 8 pool ${u8.length} questions, drops, Tier 5 shoes, Lv.15 accessory & Dragon Raid default closed) verified.`);
+// 5. Verify Dev Note 5 at Gym Bleachers right corner (41.5, 3.5), History Hall blackboard removed, and 1-time Bus/EV rewards
+const devNote5 = (Gym.interactive || []).find(o => o.id === 'note_developer_gym' && o.type === 'dev_note_5');
+assert(devNote5 && devNote5.x === 41.5 && devNote5.y === 3.5, 'Dev Note 5 must be placed at (41.5, 3.5) in classroom_gym.interactive');
+assert(mainJs.includes('handleDevNote5Interaction()') && engineJs.includes("obj.type === 'dev_note_5'"), 'Dev Note 5 interaction and rendering must be wired');
+assert.strictEqual(WD.classroom_history.blackboard, null, 'classroom_history.blackboard must be null');
+assert(engineJs.includes('!isHistoryRoom'), 'renderClassroom must skip blackboard & motto for room_history');
+assert(!mainJs.includes('🎁 [이스터에그 보상 획득!]') && mainJs.includes('🎁 [보상 획득!]'), 'Reward header must use 🎁 [보상 획득!] without 이스터에그');
+assert(mainJs.includes('if (alreadyFound) {') && mainJs.includes('if (alreadyShocked) {'), 'School bus and EV charger rewards must be strictly 1-time even for teachers');
+
+console.log(`✓ 3. Indoor Gym (${Gym.gymMonsters.length} Lv.15 monsters, Unit 8 pool ${u8.length} questions, drops, Tier 5 shoes, Lv.15 accessory, Dev Note 5 & History Hall blackboard cleanup) verified.`);

@@ -2895,6 +2895,8 @@ class MainApp {
       this.handleDevNote3Interaction();
     } else if (target.type === 'dev_note_4') {
       this.handleDevNote4Interaction();
+    } else if (target.type === 'dev_note_5') {
+      this.handleDevNote5Interaction();
     } else if (target.type === 'quest_memo') {
       this.handleQuestMemoPickup(target.data || target);
     } else if (target.type === 'quest_okchohan_book') {
@@ -4376,13 +4378,13 @@ class MainApp {
     this.showToast(`🥁 쿵-치-따-치! 1학년 4반 도덕쌤의 락스피릿이 온몸에 울려 퍼집니다!${healMsg}`, 'success');
   }
 
-  // 🪞 복도 전신 거울 이스터에그 (최초 1회 골드 20, 경험치 20)
+  // 🪞 복도 전신 거울 (최초 1회 골드 20, 경험치 20)
   handleMirrorInteraction() {
     const studentId = this.playerData.studentId || 'default';
     const mirrorKey = 'soongsil_mirror_' + studentId;
     const alreadyChecked = !!(this.playerData.hasCheckedMirror || (studentId && localStorage.getItem(mirrorKey) === 'true'));
 
-    if (alreadyChecked && !this.playerData.isTeacher) {
+    if (alreadyChecked) {
       if (window.AudioManager) window.AudioManager.playSelect();
       const mirrorPhrases = [
         `"✨ 흠... 오늘따라 교복 핏과 헤어스타일이 완벽한걸? 거울을 보며 찡긋 윙크를 지어봅니다."`,
@@ -4549,7 +4551,7 @@ class MainApp {
     const boxKey = 'soongsil_lost_box_' + studentId;
     const alreadyOpened = !!(this.playerData.hasOpenedLostBox || (studentId && localStorage.getItem(boxKey) === 'true'));
 
-    if (alreadyOpened && !this.playerData.isTeacher) {
+    if (alreadyOpened) {
       if (window.AudioManager) window.AudioManager.playSelect();
       alert(
         `📦 [낡은 철제 분실물 상자]\n\n` +
@@ -4944,7 +4946,7 @@ class MainApp {
     }
   }
 
-  // 🚌 숭실 축구부 버스 이스터에그 (클랙슨 빵빵! & 축구부 기사님의 달콤한 믹스커피)
+  // 🚌 숭실 축구부 버스 (클랙슨 빵빵! & 축구부 기사님의 달콤한 믹스커피 - 최초 1회 보상)
   handleSchoolBusEasterEgg() {
     const studentId = this.playerData.studentId || 'default';
     const busKey = 'soongsil_bus_egg_' + studentId;
@@ -4958,7 +4960,7 @@ class MainApp {
       this.engine.triggerBusHornEffect();
     }
 
-    if (alreadyFound && !this.playerData.isTeacher) {
+    if (alreadyFound) {
       if (window.RPGDialog) {
         window.RPGDialog.show(
           '🚌 숭실 축구부 버스',
@@ -4986,15 +4988,15 @@ class MainApp {
     if (window.RPGDialog) {
       window.RPGDialog.show(
         '🚌 숭실 축구부 버스 (비상탈출문)',
-        `숭실 축구부 버스 뒤편의 빨간색 비상탈출문(EXIT) 손잡이를 살짝 만졌더니...\n\n"🚨 빵! 빵~~!!"\n우렁찬 클랙슨 경적이 온 주차장에 울려 퍼집니다!\n\n운전석 창문 너머로 친절한 축구부 버스 기사님이 껄껄 웃으시며 손을 흔드십니다.\n"하하! 비상문 점검 중이었니? 우리 숭실 학생, 오늘도 수고가 많다!\n숭실 축구부 선수들의 원정과 훈련을 책임지는 25인승 버스란다.\n이거 기사님이 아껴둔 비장의 달달한 믹스커피(신속 초록 포션)인데 마시고 힘내렴~!"\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +50G & 🌟 경험치 +50 EXP\n• 🧪 주황 포션 x2 (체력 +25 회복)\n• 🧪 초록 포션 x1 (1분간 이동속도 +10%)`,
+        `숭실 축구부 버스 뒤편의 빨간색 비상탈출문(EXIT) 손잡이를 살짝 만졌더니...\n\n"🚨 빵! 빵~~!!"\n우렁찬 클랙슨 경적이 온 주차장에 울려 퍼집니다!\n\n운전석 창문 너머로 친절한 축구부 버스 기사님이 껄껄 웃으시며 손을 흔드십니다.\n"하하! 비상문 점검 중이었니? 우리 숭실 학생, 오늘도 수고가 많다!\n숭실 축구부 선수들의 원정과 훈련을 책임지는 25인승 버스란다.\n이거 기사님이 아껴둔 비장의 달달한 믹스커피(신속 초록 포션)인데 마시고 힘내렴~!"\n\n🎁 [보상 획득!]\n• 🪙 골드 +50G & 🌟 경험치 +50 EXP\n• 🧪 주황 포션 x2 (체력 +25 회복)\n• 🧪 초록 포션 x1 (1분간 이동속도 +10%)`,
         '🚌'
       );
     } else {
-      alert(`🚌 [숭실 축구부 버스 비상문 이스터에그 발견!]\n\n"🚨 빵! 빵~~!!"\n\n축구부 버스 기사님이 달달한 믹스커피(물약들)와 50G, 50 EXP를 선물해주셨습니다!`);
+      alert(`🚌 [숭실 축구부 버스 비상문 보상 획득!]\n\n"🚨 빵! 빵~~!!"\n\n축구부 버스 기사님이 달달한 믹스커피(물약들)와 50G, 50 EXP를 선물해주셨습니다!`);
     }
   }
 
-  // ⚡ 100kW DC 전기차 급속 충전기 이스터에그 (짜릿한 정전기 감전 & 번개 스파크)
+  // ⚡ 100kW DC 전기차 급속 충전기 (짜릿한 정전기 감전 & 번개 스파크 - 최초 1회 보상)
   handleEVChargerEasterEgg() {
     const studentId = this.playerData.studentId || 'default';
     const evKey = 'soongsil_ev_egg_' + studentId;
@@ -5008,7 +5010,7 @@ class MainApp {
       this.engine.triggerElectricZapEffect();
     }
 
-    if (alreadyShocked && !this.playerData.isTeacher) {
+    if (alreadyShocked) {
       if (window.RPGDialog) {
         window.RPGDialog.show(
           '⚡ 100kW DC 초급속 충전기',
@@ -5035,11 +5037,11 @@ class MainApp {
     if (window.RPGDialog) {
       window.RPGDialog.show(
         '⚡ 100kW DC 초급속 충전기',
-        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [이스터에그 보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (1분간 공격력 +5)`,
+        `충전 건 손잡이에 손을 대자마자 강력한 고압 정전기가 온몸으로 흘렀습니다!\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n머리카락이 쭈뼛 곤두서고 손가락 끝에서 푸른 번개 스파크가 튀었습니다!\n\n[⚠️ 겨울철 초급속 충전소 안전 주의]\n"100kW 초급속 충전 중에는 고전압 유도 전류로 정전기가 튈 수 있습니다!"\n\n...하지만 온몸에 짜릿한 전율이 감돌며 온몸의 마나와 용기가 가득 차올랐습니다!\n\n🎁 [보상 획득!]\n• 🪙 골드 +100G & 🌟 경험치 +100 EXP\n• 🧪 용기 포션 x1 (1분간 공격력 +5)`,
         '⚡'
       );
     } else {
-      alert(`⚡ [전기차 충전소 이스터에그 발견!]\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n\n짜릿한 정전기 감전과 함께 100G, 100 EXP, 용기 포션을 획득했습니다!`);
+      alert(`⚡ [전기차 충전소 보상 획득!]\n\n"⚡⚡ 지지직!! 파지직~~!!" ⚡⚡\n\n짜릿한 정전기 감전과 함께 100G, 100 EXP, 용기 포션을 획득했습니다!`);
     }
   }
 
@@ -5265,7 +5267,7 @@ class MainApp {
     const lockerKey = 'soongsil_secret_locker_' + (this.playerData.studentId || 'default');
     const alreadyFound = !!(this.playerData.hasOpenedSecretLocker || localStorage.getItem(lockerKey) === 'true');
 
-    if (alreadyFound && !this.playerData.isTeacher) {
+    if (alreadyFound) {
       alert('🤫 [철제 사물함]\n\n사물함 구석이 텅 비어 있습니다.');
       return;
     }
@@ -12651,7 +12653,8 @@ class MainApp {
       "숭실의 모든 꿈들이 교무실의 불빛처럼 언제나 밝고 따스하게 빛나기를 바랍니다.\n\n" +
       "— 소회의실 커피 한 잔의 온기를 전하며, 개발자 갓준철 올림 ☕✨—\"";
 
-    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+    if (!alreadyRead) {
+      if (this.playerData) this.playerData.hasReadDevNote3 = true;
       try {
         localStorage.setItem(noteKey, 'true');
       } catch (e) {}
@@ -12667,7 +12670,7 @@ class MainApp {
       alert(
         noteStory + "\n\n" +
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-        "🎁 [개발자노트 제3편 감상 보너스]\n" +
+        "🎁 [보상 획득!]\n" +
         "• 갓준철 선생님의 따스한 커피 한 잔 같은 온기가 전해집니다!\n" +
         "• 🪙 골드 +50G 획득!\n" +
         "• 🌟 경험치 +50 EXP 획득!"
@@ -12898,7 +12901,8 @@ class MainApp {
       "먼 훗날 여러분이 마주할 더 큰 세상의 오르막에서도 지치지 않는 튼튼한 날개가 되어주길 바랍니다.\n\n" +
       "— 등굣길 언덕 바람을 함께 맞으며, 개발자 갓준철 올림 🏃‍♂️✨—\"";
 
-    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+    if (!alreadyRead) {
+      if (this.playerData) this.playerData.hasReadDevNote4 = true;
       try {
         localStorage.setItem(noteKey, 'true');
       } catch (e) {}
@@ -12914,8 +12918,61 @@ class MainApp {
       alert(
         noteStory + "\n\n" +
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-        "🎁 [개발자노트 제4편 감상 보너스]\n" +
+        "🎁 [보상 획득!]\n" +
         "• 갓준철 선생님의 따뜻한 응원의 메시지가 마음에 와닿습니다!\n" +
+        "• 🪙 골드 +50G 획득!\n" +
+        "• 🌟 경험치 +50 EXP 획득!"
+      );
+    } else {
+      alert(noteStory);
+    }
+  }
+
+  // 📜 체육관 실내 농구장 관람석 우측 떨어진 개발자노트 (제5편)
+  handleDevNote5Interaction() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const noteKey = 'soongsil_dev_note_5_' + studentId;
+    let alreadyRead = !!(this.playerData && this.playerData.hasReadDevNote5);
+    try {
+      if (!alreadyRead && studentId && localStorage.getItem(noteKey) === 'true') {
+        alreadyRead = true;
+      }
+    } catch (e) {}
+
+    if (window.AudioManager && window.AudioManager.playSelect) {
+      window.AudioManager.playSelect();
+    }
+
+    const noteStory =
+      "📜 [떨어진 개발자노트 — 제5편: 코트 위의 땀방울과 뜨거운 함성]\n\n" +
+      "\"체육관 마룻바닥을 울리는 농구공의 경쾌한 바운스 소리와 운동화 마찰음,\n" +
+      "그리고 관람석이 떠나가라 친구의 이름을 외치던 너희들의 뜨거운 함성이 귓가에 맴돈다.\n\n" +
+      "경기에 이겨서 다 함께 부둥켜안고 기뻐하던 순간도,\n" +
+      "아쉽게 빗나간 슛 하나에 코트 위에 주저앉아 아쉬워하던 순간도,\n" +
+      "돌아보면 모두가 눈부시게 빛나던 우리들의 청춘이었단다.\n\n" +
+      "코트 위에서 흘린 땀방울이 결코 너희를 배신하지 않듯,\n" +
+      "오늘 너희가 쌓아가는 작은 노력들이 언젠가 인생의 가장 멋진 버저비터가 되어줄 거야.\n\n" +
+      "— 체육관 관람석 구석에서 너희의 멋진 슛을 응원하며, 개발자 갓준철 올림 🏀✨—\"";
+
+    if (!alreadyRead) {
+      if (this.playerData) this.playerData.hasReadDevNote5 = true;
+      try {
+        localStorage.setItem(noteKey, 'true');
+      } catch (e) {}
+
+      this.addGold(50);
+      this.addExp(50);
+      this.saveProgress();
+
+      if (window.AudioManager && window.AudioManager.playFanfare) {
+        window.AudioManager.playFanfare();
+      }
+
+      alert(
+        noteStory + "\n\n" +
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+        "🎁 [보상 획득!]\n" +
+        "• 갓준철 선생님의 뜨거운 응원 메시지가 가슴을 뛰게 합니다!\n" +
         "• 🪙 골드 +50G 획득!\n" +
         "• 🌟 경험치 +50 EXP 획득!"
       );
@@ -13447,7 +13504,8 @@ class MainApp {
       "너희의 찬란한 모든 꿈을 온 마음으로 응원한다.\n\n" +
       "— 진로실 밤하늘을 올려다보며, 개발자 갓준철 올림 —\"";
 
-    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+    if (!alreadyRead) {
+      if (this.playerData) this.playerData.hasReadDevNote2 = true;
       try {
         localStorage.setItem(noteKey, 'true');
       } catch (e) {}
@@ -13463,7 +13521,7 @@ class MainApp {
       alert(
         noteStory + "\n\n" +
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-        "🎁 [개발자노트 제2편 감상 보너스]\n" +
+        "🎁 [보상 획득!]\n" +
         "• 갓준철 선생님의 따뜻한 응원이 가슴을 뭉클하게 채웁니다!\n" +
         "• 🪙 골드 +50G 획득!\n" +
         "• 🌟 경험치 +50 EXP 획득!"
@@ -13473,13 +13531,15 @@ class MainApp {
     }
   }
 
-  // 📜 복도 떨어진 개발자노트 이스터에그 (제1편)
+  // 📜 복도 떨어진 개발자노트 (제1편)
   handleDevNoteInteraction() {
     const studentId = (this.playerData && this.playerData.studentId) || 'default';
     const noteKey = 'soongsil_dev_note_1_' + studentId;
-    let alreadyRead = false;
+    let alreadyRead = !!(this.playerData && this.playerData.hasReadDevNote1);
     try {
-      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+      if (!alreadyRead && studentId && localStorage.getItem(noteKey) === 'true') {
+        alreadyRead = true;
+      }
     } catch (e) {}
 
     if (window.AudioManager && window.AudioManager.playSelect) {
@@ -13505,7 +13565,8 @@ class MainApp {
       "— 숭실의 밤을 지새우며, 개발자 갓준철 올림 —\n" +
       "(※ 빛바랜 양피지 귀퉁이에 적힌 글귀... 제2편으로 이어집니다.)\"";
 
-    if (!alreadyRead && (!this.playerData || !this.playerData.isTeacher)) {
+    if (!alreadyRead) {
+      if (this.playerData) this.playerData.hasReadDevNote1 = true;
       try {
         localStorage.setItem(noteKey, 'true');
       } catch (e) {}
@@ -13521,7 +13582,7 @@ class MainApp {
       alert(
         noteStory + "\n\n" +
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
-        "🎁 [개발자노트 제1편 감상 보너스]\n" +
+        "🎁 [보상 획득!]\n" +
         "• 갓준철 선생님의 뜨거운 열정이 가슴 깊이 전해집니다!\n" +
         "• 🪙 골드 +50G 획득!\n" +
         "• 🌟 경험치 +50 EXP 획득!"

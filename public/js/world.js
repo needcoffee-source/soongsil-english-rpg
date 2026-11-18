@@ -298,12 +298,7 @@ const WORLD_DATA = {
   classroom_history: {
     name: "🏛️ 숭실역사관 (History Hall)",
     exitDoor: { x: 15, y: 17, name: "🚪 운동장 출구", prompt: "운동장으로 나가기 (SPACE)" },
-    blackboard: {
-      x: 15,
-      y: 2,
-      name: "🏛️ 숭실역사관 기념관",
-      prompt: ""
-    },
+    blackboard: null,
     teacherDesk: null,
     gatherSpots: [],
     desks: [],
@@ -896,7 +891,8 @@ const WORLD_DATA = {
       { id: "gym_stage_podium", type: "gym_stage_podium", x: 11, y: 13, name: "🎤 강연 무대", prompt: "강연 무대 살펴보기 (SPACE)" },
       { id: "gym_broadcast_storage", type: "gym_broadcast_storage", x: 6, y: 6, name: "🎛️ 체육관 방송실", prompt: "체육관 방송실 살펴보기 (SPACE)" },
       { id: "gym_equipment_storage", type: "gym_equipment_storage", x: 6, y: 20, name: "📦 창고", prompt: "창고 선반 정돈·살펴보기 (SPACE)" },
-      { id: "quest_gym_team_vests", type: "quest_gym_team_vests", x: 29, y: 4.5, name: "🦺 땀에 젖은 팀 조끼 다발", prompt: "팀 조끼 다발 회수하기 (SPACE)" }
+      { id: "quest_gym_team_vests", type: "quest_gym_team_vests", x: 29, y: 4.5, name: "🦺 땀에 젖은 팀 조끼 다발", prompt: "팀 조끼 다발 회수하기 (SPACE)" },
+      { id: "note_developer_gym", type: "dev_note_5", x: 41.5, y: 3.5, name: "📜 떨어진 개발자노트 (제5편)", prompt: "개발자노트 5편 읽기 (SPACE)" }
     ]
   },
   classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
