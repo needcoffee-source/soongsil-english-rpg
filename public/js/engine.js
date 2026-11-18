@@ -571,7 +571,7 @@ class GameEngine {
     const curMapHeight = this.getMapHeight();
 
     // Map bounds
-    if (tileX < 1 || tileX >= curMapWidth - 1) return true;
+    if (tileX < 1 || tileX >= (this.player.room === 'playground_gym' ? curMapWidth : curMapWidth - 1)) return true;
     if (tileY < 1) return true;
 
     if (this.player.room === 'playground') {
@@ -591,7 +591,7 @@ class GameEngine {
       const curW = curMapWidth;
       if (tileX >= curW - 3 && tileY >= 28 && tileY <= 32) return false;
       // Outer boundaries
-      if (tileX < 1 || tileX >= curMapWidth - 1) return true;
+      if (tileX < 1 || tileX >= curMapWidth) return true;
       if (tileY < 1 || tileY >= curMapHeight - 1) return true;
       // Left Hillside retaining wall (tx <= 1)
       if (tileX <= 1) return true;
@@ -1354,10 +1354,10 @@ class GameEngine {
             minDist = gDist;
           }
         }
-        // 8. 🏀 분실된 수업용 농구공 (죠스동 선생님 Lv.14 정돈 퀘스트)
+        // 8. 🏀 분실된 수업용 농구공 (죠스동 선생님 Lv.14 정돈 퀘스트 - 축구부 버스 오른쪽)
         if (gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
           const lbDist = Math.hypot((gymData.lostGymBall.x + 0.5) * 32 - this.player.x, (gymData.lostGymBall.y + 0.5) * 32 - this.player.y);
-          if (lbDist < 64 && lbDist < minDist) {
+          if (lbDist < 96 && lbDist < minDist) {
             closest = {
               type: 'quest_lost_gym_ball',
               data: gymData.lostGymBall,
@@ -19522,7 +19522,7 @@ class GameEngine {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    this.drawSharpLabel(x + 16, by - 4, '🏀 분실된 수업용 농구공', {
+    this.drawSharpLabel(Math.min(x + 12, 56 * 32 - 76), by - 4, '🏀 분실된 수업용 농구공', {
       bgColor: 'rgba(124, 45, 18, 0.94)',
       borderColor: '#fb923c',
       textColor: '#ffedd5',

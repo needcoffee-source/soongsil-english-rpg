@@ -2430,7 +2430,7 @@ const SERVER_QUEST_DEFINITIONS = {
       { type: 'exp', amount: 350 },
       { type: 'gold', amount: 200 },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 20, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
-      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 3, icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } }
+      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 1, icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } }
     ]
   }
 };

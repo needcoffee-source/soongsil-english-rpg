@@ -1713,13 +1713,13 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   'quest_pe_errand': {
     id: 'quest_pe_errand',
     teacherId: 'npc_teacher_pe_grade2',
-    teacherName: '2학년 체육선생님',
-    teacherRole: '2학년 체육 담당 · 체육관 무대 위',
+    teacherName: '리졍놤(2학년 체육)',
+    teacherRole: '2학년 체육',
     teacherAvatar: '👨‍🏫',
-    teacherSeat: '체육관 무대 위',
+    teacherSeat: '체육관 무대',
     minLevel: 12,
     title: '🔑 체육선생님의 심부름 (Gym Key Delivery)',
-    story: '교무실 20번 자리(2학년 체육선생님 자리)에 선생님이 깜빡하고 두고 가신 체육관 열쇠를 발견했다!\n이 열쇠로 체육관 문을 열고 들어가, 체육관 안쪽 강연 무대 위에 계신 2학년 체육선생님께 직접 열쇠를 전해드리자!',
+    story: '교무실 20번 자리(2학년 체육선생님 자리)에 선생님이 깜빡하고 두고 가신 체육관 열쇠를 발견했다!\n이 열쇠로 체육관 문을 열고 들어가, 체육관 안쪽 강연 무대 위에 계신 리졍놤(2학년 체육) 선생님께 직접 열쇠를 전해드리자!',
     objectives: [
       {
         id: 'pe_key_collect',
@@ -1736,10 +1736,10 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
   'quest_pe_court_clear': {
     id: 'quest_pe_court_clear',
     teacherId: 'npc_teacher_pe_grade2',
-    teacherName: '2학년 체육선생님',
-    teacherRole: '2학년 체육 담당 · 체육관 무대 위',
+    teacherName: '리졍놤(2학년 체육)',
+    teacherRole: '2학년 체육',
     teacherAvatar: '👨‍🏫',
-    teacherSeat: '체육관 무대 위',
+    teacherSeat: '체육관 무대',
     minLevel: 13,
     requiresDone: 'quest_pe_errand',
     title: '🏀 실내 농구장을 점거한 폭주 농구 몬스터 토벌 & 8단원 테스트',
@@ -1763,18 +1763,18 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     id: 'quest_jawsdong_cleanup',
     teacherId: 'npc_teacher_pe_grade3',
     teacherName: '죠스동(3학년 체육)',
-    teacherRole: '3학년 체육 · 공·체육복 창고 관리',
+    teacherRole: '3학년 체육',
     teacherAvatar: '👨‍🏫',
-    teacherSeat: '체육관 공·체육복 창고',
+    teacherSeat: '체육관 창고',
     minLevel: 14,
     title: '🏀 흩어진 체육 용구 회수 & 창고 재정비',
-    story: '폭주 농구 몬스터들이 날뛰는 바람에 수업용 공과 팀 조끼, 라바콘이 체육관 안팎에 엉망으로 흩어졌단다!\n\n1. 체육관 야외 광장(출구와 운동장 게이트 사이)에 굴러간 🏀 [분실된 수업용 농구공] 주워오기\n2. 체육관 실내 코트 관람석(상단 스탠드 앞)에 흩어진 🦺 [땀에 젖은 팀 조끼 다발] 회수하기\n3. 공·체육복 창고 내부 [📦 창고 선반]과 상호작용해 8단원 퀴즈 1문제를 풀고 깔끔하게 분류·정돈하기\n\n모두 마치고 돌아오면 특급 경험치 물약과 월계수 잎, 골드·경험치를 선물하마!',
-    inProgressStory: '아직 정돈이 끝나지 않았구나! 🏀🏐\n\n1. 야외 체육관 광장에 굴러간 🏀 [분실된 수업용 농구공] 회수\n2. 실내 농구 코트 상단 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수\n3. 이 창고 안쪽의 [📦 창고 선반]을 조사해 8단원 문제를 풀고 용구 분류·정돈하기\n\n세 가지를 모두 마친 뒤 나에게 보고해 주렴!',
-    completeStory: '오오! 야외 광장까지 굴러간 농구공과 관람석의 팀 조끼까지 모두 찾아와 창고 선반에 완벽히 정돈했구나! 👏\n덕분에 3학년 체육 수업을 바로 시작할 수 있겠어. 고맙다! 약속한 정돈 보상을 수여하마!',
+    story: '폭주 농구 몬스터들이 날뛰는 바람에 수업용 공과 팀 조끼, 라바콘이 체육관 안팎에 엉망으로 흩어졌단다!\n\n1. 체육관 야외 광장(축구부 버스 오른쪽)에 굴러간 🏀 [분실된 수업용 농구공] 주워오기\n2. 체육관 실내 코트 관람석(상단 스탠드 앞)에 흩어진 🦺 [땀에 젖은 팀 조끼 다발] 회수하기\n3. 공·체육복 창고 내부 [📦 창고 선반]과 상호작용해 8단원 퀴즈 1문제를 풀고 깔끔하게 분류·정돈하기\n\n모두 마치고 돌아오면 특급 경험치 물약과 월계수 잎, 골드·경험치를 선물하마!',
+    inProgressStory: '아직 정돈이 끝나지 않았구나! 🏀🏐\n\n1. 야외 체육관 광장 축구부 버스 오른쪽에 굴러간 🏀 [분실된 수업용 농구공] 회수\n2. 실내 농구 코트 상단 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수\n3. 이 창고 안쪽의 [📦 창고 선반]을 조사해 8단원 문제를 풀고 용구 분류·정돈하기\n\n세 가지를 모두 마친 뒤 나에게 보고해 주렴!',
+    completeStory: '오오! 야외 광장 축구부 버스 옆까지 굴러간 농구공과 관람석의 팀 조끼까지 모두 찾아와 창고 선반에 완벽히 정돈했구나! 👏\n덕분에 3학년 체육 수업을 바로 시작할 수 있겠어. 고맙다! 약속한 정돈 보상을 수여하마!',
     objectives: [
       {
         id: 'jawsdong_ball',
-        text: '체육관 야외 광장에 굴러간 🏀 [분실된 수업용 농구공] 주워오기',
+        text: '체육관 야외 광장(축구부 버스 오른쪽) 🏀 [분실된 수업용 농구공] 주워오기',
         targetCount: 1,
         getCount: (quest) => (quest && quest.ballRecovered ? 1 : 0)
       },
@@ -1795,7 +1795,7 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
       { type: 'gold', amount: 200, label: '🪙 200 G (골드)' },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 20, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x20 (개당 EXP +50)' },
-      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 3, icon: '🏵️', meta: { type: 'material', effect: 'Lv.15 승리의 월계관 메달 제작 핵심 재료' }, label: '🏵️ 황금 월계수 잎 x3 (Lv.15 장신구 재료)' }
+      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 1, icon: '🏵️', meta: { type: 'material', effect: 'Lv.15 승리의 월계관 메달 제작 핵심 재료' }, label: '🏵️ 황금 월계수 잎 x1 (Lv.15 장신구 재료)' }
     ]
   }
 };
@@ -2477,8 +2477,8 @@ class MainApp {
         const qErrand = this.playerData && this.playerData.quests && this.playerData.quests['quest_pe_errand'];
         if (!qErrand) {
           this.showGameDialog(
-            '👨‍🏫 2학년 체육선생님',
-            '반갑다! 체육관 안쪽 강연 무대 위를 관리하고 있는 2학년 체육선생님이란다.\n\n혹시 6층 교무실 20번 자리 내 책상에 두고 온 체육관 열쇠를 발견하면 꼭 챙겨서 가져다주렴! (Lv.12+)',
+            '👨‍🏫 리졍놤(2학년 체육)',
+            '반갑다! 체육관 안쪽 강연 무대 위를 관리하고 있는 2학년 체육선생님이란다.\n\n혹시 교무실 자리에 두고 온 체육관 열쇠를 발견하면 꼭 챙겨서 가져와주렴',
             '👨‍🏫'
           );
           return;

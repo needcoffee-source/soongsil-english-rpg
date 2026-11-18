@@ -63,15 +63,15 @@ async function runTests() {
   assert(seat20 && seat20.x === 73, 'Staff Office seat 20 must match x:73');
 
   const gymPeTeacher = (WD.classroom_gym.npcs || []).find(n => n.id === 'npc_teacher_pe_grade2');
-  assert(gymPeTeacher && gymPeTeacher.questId === 'quest_pe_errand', '2학년 체육선생님 must stand inside Gym stage with quest_pe_errand');
-  assert(gymPeTeacher.x >= 1 && gymPeTeacher.x <= 13 && gymPeTeacher.y >= 10 && gymPeTeacher.y <= 16, '2학년 체육선생님 must be on Gym stage');
+  assert(gymPeTeacher && gymPeTeacher.name === '리졍놤(2학년 체육)' && gymPeTeacher.questId === 'quest_pe_errand', '리졍놤(2학년 체육) must stand inside Gym stage with quest_pe_errand');
+  assert(gymPeTeacher.x >= 1 && gymPeTeacher.x <= 13 && gymPeTeacher.y >= 10 && gymPeTeacher.y <= 16, '리졍놤(2학년 체육) must be on Gym stage');
 
   const gymPeTeacher3 = (WD.classroom_gym.npcs || []).find(n => n.id === 'npc_teacher_pe_grade3');
   assert(gymPeTeacher3 && gymPeTeacher3.name === '죠스동(3학년 체육)', '죠스동(3학년 체육) must be placed in classroom_gym.npcs');
   assert(gymPeTeacher3.questId === 'quest_jawsdong_cleanup', '죠스동(3학년 체육) must have quest_jawsdong_cleanup');
   assert(gymPeTeacher3.x >= 1 && gymPeTeacher3.x <= 13 && gymPeTeacher3.y >= 18 && gymPeTeacher3.y <= 23, '3학년 체육선생님 must be inside Gym ball/equipment storage');
 
-  assert(WD.playground_gym.lostGymBall && WD.playground_gym.lostGymBall.type === 'quest_lost_gym_ball', 'playground_gym must have lostGymBall');
+  assert(WD.playground_gym.lostGymBall && WD.playground_gym.lostGymBall.x === 54.8 && WD.playground_gym.lostGymBall.y === 16, 'playground_gym lostGymBall must be to the right of the soccer bus (54.8, 16)');
   const gymVestsObj = (WD.classroom_gym.interactive || []).find(i => i.type === 'quest_gym_team_vests');
   assert(gymVestsObj && gymVestsObj.x === 29 && gymVestsObj.y === 4.5, 'classroom_gym must have quest_gym_team_vests in front of bleachers');
 
@@ -251,7 +251,7 @@ async function runTests() {
     const expPotAfter3 = (jawsdongOk.data.inventory || []).find(i => i.item === 'item_tiny_exp_potion');
     assert(expPotAfter3 && expPotAfter3.count === 52, 'quest_jawsdong_cleanup must reward 20x item_tiny_exp_potion (32 + 20 = 52)');
     const laurelAfter = (jawsdongOk.data.inventory || []).find(i => i.item === 'item_golden_laurel');
-    assert(laurelAfter && laurelAfter.count === 3, 'quest_jawsdong_cleanup must reward 3x item_golden_laurel');
+    assert(laurelAfter && laurelAfter.count === 1, 'quest_jawsdong_cleanup must reward 1x item_golden_laurel');
     console.log('✓ Live Lv.14 죠스동(3학년 체육) Quest (quest_jawsdong_cleanup, 3-step cleanup + rewards) passed.');
   } finally {
     if (proc) {

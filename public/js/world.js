@@ -777,7 +777,7 @@ const WORLD_DATA = {
     gatherSpots: [],
     desks: [],
     npcs: [
-      { id: "npc_teacher_pe_grade2", name: "2학년 체육선생님", avatar: "teacher", role: "2학년 체육 담당", x: 8, y: 12, questId: "quest_pe_errand", prompt: "대화하기 (SPACE)" },
+      { id: "npc_teacher_pe_grade2", name: "리졍놤(2학년 체육)", avatar: "teacher", role: "2학년 체육", x: 8, y: 12, questId: "quest_pe_errand", prompt: "대화하기 (SPACE)" },
       { id: "npc_teacher_pe_grade3", name: "죠스동(3학년 체육)", avatar: "teacher", role: "3학년 체육", x: 10, y: 19.5, questId: "quest_jawsdong_cleanup", prompt: "대화하기 (SPACE)", dialogue: "체육관 공·체육복 창고에 온 걸 환영한다! 3학년 체육을 담당하는 죠스동 선생님이다! 🏀🏐" }
     ],
     gymMonsters: [
@@ -1208,8 +1208,8 @@ const WORLD_DATA = {
     lostGymBall: {
       id: "quest_lost_gym_ball",
       type: "quest_lost_gym_ball",
-      x: 48,
-      y: 24,
+      x: 54.8,
+      y: 16,
       name: "🏀 분실된 수업용 농구공",
       prompt: "분실된 수업용 농구공 회수하기 (SPACE)"
     }
