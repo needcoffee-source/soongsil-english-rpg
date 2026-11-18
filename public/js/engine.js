@@ -1751,6 +1751,16 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_library_book_of') {
+            if (window.MainApp && typeof window.MainApp.isQuestLibBookOfCollected === 'function' && window.MainApp.isQuestLibBookOfCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_library_book_hi') {
+            if (window.MainApp && typeof window.MainApp.isQuestLibBookHiCollected === 'function' && window.MainApp.isQuestLibBookHiCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           const maxDist = (item.type === 'cafeteria_key_safe' || item.type === 'quest_library_book_of' || item.type === 'quest_gym_key') ? 80 : 64;
           if (dist < maxDist && dist < minDist) {
@@ -2176,6 +2186,26 @@ class GameEngine {
           }
           if (item.type === 'quest_career_book') {
             if (window.MainApp && typeof window.MainApp.isQuestCareerBookCollected === 'function' && window.MainApp.isQuestCareerBookCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_gym_key') {
+            if (window.MainApp && typeof window.MainApp.isQuestGymKeyCollected === 'function' && window.MainApp.isQuestGymKeyCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_gym_team_vests') {
+            if (window.MainApp && typeof window.MainApp.isQuestGymVestsCollected === 'function' && window.MainApp.isQuestGymVestsCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_library_book_of') {
+            if (window.MainApp && typeof window.MainApp.isQuestLibBookOfCollected === 'function' && window.MainApp.isQuestLibBookOfCollected()) {
+              continue;
+            }
+          }
+          if (item.type === 'quest_library_book_hi') {
+            if (window.MainApp && typeof window.MainApp.isQuestLibBookHiCollected === 'function' && window.MainApp.isQuestLibBookHiCollected()) {
               continue;
             }
           }

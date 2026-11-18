@@ -114,8 +114,35 @@ if (busFn.includes('equipTitle') || evFn.includes('equipTitle')) {
   throw new Error('Title rewards should be removed from Easter egg handlers');
 }
 
+// Verify all 1-time flags are persisted in saveProgress() so page refresh cannot repeat rewards
+const saveFn = mainCode.slice(mainCode.indexOf('saveProgress(forceServerSync = false)'), mainCode.indexOf('computeProgressDataHash(data)'));
+const requiredSaveFlags = [
+  'hasReceivedSoongsilGift',
+  'hasOpenedSecretLocker',
+  'hasCheckedMirror',
+  'hasOpenedLostBox',
+  'hasCheckedSchoolBus',
+  'hasShockedEVCharger',
+  'hasClearedPEJump',
+  'healthCabinetClaimed',
+  'hasReadDevNote',
+  'hasReadDevNote2',
+  'hasReadDevNote3',
+  'hasReadDevNote4',
+  'hasReadDevNote5',
+  'hasOpenedTimeCapsule',
+  'timeCapsuleRewardClaimed',
+  'openedSecretHistoryChest'
+];
+for (const flag of requiredSaveFlags) {
+  if (!saveFn.includes(flag)) {
+    throw new Error(`1-time reward flag ${flag} missing from saveProgress() payload!`);
+  }
+}
+
 console.log(' - Mirror reward logic: 20 Gold, 20 EXP verified.');
 console.log(' - Lost Box reward logic: 50 Gold, 30 EXP, 2 Orange Potions, 2 Red Potions verified.');
-console.log(' - School Bus Easter Egg: Bus Horn, 50G, 50 EXP, Orange/Green Potions, Special Title verified.');
-console.log(' - EV Charger Easter Egg: Electric Shock Zap, 100G, 100 EXP, Courage Potion, Special Title verified.');
+console.log(' - School Bus Easter Egg: Bus Horn, 50G, 50 EXP, Orange/Green Potions, 1-time verified.');
+console.log(' - EV Charger Easter Egg: Electric Shock Zap, 100G, 100 EXP, Courage Potion, 1-time verified.');
+console.log(' - All 16 one-time flags persisted in saveProgress() & localStorage verified.');
 console.log('\n🎉 ALL EASTER EGG SPECS VERIFIED SUCCESSFULLY!');

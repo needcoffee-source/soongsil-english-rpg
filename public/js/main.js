@@ -1851,6 +1851,14 @@ class MainApp {
       hasOpenedLostBox: false,
       hasCheckedSchoolBus: false,
       hasShockedEVCharger: false,
+      hasClearedPEJump: false,
+      healthCabinetClaimed: false,
+      hasReadDevNote: false,
+      hasReadDevNote1: false,
+      hasReadDevNote2: false,
+      hasReadDevNote3: false,
+      hasReadDevNote4: false,
+      hasReadDevNote5: false,
       hasClearedDragonRaid: false,
       hasClearedCerberusRaid: false,
       hasClearedClass704: false,
@@ -3016,14 +3024,26 @@ class MainApp {
     }
   }
 
-  // 2. 응급 구급약 & 약초 캐비닛 (비상 물약/허브 지급)
+  // 2. 응급 구급약 & 약초 캐비닛 (비상 물약/허브 최초 1회 지급)
   handleHealthCabinetInteraction() {
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
       window.AudioManager.playSelect();
     }
 
-    if (!this.playerData.healthCabinetClaimed) {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    const cabinetKey = 'soongsil_health_cabinet_' + studentId;
+    let alreadyClaimed = !!(this.playerData && this.playerData.healthCabinetClaimed);
+    try {
+      if (!alreadyClaimed && studentId && localStorage.getItem(cabinetKey) === 'true') {
+        alreadyClaimed = true;
+      }
+    } catch (e) {}
+
+    if (!alreadyClaimed) {
       this.playerData.healthCabinetClaimed = true;
+      try {
+        localStorage.setItem(cabinetKey, 'true');
+      } catch (e) {}
       this.addItem('item_red_potion', '빨간 물약', 1, '🧪', { type: 'consumable', effect: 'HP +10 회복' });
       this.addItem('item_herb', '향긋한 허브', 2, '🌿', { type: 'material', effect: '물약 및 허브티 제작 재료' });
       this.saveProgress();
@@ -4886,7 +4906,26 @@ class MainApp {
       btnComplete.onclick = () => {
         closeModal();
 
-        // Award 빨간회복물약 10개
+        const studentId = (this.playerData && this.playerData.studentId) || 'default';
+        const peJumpKey = 'soongsil_pe_jump_' + studentId;
+        let alreadyCleared = !!(this.playerData && this.playerData.hasClearedPEJump);
+        try {
+          if (!alreadyCleared && studentId && localStorage.getItem(peJumpKey) === 'true') {
+            alreadyCleared = true;
+          }
+        } catch (e) {}
+
+        if (alreadyCleared) {
+          this.showToast('🏃 제자리 점프 5회 완주 성공! (최초 1회 보상 물약은 이미 수령했습니다)', 'info');
+          return;
+        }
+
+        // 최초 1회 보상: 빨간회복물약 10개
+        this.playerData.hasClearedPEJump = true;
+        try {
+          localStorage.setItem(peJumpKey, 'true');
+        } catch (e) {}
+
         this.addItem('item_red_potion', '빨간 물약', 10, '🧪', {
           type: 'consumable',
           slot: 'consumable',
@@ -4894,10 +4933,9 @@ class MainApp {
           effect: '체력 +10 회복'
         });
 
-        this.playerData.hasClearedPEJump = true;
         this.saveProgress(true);
 
-        this.showToast('🧪 숭실고 체육선생님께 빨간회복물약 10개를 받았습니다!', 'success');
+        this.showToast('🧪 숭실고 체육선생님께 빨간회복물약 10개를 받았습니다! (최초 1회 보상)', 'success');
       };
     }
 
@@ -6162,8 +6200,26 @@ class MainApp {
           this.playerData.hasOpenedSecretLocker = !!(saved.hasOpenedSecretLocker || (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true'));
           this.playerData.hasCheckedMirror = !!(saved.hasCheckedMirror || (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true'));
           this.playerData.hasOpenedLostBox = !!(saved.hasOpenedLostBox || (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true'));
-          this.playerData.hasReadDevNote = !!(saved.hasReadDevNote || (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true'));
+          this.playerData.hasCheckedSchoolBus = !!(saved.hasCheckedSchoolBus || (studentId && localStorage.getItem('soongsil_bus_egg_' + studentId) === 'true'));
+          this.playerData.hasShockedEVCharger = !!(saved.hasShockedEVCharger || (studentId && localStorage.getItem('soongsil_ev_egg_' + studentId) === 'true'));
+          this.playerData.hasClearedPEJump = !!(saved.hasClearedPEJump || (studentId && localStorage.getItem('soongsil_pe_jump_' + studentId) === 'true'));
+          this.playerData.healthCabinetClaimed = !!(saved.healthCabinetClaimed || (studentId && localStorage.getItem('soongsil_health_cabinet_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote = !!(saved.hasReadDevNote || saved.hasReadDevNote1 || (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote1 = this.playerData.hasReadDevNote;
           this.playerData.hasReadDevNote2 = !!(saved.hasReadDevNote2 || (studentId && localStorage.getItem('soongsil_dev_note_2_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote3 = !!(saved.hasReadDevNote3 || (studentId && localStorage.getItem('soongsil_dev_note_3_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote4 = !!(saved.hasReadDevNote4 || (studentId && localStorage.getItem('soongsil_dev_note_4_' + studentId) === 'true'));
+          this.playerData.hasReadDevNote5 = !!(saved.hasReadDevNote5 || (studentId && localStorage.getItem('soongsil_dev_note_5_' + studentId) === 'true'));
+          this.playerData.hasOpenedTimeCapsule = !!(saved.hasOpenedTimeCapsule || (studentId && localStorage.getItem('soongsil_time_capsule_opened_' + studentId) === 'true'));
+          this.playerData.timeCapsuleUnlocked = !!(saved.timeCapsuleUnlocked || this.playerData.hasOpenedTimeCapsule);
+          this.playerData.timeCapsuleRewardClaimed = !!(saved.timeCapsuleRewardClaimed || (studentId && localStorage.getItem('soongsil_time_capsule_claimed_' + studentId) === 'true'));
+          this.playerData.timeCapsuleClues = Array.isArray(saved.timeCapsuleClues) ? saved.timeCapsuleClues : [false, false, false, false];
+          this.playerData.virtuePhysiqueDone = !!saved.virtuePhysiqueDone;
+          this.playerData.virtueMannerDone = !!saved.virtueMannerDone;
+          this.playerData.virtueWisdomDone = !!saved.virtueWisdomDone;
+          this.playerData.virtueWisdomLibrary = !!saved.virtueWisdomLibrary;
+          this.playerData.virtueWisdomMuseum = !!saved.virtueWisdomMuseum;
+          this.playerData.virtuesQuestCompleted = !!saved.virtuesQuestCompleted;
           this.playerData.hasClearedFirstBoss = !!(saved.hasClearedFirstBoss || (studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedDragonRaid = !!(saved.hasClearedDragonRaid || (studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true'));
           this.playerData.hasClearedCerberusRaid = !!(saved.hasClearedCerberusRaid || (studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true'));
@@ -6231,8 +6287,20 @@ class MainApp {
           this.playerData.hasOpenedSecretLocker = (studentId && localStorage.getItem('soongsil_secret_locker_' + studentId) === 'true');
           this.playerData.hasCheckedMirror = (studentId && localStorage.getItem('soongsil_mirror_' + studentId) === 'true');
           this.playerData.hasOpenedLostBox = (studentId && localStorage.getItem('soongsil_lost_box_' + studentId) === 'true');
+          this.playerData.hasCheckedSchoolBus = (studentId && localStorage.getItem('soongsil_bus_egg_' + studentId) === 'true');
+          this.playerData.hasShockedEVCharger = (studentId && localStorage.getItem('soongsil_ev_egg_' + studentId) === 'true');
+          this.playerData.hasClearedPEJump = (studentId && localStorage.getItem('soongsil_pe_jump_' + studentId) === 'true');
+          this.playerData.healthCabinetClaimed = (studentId && localStorage.getItem('soongsil_health_cabinet_' + studentId) === 'true');
           this.playerData.hasReadDevNote = (studentId && localStorage.getItem('soongsil_dev_note_1_' + studentId) === 'true');
+          this.playerData.hasReadDevNote1 = this.playerData.hasReadDevNote;
           this.playerData.hasReadDevNote2 = (studentId && localStorage.getItem('soongsil_dev_note_2_' + studentId) === 'true');
+          this.playerData.hasReadDevNote3 = (studentId && localStorage.getItem('soongsil_dev_note_3_' + studentId) === 'true');
+          this.playerData.hasReadDevNote4 = (studentId && localStorage.getItem('soongsil_dev_note_4_' + studentId) === 'true');
+          this.playerData.hasReadDevNote5 = (studentId && localStorage.getItem('soongsil_dev_note_5_' + studentId) === 'true');
+          this.playerData.hasOpenedTimeCapsule = (studentId && localStorage.getItem('soongsil_time_capsule_opened_' + studentId) === 'true');
+          this.playerData.timeCapsuleUnlocked = this.playerData.hasOpenedTimeCapsule;
+          this.playerData.timeCapsuleRewardClaimed = (studentId && localStorage.getItem('soongsil_time_capsule_claimed_' + studentId) === 'true');
+          this.playerData.timeCapsuleClues = [false, false, false, false];
           this.playerData.hasClearedFirstBoss = !!(studentId && localStorage.getItem('soongsil_first_boss_cleared_' + studentId) === 'true');
           this.playerData.hasClearedDragonRaid = !!(studentId && localStorage.getItem('soongsil_dragon_cleared_' + studentId) === 'true');
           this.playerData.hasClearedCerberusRaid = !!(studentId && localStorage.getItem('soongsil_cerberus_cleared_' + studentId) === 'true');
@@ -6358,8 +6426,26 @@ class MainApp {
               hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
               hasCheckedMirror: !!this.playerData.hasCheckedMirror,
               hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
-              hasReadDevNote: !!this.playerData.hasReadDevNote,
+              hasCheckedSchoolBus: !!this.playerData.hasCheckedSchoolBus,
+              hasShockedEVCharger: !!this.playerData.hasShockedEVCharger,
+              hasClearedPEJump: !!this.playerData.hasClearedPEJump,
+              healthCabinetClaimed: !!this.playerData.healthCabinetClaimed,
+              hasReadDevNote: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
+              hasReadDevNote1: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
               hasReadDevNote2: !!this.playerData.hasReadDevNote2,
+              hasReadDevNote3: !!this.playerData.hasReadDevNote3,
+              hasReadDevNote4: !!this.playerData.hasReadDevNote4,
+              hasReadDevNote5: !!this.playerData.hasReadDevNote5,
+              hasOpenedTimeCapsule: !!this.playerData.hasOpenedTimeCapsule,
+              timeCapsuleUnlocked: !!this.playerData.timeCapsuleUnlocked,
+              timeCapsuleRewardClaimed: !!this.playerData.timeCapsuleRewardClaimed,
+              timeCapsuleClues: Array.isArray(this.playerData.timeCapsuleClues) ? this.playerData.timeCapsuleClues : [false, false, false, false],
+              virtuePhysiqueDone: !!this.playerData.virtuePhysiqueDone,
+              virtueMannerDone: !!this.playerData.virtueMannerDone,
+              virtueWisdomDone: !!this.playerData.virtueWisdomDone,
+              virtueWisdomLibrary: !!this.playerData.virtueWisdomLibrary,
+              virtueWisdomMuseum: !!this.playerData.virtueWisdomMuseum,
+              virtuesQuestCompleted: !!this.playerData.virtuesQuestCompleted,
               hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
               hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
               hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
@@ -10833,21 +10919,24 @@ class MainApp {
   // ========================================================
 
   isQuestLibBookPgCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_lib_book_pg')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_library_missing_books'];
-    return !!(q && q.bookPgCollected);
+    return !!(q && (q.bookPgCollected || q.status === 'done'));
   }
 
   isQuestLibBookOfCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_lib_book_of')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_library_missing_books'];
-    return !!(q && q.bookOfCollected);
+    return !!(q && (q.bookOfCollected || q.status === 'done'));
   }
 
   isQuestLibBookHiCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_lib_book_hi')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_library_missing_books'];
-    return !!(q && q.bookHiCollected);
+    return !!(q && (q.bookHiCollected || q.status === 'done'));
   }
 
   // 1번 구현: '오늘의 지혜 명언' 독서대 (일일 명언 감상 및 30분간 경험치 +15% 버프 활성화)
@@ -11252,8 +11341,26 @@ class MainApp {
         hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
         hasCheckedMirror: !!this.playerData.hasCheckedMirror,
         hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
-        hasReadDevNote: !!this.playerData.hasReadDevNote,
+        hasCheckedSchoolBus: !!this.playerData.hasCheckedSchoolBus,
+        hasShockedEVCharger: !!this.playerData.hasShockedEVCharger,
+        hasClearedPEJump: !!this.playerData.hasClearedPEJump,
+        healthCabinetClaimed: !!this.playerData.healthCabinetClaimed,
+        hasReadDevNote: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
+        hasReadDevNote1: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
         hasReadDevNote2: !!this.playerData.hasReadDevNote2,
+        hasReadDevNote3: !!this.playerData.hasReadDevNote3,
+        hasReadDevNote4: !!this.playerData.hasReadDevNote4,
+        hasReadDevNote5: !!this.playerData.hasReadDevNote5,
+        hasOpenedTimeCapsule: !!this.playerData.hasOpenedTimeCapsule,
+        timeCapsuleUnlocked: !!this.playerData.timeCapsuleUnlocked,
+        timeCapsuleRewardClaimed: !!this.playerData.timeCapsuleRewardClaimed,
+        timeCapsuleClues: Array.isArray(this.playerData.timeCapsuleClues) ? this.playerData.timeCapsuleClues : [false, false, false, false],
+        virtuePhysiqueDone: !!this.playerData.virtuePhysiqueDone,
+        virtueMannerDone: !!this.playerData.virtueMannerDone,
+        virtueWisdomDone: !!this.playerData.virtueWisdomDone,
+        virtueWisdomLibrary: !!this.playerData.virtueWisdomLibrary,
+        virtueWisdomMuseum: !!this.playerData.virtueWisdomMuseum,
+        virtuesQuestCompleted: !!this.playerData.virtuesQuestCompleted,
         hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
         hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
         hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
@@ -11317,7 +11424,7 @@ class MainApp {
   computeProgressDataHash(data) {
     if (!data) return '';
     const invSig = (data.inventory || []).map(i => `${i && i.item}:${(i && i.count) || 0}`).join(',');
-    return `${data.level}_${data.exp}_${data.gold}_${data.hp}_${data.isFallen}_${invSig}_${JSON.stringify(data.equipment)}_${data.hasReceivedSoongsilGift}_${data.hasOpenedSecretLocker}_${data.hasCheckedMirror}_${data.hasOpenedLostBox}_${data.hasReadDevNote}_${data.hasReadDevNote2}_${data.hasClearedFirstBoss}_${data.hasClearedDragonRaid}_${data.hasClearedClass704}_${data.hasCafeteriaKey}_${(data.solvedMoralQuestionIds || []).length}_${data.job}_${data.hasEscapedCareerRoom}_${(data.careerClues || []).join(',')}_${(data.historyVitrines || []).join(',')}_${(data.titles || []).join(',')}_${data.equippedTitle}_${data.secretHistoryRoomUnlocked}_${data.openedSecretHistoryChest}_${JSON.stringify(data.quests || {})}`;
+    return `${data.level}_${data.exp}_${data.gold}_${data.hp}_${data.isFallen}_${invSig}_${JSON.stringify(data.equipment)}_${data.hasReceivedSoongsilGift}_${data.hasOpenedSecretLocker}_${data.hasCheckedMirror}_${data.hasOpenedLostBox}_${data.hasCheckedSchoolBus}_${data.hasShockedEVCharger}_${data.hasClearedPEJump}_${data.healthCabinetClaimed}_${data.hasReadDevNote}_${data.hasReadDevNote2}_${data.hasReadDevNote3}_${data.hasReadDevNote4}_${data.hasReadDevNote5}_${data.hasOpenedTimeCapsule}_${data.timeCapsuleRewardClaimed}_${data.hasClearedFirstBoss}_${data.hasClearedDragonRaid}_${data.hasClearedClass704}_${data.hasCafeteriaKey}_${(data.solvedMoralQuestionIds || []).length}_${data.job}_${data.hasEscapedCareerRoom}_${(data.careerClues || []).join(',')}_${(data.historyVitrines || []).join(',')}_${(data.titles || []).join(',')}_${data.equippedTitle}_${data.secretHistoryRoomUnlocked}_${data.openedSecretHistoryChest}_${JSON.stringify(data.quests || {})}`;
   }
 
   getStudentAuthHeaders() {
@@ -11439,7 +11546,15 @@ class MainApp {
       localStorage.removeItem('soongsil_lost_box_' + studentId);
       localStorage.removeItem('soongsil_bus_egg_' + studentId);
       localStorage.removeItem('soongsil_ev_egg_' + studentId);
+      localStorage.removeItem('soongsil_pe_jump_' + studentId);
+      localStorage.removeItem('soongsil_health_cabinet_' + studentId);
       localStorage.removeItem('soongsil_dev_note_1_' + studentId);
+      localStorage.removeItem('soongsil_dev_note_2_' + studentId);
+      localStorage.removeItem('soongsil_dev_note_3_' + studentId);
+      localStorage.removeItem('soongsil_dev_note_4_' + studentId);
+      localStorage.removeItem('soongsil_dev_note_5_' + studentId);
+      localStorage.removeItem('soongsil_time_capsule_opened_' + studentId);
+      localStorage.removeItem('soongsil_time_capsule_claimed_' + studentId);
       localStorage.removeItem('soongsil_first_boss_cleared_' + studentId);
       localStorage.removeItem('soongsil_dragon_cleared_' + studentId);
       localStorage.removeItem('soongsil_cerberus_cleared_' + studentId);
@@ -12631,13 +12746,15 @@ class MainApp {
     }
   }
 
-  // 📜 교무실 탕비실 떨어진 개발자노트 이스터에그 (제3편)
+  // 📜 교무실 탕비실 떨어진 개발자노트 (제3편)
   handleDevNote3Interaction() {
     const studentId = (this.playerData && this.playerData.studentId) || 'default';
     const noteKey = 'soongsil_dev_note_3_' + studentId;
-    let alreadyRead = false;
+    let alreadyRead = !!(this.playerData && this.playerData.hasReadDevNote3);
     try {
-      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+      if (!alreadyRead && studentId && localStorage.getItem(noteKey) === 'true') {
+        alreadyRead = true;
+      }
     } catch (e) {}
 
     if (window.AudioManager && window.AudioManager.playSelect) {
@@ -12877,13 +12994,15 @@ class MainApp {
     modal.classList.remove('hidden');
   }
 
-  // 📜 정문 앞 도로 떨어진 개발자노트 이스터에그 (제4편)
+  // 📜 3층 복도 떨어진 개발자노트 (제4편)
   handleDevNote4Interaction() {
     const studentId = (this.playerData && this.playerData.studentId) || 'default';
     const noteKey = 'soongsil_dev_note_4_' + studentId;
-    let alreadyRead = false;
+    let alreadyRead = !!(this.playerData && this.playerData.hasReadDevNote4);
     try {
-      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+      if (!alreadyRead && studentId && localStorage.getItem(noteKey) === 'true') {
+        alreadyRead = true;
+      }
     } catch (e) {}
 
     if (window.AudioManager && window.AudioManager.playSelect) {
@@ -13480,13 +13599,15 @@ class MainApp {
     this.showToast('💖 갓준철 선생님 책상에 [' + cleanNote + '] 쪽지를 살포시 붙였습니다!', 'success');
   }
 
-// 📜 진로실 떨어진 개발자노트 이스터에그 (제2편)
+// 📜 진로실 떨어진 개발자노트 (제2편)
   handleDevNote2Interaction() {
     const studentId = (this.playerData && this.playerData.studentId) || 'default';
     const noteKey = 'soongsil_dev_note_2_' + studentId;
-    let alreadyRead = false;
+    let alreadyRead = !!(this.playerData && this.playerData.hasReadDevNote2);
     try {
-      alreadyRead = !!(studentId && localStorage.getItem(noteKey) === 'true');
+      if (!alreadyRead && studentId && localStorage.getItem(noteKey) === 'true') {
+        alreadyRead = true;
+      }
     } catch (e) {}
 
     if (window.AudioManager && window.AudioManager.playSelect) {
@@ -13535,7 +13656,7 @@ class MainApp {
   handleDevNoteInteraction() {
     const studentId = (this.playerData && this.playerData.studentId) || 'default';
     const noteKey = 'soongsil_dev_note_1_' + studentId;
-    let alreadyRead = !!(this.playerData && this.playerData.hasReadDevNote1);
+    let alreadyRead = !!(this.playerData && (this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1));
     try {
       if (!alreadyRead && studentId && localStorage.getItem(noteKey) === 'true') {
         alreadyRead = true;
@@ -13566,7 +13687,10 @@ class MainApp {
       "(※ 빛바랜 양피지 귀퉁이에 적힌 글귀... 제2편으로 이어집니다.)\"";
 
     if (!alreadyRead) {
-      if (this.playerData) this.playerData.hasReadDevNote1 = true;
+      if (this.playerData) {
+        this.playerData.hasReadDevNote = true;
+        this.playerData.hasReadDevNote1 = true;
+      }
       try {
         localStorage.setItem(noteKey, 'true');
       } catch (e) {}
@@ -14164,24 +14288,27 @@ class MainApp {
   }
 
   isQuestSocialBookCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_okchohan_textbook')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_okchohan_social'];
     if (!q) return false;
-    return !!q.textbookCollected;
+    return !!(q.textbookCollected || q.status === 'done');
   }
 
   isQuestUsbCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_yosunyu_usb')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_yosunyu_info'];
     if (!q) return false;
-    return !!q.usbCollected;
+    return !!(q.usbCollected || q.status === 'done');
   }
 
   isQuestCareerBookCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_career_guidebook')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_kwimjinsyong_career'];
     if (!q) return false;
-    return !!q.guidebookCollected;
+    return !!(q.guidebookCollected || q.status === 'done');
   }
 
   isQuestGymKeyCollected() {
@@ -14191,11 +14318,13 @@ class MainApp {
   }
 
   isQuestGymBallCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_lost_pe_ball')) return true;
     const q = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_jawsdong_cleanup'] : null;
     return !!(q && (q.ballRecovered || q.status === 'done'));
   }
 
   isQuestGymVestsCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_wet_team_vests')) return true;
     const q = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_jawsdong_cleanup'] : null;
     return !!(q && (q.vestsRecovered || q.status === 'done'));
   }
@@ -14470,17 +14599,19 @@ class MainApp {
   }
 
   isQuestSketchbookCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_kimmijin_sketchbook')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_kimmijin_art'];
     if (!q) return false;
-    return !!q.sketchbookCollected;
+    return !!(q.sketchbookCollected || q.status === 'done');
   }
 
   isQuestMemoCollected() {
+    if (typeof this.hasItem === 'function' && this.hasItem('item_joshua_memo')) return true;
     if (!this.playerData || !this.playerData.quests) return false;
     const q = this.playerData.quests['quest_joshua_intro'];
     if (!q) return false;
-    return !!q.memoCollected;
+    return !!(q.memoCollected || q.status === 'done');
   }
 
   openQuestDispatchModal(questId) {
@@ -15329,6 +15460,10 @@ class MainApp {
           if (!this.playerData.timeCapsuleUnlocked) {
             this.playerData.timeCapsuleUnlocked = true;
             this.playerData.hasOpenedTimeCapsule = true;
+            const studentId = (this.playerData && this.playerData.studentId) || 'default';
+            try {
+              localStorage.setItem('soongsil_time_capsule_opened_' + studentId, 'true');
+            } catch (e) {}
             this.saveProgress();
           }
           if (window.AudioManager && window.AudioManager.playFanfare) {
@@ -15352,7 +15487,17 @@ class MainApp {
   }
 
   claimTimeCapsuleSuccess() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    if (this.playerData.timeCapsuleRewardClaimed) {
+      this.openTimeCapsuleOpenedModal(true);
+      return;
+    }
     this.playerData.hasOpenedTimeCapsule = true;
+    this.playerData.timeCapsuleRewardClaimed = true;
+    try {
+      localStorage.setItem('soongsil_time_capsule_opened_' + studentId, 'true');
+      localStorage.setItem('soongsil_time_capsule_claimed_' + studentId, 'true');
+    } catch (e) {}
 
     if (!this.playerData.titles) this.playerData.titles = [];
     const tId = 'title_time_connector';
@@ -15621,7 +15766,21 @@ class MainApp {
   }
 
   claimTimeCapsuleFromVicePrincipal() {
+    const studentId = (this.playerData && this.playerData.studentId) || 'default';
+    let alreadyClaimed = !!(this.playerData && this.playerData.timeCapsuleRewardClaimed);
+    try {
+      if (!alreadyClaimed && studentId && localStorage.getItem('soongsil_time_capsule_claimed_' + studentId) === 'true') {
+        alreadyClaimed = true;
+      }
+    } catch (e) {}
+    if (alreadyClaimed) {
+      this.playerData.timeCapsuleRewardClaimed = true;
+      return;
+    }
     this.playerData.timeCapsuleRewardClaimed = true;
+    try {
+      localStorage.setItem('soongsil_time_capsule_claimed_' + studentId, 'true');
+    } catch (e) {}
 
     if (!this.playerData.titles) this.playerData.titles = [];
     const tId = 'title_time_connector';
