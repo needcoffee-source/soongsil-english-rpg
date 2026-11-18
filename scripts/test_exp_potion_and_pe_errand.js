@@ -67,7 +67,7 @@ async function runTests() {
   assert(gymPeTeacher.x >= 1 && gymPeTeacher.x <= 13 && gymPeTeacher.y >= 10 && gymPeTeacher.y <= 16, '2학년 체육선생님 must be on Gym stage');
 
   const gymPeTeacher3 = (WD.classroom_gym.npcs || []).find(n => n.id === 'npc_teacher_pe_grade3');
-  assert(gymPeTeacher3 && gymPeTeacher3.name === '3학년 체육선생님', '3학년 체육선생님 must be placed in classroom_gym.npcs');
+  assert(gymPeTeacher3 && gymPeTeacher3.name === '죠스동(3학년 체육)', '죠스동(3학년 체육) must be placed in classroom_gym.npcs');
   assert(gymPeTeacher3.x >= 1 && gymPeTeacher3.x <= 13 && gymPeTeacher3.y >= 18 && gymPeTeacher3.y <= 23, '3학년 체육선생님 must be inside Gym ball/equipment storage');
 
   assert(serverJs.includes("'item_tiny_exp_potion'") && mainJs.includes("'item_tiny_exp_potion'"), 'item_tiny_exp_potion registered on client & server');
