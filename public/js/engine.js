@@ -1354,6 +1354,19 @@ class GameEngine {
             minDist = gDist;
           }
         }
+        // 8. 🏀 분실된 수업용 농구공 (죠스동 선생님 Lv.14 정돈 퀘스트)
+        if (gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
+          const lbDist = Math.hypot((gymData.lostGymBall.x + 0.5) * 32 - this.player.x, (gymData.lostGymBall.y + 0.5) * 32 - this.player.y);
+          if (lbDist < 64 && lbDist < minDist) {
+            closest = {
+              type: 'quest_lost_gym_ball',
+              data: gymData.lostGymBall,
+              name: gymData.lostGymBall.name || '🏀 분실된 수업용 농구공',
+              prompt: gymData.lostGymBall.prompt || '분실된 수업용 농구공 회수하기 (SPACE)'
+            };
+            minDist = lbDist;
+          }
+        }
       }
     } else if (this.player.room === 'playground') {
       const pg = WORLD_DATA.playground;
@@ -1733,6 +1746,11 @@ class GameEngine {
               continue;
             }
           }
+          if (item.type === 'quest_gym_team_vests') {
+            if (window.MainApp && typeof window.MainApp.isQuestGymVestsCollected === 'function' && window.MainApp.isQuestGymVestsCollected()) {
+              continue;
+            }
+          }
           const dist = Math.hypot((item.x + 0.5) * 32 - this.player.x, (item.y + 0.5) * 32 - this.player.y);
           const maxDist = (item.type === 'cafeteria_key_safe' || item.type === 'quest_library_book_of' || item.type === 'quest_gym_key') ? 80 : 64;
           if (dist < maxDist && dist < minDist) {
@@ -2057,6 +2075,11 @@ class GameEngine {
         }
         if (gymData.guardTeacher && Math.hypot(gymData.guardTeacher.x * 32 - x, (gymData.guardTeacher.y + 0.5) * 32 - y) < 56) {
           return { type: 'gym_guard_teacher', name: gymData.guardTeacher.name, prompt: gymData.guardTeacher.prompt };
+        }
+        if (gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
+          if (Math.hypot((gymData.lostGymBall.x + 0.5) * 32 - x, (gymData.lostGymBall.y + 0.5) * 32 - y) < 56) {
+            return { type: 'quest_lost_gym_ball', data: gymData.lostGymBall, name: gymData.lostGymBall.name, prompt: gymData.lostGymBall.prompt };
+          }
         }
       }
     } else {
@@ -16903,6 +16926,12 @@ class GameEngine {
     // 8-B. 👮 배움터 지킴이 선생님 (숭실중학교 정문 오른쪽: tx: 10, ty: 33)
     this.drawHighResGuardTeacher(10 * 32, 33 * 32);
 
+    // 8-C. 🏀 분실된 수업용 농구공 (tx: 48, ty: 24)
+    const gymData = WORLD_DATA.playground_gym;
+    if (gymData && gymData.lostGymBall && (!window.MainApp || typeof window.MainApp.isQuestGymBallCollected !== 'function' || !window.MainApp.isQuestGymBallCollected())) {
+      this.drawLostGymBall(gymData.lostGymBall.x * 32, gymData.lostGymBall.y * 32);
+    }
+
     // 9. East Exit Gate to Soccer Field (tx: 50..55, ty: 28..32)
     const exitX = 51 * 32;
     const exitY = 28 * 32;
@@ -19460,10 +19489,87 @@ class GameEngine {
 
     // 4. 우측 대형 실내 농구 코트 & 관람석 & 골대
     this.drawGymBasketballCourt();
+    this.drawQuestGymTeamVests(29 * 32, 4.5 * 32);
 
     // 5. 하단 광장 연결 유리 출입문 프레임
     this.drawGymEntranceDoor();
 
+    ctx.restore();
+  }
+
+  drawLostGymBall(x, y) {
+    const ctx = this.ctx;
+    ctx.save();
+    const bob = Math.abs(Math.sin(Date.now() / 220)) * 4;
+    const by = y - bob;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 26, 11, 4.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const pulse = 0.22 + Math.sin(Date.now() / 180) * 0.1;
+    ctx.fillStyle = `rgba(249, 115, 22, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 14, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 14, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    this.drawSharpLabel(x + 16, by - 4, '🏀 분실된 수업용 농구공', {
+      bgColor: 'rgba(124, 45, 18, 0.94)',
+      borderColor: '#fb923c',
+      textColor: '#ffedd5',
+      fontSize: 10,
+      paddingX: 7,
+      height: 17
+    });
+    ctx.restore();
+  }
+
+  drawQuestGymTeamVests(x, y) {
+    if (window.MainApp && typeof window.MainApp.isQuestGymVestsCollected === 'function' && window.MainApp.isQuestGymVestsCollected()) {
+      return;
+    }
+    const ctx = this.ctx;
+    ctx.save();
+    const bob = Math.sin(Date.now() / 240) * 2;
+    const by = y + bob;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 24, 13, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    const pulse = 0.22 + Math.sin(Date.now() / 190) * 0.1;
+    ctx.fillStyle = `rgba(250, 204, 21, ${pulse})`;
+    ctx.beginPath();
+    ctx.arc(x + 16, by + 13, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Stacked neon yellow & blue team vests
+    ctx.fillStyle = '#2563eb';
+    ctx.fillRect(x + 6, by + 10, 12, 10);
+    ctx.fillStyle = '#eab308';
+    ctx.fillRect(x + 12, by + 7, 13, 11);
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(x + 12, by + 7, 13, 11);
+
+    this.drawSharpLabel(x + 16, by - 4, '🦺 땀에 젖은 팀 조끼 다발', {
+      bgColor: 'rgba(30, 58, 138, 0.94)',
+      borderColor: '#facc15',
+      textColor: '#fef08a',
+      fontSize: 10,
+      paddingX: 7,
+      height: 17
+    });
     ctx.restore();
   }
 

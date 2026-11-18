@@ -742,6 +742,8 @@ const ALL_GAME_ITEMS = {
   // 7. Legendary Season Boss Artifacts & Rewards & New Potions
   'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
   'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } },
+  'item_lost_pe_ball': { name: '분실된 수업용 농구공', icon: '🏀', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 수업 농구공' } },
+  'item_wet_team_vests': { name: '땀에 젖은 팀 조끼 다발', icon: '🦺', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 팀 조끼 다발' } },
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
@@ -1756,6 +1758,45 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
       { type: 'exp', amount: 300, label: '🌟 300 EXP (경험치)' },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 30, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x30 (개당 EXP +50)' }
     ]
+  },
+  'quest_jawsdong_cleanup': {
+    id: 'quest_jawsdong_cleanup',
+    teacherId: 'npc_teacher_pe_grade3',
+    teacherName: '죠스동(3학년 체육)',
+    teacherRole: '3학년 체육 · 공·체육복 창고 관리',
+    teacherAvatar: '👨‍🏫',
+    teacherSeat: '체육관 공·체육복 창고',
+    minLevel: 14,
+    title: '🏀 흩어진 체육 용구 회수 & 창고 재정비',
+    story: '폭주 농구 몬스터들이 날뛰는 바람에 수업용 공과 팀 조끼, 라바콘이 체육관 안팎에 엉망으로 흩어졌단다!\n\n1. 체육관 야외 광장(출구와 운동장 게이트 사이)에 굴러간 🏀 [분실된 수업용 농구공] 주워오기\n2. 체육관 실내 코트 관람석(상단 스탠드 앞)에 흩어진 🦺 [땀에 젖은 팀 조끼 다발] 회수하기\n3. 공·체육복 창고 내부 [📦 창고 선반]과 상호작용해 8단원 퀴즈 1문제를 풀고 깔끔하게 분류·정돈하기\n\n모두 마치고 돌아오면 특급 경험치 물약과 월계수 잎, 골드·경험치를 선물하마!',
+    inProgressStory: '아직 정돈이 끝나지 않았구나! 🏀🏐\n\n1. 야외 체육관 광장에 굴러간 🏀 [분실된 수업용 농구공] 회수\n2. 실내 농구 코트 상단 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수\n3. 이 창고 안쪽의 [📦 창고 선반]을 조사해 8단원 문제를 풀고 용구 분류·정돈하기\n\n세 가지를 모두 마친 뒤 나에게 보고해 주렴!',
+    completeStory: '오오! 야외 광장까지 굴러간 농구공과 관람석의 팀 조끼까지 모두 찾아와 창고 선반에 완벽히 정돈했구나! 👏\n덕분에 3학년 체육 수업을 바로 시작할 수 있겠어. 고맙다! 약속한 정돈 보상을 수여하마!',
+    objectives: [
+      {
+        id: 'jawsdong_ball',
+        text: '체육관 야외 광장에 굴러간 🏀 [분실된 수업용 농구공] 주워오기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.ballRecovered ? 1 : 0)
+      },
+      {
+        id: 'jawsdong_vests',
+        text: '체육관 실내 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.vestsRecovered ? 1 : 0)
+      },
+      {
+        id: 'jawsdong_sort',
+        text: '공·체육복 창고 [📦 창고 선반]에서 8단원 퀴즈 풀고 분류·정돈하기',
+        targetCount: 1,
+        getCount: (quest) => (quest && quest.storageSorted ? 1 : 0)
+      }
+    ],
+    rewards: [
+      { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
+      { type: 'gold', amount: 200, label: '🪙 200 G (골드)' },
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 20, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x20 (개당 EXP +50)' },
+      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 3, icon: '🏵️', meta: { type: 'material', effect: 'Lv.15 승리의 월계관 메달 제작 핵심 재료' }, label: '🏵️ 황금 월계수 잎 x3 (Lv.15 장신구 재료)' }
+    ]
   }
 };
 window.QUEST_DEFINITIONS = QUEST_DEFINITIONS;
@@ -2674,6 +2715,48 @@ class MainApp {
         });
         return;
       }
+      const qClean = this.playerData && this.playerData.quests && this.playerData.quests['quest_jawsdong_cleanup'];
+      if (qClean && qClean.status === 'in_progress' && !qClean.storageSorted) {
+        if (!qClean.ballRecovered || !qClean.vestsRecovered) {
+          const missing = [];
+          if (!qClean.ballRecovered) missing.push('• 체육관 야외 광장: 🏀 [분실된 수업용 농구공]');
+          if (!qClean.vestsRecovered) missing.push('• 실내 농구장 상단 관람석 앞: 🦺 [땀에 젖은 팀 조끼 다발]');
+          this.showGameDialog(
+            '📦 공·체육복 창고 선반 (용구 부족)',
+            `아직 흩어진 체육 용구를 모두 회수하지 못했습니다!\n먼저 아래 용구를 모두 찾아온 뒤 선반을 정돈해 주세요:\n\n${missing.join('\n')}`,
+            '📦'
+          );
+          return;
+        }
+        const u8Q = (this.quizManager && typeof this.quizManager.getRandomQuestion === 'function')
+          ? this.quizManager.getRandomQuestion('8단원')
+          : null;
+        const quizTitle = '📦 [Lv.14 체육관 정돈] 8단원 용구 분류 퀴즈';
+        const quizQuestion = u8Q
+          ? `[8단원 테스트] 문제를 맞히고 회수한 농구공과 팀 조끼를 창고 선반에 정돈하세요!\n\n${u8Q.question}`
+          : '다음 8단원(Give Your Hand, Give Your Heart) 핵심 문장의 빈칸에 알맞은 단어는?\n\n"Let\'s _____ a helping hand to our neighbors in need!"';
+        const quizOptions = (u8Q && Array.isArray(u8Q.options) && u8Q.options.length >= 2)
+          ? u8Q.options
+          : ['1. give', '2. break', '3. hide', '4. forget'];
+        const quizAnswer = (u8Q && u8Q.answer) ? u8Q.answer : '1. give';
+        this.openAdventureQuizModal({
+          title: quizTitle,
+          question: quizQuestion,
+          options: quizOptions,
+          answerPrefix: quizAnswer,
+          successFeedback: '📦 ✨ 정답입니다! 회수해 온 수업용 농구공과 팀 조끼, 라바콘을 종목별로 반듯하게 분류·정돈했습니다!\n이제 바로 옆 [죠스동(3학년 체육)] 선생님께 완료 보고를 드리세요!',
+          onSolved: () => {
+            qClean.storageSorted = true;
+            this.saveProgress(true);
+            this.updateQuestTracker();
+            if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
+              window.AudioManager.playFanfare();
+            }
+            this.showToast('🎉 [체육관 정돈 완료] 창고 선반 재정비 성공! 죠스동 선생님께 보고하세요!', 'success');
+          }
+        });
+        return;
+      }
       this.showGameDialog(
         '📦 창고',
         `"강연 무대 아래쪽 창고입니다.\n농구공·배구공·피구공 보관함과 팀 조끼(유니폼), 접이식 체조 매트가 종목별로 정갈하게 수납되어 있습니다."`,
@@ -2824,6 +2907,10 @@ class MainApp {
       this.handleQuestCareerBookPickup(target.data || target);
     } else if (target.type === 'quest_gym_key') {
       this.handleStaffGymKeyInteraction(target.data || target);
+    } else if (target.type === 'quest_lost_gym_ball') {
+      this.handleQuestGymBallPickup(target.data || target);
+    } else if (target.type === 'quest_gym_team_vests') {
+      this.handleQuestGymVestsPickup(target.data || target);
     } else if (target.type === 'desk_juncheol') {
       this.handleJuncheolDeskInteraction();
     } else if (target.type === 'desk_sangdae') {
@@ -13970,6 +14057,7 @@ class MainApp {
     if (id === 'npc_teacher_yosunyu') questId = 'quest_yosunyu_info';
     if (id === 'npc_teacher_kwimjinsyong') questId = 'quest_kwimjinsyong_career';
     if (id === 'npc_librarian') questId = 'quest_library_missing_books';
+    if (id === 'npc_teacher_pe_grade3') questId = 'quest_jawsdong_cleanup';
     if (id === 'npc_teacher_pe_grade2') {
       const q1 = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_pe_errand'] : null;
       if (!q1 || q1.status !== 'done') {
@@ -14039,6 +14127,76 @@ class MainApp {
     if (typeof this.hasItem === 'function' && this.hasItem('item_gym_key')) return true;
     const q = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_pe_errand'] : null;
     return !!(q && (q.keyCollected || q.status === 'done'));
+  }
+
+  isQuestGymBallCollected() {
+    const q = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_jawsdong_cleanup'] : null;
+    return !!(q && (q.ballRecovered || q.status === 'done'));
+  }
+
+  isQuestGymVestsCollected() {
+    const q = (this.playerData && this.playerData.quests) ? this.playerData.quests['quest_jawsdong_cleanup'] : null;
+    return !!(q && (q.vestsRecovered || q.status === 'done'));
+  }
+
+  handleQuestGymBallPickup() {
+    if (!this.playerData) return;
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const q = this.playerData.quests['quest_jawsdong_cleanup'];
+    if (!q || q.status !== 'in_progress') {
+      this.showGameDialog(
+        '🏀 분실된 수업용 농구공',
+        '누군가 체육관 밖 광장까지 굴려버린 수업용 농구공입니다.\n\n체육관 안쪽 공·체육복 창고의 👨‍🏫 [죠스동(3학년 체육)] 선생님께 먼저 의뢰를 수락하세요! (Lv.14+)',
+        '🏀'
+      );
+      return;
+    }
+    if (q.ballRecovered) {
+      this.showToast('이미 분실된 수업용 농구공을 회수했습니다.', 'info');
+      return;
+    }
+    q.ballRecovered = true;
+    this.addItem('item_lost_pe_ball', '분실된 수업용 농구공', 1, '🏀', {
+      type: 'quest',
+      isQuestItem: true,
+      effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 수업 농구공'
+    });
+    this.saveProgress(true);
+    this.updateQuestTracker();
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+    this.showToast('🏀 체육관 야외 광장에서 [분실된 수업용 농구공]을 회수했습니다!', 'success');
+  }
+
+  handleQuestGymVestsPickup() {
+    if (!this.playerData) return;
+    if (!this.playerData.quests) this.playerData.quests = {};
+    const q = this.playerData.quests['quest_jawsdong_cleanup'];
+    if (!q || q.status !== 'in_progress') {
+      this.showGameDialog(
+        '🦺 땀에 젖은 팀 조끼 다발',
+        '관람석 앞에 아무렇게나 벗어둔 팀 조끼 다발입니다.\n\n체육관 안쪽 공·체육복 창고의 👨‍🏫 [죠스동(3학년 체육)] 선생님께 먼저 의뢰를 수락하세요! (Lv.14+)',
+        '🦺'
+      );
+      return;
+    }
+    if (q.vestsRecovered) {
+      this.showToast('이미 팀 조끼 다발을 회수했습니다.', 'info');
+      return;
+    }
+    q.vestsRecovered = true;
+    this.addItem('item_wet_team_vests', '땀에 젖은 팀 조끼 다발', 1, '🦺', {
+      type: 'quest',
+      isQuestItem: true,
+      effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 팀 조끼 다발'
+    });
+    this.saveProgress(true);
+    this.updateQuestTracker();
+    if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
+      window.AudioManager.playCollect();
+    }
+    this.showToast('🦺 실내 농구장 관람석 앞에서 [땀에 젖은 팀 조끼 다발]을 회수했습니다!', 'success');
   }
 
   handleStaffGymKeyInteraction() {

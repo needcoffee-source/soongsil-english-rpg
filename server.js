@@ -2121,7 +2121,9 @@ const ALL_GAME_ITEMS = {
   'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
   'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
   'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
-  'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } }
+  'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } },
+  'item_lost_pe_ball': { name: '분실된 수업용 농구공', icon: '🏀', meta: { type: 'quest', isQuestItem: true, effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 수업 농구공' } },
+  'item_wet_team_vests': { name: '땀에 젖은 팀 조끼 다발', icon: '🦺', meta: { type: 'quest', isQuestItem: true, effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 팀 조끼 다발' } }
 };
 
 function computeStudentCombatStats(record = {}) {
@@ -2418,6 +2420,17 @@ const SERVER_QUEST_DEFINITIONS = {
     rewards: [
       { type: 'exp', amount: 300 },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 30, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } }
+    ]
+  },
+  'quest_jawsdong_cleanup': {
+    minLevel: 14,
+    isComplete: (q) => (!!q.ballRecovered && !!q.vestsRecovered && !!q.storageSorted),
+    cleanupItems: ['item_lost_pe_ball', 'item_wet_team_vests'],
+    rewards: [
+      { type: 'exp', amount: 350 },
+      { type: 'gold', amount: 200 },
+      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 20, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
+      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 3, icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } }
     ]
   }
 };

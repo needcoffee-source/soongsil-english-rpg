@@ -778,7 +778,7 @@ const WORLD_DATA = {
     desks: [],
     npcs: [
       { id: "npc_teacher_pe_grade2", name: "2학년 체육선생님", avatar: "teacher", role: "2학년 체육 담당", x: 8, y: 12, questId: "quest_pe_errand", prompt: "대화하기 (SPACE)" },
-      { id: "npc_teacher_pe_grade3", name: "죠스동(3학년 체육)", avatar: "teacher", role: "3학년 체육", x: 10, y: 19.5, prompt: "대화하기 (SPACE)", dialogue: "체육관 공·체육복 창고에 온 걸 환영한다! 3학년 체육을 담당하는 죠스동 선생님이다! 🏀🏐\n지금 다음 체육 수업을 앞두고 체육관 정돈 일손이 부족하던 참인데, 14레벨이 되면 내 특별한 정돈 임무를 도와주렴!" }
+      { id: "npc_teacher_pe_grade3", name: "죠스동(3학년 체육)", avatar: "teacher", role: "3학년 체육", x: 10, y: 19.5, questId: "quest_jawsdong_cleanup", prompt: "대화하기 (SPACE)", dialogue: "체육관 공·체육복 창고에 온 걸 환영한다! 3학년 체육을 담당하는 죠스동 선생님이다! 🏀🏐" }
     ],
     gymMonsters: [
       {
@@ -895,7 +895,8 @@ const WORLD_DATA = {
     interactive: [
       { id: "gym_stage_podium", type: "gym_stage_podium", x: 11, y: 13, name: "🎤 강연 무대", prompt: "강연 무대 살펴보기 (SPACE)" },
       { id: "gym_broadcast_storage", type: "gym_broadcast_storage", x: 6, y: 6, name: "🎛️ 체육관 방송실", prompt: "체육관 방송실 살펴보기 (SPACE)" },
-      { id: "gym_equipment_storage", type: "gym_equipment_storage", x: 6, y: 20, name: "📦 창고", prompt: "창고 살펴보기 (SPACE)" }
+      { id: "gym_equipment_storage", type: "gym_equipment_storage", x: 6, y: 20, name: "📦 창고", prompt: "창고 선반 정돈·살펴보기 (SPACE)" },
+      { id: "quest_gym_team_vests", type: "quest_gym_team_vests", x: 29, y: 4.5, name: "🦺 땀에 젖은 팀 조끼 다발", prompt: "팀 조끼 다발 회수하기 (SPACE)" }
     ]
   },
   classroom_204: { name: "2학년 4반", exitDoor: { x: 15, y: 17 }, blackboard: { x: 15, y: 2, name: "칠판", prompt: "" }, teacherDesk: null, gatherSpots: [], desks: [], npcs: [], interactive: [] },
@@ -1203,6 +1204,14 @@ const WORLD_DATA = {
       role: "숭실 정문 지킴이",
       avatar: "teacher",
       prompt: "언덕길 오르기 (SPACE)"
+    },
+    lostGymBall: {
+      id: "quest_lost_gym_ball",
+      type: "quest_lost_gym_ball",
+      x: 48,
+      y: 24,
+      name: "🏀 분실된 수업용 농구공",
+      prompt: "분실된 수업용 농구공 회수하기 (SPACE)"
     }
   },
   playground: {
