@@ -654,187 +654,6 @@ window.ITEM_CODEX_DATABASE = [
   }
 ];
 
-// =========================================================================
-// 👾 MONSTER CODEX MASTER DATABASE (몬스터 도감 — 실내 체육관 5종 및 지역별 몬스터)
-// =========================================================================
-window.MONSTER_CODEX_DATABASE = [
-  // 1. 실내 체육관 농구 코트 몬스터 5종 (Lv.15 · 8단원 퀴즈)
-  {
-    id: 'gym_mob_dunk_1',
-    name: '불멸의 덩크 머신 (좌측 코트)',
-    icon: '🏀',
-    category: 'monster',
-    regionBadge: '체육관 Lv.15',
-    tierBadge: '실내 코트 일반',
-    tierColor: '#dc2626',
-    effect: '❤️ HP 420 · ⚔️ ATK 65 · 🛡️ DEF 26 · 💥 반격 58 (8단원 퀴즈)',
-    source: '🏛️ 숭실 체육관 실내 농구장 좌측 페인트존 (리젠 15초 · 보상 55G / 135 EXP)',
-    drops: '황금 월계수 잎(45%), 초소형 경험치 물약(50%), 맑은 물약(18%), 엘릭서(4%), 불멸의 에어 농구화(10%)'
-  },
-  {
-    id: 'gym_mob_dunk_3',
-    name: '불멸의 덩크 머신 (우측 코트)',
-    icon: '🏀',
-    category: 'monster',
-    regionBadge: '체육관 Lv.15',
-    tierBadge: '실내 코트 일반',
-    tierColor: '#dc2626',
-    effect: '❤️ HP 420 · ⚔️ ATK 65 · 🛡️ DEF 26 · 💥 반격 58 (8단원 퀴즈)',
-    source: '🏛️ 숭실 체육관 실내 농구장 우측 상단 코트 (리젠 15초 · 보상 55G / 135 EXP)',
-    drops: '황금 월계수 잎(45%), 초소형 경험치 물약(50%), 맑은 물약(18%), 엘릭서(4%), 불멸의 에어 농구화(10%)'
-  },
-  {
-    id: 'gym_mob_dunk_2',
-    name: '불멸의 백보드 분쇄기',
-    icon: '🏀',
-    category: 'monster',
-    regionBadge: '체육관 Lv.15',
-    tierBadge: '실내 코트 중장갑',
-    tierColor: '#ea580c',
-    effect: '❤️ HP 420 · ⚔️ ATK 65 · 🛡️ DEF 26 · 💥 반격 58 (8단원 퀴즈)',
-    source: '🏛️ 숭실 체육관 실내 농구장 우측 하단 골대 앞 (리젠 15초 · 보상 55G / 135 EXP)',
-    drops: '황금 월계수 잎(45%), 초소형 경험치 물약(50%), 맑은 물약(18%), 엘릭서(4%), 불멸의 에어 농구화(10%)'
-  },
-  {
-    id: 'gym_mob_whistle_1',
-    name: '심연의 심판 골렘',
-    icon: '📯',
-    category: 'monster',
-    regionBadge: '체육관 Lv.15',
-    tierBadge: '실내 코트 상급',
-    tierColor: '#0284c7',
-    effect: '❤️ HP 460 · ⚔️ ATK 70 · 🛡️ DEF 30 · 💥 반격 65 (8단원 퀴즈)',
-    source: '🏛️ 숭실 체육관 실내 농구장 중앙 관람석 앞 (리젠 18초 · 보상 65G / 155 EXP)',
-    drops: '황금 월계수 잎(45%), 초소형 경험치 물약(50%), 맑은 물약(18%), 엘릭서(4%), 불멸의 에어 농구화(10%)'
-  },
-  {
-    id: 'gym_mob_captain_elite',
-    name: '불멸의 실내 코트 제왕',
-    icon: '🏆',
-    category: 'monster',
-    regionBadge: '체육관 Lv.15',
-    tierBadge: '실내 코트 엘리트',
-    tierColor: '#d97706',
-    effect: '❤️ HP 580 · ⚔️ ATK 80 · 🛡️ DEF 34 · 💥 반격 75 (8단원 퀴즈)',
-    source: '🏛️ 숭실 체육관 실내 농구장 중앙 센터서클 (리젠 25초 · 보상 95G / 220 EXP)',
-    drops: '황금 월계수 잎 1~2개(60%), 초소형 경험치 물약(50%), 맑은 물약(28%), 엘릭서(8%), 불멸의 에어 농구화(15%)'
-  },
-
-  // 2. 학생 급식실 몬스터 (Lv.10~12 · 7단원 퀴즈)
-  {
-    id: 'caf_mob_kitchen_1',
-    name: '눌어붙은 누룽지 슬라임',
-    icon: '🥘',
-    category: 'monster',
-    regionBadge: '급식실 Lv.10~12',
-    tierBadge: '급식실 일반',
-    tierColor: '#059669',
-    effect: '❤️ HP 220 · ⚔️ ATK 45 · 🛡️ DEF 13 · 💥 반격 45 (7단원 퀴즈)',
-    source: '🍱 학생 급식실 조리실 구역 (리젠 15초 · 보상 32G / 70 EXP)',
-    drops: '정제된 영양의 정수(100%), 특수 강화 스텐 조각(40%)'
-  },
-  {
-    id: 'caf_mob_table_1',
-    name: '바닥에 흘린 밥풀 골렘',
-    icon: '🍙',
-    category: 'monster',
-    regionBadge: '급식실 Lv.10~12',
-    tierBadge: '급식실 일반',
-    tierColor: '#059669',
-    effect: '❤️ HP 220 · ⚔️ ATK 45 · 🛡️ DEF 13 · 💥 반격 45 (7단원 퀴즈)',
-    source: '🍱 학생 급식실 학생 식탁 구역 (리젠 15초 · 보상 32G / 70 EXP)',
-    drops: '정제된 영양의 정수(100%), 특수 강화 스텐 조각(40%)'
-  },
-  {
-    id: 'caf_mob_teacher_1',
-    name: '남겨진 샐러드 골렘',
-    icon: '🥗',
-    category: 'monster',
-    regionBadge: '급식실 Lv.10~12',
-    tierBadge: '급식실 일반',
-    tierColor: '#16a34a',
-    effect: '❤️ HP 230 · ⚔️ ATK 46 · 🛡️ DEF 13 · 💥 반격 46 (7단원 퀴즈)',
-    source: '🍱 학생 급식실 교사 급식실 구역 (리젠 15초 · 보상 34G / 75 EXP)',
-    drops: '정제된 영양의 정수(100%), 특수 강화 스텐 조각(40%)'
-  },
-  {
-    id: 'caf_mob_tray',
-    name: '쏟아진 잔반 괴물',
-    icon: '🥣',
-    category: 'monster',
-    regionBadge: '급식실 Lv.10~12',
-    tierBadge: '급식실 상급',
-    tierColor: '#0d9488',
-    effect: '❤️ HP 270 · ⚔️ ATK 48 · 🛡️ DEF 14 · 💥 반격 50 (7단원 퀴즈)',
-    source: '🍱 학생 급식실 퇴식구 구역 (리젠 15초 · 보상 38G / 85 EXP)',
-    drops: '정제된 영양의 정수(100%), 특수 강화 스텐 조각(40%)'
-  },
-
-  // 3. 숭실역사관 몬스터 (Lv.8~10 · 6단원 퀴즈)
-  {
-    id: 'hist_mob_1',
-    name: '시간의 수호석상 / 기록관 골렘',
-    icon: '🏛️',
-    category: 'monster',
-    regionBadge: '역사관 Lv.8~10',
-    tierBadge: '역사관 수호자',
-    tierColor: '#4f46e5',
-    effect: '❤️ HP 120 · ⚔️ ATK 18 · 🛡️ DEF 5 · 💥 반격 25 (6단원 퀴즈)',
-    source: '🏛️ 숭실역사관 좌·우 전시홀 (리젠 15초 · 보상 18G / 40 EXP)',
-    drops: '숭실 역사의 정수(100%), 꺾이지 않는 사명석(35%)'
-  },
-  {
-    id: 'hist_mob_2',
-    name: '불멸의 파수병 / 사명의 기사',
-    icon: '⚔️',
-    category: 'monster',
-    regionBadge: '역사관 Lv.8~10',
-    tierBadge: '역사관 정예',
-    tierColor: '#6366f1',
-    effect: '❤️ HP 135~160 · ⚔️ ATK 20~24 · 🛡️ DEF 6~8 · 💥 반격 28~32 (6단원 퀴즈)',
-    source: '🏛️ 숭실역사관 중앙 레드카펫 & 제단 앞 (리젠 15~20초 · 보상 22~30G / 45~65 EXP)',
-    drops: '숭실 역사의 정수 1~2개(100%), 꺾이지 않는 사명석(35~50%)'
-  },
-
-  // 4. 야외 농구장·풋살장 & 1-2반 보스
-  {
-    id: 'pg_bball_mobs',
-    name: '농구공 슬라임 / 백보드 수호병 / 주장 드리블러',
-    icon: '🏀',
-    category: 'monster',
-    regionBadge: '농구장 Lv.5~7',
-    tierBadge: '야외 농구장',
-    tierColor: '#c2410c',
-    effect: '❤️ HP 75~115 · ⚔️ ATK 14~20 · 🛡️ DEF 3~5 (5단원 퀴즈)',
-    source: '🏀 야외 운동장 농구 코트 (보상 12~22G / 25~45 EXP)',
-    drops: '농구공 가죽 조각, 노란 개나리 꽃잎, 가죽갑옷, 날렵한 가죽 운동화'
-  },
-  {
-    id: 'pg_futsal_mobs',
-    name: '풋살공 슬라임 / 골대 거미 / 황금 스트라이커',
-    icon: '⚽',
-    category: 'monster',
-    regionBadge: '풋살장 Lv.5~7',
-    tierBadge: '야외 풋살장',
-    tierColor: '#15803d',
-    effect: '❤️ HP 75~115 · ⚔️ ATK 14~20 · 🛡️ DEF 3~5 (5단원 퀴즈)',
-    source: '⚽ 야외 운동장 풋살 코트 (보상 12~22G / 25~45 EXP)',
-    drops: '탄력있는 풋살공 가죽, 노란 개나리 꽃잎, 가죽투구, 가죽손잡이 세이버, 날렵한 가죽 운동화'
-  },
-  {
-    id: 'boss_leather_golem',
-    name: '가죽 골렘 (1차 관문 상시 보스)',
-    icon: '🪵',
-    category: 'monster',
-    regionBadge: '1-2반 Lv.3~5',
-    tierBadge: '1:1 상시 보스',
-    tierColor: '#b45309',
-    effect: '❤️ HP 2,000 (연화 비책 소지 시 HP 200 · DEF 5 약화)',
-    source: '🏫 7층 1학년 2반 교실 상시 출현 (보상 100G / 200 EXP)',
-    drops: '질긴 보스의 가죽, 엘리베이터 작동권, 가죽 장비, 성실의 개나리 반지'
-  }
-];
-
 /**
  * Shared crisp UI icon renderer for items whose OS emoji glyphs render poorly
  * (e.g., washed-out futsal ball on light backgrounds or black-legged elixir alembic).
@@ -14088,14 +13907,11 @@ class MainApp {
     if (fillEl) fillEl.style.width = `${pct}%`;
     if (pctEl) pctEl.innerText = `${pct}%`;
 
-    // Filter by tab (전체 / 무기·방어구 / 신발 / 장신구 / 재료 / 소비품 / 몬스터)
+    // Filter by tab (전체 / 무기·방어구 / 신발 / 장신구 / 재료 / 소비품)
     const tab = this.currentCodexTab || 'all';
-    const monsterDb = window.MONSTER_CODEX_DATABASE || [];
     let filtered = db;
     if (tab === 'all') {
-      filtered = [...db, ...monsterDb];
-    } else if (tab === 'monster') {
-      filtered = monsterDb;
+      filtered = db;
     } else if (tab === 'weapon_armor') {
       filtered = db.filter(item => item.category === 'weapon_armor' || item.subCategory === 'weapon_armor' || (item.category === 'equip' && !item.id.includes('shoes') && !item.id.includes('boots') && !item.id.includes('ring') && !item.id.includes('talisman') && !item.id.includes('pass')));
     } else if (tab === 'shoes') {
@@ -14119,15 +13935,14 @@ class MainApp {
     }
 
     filtered.forEach(item => {
-      const isMonster = (item.category === 'monster');
-      const inInv = !isMonster && checkInInv(item.id);
-      const isEquipped = !isMonster && checkIsEquipped(item.id);
-      const isOwned = isMonster ? true : (inInv || isEquipped);
+      const inInv = checkInInv(item.id);
+      const isEquipped = checkIsEquipped(item.id);
+      const isOwned = inInv || isEquipped;
 
       const card = document.createElement('div');
       card.style.cssText = `
-        background: ${isMonster ? '#fffbeb' : (isOwned ? '#ffffff' : '#f1f5f9')};
-        border: 2px solid ${isMonster ? item.tierColor : (isOwned ? '#22c55e' : '#cbd5e1')};
+        background: ${isOwned ? '#ffffff' : '#f1f5f9'};
+        border: 2px solid ${isOwned ? '#22c55e' : '#cbd5e1'};
         border-radius: 10px;
         padding: 10px;
         display: flex;
@@ -14159,8 +13974,8 @@ class MainApp {
               <span style="font-size: 10px; font-weight: 800; background: ${item.tierColor}15; color: ${item.tierColor}; border: 1px solid ${item.tierColor}40; border-radius: 4px; padding: 1px 5px;">
                 ${item.tierBadge}
               </span>
-              <span style="font-size: 10px; font-weight: 800; color: ${isMonster ? item.tierColor : (isOwned ? '#16a34a' : '#64748b')};">
-                ${isMonster ? (item.regionBadge || '👾 출현 몬스터') : (isOwned ? '✅ 보유 중' : '🔒 미보유')}
+              <span style="font-size: 10px; font-weight: 800; color: ${isOwned ? '#16a34a' : '#64748b'};">
+                ${isOwned ? '✅ 보유 중' : '🔒 미보유'}
               </span>
             </div>
           </div>
@@ -14169,20 +13984,15 @@ class MainApp {
             ${item.name}
           </div>
 
-          <div style="font-size: 11px; font-weight: 800; color: ${isMonster ? '#b91c1c' : '#0284c7'}; background: ${isMonster ? '#fee2e2' : '#e0f2fe'}; padding: 4px 6px; border-radius: 5px; margin-bottom: 6px;">
+          <div style="font-size: 11px; font-weight: 800; color: #0284c7; background: #e0f2fe; padding: 4px 6px; border-radius: 5px; margin-bottom: 6px;">
             ⚡ ${item.effect}
           </div>
 
           <div style="font-size: 11px; color: #334155; line-height: 1.4; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; margin-bottom: 4px;">
-            <div style="font-weight: 800; color: #475569; margin-bottom: 2px;">${isMonster ? '📍 출현 위치 및 보상:' : '📍 획득 경로:'}</div>
+            <div style="font-weight: 800; color: #475569; margin-bottom: 2px;">📍 획득 경로:</div>
             <div>${item.source}</div>
           </div>
         </div>
-
-        ${item.drops ? `
-        <div style="font-size: 10.5px; color: #475569; background: #fef3c7; border: 1px solid #fde68a; border-radius: 5px; padding: 4px 6px; margin-top: 4px;">
-          🎁 <b>주요 드랍:</b> <span style="font-weight: 700; color: #92400e;">${item.drops}</span>
-        </div>` : ''}
 
         ${item.recipe ? `
         <div style="font-size: 10.5px; color: #64748b; text-align: right; margin-top: 4px;">

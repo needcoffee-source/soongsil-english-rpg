@@ -127,14 +127,11 @@ assert(engineJs.includes('!isHistoryRoom'), 'renderClassroom must skip blackboar
 assert(!mainJs.includes('🎁 [이스터에그 보상 획득!]') && mainJs.includes('🎁 [보상 획득!]'), 'Reward header must use 🎁 [보상 획득!] without 이스터에그');
 assert(mainJs.includes('if (alreadyFound) {') && mainJs.includes('if (alreadyShocked) {'), 'School bus and EV charger rewards must be strictly 1-time even for teachers');
 
-// 6. Verify Codex registration for 5 Indoor Gym Monsters + Immortal Air Shoes + Victory Laurel Medal + Golden Laurel Leaf + Tiny EXP Potion
-assert(mainJs.includes('window.MONSTER_CODEX_DATABASE = ['), 'MONSTER_CODEX_DATABASE must be defined in main.js');
-for (const mobId of ['gym_mob_dunk_1', 'gym_mob_dunk_3', 'gym_mob_dunk_2', 'gym_mob_whistle_1', 'gym_mob_captain_elite']) {
-  assert(mainJs.includes(`id: '${mobId}'`), `Monster ${mobId} must be registered in MONSTER_CODEX_DATABASE`);
-}
+// 6. Verify Codex registration for Immortal Air Shoes + Victory Laurel Medal + Golden Laurel Leaf + Tiny EXP Potion (and no Monster tab)
+assert(!mainJs.includes('window.MONSTER_CODEX_DATABASE'), 'MONSTER_CODEX_DATABASE must NOT exist in main.js');
 for (const itemId of ['equip_immortal_shoes', 'equip_victory_medal', 'item_golden_laurel', 'item_tiny_exp_potion']) {
   assert(mainJs.includes(`id: '${itemId}'`), `Item ${itemId} must be registered in ITEM_CODEX_DATABASE`);
 }
-assert(indexHtml.includes('data-tab="monster"'), 'index.html must include Monster tab in Codex modal');
+assert(!indexHtml.includes('data-tab="monster"'), 'index.html must NOT include Monster tab in Codex modal');
 
 console.log(`✓ 3. Indoor Gym (${Gym.gymMonsters.length} Lv.15 monsters, Unit 8 pool ${u8.length} questions, drops, Tier 5 shoes, Lv.15 accessory, Dev Note 5, History Hall cleanup & Codex registration) verified.`);
