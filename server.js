@@ -2079,7 +2079,7 @@ const ALL_GAME_ITEMS = {
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_nutrition_essence': { name: '정제된 영양의 정수', icon: '🍱', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료' } },
   'item_stainless_shard': { name: '특수 강화 스텐 조각', icon: '✨', meta: { type: 'material', effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료' } },
-  'item_golden_laurel': { name: '황금 월계수 잎', icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } },
+  'item_golden_laurel': { name: '황금 월계수 잎', icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } },
 
   // 2. Potions & Scrolls
   'item_red_potion': { name: '빨간 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
@@ -2430,7 +2430,7 @@ const SERVER_QUEST_DEFINITIONS = {
       { type: 'exp', amount: 350 },
       { type: 'gold', amount: 200 },
       { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 20, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
-      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 1, icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } }
+      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 1, icon: '🏵️', meta: { type: 'material', effect: '체육관 실내 농구장 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } }
     ]
   }
 };

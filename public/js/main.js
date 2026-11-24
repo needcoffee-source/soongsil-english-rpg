@@ -194,18 +194,18 @@ window.ITEM_CODEX_DATABASE = [
     category: 'material',
     tierBadge: '야외 전리품',
     tierColor: '#0284c7',
-    effect: '급식실 특수 위생 스테인리스 합금 파편 · 5티어 최고급 장비 제작 핵심 재료',
+    effect: '급식실 음식물 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료',
     source: '학생 급식실 바닥 음식물 몬스터 처치 시 드랍',
-    recipe: '급식실 몬스터 처치 전리품'
+    recipe: '급식실 몬스터 전투 드랍'
   },
   {
     id: 'item_golden_laurel',
     name: '황금 월계수 잎',
     icon: '🏵️',
     category: 'material',
-    tierBadge: '체육관 전리품',
+    tierBadge: '야외 전리품',
     tierColor: '#eab308',
-    effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
+    effect: '체육관 실내 농구장 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
     source: '체육관 실내 농구장 몬스터 처치 시 드랍',
     recipe: '체육관 실내 농구장 전투 드랍'
   },
@@ -742,7 +742,7 @@ const ALL_GAME_ITEMS = {
   'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', count: 9999, meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_shoes': { name: '불멸의 에어 농구화', icon: '👟', count: 1, meta: { type: 'equipment', slot: 'shoes', requiredLevel: 15, stats: { atk: 8, def: 6, hp: 15 }, effect: '5티어 신발 · 공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 질주 (Lv.15 이상)' } },
   'equip_victory_medal': { name: '승리의 월계관 메달', icon: '🏅', count: 9999, meta: { type: 'equipment', slot: 'accessory', requiredLevel: 15, stats: { atk: 20, def: 5, hp: 30 }, effect: '공격력 +20, 방어력 +5, 체력 +30 (Lv.15 이상)' } },
-  'item_golden_laurel': { name: '황금 월계수 잎', icon: '🏵️', count: 9999, meta: { type: 'material', effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } },
+  'item_golden_laurel': { name: '황금 월계수 잎', icon: '🏵️', count: 9999, meta: { type: 'material', effect: '체육관 실내 농구장 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료' } },
 
   // 7. Legendary Season Boss Artifacts & Rewards & New Potions
   'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', count: 9999, meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
@@ -8840,7 +8840,7 @@ class MainApp {
         const laurelCount = mob.type === 'elite' ? (Math.floor(Math.random() * 2) + 1) : 1;
         this.addItem('item_golden_laurel', '황금 월계수 잎', laurelCount, '🏵️', {
           type: 'material',
-          effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료'
+          effect: '체육관 실내 농구장 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료'
         });
         dropsList.push(`🏵️ 황금 월계수 잎 x${laurelCount}개 (${laurelRate}% 드랍!)`);
       }
