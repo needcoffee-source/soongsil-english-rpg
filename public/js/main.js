@@ -206,7 +206,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '체육관 전리품',
     tierColor: '#eab308',
     effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
-    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍',
+    source: '체육관 실내 농구장 몬스터 처치 시 드랍',
     recipe: '체육관 실내 농구장 전투 드랍'
   },
 
