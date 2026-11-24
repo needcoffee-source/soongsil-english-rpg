@@ -195,7 +195,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '야외 전리품',
     tierColor: '#0284c7',
     effect: '급식실 특수 위생 스테인리스 합금 파편 · 5티어 최고급 장비 제작 핵심 재료',
-    source: '학생 급식실 바닥 음식물 몬스터 처치 시 40% 행운 드랍',
+    source: '학생 급식실 바닥 음식물 몬스터 처치 시 드랍',
     recipe: '급식실 몬스터 처치 전리품'
   },
   {
@@ -206,8 +206,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '체육관 전리품',
     tierColor: '#eab308',
     effect: '체육관 실내 농구장 Lv.15 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
-    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍 (45~60%) / 죠스동(3학년 체육) 퀘스트 보상',
-    recipe: '체육관 실내 농구장 전투 드랍 & 퀘스트 보상'
+    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍',
+    recipe: '체육관 실내 농구장 전투 드랍'
   },
 
   // 2. Consumables (소비품 10종 - craft_recipes.json 공식 레시피)
@@ -296,8 +296,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '경험치 물약',
     tierColor: '#f59e0b',
     effect: '사용 시 경험치(EXP) +50 즉시 상승',
-    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍 (50%) / 리졍놤·죠스동 체육선생님 퀘스트 보상',
-    recipe: '체육관 몬스터 드랍 및 퀘스트 보상 (제작 불가)'
+    source: '퀘스트',
+    recipe: '제작불가'
   },
   {
     id: 'item_revive_scroll',
@@ -566,9 +566,8 @@ window.ITEM_CODEX_DATABASE = [
     subCategory: 'shoes',
     tierBadge: '5티어 신발',
     tierColor: '#ef4444',
-    effect: '공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 고속 질주 (Lv.15 이상)',
-    source: '체육관 실내 농구장(Lv.15) 몬스터 처치 시 드랍 (일반 10% / 제왕 15%)',
-    recipe: '체육관 실내 농구장 전투 드랍 (제작 불가)'
+    effect: '공격력 +8, 방어력 +6, 체력 +15',
+    source: '체육관 실내 몬스터 토벌 시 드랍'
   },
 
   // 5. Special School Accessories (장신구)
@@ -603,7 +602,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '영광 장신구',
     tierColor: '#eab308',
     effect: '공격력 +20, 방어력 +5, 체력 +30 증가 (Lv.15 이상)',
-    source: '7층 복도 식물존 옆 장신구 세공대(C)에서 제작 (15레벨 이상)',
+    source: '복도 식물존 옆 악세서리 세공대에서 제작 (15레벨 이상)',
     recipe: '황금 월계수 잎 12개 + 1,000G',
     stats: { atk: 20, def: 5, hp: 30 }
   },
