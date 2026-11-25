@@ -229,6 +229,10 @@ class UphillRushGame {
 
   close() {
     this.isRunning = false;
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
@@ -400,6 +404,11 @@ class UphillRushGame {
   startCountdown() {
     if (!this.overlayEl) return;
 
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+
     let count = 3;
     this.overlayEl.innerHTML = `
       <div id="uphill-count-num" style="font-size: 80px; font-weight: 900; color: #fef08a; text-shadow: 0 0 20px #f59e0b; animation: pulse 0.5s;">${count}</div>
@@ -410,7 +419,12 @@ class UphillRushGame {
       window.AudioManager.playSelect();
     }
 
-    const timer = setInterval(() => {
+    this.countdownTimer = setInterval(() => {
+      if (!this.modal || this.modal.classList.contains('hidden')) {
+        clearInterval(this.countdownTimer);
+        this.countdownTimer = null;
+        return;
+      }
       count--;
       const numEl = document.getElementById('uphill-count-num');
       if (count > 0) {
@@ -427,7 +441,9 @@ class UphillRushGame {
           window.AudioManager.playWhistle();
         }
       } else {
-        clearInterval(timer);
+        clearInterval(this.countdownTimer);
+        this.countdownTimer = null;
+        if (!this.modal || this.modal.classList.contains('hidden')) return;
         this.overlayEl.classList.add('hidden');
         this.startGame();
       }
@@ -435,6 +451,10 @@ class UphillRushGame {
   }
 
   startGame() {
+    if (this.animFrameId) {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
     this.reset();
     this.isRunning = true;
     this.startTime = Date.now();

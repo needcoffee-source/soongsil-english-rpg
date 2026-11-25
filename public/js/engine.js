@@ -198,6 +198,20 @@ class GameEngine {
     }
   }
 
+  resetInputState() {
+    if (this.keys) {
+      this.keys.up = false;
+      this.keys.down = false;
+      this.keys.left = false;
+      this.keys.right = false;
+    }
+    if (window.MainApp && typeof window.MainApp.stopDash === 'function') {
+      window.MainApp.stopDash();
+    } else if (this.player) {
+      this.player.isDashing = false;
+    }
+  }
+
   triggerLibraryShh() {
     this.libraryShhTimer = Date.now() + 2500;
     if (window.AudioManager && typeof window.AudioManager.playWrong === 'function') {
@@ -848,11 +862,11 @@ class GameEngine {
       // Check if player stepped on the west gym gate (x: 1~3, y: 47~49)
       if (Math.abs(tileX - gymGate.x) <= 1 && tileY >= 47 && tileY <= 51) {
         const pLevel = Number((window.MainApp && window.MainApp.playerData && window.MainApp.playerData.level) || (this.player && this.player.level)) || 1;
-        if (!this.player.isTeacher && pLevel < 12) {
+        if (!this.player.isTeacher && pLevel < 10) {
           this.player.x = 4.2 * 32;
           if (!this._lastGymNotice || Date.now() - this._lastGymNotice > 2000) {
             this._lastGymNotice = Date.now();
-            alert(`🔒 [숭실 체육관 구역 - Lv.12 입장 제한]\n\n"🏛️ 숭실 체육관 및 주차장 구역은 Lv.12 이상부터 입장할 수 있습니다!\n(현재 레벨: Lv.${pLevel} / 필요: Lv.12 이상)"`);
+            alert(`🔒 [숭실 체육관 구역 - Lv.10 입장 제한]\n\n"🏛️ 숭실 체육관 및 주차장 구역은 Lv.10 이상부터 입장할 수 있습니다!\n(Lv.10: 야외 배움터 지킴이 · 업힐러쉬 가능 / Lv.12+: 체육관 실내 농구장)\n(현재 레벨: Lv.${pLevel} / 필요: Lv.10 이상)"`);
           }
           return;
         }
@@ -975,12 +989,11 @@ class GameEngine {
       }
     }
     this.player.room = roomId;
-    if (roomId === 'playground') this.player.floor = 1;
+    if (roomId === 'playground' || roomId === 'playground_gym' || roomId === 'room_cafeteria' || roomId === 'room_gym') this.player.floor = 1;
     else if (roomId === 'room_health' || roomId === 'room_wee') this.player.floor = 3;
     else if (roomId === 'room_career') this.player.floor = 5;
     else if (roomId === 'room_staff_office') this.player.floor = 6;
     else if (roomId === 'room_history' || roomId === 'room_secret_history') this.player.floor = 0;
-    else if (roomId === 'room_cafeteria' || roomId === 'room_gym') this.player.floor = 1;
     this.player.roomName = roomName;
     this.player.x = x;
     this.player.y = y;
@@ -1125,7 +1138,8 @@ class GameEngine {
         const rData = fData && fData.rooms ? fData.rooms.find(r => r.id === this.player.room) : null;
         this.player.roomName = rData ? rData.name : '교실 내부';
       }
-      if (this.player.room === 'playground') this.player.floor = 1;
+      if (this.player.room === 'playground' || this.player.room === 'playground_gym' || this.player.room === 'room_cafeteria' || this.player.room === 'room_gym') this.player.floor = 1;
+      else if (this.player.room === 'room_health' || this.player.room === 'room_wee') this.player.floor = 3;
       else if (this.player.room === 'room_career') this.player.floor = 5;
       else if (this.player.room === 'room_staff_office') this.player.floor = 6;
       else if (this.player.room === 'room_history' || this.player.room === 'room_secret_history') this.player.floor = 0;
@@ -1818,7 +1832,7 @@ class GameEngine {
       if (cr.gatherSpots) {
         for (const spot of cr.gatherSpots) {
           const sDist = Math.hypot(spot.x * 32 - this.player.x, spot.y * 32 - this.player.y);
-          if (sDist < 64) {
+          if (sDist < 64 && sDist < minDist) {
             closest = { type: spot.type, data: spot, name: spot.name, prompt: spot.prompt };
             minDist = sDist;
           }
@@ -8680,35 +8694,35 @@ class GameEngine {
         window.AudioManager.playSlothHypnosisAndDopamine();
       }
       if (typeof this.addFloatingText === 'function') {
-        this.addFloatingText(bx, by - 102, '🦥 "하아아암~ 공부는 내일 해... 무한 쇼츠 도파민포 발사~!!"', '#fde047', 16);
+        this.addFloatingText('🦥 "하아아암~ 공부는 내일 해... 무한 쇼츠 도파민포 발사~!!"', bx, by - 102, '#fde047', 16);
       }
     } else if (kind === 'final_god') {
       if (window.AudioManager && typeof window.AudioManager.playFinalGodDimensionSlash === 'function') {
         window.AudioManager.playFinalGodDimensionSlash();
       }
       if (typeof this.addFloatingText === 'function') {
-        this.addFloatingText(bx, by - 98, '💀 "네놈의 답안지를 공간째로 베어주마!!"', '#7dd3fc', 16);
+        this.addFloatingText('💀 "네놈의 답안지를 공간째로 베어주마!!"', bx, by - 98, '#7dd3fc', 16);
       }
     } else if (kind === 'demon') {
       if (window.AudioManager && typeof window.AudioManager.playDemonSlash === 'function') {
         window.AudioManager.playDemonSlash();
       }
       if (typeof this.addFloatingText === 'function') {
-        this.addFloatingText(bx, by - 92, '😈 피빛 채점창 — 0점 참격!!', '#f87171', 16);
+        this.addFloatingText('😈 피빛 채점창 — 0점 참격!!', bx, by - 92, '#f87171', 16);
       }
     } else if (kind === 'cerberus') {
       if (window.AudioManager && typeof window.AudioManager.playCerberusRoar === 'function') {
         window.AudioManager.playCerberusRoar();
       }
       if (typeof this.addFloatingText === 'function') {
-        this.addFloatingText(bx, by - 84, '🐕 SPEAK · WRITE · LISTEN 3중 지옥불 브레스!!', '#fb923c', 16);
+        this.addFloatingText('🐕 SPEAK · WRITE · LISTEN 3중 지옥불 브레스!!', bx, by - 84, '#fb923c', 16);
       }
     } else {
       if (window.AudioManager && typeof window.AudioManager.playDragonRoar === 'function') {
         window.AudioManager.playDragonRoar();
       }
       if (typeof this.addFloatingText === 'function') {
-        this.addFloatingText(bx, by - 78, '🔥 고대 청동 브레스!!', '#fb923c', 16);
+        this.addFloatingText('🔥 고대 청동 브레스!!', bx, by - 78, '#fb923c', 16);
       }
     }
   }
@@ -8806,7 +8820,7 @@ class GameEngine {
             });
           }
           if (typeof this.addFloatingText === 'function') {
-            this.addFloatingText(bx, by - 98, '🏖️ "풍덩——!! 운동장이 통째로 내 워터파크다~!!"', '#67e8f9', 16);
+            this.addFloatingText('🏖️ "풍덩——!! 운동장이 통째로 내 워터파크다~!!"', bx, by - 98, '#67e8f9', 16);
           }
         } else if (fx.bossKind === 'final_god') {
           fx.shakePower = 22;
@@ -8836,7 +8850,7 @@ class GameEngine {
           fx.shockwaves.push({ x: bx, y: by + 24, r: 12, maxR: 205, alpha: 1, color: '#38bdf8', width: 5, speed: 4.8 });
           fx.shockwaves.push({ x: bx, y: by + 24, r: 6, maxR: 155, alpha: 0.95, color: '#ef4444', width: 3.5, speed: 3.5 });
           if (typeof this.addFloatingText === 'function') {
-            this.addFloatingText(bx, by - 95, '💀 "종이 울렸다... 모든 답안지를 수거하마!!"', '#7dd3fc', 16);
+            this.addFloatingText('💀 "종이 울렸다... 모든 답안지를 수거하마!!"', bx, by - 95, '#7dd3fc', 16);
           }
         } else if (fx.bossKind === 'demon') {
           fx.flashColor = '168, 85, 247';
@@ -8880,7 +8894,7 @@ class GameEngine {
             });
           }
           if (typeof this.addFloatingText === 'function') {
-            this.addFloatingText(bx, by - 95, '😈 "전원 0점 처리해주마!!" (중간고사 대마왕 강림!)', '#fca5a5', 16);
+            this.addFloatingText('😈 "전원 0점 처리해주마!!" (중간고사 대마왕 강림!)', bx, by - 95, '#fca5a5', 16);
           }
         } else if (fx.bossKind === 'cerberus') {
           fx.flashColor = '249, 115, 22';
@@ -8909,7 +8923,7 @@ class GameEngine {
             });
           }
           if (typeof this.addFloatingText === 'function') {
-            this.addFloatingText(bx, by - 86, '🐕 "그르르르!! 말하기·쓰기·듣기 만점자만 통과다!!"', '#fde047', 16);
+            this.addFloatingText('🐕 "그르르르!! 말하기·쓰기·듣기 만점자만 통과다!!"', bx, by - 86, '#fde047', 16);
           }
         } else {
           fx.flashColor = '254, 243, 199';
@@ -8945,7 +8959,7 @@ class GameEngine {
           }
 
           if (typeof this.addFloatingText === 'function') {
-            this.addFloatingText(bx, by - 82, '🐲 크아아앙!! (고대 청동 드래곤 강림!)', '#fef08a', 16);
+            this.addFloatingText('🐲 크아아앙!! (고대 청동 드래곤 강림!)', bx, by - 82, '#fef08a', 16);
           }
         }
       }
@@ -9681,7 +9695,7 @@ class GameEngine {
     if (typeof this.addFloatingText === 'function') {
       const bx = 18 * 32 + 16;
       const by = 35 * 32 + 16;
-      this.addFloatingText(bx, by - 95, '🎆 "수고했어 숭실중학교! 해피 여름방학 개막~!!" 🎊', '#fef08a', 18);
+      this.addFloatingText('🎆 "수고했어 숭실중학교! 해피 여름방학 개막~!!" 🎊', bx, by - 95, '#fef08a', 18);
     }
   }
 

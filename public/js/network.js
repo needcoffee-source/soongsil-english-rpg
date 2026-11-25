@@ -213,6 +213,12 @@ class NetworkManager {
       }
     });
 
+    this.socket.on('teacher_chat_log', (item) => {
+      if (window.MainApp && typeof window.MainApp.onTeacherChatLog === 'function') {
+        window.MainApp.onTeacherChatLog(item);
+      }
+    });
+
     // Real-Time Student Progress Sync & Reset by Teacher
     this.socket.on('student_progress_sync_from_admin', (progress) => {
       if (window.MainApp && window.MainApp.onAdminProgressSynced) {
@@ -246,7 +252,9 @@ class NetworkManager {
           const radius = 16 + Math.random() * 36;
           const targetX = Math.round(x + Math.cos(angle) * radius);
           const targetY = Math.round(y + Math.sin(angle) * radius);
-          this.engine.floor = floor !== undefined ? floor : 0;
+          if (this.engine.player) {
+            this.engine.player.floor = floor !== undefined ? floor : 1;
+          }
           this.engine.warpToRoom(room || 'playground', room === 'playground' ? '숭실 운동장' : (room || '1학년 2반'), targetX, targetY);
         } else {
           this.engine.teleportTo(floor || 7, room || 'room_702');

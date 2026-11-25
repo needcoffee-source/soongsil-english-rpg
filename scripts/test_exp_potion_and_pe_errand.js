@@ -253,6 +253,26 @@ async function runTests() {
     const laurelAfter = (jawsdongOk.data.inventory || []).find(i => i.item === 'item_golden_laurel');
     assert(laurelAfter && laurelAfter.count === 1, 'quest_jawsdong_cleanup must reward 1x item_golden_laurel');
     console.log('✓ Live Lv.14 죠스동(3학년 체육) Quest (quest_jawsdong_cleanup, 3-step cleanup + rewards) passed.');
+
+    // 2f. Unauthenticated /api/save-progress must be rejected with 401
+    const unauthSave = await reqJson(testPort, 'POST', '/api/save-progress', {
+      studentId: sid,
+      progress: { level: 99, gold: 99999 }
+    });
+    assert.strictEqual(unauthSave.status, 401, 'Unauthenticated /api/save-progress must return 401');
+
+    // 2g. Bulk /api/item/use-exp-potion (count: 10) consumes 10 and grants +500 EXP
+    const bulkUseRes = await reqJson(testPort, 'POST', '/api/item/use-exp-potion', {
+      studentId: sid,
+      itemId: 'item_tiny_exp_potion',
+      count: 10
+    }, authHeaders);
+    assert.strictEqual(bulkUseRes.status, 200);
+    assert.strictEqual(bulkUseRes.data.usedCount, 10, 'Bulk EXP potion must consume 10 bottles');
+    assert.strictEqual(bulkUseRes.data.expGained, 500, 'Bulk 10x EXP potion must grant +500 EXP');
+    const expPotAfterBulk = (bulkUseRes.data.inventory || []).find(i => i.item === 'item_tiny_exp_potion');
+    assert(expPotAfterBulk && expPotAfterBulk.count === 42, 'Using 10 out of 52 must leave 42 in inventory');
+    console.log('✓ Unauthenticated /api/save-progress blocked (401) & bulk /api/item/use-exp-potion (10x = +500 EXP) passed.');
   } finally {
     if (proc) {
       try { proc.kill(); } catch (_) {}

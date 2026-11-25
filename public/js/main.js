@@ -63,8 +63,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '약초 재료',
     tierColor: '#166534',
     effect: '빨간 물약, 주홍 물약, 부활 주문서 조제 필수 재료',
-    source: '7층 1학년 복도 동쪽 화분(실내 식물존) 1단원 퀴즈 정답 시 드랍',
-    recipe: '7층 복도 화분 채집 파밍'
+    source: '7층 1학년 1반 교실 동쪽 화분(실내 식물존) 1단원 퀴즈 정답 시 드랍',
+    recipe: '7층 1-1 교실 화분 채집 파밍'
   },
   {
     id: 'item_forsythia',
@@ -74,8 +74,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교화 재료',
     tierColor: '#ca8a04',
     effect: '주홍 물약, 청동 장비, 성실의 개나리 반지 제작 재료',
-    source: '7층 1학년 복도 서쪽 개나리 화분 2단원 퀴즈 정답 시 드랍',
-    recipe: '7층 복도 개나리 화분 채집 파밍'
+    source: '7층 1학년 1반 교실 서쪽 개나리 화분 2단원 퀴즈 정답 시 드랍',
+    recipe: '7층 1-1 교실 개나리 화분 채집 파밍'
   },
   {
     id: 'item_ginkgo',
@@ -85,8 +85,8 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '교목 재료',
     tierColor: '#d97706',
     effect: '부활 주문서 및 합심의 황금 은행잎 부적 제작 재료',
-    source: '7층 1학년 복도 중앙 교목 은행나무 3단원 퀴즈 정답 시 드랍',
-    recipe: '7층 복도 은행나무 채집 파밍'
+    source: '7층 1학년 1반 교실 중앙 교목 은행나무 3단원 퀴즈 정답 시 드랍',
+    recipe: '7층 1-1 교실 은행나무 채집 파밍'
   },
   {
     id: 'item_boss_leather',
@@ -690,8 +690,8 @@ const ALL_GAME_ITEMS = {
   'item_ginkgo': { name: '황금 은행잎', icon: '🍂', count: 9999, meta: { type: 'material', effect: '교목 은행나무 부적 및 부활 주문서 재료' } },
   'item_boss_leather': { name: '질긴 보스의 가죽', icon: '🥋', count: 9999, meta: { type: 'material', effect: '가죽 골렘 전리품 · 2티어 가죽 장비 필수 재료' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', count: 9999, meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
-  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)' } },
-  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', effect: '급식실 정문 출입용 황금 열쇠' } },
+  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)' } },
+  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '급식실 정문 출입용 황금 열쇠' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', count: 9999, meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', count: 9999, meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
   'item_history_essence': { name: '🏛️ 숭실 역사의 정수', icon: '🏛️', count: 9999, meta: { type: 'material', effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 필수 재료' } },
@@ -752,11 +752,11 @@ const ALL_GAME_ITEMS = {
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
   'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
-  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
-  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
-  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
-  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
-  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
+  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', isQuestItem: true, effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
+  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
+  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
+  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
+  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
   'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', count: 1, meta: { type: 'equipment', slot: 'accessory', stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } }
 
 };
@@ -806,14 +806,29 @@ const ITEM_SELL_PRICES = {
   'equip_heritage_armor': 100, // 제작비 500G -> 20% = 100G
   'equip_bronze_shoes': 16, // 3티어 청동 신발 매각가
   'equip_heritage_boots': 30, // 4티어 헤리티지 신발 매각가
+  'equip_immortal_blade': 300,
+  'equip_immortal_helmet': 200,
+  'equip_immortal_armor': 240,
+  'item_nutrition_essence': 5,
+  'item_stainless_shard': 10,
   'equip_immortal_shoes': 50, // 5티어 불멸의 에어 농구화 매각가
   'equip_victory_medal': 200, // 제작비 1000G -> 20% = 200G
   'item_golden_laurel': 5, // 체육관 실내 농구장 Lv.15 재료
 
-  // 7. 최상위 엔드 레이드 전리품
+  // 7. 최상위 엔드 레이드 전리품 & 퀘스트 아이템(매각 불가)
   'equip_omr_wand': 20,
   'equip_vintage_armband': 0, // 2004년 유물 장신구 (매각 불가)
-    'equip_elevator_pass': 0 // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
+  'equip_elevator_pass': 0, // 작동권 매점 판매 불가 (퀘스트 핵심 아이템)
+  'item_golem_weakness_scroll': 0,
+  'item_cafeteria_key': 0,
+  'item_joshua_memo': 0,
+  'item_okchohan_textbook': 0,
+  'item_kimmijin_sketchbook': 0,
+  'item_yosunyu_usb': 0,
+  'item_career_guidebook': 0,
+  'item_gym_key': 0,
+  'item_lost_pe_ball': 0,
+  'item_wet_team_vests': 0
 };
 
 // =========================================================================
@@ -1150,6 +1165,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: 'Joshua 선생님',
     teacherRole: '3학년 영어',
     teacherSeat: '교무실',
+    returnLocation: '6층 교무실',
+    progressHint: '1-1 교실 교탁과 6층 탕비실 안쪽을 조사하세요.',
     teacherAvatar: '👨‍🏫',
     category: '⭐ 입문 퀘스트 (Introductory Quest)',
     title: '[3학년 영어] Joshua 선생님의 특별 지령: 흩어진 단어장',
@@ -1200,6 +1217,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '옥촣한 선생님',
     teacherRole: '사회',
     teacherSeat: '교무실',
+    returnLocation: '6층 교무실',
+    progressHint: '1-3 컴퓨터실 산성비 1,000점 & 교무실 인쇄실 교재를 찾으세요.',
     teacherAvatar: '👨‍🏫',
     category: '🏛️ 사회 탐구 퀘스트 (Social Studies Quest)',
     title: '[사회] 옥촣한 선생님의 특별 과제: 숭실 사회 탐구',
@@ -1252,6 +1271,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '김진믜 선생님',
     teacherRole: '미술',
     teacherSeat: '교무실',
+    returnLocation: '6층 교무실',
+    progressHint: '노란 개나리 꽃잎 3송이 & 운동장 스탠드 파란 벤치의 스케치북을 찾으세요.',
     teacherAvatar: '🎨',
     category: '🎨 숭실 예술 프로젝트 (Fine Arts Quest)',
     title: '[미술] 김진믜 선생님의 예술 프로젝트: 숭실의 색채',
@@ -1308,6 +1329,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '요션유 선생님',
     teacherRole: '정보',
     teacherSeat: '교무실',
+    returnLocation: '6층 교무실',
+    progressHint: '1-3 컴퓨터실 메인 서버 점검 & 1-2 교실 구석의 USB를 찾으세요.',
     teacherAvatar: '💻',
     category: '💻 숭실 정보·알고리즘 프로젝트 (Informatics Quest)',
     title: '[정보] 요션유 선생님의 알고리즘 과제: 디지털 숭실',
@@ -1361,6 +1384,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '귐즨숑 선생님',
     teacherRole: '진로',
     teacherSeat: '교무실',
+    returnLocation: '6층 교무실',
+    progressHint: '5층 진로상담실 안내서를 챙겨 6층 복도 동쪽 창가의 고민 학생에게 전달하세요.',
     teacherAvatar: '🌟',
     category: '🌟 숭실 진로·적성 멘토링 프로젝트 (Career Quest)',
     title: '[진로] 귐즨숑 선생님의 진로 격려: 빛나는 재능의 씨앗',
@@ -1407,6 +1432,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '사서 선생님',
     teacherRole: '2층 도서관',
     teacherSeat: '도서관 안내석',
+    returnLocation: '2층 도서관',
+    progressHint: '운동장 스탠드·6층 교무실·숭실역사관에서 분실도서 3권을 회수하세요.',
     teacherAvatar: '👩‍🏫',
     category: '📚 도서관 특별 의뢰 (Library Quest)',
     title: '[도서관] 사서 선생님의 긴급 의뢰: 흩어진 3권의 도서 회수',
@@ -1465,6 +1492,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '급식지도 선생님',
     teacherRole: '영양 및 급식지도',
     teacherSeat: '급식지도석',
+    returnLocation: '학생 급식실',
+    progressHint: '배부대 앞 [반찬 더 달라는 학생]과 1:1 퀴즈 대결을 진행하세요.',
     teacherAvatar: '👨‍🏫',
     category: '🍱 급식실 질서 퀘스트 (1단계)',
     title: '[급식실] 반찬 더 달라고 조르는 학생 진정시키기',
@@ -1499,6 +1528,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '급식지도 선생님',
     teacherRole: '영양 및 급식지도',
     teacherSeat: '급식지도석',
+    returnLocation: '학생 급식실',
+    progressHint: '우측 식탁 좌석 [식탁에서 떠드는 학생]을 1:1 퀴즈로 진정시키세요.',
     teacherAvatar: '👨‍🏫',
     category: '🍽️ 급식실 예절 퀘스트 (2단계)',
     title: '[급식실] 식탁에서 떠들며 먹는 학생들 진정시키기',
@@ -1536,6 +1567,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: '보건 선생님',
     teacherRole: '3층 보건실',
     teacherSeat: '보건실 진료석',
+    returnLocation: '3층 보건실',
+    progressHint: '보건실 캐비닛·2층 도서관 자연과학 서가·향긋한 허브 5개를 모으세요.',
     teacherAvatar: '🩺',
     category: '🩺 장편 모험 제1막 (Lv.11)',
     title: '[장편 1막] 보건실 긴급 처방: 사라진 활력의 비약',
@@ -1602,6 +1635,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: 'Wee클래스 전문상담 선생님',
     teacherRole: '3층 Wee클래스',
     teacherSeat: '상담실',
+    returnLocation: '3층 Wee클래스',
+    progressHint: 'Wee클래스 우체통·체육관 창고·체육관 방송실 콘솔을 차례로 확인하세요.',
     teacherAvatar: '🕊️',
     category: '🕊️ 장편 모험 제2막 (Lv.12)',
     title: '[장편 2막] Wee클래스의 비밀 쪽지와 체육관의 신호',
@@ -1661,6 +1696,8 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherName: 'Wee클래스 전문상담 선생님',
     teacherRole: '3층 Wee클래스 · 연합 완결',
     teacherSeat: '상담실',
+    returnLocation: '3층 Wee클래스',
+    progressHint: '3층 보건 선생님 인증 → 체육관 강연 무대 스피치 → Wee클래스 허브차 다과 순으로 진행하세요.',
     teacherAvatar: '💖',
     category: '💖 장편 모험 완결 3막 (Lv.12)',
     title: '[장편 완결 3막] 희망의 종소리: 몸과 마음의 공명',
@@ -1722,9 +1759,15 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherRole: '2학년 체육',
     teacherAvatar: '👨‍🏫',
     teacherSeat: '체육관 무대',
+    returnLocation: '체육관 실내 무대',
+    progressHint: '6층 교무실 20번 자리에서 🔑 [2학년 체육관 열쇠]를 찾아 체육관 무대로 전해드리세요.',
     minLevel: 12,
+    cleanupItem: 'item_gym_key',
     title: '🔑 체육선생님의 심부름 (Gym Key Delivery)',
     story: '교무실 20번 자리(2학년 체육선생님 자리)에 선생님이 깜빡하고 두고 가신 체육관 열쇠를 발견했다!\n이 열쇠로 체육관 문을 열고 들어가, 체육관 안쪽 강연 무대 위에 계신 리졍놤(2학년 체육) 선생님께 직접 열쇠를 전해드리자!',
+    inProgressStory: '아직 [🔑 2학년 체육관 열쇠]를 찾지 못했더구나! 6층 교무실 20번 자리에서 열쇠를 챙겨 체육관 안쪽 강연 무대로 가져오렴!',
+    completeStory: '오오! 교무실 20번 자리에 두고 온 열쇠를 챙겨와 주었구나! 정말 고맙다!\n약속한 심부름 보상으로 [🪙 100 G]와 [🧪 초소형 경험치 물약 3개]를 주마!',
+    doneStory: '네가 열쇠를 전해준 덕분에 체육관 문을 열 수 있었단다. 고맙다!',
     objectives: [
       {
         id: 'pe_key_collect',
@@ -1745,12 +1788,15 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherRole: '2학년 체육',
     teacherAvatar: '👨‍🏫',
     teacherSeat: '체육관 무대',
+    returnLocation: '체육관 실내 무대',
+    progressHint: '체육관 실내 농구장에서 8단원 배틀로 몬스터 3마리를 토벌하세요.',
     minLevel: 13,
     requiresDone: 'quest_pe_errand',
     title: '🏀 실내 농구장을 점거한 폭주 농구 몬스터 토벌 & 8단원 테스트',
     story: '덕분에 체육관 문을 열고 무사히 들어왔는데 큰일이란다!\n실내 농구 코트를 폭주 농구 몬스터들이 점거해버려서 2학년 체육 수업을 시작할 수가 없구나.\n\n실내 농구장에서 8단원 영어 퀴즈 배틀로 폭주 농구 몬스터 3마리를 토벌하고 실력을 증명해 주렴!',
     inProgressStory: '실내 농구 코트를 배회하는 폭주 농구 몬스터(불멸의 덩크 머신, 백보드 분쇄기, 심판 골렘, 실내 코트 제왕) 중 3마리를 8단원 퀴즈 대결로 토벌하고 돌아오렴!',
     completeStory: '오오! 그 강력한 실내 농구장 몬스터들을 8단원 실력으로 단숨에 제압하다니 정말 놀랍구나!\n덕분에 코트 질서가 완전히 회복되었단다. 약속한 특급 보상으로 [🧪 초소형 경험치 물약 30개]와 [🌟 300 EXP]를 수여하마!',
+    doneStory: '덕분에 실내 농구 코트 질서가 완벽히 회복되었단다. 언제든 8단원 실력을 갈고닦아 보렴! 🏀',
     objectives: [
       {
         id: 'gym_mob_hunt',
@@ -1771,11 +1817,14 @@ window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
     teacherRole: '3학년 체육',
     teacherAvatar: '👨‍🏫',
     teacherSeat: '체육관 창고',
+    returnLocation: '체육관 창고',
+    progressHint: '버스 옆 농구공·관람석 팀 조끼 회수 후 창고 선반 8단원 퀴즈를 완료하세요.',
     minLevel: 14,
     title: '🏀 흩어진 체육 용구 회수 & 창고 재정비',
     story: '폭주 농구 몬스터들이 날뛰는 바람에 수업용 공과 팀 조끼, 라바콘이 체육관 안팎에 엉망으로 흩어졌단다!\n\n1. 체육관 야외 광장(축구부 버스 오른쪽)에 굴러간 🏀 [분실된 수업용 농구공] 주워오기\n2. 체육관 실내 코트 관람석(상단 스탠드 앞)에 흩어진 🦺 [땀에 젖은 팀 조끼 다발] 회수하기\n3. 공·체육복 창고 내부 [📦 창고 선반]과 상호작용해 8단원 퀴즈 1문제를 풀고 깔끔하게 분류·정돈하기\n\n모두 마치고 돌아오면 특급 경험치 물약과 월계수 잎, 골드·경험치를 선물하마!',
     inProgressStory: '아직 정돈이 끝나지 않았구나! 🏀🏐\n\n1. 야외 체육관 광장 축구부 버스 오른쪽에 굴러간 🏀 [분실된 수업용 농구공] 회수\n2. 실내 농구 코트 상단 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수\n3. 이 창고 안쪽의 [📦 창고 선반]을 조사해 8단원 문제를 풀고 용구 분류·정돈하기\n\n세 가지를 모두 마친 뒤 나에게 보고해 주렴!',
     completeStory: '오오! 야외 광장 축구부 버스 옆까지 굴러간 농구공과 관람석의 팀 조끼까지 모두 찾아와 창고 선반에 완벽히 정돈했구나! 👏\n덕분에 3학년 체육 수업을 바로 시작할 수 있겠어. 고맙다! 약속한 정돈 보상을 수여하마!',
+    doneStory: '체육관 용구 정돈 덕분에 3학년 체육 수업 준비가 완벽해졌다! 훌륭해! 👏',
     objectives: [
       {
         id: 'jawsdong_ball',
@@ -2090,24 +2139,63 @@ class MainApp {
   }
 
   initControls() {
-    document.querySelectorAll('.dpad-btn').forEach(btn => {
-      const dir = btn.getAttribute('data-dir');
-      if (!dir) return;
+    const dpadContainer = document.getElementById('dpad-container');
+    const dpadBtns = Array.from(document.querySelectorAll('.dpad-btn[data-dir]'));
+    let activeDpadDir = null;
+    let activeDpadPointerId = null;
 
-      const handlePress = (e) => {
+    const setActiveDpadDir = (nextDir) => {
+      if (activeDpadDir === nextDir) return;
+      if (activeDpadDir) {
+        this.engine.setDirectionInput(activeDpadDir, false);
+        const prevBtn = dpadBtns.find(b => b.getAttribute('data-dir') === activeDpadDir);
+        if (prevBtn) prevBtn.classList.remove('active');
+      }
+      activeDpadDir = nextDir || null;
+      if (activeDpadDir) {
+        this.engine.setDirectionInput(activeDpadDir, true);
+        const nextBtn = dpadBtns.find(b => b.getAttribute('data-dir') === activeDpadDir);
+        if (nextBtn) nextBtn.classList.add('active');
+      }
+    };
+
+    const resolveDpadDirAtPoint = (clientX, clientY) => {
+      const target = document.elementFromPoint(clientX, clientY);
+      const btn = target && target.closest ? target.closest('.dpad-btn[data-dir]') : null;
+      return btn ? btn.getAttribute('data-dir') : null;
+    };
+
+    if (dpadContainer) {
+      dpadContainer.addEventListener('pointerdown', (e) => {
+        const dir = resolveDpadDirAtPoint(e.clientX, e.clientY);
+        if (!dir) return;
         e.preventDefault();
-        this.engine.setDirectionInput(dir, true);
-      };
-      const handleRelease = (e) => {
+        activeDpadPointerId = e.pointerId;
+        if (typeof dpadContainer.setPointerCapture === 'function') {
+          try { dpadContainer.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+        setActiveDpadDir(dir);
+      });
+
+      dpadContainer.addEventListener('pointermove', (e) => {
+        if (activeDpadPointerId !== null && e.pointerId !== activeDpadPointerId) return;
+        if (activeDpadPointerId === null && e.buttons === 0) return;
         e.preventDefault();
-        this.engine.setDirectionInput(dir, false);
+        const dir = resolveDpadDirAtPoint(e.clientX, e.clientY);
+        if (dir) setActiveDpadDir(dir);
+      });
+
+      const releaseDpad = (e) => {
+        if (activeDpadPointerId !== null && e.pointerId !== activeDpadPointerId) return;
+        if (e) e.preventDefault();
+        activeDpadPointerId = null;
+        setActiveDpadDir(null);
       };
 
-      btn.addEventListener('pointerdown', handlePress);
-      btn.addEventListener('pointerup', handleRelease);
-      btn.addEventListener('pointerleave', handleRelease);
-      btn.addEventListener('pointercancel', handleRelease);
-    });
+      dpadContainer.addEventListener('pointerup', releaseDpad);
+      dpadContainer.addEventListener('pointercancel', releaseDpad);
+      dpadContainer.addEventListener('lostpointercapture', releaseDpad);
+    }
 
     const btnA = document.getElementById('btn-action-a');
     const btnB = document.getElementById('btn-action-b');
@@ -2269,6 +2357,16 @@ class MainApp {
       });
     }
 
+    const resetInputOnBlur = () => {
+      if (this.engine && typeof this.engine.resetInputState === 'function') {
+        this.engine.resetInputState();
+      }
+    };
+    window.addEventListener('blur', resetInputOnBlur);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) resetInputOnBlur();
+    });
+
     window.addEventListener('keydown', (e) => {
       // [ESC] 키로 모든 활성 모달 / 팝업 즉시 닫기
       if (e.key === 'Escape') {
@@ -2282,13 +2380,86 @@ class MainApp {
         }
       }
 
-      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT' || (document.activeElement && document.activeElement.isContentEditable)) return;
+
       const arModal = document.getElementById('modal-acid-rain');
       if (arModal && !arModal.classList.contains('hidden')) return;
       const peModal = document.getElementById('modal-pe-jump-challenge');
       if (peModal && !peModal.classList.contains('hidden')) return;
       const uphillModal = document.getElementById('modal-uphill-rush');
       if (uphillModal && !uphillModal.classList.contains('hidden')) return;
+
+      // 1~4 숫자 키로 퀴즈 / 배틀 / 레이드 선택지 즉시 선택
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4')) {
+        const optIdx = Number(e.key) - 1;
+        const choiceSelectors = [
+          { modalId: 'modal-field-battle', optSel: '#battle-quiz-options .quiz-opt-btn' },
+          { modalId: 'modal-boss-raid', optSel: '#raid-quiz-options .quiz-opt-btn' },
+          { modalId: 'modal-quiz', optSel: '#quiz-options .quiz-opt-btn' },
+          { modalId: 'modal-recycle-quiz', optSel: '#recycle-quiz-options button' }
+        ];
+        for (const cfg of choiceSelectors) {
+          const modalEl = document.getElementById(cfg.modalId);
+          if (modalEl && !modalEl.classList.contains('hidden')) {
+            const btns = Array.from(modalEl.querySelectorAll(cfg.optSel));
+            const targetBtn = btns[optIdx];
+            if (targetBtn && !targetBtn.disabled && targetBtn.offsetParent !== null) {
+              e.preventDefault();
+              targetBtn.click();
+            }
+            return;
+          }
+        }
+      }
+
+      // RPG 대화창은 Space/Enter로만 넘기고 배경 이동은 차단
+      if (window.RPGDialog && window.RPGDialog.isOpen) {
+        if (this.engine && typeof this.engine.resetInputState === 'function') {
+          this.engine.resetInputState();
+        }
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          window.RPGDialog.advance();
+        }
+        return;
+      }
+
+      // 다른 모달이 열려 있을 때 배경 캐릭터 이동/상호작용 차단 (Stuck-Key 방지)
+      if (this.hasOpenModal()) {
+        if (this.engine && typeof this.engine.resetInputState === 'function') {
+          this.engine.resetInputState();
+        }
+        return;
+      }
+
+      // 단축키 (I: 가방, C: 제작, M: 로드맵)
+      const isLoggedIn = !this.modalLogin || this.modalLogin.classList.contains('hidden');
+      if (isLoggedIn && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key === 'i' || e.key === 'I') {
+          e.preventDefault();
+          if (this.modalInventory && !this.modalInventory.classList.contains('hidden')) {
+            this.modalInventory.classList.add('hidden');
+          } else {
+            this.openInventory();
+          }
+          return;
+        }
+        if (e.key === 'c' || e.key === 'C') {
+          e.preventDefault();
+          if (this.craftingManager && typeof this.craftingManager.open === 'function') {
+            this.craftingManager.open();
+          }
+          return;
+        }
+        if (e.key === 'm' || e.key === 'M') {
+          e.preventDefault();
+          if (typeof this.openRoadmapModal === 'function') {
+            this.openRoadmapModal();
+          }
+          return;
+        }
+      }
 
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.engine.setDirectionInput('up', true);
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.engine.setDirectionInput('down', true);
@@ -2304,10 +2475,6 @@ class MainApp {
       }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        if (window.RPGDialog && window.RPGDialog.isOpen) {
-          window.RPGDialog.advance();
-          return;
-        }
         if (window.BrawlBall && window.BrawlBall.tryKick()) {
           return;
         }
@@ -2348,6 +2515,11 @@ class MainApp {
     window.addEventListener('resize', () => this.engine.resize());
   }
 
+  hasOpenModal() {
+    if (window.RPGDialog && window.RPGDialog.isOpen) return true;
+    return Boolean(document.querySelector('.modal-overlay:not(.hidden)'));
+  }
+
   // [ESC] 키로 모든 활성 모달 / 다이얼로그 즉시 닫기
   closeTopModal() {
     // 1. RPGDialog if open
@@ -2383,8 +2555,11 @@ class MainApp {
       topModal.classList.add('hidden');
     }
 
-    if (topModal.id === 'modal-crafting' && window.CraftingManager) {
-      try { window.CraftingManager.close(); } catch (e) {}
+    if (topModal.id === 'modal-crafting' && this.craftingManager) {
+      try { this.craftingManager.close(); } catch (e) {}
+    }
+    if (topModal.id === 'modal-pe-jump-challenge' && typeof this.cleanupPeJumpMiniGame === 'function') {
+      try { this.cleanupPeJumpMiniGame(); } catch (e) {}
     }
 
     if (window.AudioManager && typeof window.AudioManager.playSelect === 'function') {
@@ -2609,10 +2784,10 @@ class MainApp {
       });
     } else if (target.type === 'gym_gate') {
       const playerLv = Number(this.playerData && this.playerData.level) || 1;
-      if (playerLv < 12 && !this.playerData.isTeacher) {
+      if (playerLv < 10 && !this.playerData.isTeacher) {
         this.showGameDialog(
-          '숭실 체육관 구역 입장 제한 (Lv.12+)',
-          `"🏛️ 숭실 체육관 및 주차장 구역은 Lv.12 이상부터 입장할 수 있습니다!\n\n• 현재 레벨: Lv.${playerLv}\n• 필요 레벨: Lv.12 이상\n\n운동장·역사관·급식실에서 성장해 Lv.12를 달성한 뒤 다시 찾아와 주세요!"`,
+          '숭실 체육관 구역 입장 제한 (Lv.10+)',
+          `"🏛️ 숭실 체육관 및 주차장 구역은 Lv.10 이상부터 입장할 수 있습니다!\n(Lv.10: 야외 배움터 지킴이 · 업힐러쉬 가능 / Lv.12+: 체육관 실내 농구장)\n\n• 현재 레벨: Lv.${playerLv}\n• 필요 레벨: Lv.10 이상"`,
           '🔒'
         );
         return;
@@ -3391,6 +3566,7 @@ class MainApp {
             this.playerData.quests['quest_cafeteria_order'] = { status: 'in_progress', targetCalmed: false };
             this.showToast('🍱 [급식실 퀘스트 시작] 배부대의 반찬 조르는 학생을 1:1 퀴즈로 진정시키세요!', 'info');
             this.saveProgress();
+            this.updateQuestTracker();
           },
           () => {},
           '선생님, 제가 설득해 볼게요! (수락)',
@@ -3415,6 +3591,8 @@ class MainApp {
       q1.status = 'done';
       this.addGold(150);
       this.addExp(200);
+      this.saveProgress();
+      this.updateQuestTracker();
       if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
         window.AudioManager.playFanfare();
       }
@@ -3430,6 +3608,7 @@ class MainApp {
             this.playerData.quests['quest_cafeteria_manners'] = { status: 'in_progress', targetCalmed: false };
             this.showToast('🍽️ [연계 퀘스트 시작] 식탁에서 떠드는 학생을 1:1 퀴즈로 진정시키세요!', 'info');
             this.saveProgress();
+            this.updateQuestTracker();
           },
           () => {},
           '네, 식사 예절도 지도할게요! (수락)',
@@ -3453,6 +3632,7 @@ class MainApp {
             this.playerData.quests['quest_cafeteria_manners'] = { status: 'in_progress', targetCalmed: false };
             this.showToast('🍽️ [연계 퀘스트 시작] 식탁에서 떠드는 학생을 1:1 퀴즈로 진정시키세요!', 'info');
             this.saveProgress();
+            this.updateQuestTracker();
           },
           () => {},
           '제가 진정시킬게요! (수락)',
@@ -3477,6 +3657,7 @@ class MainApp {
       q2.status = 'done';
       this.addGold(100);
       this.addExp(200);
+      this.updateQuestTracker();
       this.addItem('item_nutrition_essence', '정제된 영양의 정수', 2, '🍱', {
         type: 'material',
         effect: '급식실 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료'
@@ -4087,7 +4268,7 @@ class MainApp {
       if (btnSubmit && inputPwd) {
         btnSubmit.addEventListener('click', () => {
           const curClues = this.playerData.careerClues || [];
-          const curSolved = curClues.filter(Boolean).length;
+          const curSolved = curClues.slice(0, 6).filter(Boolean).length;
           if (curSolved < 6) {
             alert(`🔒 아직 6개의 직업 단서를 모두 찾지 못했습니다! (현재 발견: ${curSolved} / 6개)\n방 안의 가구들을 조사하여 부족한 단서를 먼저 모아오세요!`);
             return;
@@ -4697,12 +4878,15 @@ class MainApp {
     const trackEl = document.getElementById('pe-rhythm-track');
     const indicatorEl = document.getElementById('pe-rhythm-indicator');
 
+    if (typeof this.cleanupPeJumpMiniGame === 'function') {
+      this.cleanupPeJumpMiniGame();
+    }
+
     // Reset overlay
     if (victoryOverlay) victoryOverlay.classList.add('hidden');
 
     let jumpCount = 0;
     const maxJumps = 5;
-    let animFrameId = null;
     let isJumpingCooldown = false;
     let isGameOver = false;
 
@@ -4774,10 +4958,10 @@ class MainApp {
         indicatorEl.style.transform = `translateX(${px}px)`;
       }
 
-      animFrameId = requestAnimationFrame(renderLoop);
+      this._peJumpAnimId = requestAnimationFrame(renderLoop);
     };
 
-    animFrameId = requestAnimationFrame(renderLoop);
+    this._peJumpAnimId = requestAnimationFrame(renderLoop);
 
     // Jump trigger handler
     const doJump = () => {
@@ -4819,7 +5003,10 @@ class MainApp {
         if (jumpCount >= maxJumps) {
           // Victory!
           isGameOver = true;
-          cancelAnimationFrame(animFrameId);
+          if (this._peJumpAnimId) {
+            cancelAnimationFrame(this._peJumpAnimId);
+            this._peJumpAnimId = null;
+          }
           if (speechEl) speechEl.innerText = "와하하! 5회 완주 대성공이다! 훌륭하군!";
 
           if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
@@ -4894,14 +5081,13 @@ class MainApp {
       }
     };
 
-    window.addEventListener('keydown', keyHandler, true);
-
     const closeModal = () => {
       isGameOver = true;
-      if (animFrameId) cancelAnimationFrame(animFrameId);
-      window.removeEventListener('keydown', keyHandler, true);
-      modal.classList.add('hidden');
+      this.cleanupPeJumpMiniGame();
     };
+
+    this._peJumpKeyHandler = keyHandler;
+    window.addEventListener('keydown', keyHandler, true);
 
     if (btnCloseX) {
       btnCloseX.onclick = closeModal;
@@ -4945,6 +5131,19 @@ class MainApp {
     }
 
     modal.classList.remove('hidden');
+  }
+
+  cleanupPeJumpMiniGame() {
+    if (this._peJumpAnimId) {
+      cancelAnimationFrame(this._peJumpAnimId);
+      this._peJumpAnimId = null;
+    }
+    if (this._peJumpKeyHandler) {
+      window.removeEventListener('keydown', this._peJumpKeyHandler, true);
+      this._peJumpKeyHandler = null;
+    }
+    const modal = document.getElementById('modal-pe-jump-challenge');
+    if (modal) modal.classList.add('hidden');
   }
 
   handleTeacherCarEasterEgg() {
@@ -5383,7 +5582,7 @@ class MainApp {
           this.showToast('📚 [숭실 3대 덕목 - 지(智)] 도서관 & 역사관 사료 열람 완료! 지혜 증명 완료!', 'success');
         }
       } else {
-        this.showToast('🏛️ [숭실 3대 덕목 - 지(智)] 4층 숭실 역사관 열람 완료! (2층 도서관 역사 서가도 방문하세요)', 'info');
+        this.showToast('🏛️ [숭실 3대 덕목 - 지(智)] 운동장 남동쪽 숭실 역사관 열람 완료! (2층 도서관 역사 서가도 방문하세요)', 'info');
       }
     }
 
@@ -5406,7 +5605,7 @@ class MainApp {
         `🎉 [숭실역사관 4대 전시관 완벽 답사 달성!]\n` +
         `숭실 127년의 유구한 역사와 숭고한 정신을 모두 마음에 새겼습니다!\n\n` +
         `🏛️ 특별 한정 칭호 [${titleName}]를 획득 및 자동 착용했습니다!\n` +
-        `• 칭호 효과: 공격력 +10, 체력 +30 및 기말고사 파멸신 추가 타격 혜택!`
+        `• 숭실 127년의 역사를 가슴에 새긴 명예 칭호입니다!`
       );
       return;
     }
@@ -6286,6 +6485,11 @@ class MainApp {
           this.playerData.hiddenQuestCareer1 = saved.hiddenQuestCareer1 || (studentId ? localStorage.getItem('soongsil_hidden_career_1_' + studentId) : null) || null;
           this.playerData.hasHangangwooBookmark = !!(saved.hasHangangwooBookmark || (studentId && localStorage.getItem('soongsil_hangangwoo_bookmark_' + studentId) === 'true'));
           this.playerData.hiddenQuestCareer2 = saved.hiddenQuestCareer2 || (studentId ? localStorage.getItem('soongsil_hidden_career_2_' + studentId) : null) || null;
+          this.playerData.uphillTopRecords = Array.isArray(saved.uphillTopRecords) ? saved.uphillTopRecords : [];
+          this.playerData.uphillBestTime = saved.uphillBestTime || null;
+          this.playerData.uphillCleared = !!(saved.uphillCleared || (studentId && localStorage.getItem('soongsil_uphill_cleared_' + studentId) === 'true'));
+          this.playerData.visitedBookshelves = Array.isArray(saved.visitedBookshelves) ? saved.visitedBookshelves : [];
+          this.playerData.juncheolGuestbookNote = saved.juncheolGuestbookNote || (studentId ? localStorage.getItem('soongsil_juncheol_note_' + studentId) : '') || '';
           console.log(`[Storage] 학생(${studentId}) 누적 영구 데이터 복구 완료: Lv.${this.playerData.level}, ${this.playerData.gold}G, 인벤토리 ${this.playerData.inventory.length}종, 호칭: ${this.playerData.equippedTitle || '없음'}, 1차골렘클리어: ${this.playerData.hasClearedFirstBoss}, 704클리어: ${this.playerData.hasClearedClass704}`);
         } else {
           this.playerData.hasReceivedSoongsilGift = (studentId && localStorage.getItem('soongsil_gift_' + studentId) === 'true');
@@ -6334,6 +6538,11 @@ class MainApp {
           this.playerData.hiddenQuestCareer1 = studentId ? localStorage.getItem('soongsil_hidden_career_1_' + studentId) : null;
           this.playerData.hasHangangwooBookmark = !!(studentId && localStorage.getItem('soongsil_hangangwoo_bookmark_' + studentId) === 'true');
           this.playerData.hiddenQuestCareer2 = studentId ? localStorage.getItem('soongsil_hidden_career_2_' + studentId) : null;
+          this.playerData.uphillTopRecords = [];
+          this.playerData.uphillBestTime = null;
+          this.playerData.uphillCleared = !!(studentId && localStorage.getItem('soongsil_uphill_cleared_' + studentId) === 'true');
+          this.playerData.visitedBookshelves = [];
+          this.playerData.juncheolGuestbookNote = (studentId ? localStorage.getItem('soongsil_juncheol_note_' + studentId) : '') || '';
           this.playerData.quests = {};
           if (studentId) {
             try {
@@ -6407,70 +6616,15 @@ class MainApp {
         window.__soongsilBeforeUnloadBound = true;
         window.addEventListener('beforeunload', () => {
           if (this.playerData && !this.playerData.isTeacher && this.playerData.studentId && this.playerData.studentId !== '교사') {
-            const saveData = {
-              name: this.playerData.name,
-              studentId: this.playerData.studentId,
-              grade: this.playerData.grade,
-              level: this.playerData.level,
-              exp: this.playerData.exp,
-              gold: this.playerData.gold,
-              hp: (this.playerData.hp !== undefined && this.playerData.hp !== null) ? this.playerData.hp : 100,
-              maxHp: this.playerData.maxHp || 100,
-              isFallen: !!this.playerData.isFallen,
-              baseHp: this.playerData.baseHp,
-              baseAtk: this.playerData.baseAtk,
-              baseDef: this.playerData.baseDef,
-              atk: this.playerData.atk,
-              def: this.playerData.def,
-              inventory: this.playerData.inventory,
-              equipment: this.playerData.equipment,
-              isAccessory2Unlocked: this.playerData.isAccessory2Unlocked,
-              hairColor: this.playerData.hairColor,
-              outfitColor: this.playerData.outfitColor,
-              hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
-              hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
-              hasCheckedMirror: !!this.playerData.hasCheckedMirror,
-              hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
-              hasCheckedSchoolBus: !!this.playerData.hasCheckedSchoolBus,
-              hasShockedEVCharger: !!this.playerData.hasShockedEVCharger,
-              hasClearedPEJump: !!this.playerData.hasClearedPEJump,
-              healthCabinetClaimed: !!this.playerData.healthCabinetClaimed,
-              hasReadDevNote: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
-              hasReadDevNote1: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
-              hasReadDevNote2: !!this.playerData.hasReadDevNote2,
-              hasReadDevNote3: !!this.playerData.hasReadDevNote3,
-              hasReadDevNote4: !!this.playerData.hasReadDevNote4,
-              hasReadDevNote5: !!this.playerData.hasReadDevNote5,
-              hasOpenedTimeCapsule: !!this.playerData.hasOpenedTimeCapsule,
-              timeCapsuleUnlocked: !!this.playerData.timeCapsuleUnlocked,
-              timeCapsuleRewardClaimed: !!this.playerData.timeCapsuleRewardClaimed,
-              timeCapsuleClues: Array.isArray(this.playerData.timeCapsuleClues) ? this.playerData.timeCapsuleClues : [false, false, false, false],
-              virtuePhysiqueDone: !!this.playerData.virtuePhysiqueDone,
-              virtueMannerDone: !!this.playerData.virtueMannerDone,
-              virtueWisdomDone: !!this.playerData.virtueWisdomDone,
-              virtueWisdomLibrary: !!this.playerData.virtueWisdomLibrary,
-              virtueWisdomMuseum: !!this.playerData.virtueWisdomMuseum,
-              virtuesQuestCompleted: !!this.playerData.virtuesQuestCompleted,
-              hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
-              hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
-              hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
-              hasClearedClass704: !!this.playerData.hasClearedClass704,
-        hasCafeteriaKey: !!this.playerData.hasCafeteriaKey,
-              job: this.playerData.job || null,
-              hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
-              careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
-              historyVitrines: Array.isArray(this.playerData.historyVitrines) ? this.playerData.historyVitrines : [false, false, false, false],
-              solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
-              titles: this.playerData.titles || [],
-              equippedTitle: this.playerData.equippedTitle || null,
-              secretHistoryRoomUnlocked: !!this.playerData.secretHistoryRoomUnlocked,
-              openedSecretHistoryChest: !!this.playerData.openedSecretHistoryChest,
-              updatedAt: Date.now()
-            };
+            const saveData = this.buildProgressSavePayload();
             try {
               localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
               if (navigator.sendBeacon) {
-                navigator.sendBeacon('/api/save-progress', JSON.stringify({ studentId: saveData.studentId, progress: saveData }));
+                navigator.sendBeacon('/api/save-progress', JSON.stringify({
+                  studentId: saveData.studentId,
+                  studentAuthToken: this.playerData.studentAuthToken || '',
+                  progress: saveData
+                }));
               }
             } catch (e) {}
           }
@@ -6696,16 +6850,20 @@ class MainApp {
     }
 
     // 1:1 Field Monster Battle Modal buttons
+    const requestBattleFlee = () => {
+      if (this.currentFieldMob && this.currentFieldMob.hp > 0 && this.playerData && this.playerData.hp > 0) {
+        const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 전투에서 물러나시겠습니까?');
+        if (!flee) return;
+      }
+      this.closeFieldBattleModal();
+    };
     const btnCloseBattleX = document.getElementById('btn-close-battle-x');
     if (btnCloseBattleX && this.modalFieldBattle) {
-      btnCloseBattleX.addEventListener('click', () => this.closeFieldBattleModal());
+      btnCloseBattleX.addEventListener('click', requestBattleFlee);
     }
     const btnBattleFlee = document.getElementById('btn-battle-flee');
     if (btnBattleFlee && this.modalFieldBattle) {
-      btnBattleFlee.addEventListener('click', () => {
-        const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 전투에서 물러나시겠습니까?');
-        if (flee) this.closeFieldBattleModal();
-      });
+      btnBattleFlee.addEventListener('click', requestBattleFlee);
     }
     const btnBattleNextTurn = document.getElementById('btn-battle-next-turn');
     if (btnBattleNextTurn) {
@@ -7188,7 +7346,7 @@ class MainApp {
     return true;
   }
 
-  // 가방 아이템 자동 정렬 (장비 -> 소비/물약 -> 재료 순, 세부 티어/이름순)
+  // 가방 아이템 자동 정렬 (장비 -> 소비/물약 -> 재료 -> 퀘스트 순, 세부 티어/이름순)
   sortInventory() {
     if (!this.playerData || !this.playerData.inventory) return;
 
@@ -7196,23 +7354,41 @@ class MainApp {
       window.AudioManager.playSelect();
     }
 
+    const isQuestEntry = (item) => {
+      const catalogMeta = (item && item.item && ALL_GAME_ITEMS[item.item] && ALL_GAME_ITEMS[item.item].meta) || {};
+      return !!(item && (item.type === 'quest' || item.isQuestItem || catalogMeta.type === 'quest' || catalogMeta.isQuestItem || item.item === 'equip_elevator_pass'));
+    };
+
     const getCategoryRank = (item) => {
-      const isEquip = (item.item !== 'equip_elevator_pass') && (item.type === 'equipment' || (item.item && item.item.startsWith('equip_')));
+      if (isQuestEntry(item)) return 4;
+      const isEquip = (item.type === 'equipment' || (item.item && item.item.startsWith('equip_')));
       const isConsumable = (item.type === 'consumable' || (item.item && (item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'))));
       if (isEquip) return 1;
       if (isConsumable) return 2;
       return 3; // Materials & other
     };
 
-    const getEquipSlotRank = (slot) => {
-      switch (slot) {
+    const getEquipSlotRank = (slot, itemId = '') => {
+      const resolvedSlot = slot || (ALL_GAME_ITEMS[itemId] && ALL_GAME_ITEMS[itemId].meta && ALL_GAME_ITEMS[itemId].meta.slot) || '';
+      switch (resolvedSlot) {
         case 'weapon': return 1;
         case 'armor': return 2;
         case 'head': case 'helmet': return 3;
-        case 'boots': return 4;
+        case 'boots': case 'shoes': return 4;
         case 'accessory': return 5;
         default: return 6;
       }
+    };
+
+    const getEquipTier = (item) => {
+      if (item && Number(item.tier) > 0) return Number(item.tier);
+      const id = (item && item.item) || '';
+      if (id.includes('immortal') || id === 'equip_victory_medal') return 5;
+      if (id.includes('heritage') || id === 'equip_omr_wand') return 4;
+      if (id.includes('bronze') || id === 'equip_ginkgo_talisman') return 3;
+      if (id.includes('leather') || id === 'equip_forsythia_ring') return 2;
+      if (id.includes('wood') || id === 'equip_shoes_samdidas' || id === 'equip_vintage_armband') return 1;
+      return 0;
     };
 
     const getConsumableRank = (itemId) => {
@@ -7234,11 +7410,11 @@ class MainApp {
 
       // Same category: Equipment
       if (catA === 1) {
-        const slotA = getEquipSlotRank(a.slot);
-        const slotB = getEquipSlotRank(b.slot);
+        const slotA = getEquipSlotRank(a.slot, a.item);
+        const slotB = getEquipSlotRank(b.slot, b.item);
         if (slotA !== slotB) return slotA - slotB;
-        const tierA = a.tier || 0;
-        const tierB = b.tier || 0;
+        const tierA = getEquipTier(a);
+        const tierB = getEquipTier(b);
         if (tierA !== tierB) return tierB - tierA; // Higher tier first
       }
 
@@ -7269,15 +7445,22 @@ class MainApp {
 
     const currentTab = this.currentInvTab || 'all';
 
+    const classifyItem = (item) => {
+      const catalogMeta = (item && item.item && ALL_GAME_ITEMS[item.item] && ALL_GAME_ITEMS[item.item].meta) || {};
+      const isQuest = !!(item && (item.type === 'quest' || item.isQuestItem || catalogMeta.type === 'quest' || catalogMeta.isQuestItem || item.item === 'equip_elevator_pass'));
+      const isEquip = !isQuest && !!(item && (item.type === 'equipment' || (item.item && item.item.startsWith('equip_'))));
+      const isPotion = !isQuest && !isEquip && !!(item && (item.type === 'consumable' || (item.item && (item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir')))));
+      const isMaterial = !isQuest && !isEquip && !isPotion;
+      return { catalogMeta, isQuest, isEquip, isPotion, isMaterial };
+    };
+
     // Filter items based on current category tab
     const filteredItems = this.playerData.inventory.filter(item => {
-      const isEquip = (item.item !== 'equip_elevator_pass') && (item.type === 'equipment' || item.item.startsWith('equip_'));
-      const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'));
-      const isMaterial = !isEquip && !isPotion;
-
+      const { isQuest, isEquip, isPotion, isMaterial } = classifyItem(item);
       if (currentTab === 'equipment') return isEquip;
       if (currentTab === 'consumable') return isPotion;
       if (currentTab === 'material') return isMaterial;
+      if (currentTab === 'quest') return isQuest;
       return true; // 'all'
     });
 
@@ -7292,12 +7475,12 @@ class MainApp {
       if (currentTab === 'equipment') tabName = '장비 아이템';
       else if (currentTab === 'consumable') tabName = '소비 아이템';
       else if (currentTab === 'material') tabName = '재료 아이템';
+      else if (currentTab === 'quest') tabName = '퀘스트 아이템';
       emptyMsg.innerText = `🎒 보유 중인 ${tabName}이 없습니다.`;
       this.invGrid.appendChild(emptyMsg);
     } else {
       filteredItems.forEach(item => {
-        const isEquip = (item.item !== 'equip_elevator_pass') && (item.type === 'equipment' || item.item.startsWith('equip_'));
-        const isPotion = (item.type === 'consumable' || item.item.includes('potion') || item.item.includes('scroll') || item.item.includes('elixir'));
+        const { catalogMeta, isQuest, isEquip, isPotion } = classifyItem(item);
         const isScroll = (item.item === 'item_revive_scroll');
         const isReturnScroll = (item.item === 'item_return_scroll');
         const isTeleportScroll = (item.item === 'item_teleport_scroll');
@@ -7306,7 +7489,6 @@ class MainApp {
         const isProtectionPotion = (item.item === 'item_protection_potion');
         const isTinyExpPotion = (item.item === 'item_tiny_exp_potion');
         const isClearPotion = (item.item === 'item_clear_potion');
-        const isElixir = (item.item === 'item_elixir');
         const equippedNow = isEquip && this.isItemEquipped(item.item);
 
         const card = document.createElement('div');
@@ -7314,7 +7496,6 @@ class MainApp {
 
         // Determine item stats & effect text badge
         let statBadgeHtml = '';
-        const catalogMeta = ALL_GAME_ITEMS[item.item]?.meta || {};
         const stats = item.stats || item.meta?.stats || catalogMeta.stats;
         const effect = catalogMeta.effect || item.effect || item.meta?.effect;
         const heal = catalogMeta.heal || item.heal || item.meta?.heal;
@@ -7347,6 +7528,9 @@ class MainApp {
             const healAmount = heal || 10;
             statBadgeHtml = `<span class="inv-item-stat-badge potion">🧪 체력 +${healAmount} 즉시 회복</span>`;
           }
+        } else if (isQuest) {
+          const questDesc = effect || '퀘스트 진행 및 특수 인가 아이템';
+          statBadgeHtml = `<span class="inv-item-stat-badge material" style="color:#fde047;">🔑 ${questDesc}</span>`;
         } else {
           // Material
           const matDesc = effect || '장비 제작 및 상위 합성 재료';
@@ -7406,6 +7590,9 @@ class MainApp {
           } else if (isScroll) {
             btnClass = 'btn-inv-scroll';
             btnText = '사용';
+          } else if (isTinyExpPotion) {
+            btnClass = 'btn-inv-potion';
+            btnText = '1개';
           } else if (isCouragePotion) {
             btnClass = 'btn-inv-courage';
             btnText = '마시기';
@@ -7417,30 +7604,51 @@ class MainApp {
           btn.className = 'btn-inv-action ' + btnClass;
           btn.innerText = btnText;
 
-          const handleUse = () => {
+          const handleUse = (qty = 1) => {
             if (isTeleportScroll) this.useTeleportScroll();
             else if (isReturnScroll) this.useReturnScroll();
             else if (isScroll) this.attemptUseReviveScroll();
             else if (isGreenPotion) this.useGreenPotion();
             else if (isCouragePotion) this.useCouragePotion();
             else if (isProtectionPotion) this.useProtectionPotion();
-            else if (isTinyExpPotion) this.useExpPotion('item_tiny_exp_potion');
+            else if (isTinyExpPotion) this.useExpPotion('item_tiny_exp_potion', qty);
             else this.usePotion(item.item);
           };
 
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            handleUse();
+            handleUse(1);
           });
           card.style.cursor = 'pointer';
           card.addEventListener('click', () => {
-            handleUse();
+            handleUse(1);
           });
           actionArea.appendChild(btn);
+
+          if (isTinyExpPotion && item.count > 1) {
+            if (item.count >= 10) {
+              const btn10 = document.createElement('button');
+              btn10.className = 'btn-inv-action btn-inv-return';
+              btn10.innerText = '10개';
+              btn10.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleUse(10);
+              });
+              actionArea.appendChild(btn10);
+            }
+            const btnAll = document.createElement('button');
+            btnAll.className = 'btn-inv-action btn-inv-courage';
+            btnAll.innerText = '전체';
+            btnAll.addEventListener('click', (e) => {
+              e.stopPropagation();
+              handleUse(item.count);
+            });
+            actionArea.appendChild(btnAll);
+          }
         } else {
           const tag = document.createElement('span');
           tag.className = 'inv-material-tag';
-          tag.innerText = '재료';
+          tag.innerText = isQuest ? '퀘스트' : '재료';
           actionArea.appendChild(tag);
         }
 
@@ -7916,7 +8124,7 @@ class MainApp {
       }
     }
 
-    if (hasParticipated || isModalOpen || isInBossRoom || isInPlayground) {
+    if (hasParticipated || isModalOpen) {
       this.addGold(data.rewardGold || 100);
       this.addExp(data.rewardExp || 200);
 
@@ -8484,6 +8692,9 @@ class MainApp {
 
   closeFieldBattleModal() {
     if (this.currentFieldMob) {
+      if (this.currentFieldMob.hp > 0 && this.currentFieldMob.maxHp) {
+        this.currentFieldMob.hp = this.currentFieldMob.maxHp;
+      }
       this.currentFieldMob.inBattle = false;
       this.currentFieldMob = null;
     }
@@ -8719,13 +8930,16 @@ class MainApp {
         if (this.engine && this.engine.player) {
           this.engine.player.isFallen = true;
         }
-        this.saveProgress();
+        if (this.networkManager && this.networkManager.socket) {
+          this.networkManager.socket.emit('player_fallen', { name: this.playerData.name });
+        }
+        this.saveProgress(true);
         setTimeout(() => {
           this.closeFieldBattleModal();
           if (window.RPGDialog) {
             window.RPGDialog.confirm(
               '😵 전투 패배',
-              `${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n1학년 복도(보건실)로 안전하게 귀환하시겠습니까?\n(취소 시 가방의 물약을 사용하여 회복할 수 있습니다)`,
+              `${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n7층 복도(안전 구역)로 귀환하시겠습니까?\n(취소 시 현 위치에서 동료의 부활 주문서를 기다립니다)`,
               '💀',
               () => {
                 this.respawnAtHallway();
@@ -8736,7 +8950,7 @@ class MainApp {
             );
           } else {
             const respawn = confirm(
-              `😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n1학년 복도(보건실)로 안전하게 귀환하시겠습니까?\n(취소 시 가방의 물약을 사용하여 회복할 수 있습니다)`
+              `😵 [전투 패배]\n\n${mob.name}의 강력한 일격에 쓰러졌습니다!\n\n7층 복도(안전 구역)로 귀환하시겠습니까?\n(취소 시 현 위치에서 동료의 부활 주문서를 기다립니다)`
             );
             if (respawn) {
               this.respawnAtHallway();
@@ -9025,15 +9239,22 @@ class MainApp {
     }
   }
 
-  onFieldMonstersState(state) {
-    if (!state || !window.WORLD_DATA || !WORLD_DATA.playground) return;
-    const now = Date.now();
-    const allMobs = [
-      ...(WORLD_DATA.playground.basketballMonsters || []),
-      ...(WORLD_DATA.playground.futsalMonsters || []),
-      ...((WORLD_DATA.classroom_gym && WORLD_DATA.classroom_gym.gymMonsters) || [])
+  _getAllFieldMobList() {
+    if (!window.WORLD_DATA) return [];
+    const pg = WORLD_DATA.playground || {};
+    return [
+      ...(pg.basketballMonsters || []),
+      ...(pg.futsalMonsters || []),
+      ...((WORLD_DATA.classroom_gym && WORLD_DATA.classroom_gym.gymMonsters) || []),
+      ...((WORLD_DATA.classroom_history && WORLD_DATA.classroom_history.historyMonsters) || []),
+      ...((WORLD_DATA.classroom_cafeteria && WORLD_DATA.classroom_cafeteria.cafeteriaMonsters) || [])
     ];
-    allMobs.forEach(m => {
+  }
+
+  onFieldMonstersState(state) {
+    if (!state || !window.WORLD_DATA) return;
+    const now = Date.now();
+    this._getAllFieldMobList().forEach(m => {
       if (state[m.id] && now < state[m.id]) {
         m.defeated = true;
         m.respawnAt = state[m.id];
@@ -9042,13 +9263,8 @@ class MainApp {
   }
 
   onFieldMonsterDefeatedSync(data) {
-    if (!data || !data.mobId || !window.WORLD_DATA || !WORLD_DATA.playground) return;
-    const allMobs = [
-      ...(WORLD_DATA.playground.basketballMonsters || []),
-      ...(WORLD_DATA.playground.futsalMonsters || []),
-      ...((WORLD_DATA.classroom_gym && WORLD_DATA.classroom_gym.gymMonsters) || [])
-    ];
-    const targetMob = allMobs.find(m => m.id === data.mobId);
+    if (!data || !data.mobId || !window.WORLD_DATA) return;
+    const targetMob = this._getAllFieldMobList().find(m => m.id === data.mobId);
     if (targetMob) {
       targetMob.defeated = true;
       targetMob.respawnAt = data.respawnAt || (Date.now() + 15000);
@@ -9081,16 +9297,18 @@ class MainApp {
       this.bossTimerInterval = null;
     }
 
-    // Warp player to hallway center (15*32, 10*32)
+    // Warp player to 7th floor hallway center (15*32, 10*32)
     if (this.engine) {
       this.engine.triggerFadeWarp(() => {
-        this.engine.warpToRoom('hallway', '1학년 복도', 15 * 32, 10 * 32);
+        this.engine.warpToFloor(7, 15 * 32, 10 * 32);
       });
     }
 
     if (this.networkManager.socket) {
       this.networkManager.socket.emit('player_respawn_hallway');
     }
+
+    this.saveProgress(true);
 
     if (window.AudioManager) {
       window.AudioManager.playRevive();
@@ -9583,7 +9801,7 @@ class MainApp {
     return true;
   }
 
-  async useExpPotion(itemId = 'item_tiny_exp_potion') {
+  async useExpPotion(itemId = 'item_tiny_exp_potion', count = 1) {
     if (!this.playerData || !Array.isArray(this.playerData.inventory)) return false;
     const pot = this.playerData.inventory.find(i => i.item === itemId);
     if (!pot || pot.count <= 0) {
@@ -9596,20 +9814,28 @@ class MainApp {
       return false;
     }
 
+    const reqCount = Math.max(1, Math.min(Math.floor(Number(count) || 1), Number(pot.count) || 1, 100));
     const px = this.engine && this.engine.player ? this.engine.player.x + 16 : undefined;
     const py = this.engine && this.engine.player ? this.engine.player.y - 14 : undefined;
 
     if (this.playerData.isTeacher || this.playerData.studentId === '교사' || !this.playerData.studentId) {
-      this.removeItem(itemId, 1);
-      this.addExp(50);
-      if (this.engine && typeof this.engine.addFloatingText === 'function') {
-        this.engine.addFloatingText('+50 EXP ✨', px, py, '#fbbf24', 18);
+      let used = 0;
+      let totalExp = 0;
+      while (used < reqCount && (Number(this.playerData.level) || 1) < MAX_LEVEL) {
+        this.addExp(50);
+        totalExp += 50;
+        used++;
       }
+      if (used > 0) this.removeItem(itemId, used);
+      if (this.engine && typeof this.engine.addFloatingText === 'function' && totalExp > 0) {
+        this.engine.addFloatingText(`+${totalExp} EXP ✨`, px, py, '#fbbf24', 18);
+      }
+      this.showToast(`🧪 초소형 경험치 물약${used > 1 ? ` x${used}` : ''} 사용! 경험치 +${totalExp} EXP 상승`, 'success');
       this.saveProgress(true);
       if (!this.modalInventory.classList.contains('hidden')) {
         this.openInventory();
       }
-      return true;
+      return used > 0;
     }
 
     if (this._expPotionBusy) return false;
@@ -9621,7 +9847,8 @@ class MainApp {
         headers: this.getStudentAuthHeaders(),
         body: JSON.stringify({
           studentId: this.playerData.studentId,
-          itemId
+          itemId,
+          count: reqCount
         })
       });
       const data = await res.json();
@@ -9633,6 +9860,8 @@ class MainApp {
       this.updatePlayerNameDisplay();
       if (typeof this.updateStatsUI === 'function') this.updateStatsUI();
       const gained = Number(data.expGained) || 50;
+      const usedCount = Number(data.usedCount) || reqCount;
+      const qtyLabel = usedCount > 1 ? ` x${usedCount}` : '';
       if (this.engine && typeof this.engine.addFloatingText === 'function') {
         this.engine.addFloatingText(`+${gained} EXP ✨`, px, py, '#fbbf24', 18);
       }
@@ -9640,12 +9869,12 @@ class MainApp {
         if (window.AudioManager && typeof window.AudioManager.playFanfare === 'function') {
           window.AudioManager.playFanfare();
         }
-        this.showToast(`🎉 레벨 업! Lv.${data.level} 달성! (경험치 물약 +${gained} EXP)`, 'success');
+        this.showToast(`🎉 레벨 업! Lv.${data.level} 달성! (경험치 물약${qtyLabel} +${gained} EXP)`, 'success');
       } else {
         if (window.AudioManager && typeof window.AudioManager.playCollect === 'function') {
           window.AudioManager.playCollect();
         }
-        this.showToast(`🧪 초소형 경험치 물약 사용! 경험치 +${gained} EXP 상승`, 'success');
+        this.showToast(`🧪 초소형 경험치 물약${qtyLabel} 사용! 경험치 +${gained} EXP 상승`, 'success');
       }
       if (!this.modalInventory.classList.contains('hidden')) {
         this.openInventory();
@@ -9689,6 +9918,7 @@ class MainApp {
     this.playerData.hp = Math.max(1, Math.floor(this.playerData.maxHp * 0.5));
     this.updateHpBar();
     this.updateBossRaidUI();
+    this.saveProgress(true);
 
     if (this.networkManager.socket) {
       this.networkManager.socket.emit('player_revive_accepted', {
@@ -9868,59 +10098,6 @@ class MainApp {
         }
         this.onBossRaidStateUpdate({ ...window.BOSS_CONFIG, active: false, stoppedByTeacher: true });
         alert('⏹️ 보스레이드 이벤트를 종료(보스 철수 및 대기 상태 전환)했습니다.');
-      });
-    }
-
-    if (this.networkManager.socket) {
-      this.networkManager.socket.on('teacher_chat_log', (item) => {
-        const row = document.createElement('div');
-        row.className = 'admin-chat-item';
-        row.id = `admin_${item.id}`;
-
-        const infoDiv = document.createElement('div');
-        const tagSpan = document.createElement('span');
-        tagSpan.style.color = '#60a5fa';
-        tagSpan.style.fontWeight = 'bold';
-        tagSpan.textContent = `[${item.grade}학년 / ${item.floor}F] `;
-        const senderB = document.createElement('b');
-        senderB.textContent = `${item.senderName} (${item.studentId})`;
-        const msgText = document.createTextNode(`: ${item.text || ''} `);
-        const timeSmall = document.createElement('small');
-        timeSmall.style.color = '#71717a';
-        timeSmall.style.marginLeft = '6px';
-        timeSmall.textContent = item.time || '';
-        infoDiv.appendChild(tagSpan);
-        infoDiv.appendChild(senderB);
-        infoDiv.appendChild(msgText);
-        infoDiv.appendChild(timeSmall);
-
-        const btnsDiv = document.createElement('div');
-        btnsDiv.className = 'admin-action-btns';
-
-        const btnDel = document.createElement('button');
-        btnDel.className = 'btn-del';
-        btnDel.textContent = '삭제';
-        btnDel.addEventListener('click', () => this.deleteChat(item.id));
-
-        const btnMute = document.createElement('button');
-        btnMute.className = 'btn-mute';
-        btnMute.textContent = '채금';
-        btnMute.addEventListener('click', () => this.muteStudent(item.senderName));
-
-        const btnKick = document.createElement('button');
-        btnKick.className = 'btn-kick';
-        btnKick.style.cssText = 'background:#dc2626; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:11px; cursor:pointer;';
-        btnKick.textContent = '강퇴';
-        btnKick.addEventListener('click', () => this.kickStudent(item.senderId, item.senderName));
-
-        btnsDiv.appendChild(btnDel);
-        btnsDiv.appendChild(btnMute);
-        btnsDiv.appendChild(btnKick);
-
-        row.appendChild(infoDiv);
-        row.appendChild(btnsDiv);
-        chatLogContainer.appendChild(row);
-        chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
       });
     }
 
@@ -10642,6 +10819,61 @@ class MainApp {
     }
   }
 
+  onTeacherChatLog(item) {
+    if (!item || !this.playerData || !this.playerData.isTeacher) return;
+    const chatLogContainer = document.getElementById('admin-chat-logs');
+    if (!chatLogContainer) return;
+
+    const row = document.createElement('div');
+    row.className = 'admin-chat-item';
+    row.id = `admin_${item.id}`;
+
+    const infoDiv = document.createElement('div');
+    const tagSpan = document.createElement('span');
+    tagSpan.style.color = '#60a5fa';
+    tagSpan.style.fontWeight = 'bold';
+    tagSpan.textContent = `[${item.grade}학년 / ${item.floor}F] `;
+    const senderB = document.createElement('b');
+    senderB.textContent = `${item.senderName} (${item.studentId})`;
+    const msgText = document.createTextNode(`: ${item.text || ''} `);
+    const timeSmall = document.createElement('small');
+    timeSmall.style.color = '#71717a';
+    timeSmall.style.marginLeft = '6px';
+    timeSmall.textContent = item.time || '';
+    infoDiv.appendChild(tagSpan);
+    infoDiv.appendChild(senderB);
+    infoDiv.appendChild(msgText);
+    infoDiv.appendChild(timeSmall);
+
+    const btnsDiv = document.createElement('div');
+    btnsDiv.className = 'admin-action-btns';
+
+    const btnDel = document.createElement('button');
+    btnDel.className = 'btn-del';
+    btnDel.textContent = '삭제';
+    btnDel.addEventListener('click', () => this.deleteChat(item.id));
+
+    const btnMute = document.createElement('button');
+    btnMute.className = 'btn-mute';
+    btnMute.textContent = '채금';
+    btnMute.addEventListener('click', () => this.muteStudent(item.senderName));
+
+    const btnKick = document.createElement('button');
+    btnKick.className = 'btn-kick';
+    btnKick.style.cssText = 'background:#dc2626; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:11px; cursor:pointer;';
+    btnKick.textContent = '강퇴';
+    btnKick.addEventListener('click', () => this.kickStudent(item.senderId, item.senderName));
+
+    btnsDiv.appendChild(btnDel);
+    btnsDiv.appendChild(btnMute);
+    btnsDiv.appendChild(btnKick);
+
+    row.appendChild(infoDiv);
+    row.appendChild(btnsDiv);
+    chatLogContainer.appendChild(row);
+    chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
+  }
+
   muteStudent(studentName) {
     if (confirm(`'${studentName}' 학생의 채팅을 10분간 금지하시겠습니까?`)) {
       if (this.networkManager.socket) {
@@ -11322,70 +11554,7 @@ class MainApp {
     if (!this.playerData.studentId || this.playerData.studentId === '교사') return;
 
     try {
-      const saveData = {
-        name: this.playerData.name,
-        studentId: this.playerData.studentId,
-        grade: this.playerData.grade,
-        level: this.playerData.level,
-        exp: this.playerData.exp,
-        gold: this.playerData.gold,
-        hp: (this.playerData.hp !== undefined && this.playerData.hp !== null) ? this.playerData.hp : 100,
-        maxHp: this.playerData.maxHp || 100,
-        isFallen: !!this.playerData.isFallen,
-        baseHp: this.playerData.baseHp,
-        baseAtk: this.playerData.baseAtk,
-        baseDef: this.playerData.baseDef,
-        atk: this.playerData.atk,
-        def: this.playerData.def,
-        inventory: this.playerData.inventory,
-        equipment: this.playerData.equipment,
-        isAccessory2Unlocked: !!this.playerData.isAccessory2Unlocked,
-        hairColor: this.playerData.hairColor,
-        outfitColor: this.playerData.outfitColor,
-        hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
-        hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
-        hasCheckedMirror: !!this.playerData.hasCheckedMirror,
-        hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
-        hasCheckedSchoolBus: !!this.playerData.hasCheckedSchoolBus,
-        hasShockedEVCharger: !!this.playerData.hasShockedEVCharger,
-        hasClearedPEJump: !!this.playerData.hasClearedPEJump,
-        healthCabinetClaimed: !!this.playerData.healthCabinetClaimed,
-        hasReadDevNote: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
-        hasReadDevNote1: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
-        hasReadDevNote2: !!this.playerData.hasReadDevNote2,
-        hasReadDevNote3: !!this.playerData.hasReadDevNote3,
-        hasReadDevNote4: !!this.playerData.hasReadDevNote4,
-        hasReadDevNote5: !!this.playerData.hasReadDevNote5,
-        hasOpenedTimeCapsule: !!this.playerData.hasOpenedTimeCapsule,
-        timeCapsuleUnlocked: !!this.playerData.timeCapsuleUnlocked,
-        timeCapsuleRewardClaimed: !!this.playerData.timeCapsuleRewardClaimed,
-        timeCapsuleClues: Array.isArray(this.playerData.timeCapsuleClues) ? this.playerData.timeCapsuleClues : [false, false, false, false],
-        virtuePhysiqueDone: !!this.playerData.virtuePhysiqueDone,
-        virtueMannerDone: !!this.playerData.virtueMannerDone,
-        virtueWisdomDone: !!this.playerData.virtueWisdomDone,
-        virtueWisdomLibrary: !!this.playerData.virtueWisdomLibrary,
-        virtueWisdomMuseum: !!this.playerData.virtueWisdomMuseum,
-        virtuesQuestCompleted: !!this.playerData.virtuesQuestCompleted,
-        hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
-        hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
-        hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
-        hasClearedClass704: !!this.playerData.hasClearedClass704,
-        hasCafeteriaKey: !!this.playerData.hasCafeteriaKey,
-        job: this.playerData.job || null,
-        hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
-        careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
-        historyVitrines: Array.isArray(this.playerData.historyVitrines) ? this.playerData.historyVitrines : [false, false, false, false],
-        solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
-        titles: this.playerData.titles || [],
-        equippedTitle: this.playerData.equippedTitle || null,
-        quests: this.playerData.quests || {},
-        secretHistoryRoomUnlocked: !!this.playerData.secretHistoryRoomUnlocked,
-        openedSecretHistoryChest: !!this.playerData.openedSecretHistoryChest,
-        hiddenQuestCareer1: this.playerData.hiddenQuestCareer1 || null,
-        hasHangangwooBookmark: !!this.playerData.hasHangangwooBookmark,
-        hiddenQuestCareer2: this.playerData.hiddenQuestCareer2 || null,
-        updatedAt: Date.now()
-      };
+      const saveData = this.buildProgressSavePayload();
       localStorage.setItem('soongsil_save_' + this.playerData.studentId, JSON.stringify(saveData));
       if (this.playerData.quests) {
         try { localStorage.setItem('soongsil_quests_' + this.playerData.studentId, JSON.stringify(this.playerData.quests)); } catch (e) {}
@@ -11426,10 +11595,98 @@ class MainApp {
     }
   }
 
+  buildProgressSavePayload() {
+    return {
+      name: this.playerData.name,
+      studentId: this.playerData.studentId,
+      grade: this.playerData.grade,
+      level: this.playerData.level,
+      exp: this.playerData.exp,
+      gold: this.playerData.gold,
+      hp: (this.playerData.hp !== undefined && this.playerData.hp !== null) ? this.playerData.hp : 100,
+      maxHp: this.playerData.maxHp || 100,
+      isFallen: !!this.playerData.isFallen,
+      baseHp: this.playerData.baseHp,
+      baseAtk: this.playerData.baseAtk,
+      baseDef: this.playerData.baseDef,
+      atk: this.playerData.atk,
+      def: this.playerData.def,
+      inventory: this.playerData.inventory,
+      equipment: this.playerData.equipment,
+      isAccessory2Unlocked: !!this.playerData.isAccessory2Unlocked,
+      hairColor: this.playerData.hairColor,
+      outfitColor: this.playerData.outfitColor,
+      hasReceivedSoongsilGift: !!this.playerData.hasReceivedSoongsilGift,
+      hasOpenedSecretLocker: !!this.playerData.hasOpenedSecretLocker,
+      hasCheckedMirror: !!this.playerData.hasCheckedMirror,
+      hasOpenedLostBox: !!this.playerData.hasOpenedLostBox,
+      hasCheckedSchoolBus: !!this.playerData.hasCheckedSchoolBus,
+      hasShockedEVCharger: !!this.playerData.hasShockedEVCharger,
+      hasClearedPEJump: !!this.playerData.hasClearedPEJump,
+      healthCabinetClaimed: !!this.playerData.healthCabinetClaimed,
+      hasReadDevNote: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
+      hasReadDevNote1: !!(this.playerData.hasReadDevNote || this.playerData.hasReadDevNote1),
+      hasReadDevNote2: !!this.playerData.hasReadDevNote2,
+      hasReadDevNote3: !!this.playerData.hasReadDevNote3,
+      hasReadDevNote4: !!this.playerData.hasReadDevNote4,
+      hasReadDevNote5: !!this.playerData.hasReadDevNote5,
+      hasOpenedTimeCapsule: !!this.playerData.hasOpenedTimeCapsule,
+      timeCapsuleUnlocked: !!this.playerData.timeCapsuleUnlocked,
+      timeCapsuleRewardClaimed: !!this.playerData.timeCapsuleRewardClaimed,
+      timeCapsuleClues: Array.isArray(this.playerData.timeCapsuleClues) ? this.playerData.timeCapsuleClues : [false, false, false, false],
+      virtuePhysiqueDone: !!this.playerData.virtuePhysiqueDone,
+      virtueMannerDone: !!this.playerData.virtueMannerDone,
+      virtueWisdomDone: !!this.playerData.virtueWisdomDone,
+      virtueWisdomLibrary: !!this.playerData.virtueWisdomLibrary,
+      virtueWisdomMuseum: !!this.playerData.virtueWisdomMuseum,
+      virtuesQuestCompleted: !!this.playerData.virtuesQuestCompleted,
+      hasClearedFirstBoss: !!this.playerData.hasClearedFirstBoss,
+      hasClearedDragonRaid: !!this.playerData.hasClearedDragonRaid,
+      hasClearedCerberusRaid: !!this.playerData.hasClearedCerberusRaid,
+      hasClearedClass704: !!this.playerData.hasClearedClass704,
+      hasCafeteriaKey: !!this.playerData.hasCafeteriaKey,
+      job: this.playerData.job || null,
+      hasEscapedCareerRoom: !!this.playerData.hasEscapedCareerRoom,
+      careerClues: Array.isArray(this.playerData.careerClues) ? this.playerData.careerClues : [false, false, false, false, false, false],
+      historyVitrines: Array.isArray(this.playerData.historyVitrines) ? this.playerData.historyVitrines : [false, false, false, false],
+      solvedMoralQuestionIds: Array.isArray(this.playerData.solvedMoralQuestionIds) ? this.playerData.solvedMoralQuestionIds : [],
+      titles: this.playerData.titles || [],
+      equippedTitle: this.playerData.equippedTitle || null,
+      quests: this.playerData.quests || {},
+      secretHistoryRoomUnlocked: !!this.playerData.secretHistoryRoomUnlocked,
+      openedSecretHistoryChest: !!this.playerData.openedSecretHistoryChest,
+      hiddenQuestCareer1: this.playerData.hiddenQuestCareer1 || null,
+      hasHangangwooBookmark: !!this.playerData.hasHangangwooBookmark,
+      hiddenQuestCareer2: this.playerData.hiddenQuestCareer2 || null,
+      uphillTopRecords: Array.isArray(this.playerData.uphillTopRecords) ? this.playerData.uphillTopRecords : [],
+      uphillBestTime: this.playerData.uphillBestTime || null,
+      uphillCleared: !!this.playerData.uphillCleared,
+      visitedBookshelves: Array.isArray(this.playerData.visitedBookshelves) ? this.playerData.visitedBookshelves : [],
+      juncheolGuestbookNote: this.playerData.juncheolGuestbookNote || '',
+      updatedAt: Date.now()
+    };
+  }
+
   computeProgressDataHash(data) {
     if (!data) return '';
     const invSig = (data.inventory || []).map(i => `${i && i.item}:${(i && i.count) || 0}`).join(',');
-    return `${data.level}_${data.exp}_${data.gold}_${data.hp}_${data.isFallen}_${invSig}_${JSON.stringify(data.equipment)}_${data.hasReceivedSoongsilGift}_${data.hasOpenedSecretLocker}_${data.hasCheckedMirror}_${data.hasOpenedLostBox}_${data.hasCheckedSchoolBus}_${data.hasShockedEVCharger}_${data.hasClearedPEJump}_${data.healthCabinetClaimed}_${data.hasReadDevNote}_${data.hasReadDevNote2}_${data.hasReadDevNote3}_${data.hasReadDevNote4}_${data.hasReadDevNote5}_${data.hasOpenedTimeCapsule}_${data.timeCapsuleRewardClaimed}_${data.hasClearedFirstBoss}_${data.hasClearedDragonRaid}_${data.hasClearedClass704}_${data.hasCafeteriaKey}_${(data.solvedMoralQuestionIds || []).length}_${data.job}_${data.hasEscapedCareerRoom}_${(data.careerClues || []).join(',')}_${(data.historyVitrines || []).join(',')}_${(data.titles || []).join(',')}_${data.equippedTitle}_${data.secretHistoryRoomUnlocked}_${data.openedSecretHistoryChest}_${JSON.stringify(data.quests || {})}`;
+    return [
+      data.level, data.exp, data.gold, data.hp, data.isFallen, invSig, JSON.stringify(data.equipment),
+      data.isAccessory2Unlocked, data.hasReceivedSoongsilGift, data.hasOpenedSecretLocker, data.hasCheckedMirror,
+      data.hasOpenedLostBox, data.hasCheckedSchoolBus, data.hasShockedEVCharger, data.hasClearedPEJump,
+      data.healthCabinetClaimed, data.hasReadDevNote, data.hasReadDevNote2, data.hasReadDevNote3, data.hasReadDevNote4,
+      data.hasReadDevNote5, data.hasOpenedTimeCapsule, data.timeCapsuleUnlocked, data.timeCapsuleRewardClaimed,
+      (data.timeCapsuleClues || []).join(','), data.virtuePhysiqueDone, data.virtueMannerDone, data.virtueWisdomDone,
+      data.virtueWisdomLibrary, data.virtueWisdomMuseum, data.virtuesQuestCompleted, data.hasClearedFirstBoss,
+      data.hasClearedDragonRaid, data.hasClearedCerberusRaid, data.hasClearedClass704, data.hasCafeteriaKey,
+      (data.solvedMoralQuestionIds || []).length, data.job, data.hasEscapedCareerRoom,
+      (data.careerClues || []).join(','), (data.historyVitrines || []).join(','), (data.titles || []).join(','),
+      data.equippedTitle, data.secretHistoryRoomUnlocked, data.openedSecretHistoryChest,
+      data.hiddenQuestCareer1, data.hasHangangwooBookmark, data.hiddenQuestCareer2,
+      (data.uphillTopRecords || []).join(','), data.uphillBestTime, data.uphillCleared,
+      (data.visitedBookshelves || []).join(','), data.juncheolGuestbookNote,
+      JSON.stringify(data.quests || {})
+    ].join('_');
   }
 
   getStudentAuthHeaders() {
@@ -11568,6 +11825,14 @@ class MainApp {
       localStorage.removeItem('soongsil_job_' + studentId);
       localStorage.removeItem('soongsil_career_escaped_' + studentId);
       localStorage.removeItem('soongsil_career_clues_' + studentId);
+      localStorage.removeItem('soongsil_quests_' + studentId);
+      localStorage.removeItem('soongsil_secret_history_unlocked_' + studentId);
+      localStorage.removeItem('soongsil_secret_history_chest_' + studentId);
+      localStorage.removeItem('soongsil_hidden_career_1_' + studentId);
+      localStorage.removeItem('soongsil_hangangwoo_bookmark_' + studentId);
+      localStorage.removeItem('soongsil_hidden_career_2_' + studentId);
+      localStorage.removeItem('soongsil_uphill_cleared_' + studentId);
+      localStorage.removeItem('soongsil_juncheol_note_' + studentId);
       console.log(`[Storage] 학생(${studentId}) 로컬 브라우저 세이브 초기화 완료`);
     } catch (e) {
       console.warn('Failed to clear local student data', e);
@@ -11588,12 +11853,17 @@ class MainApp {
     this.playerData.hasOpenedLostBox = !!updatedProgress.hasOpenedLostBox;
     this.playerData.hasCheckedSchoolBus = !!updatedProgress.hasCheckedSchoolBus;
     this.playerData.hasShockedEVCharger = !!updatedProgress.hasShockedEVCharger;
-    this.playerData.hasCheckedSchoolBus = !!updatedProgress.hasCheckedSchoolBus;
-    this.playerData.hasShockedEVCharger = !!updatedProgress.hasShockedEVCharger;
     this.playerData.hasReadDevNote = !!updatedProgress.hasReadDevNote;
     this.playerData.hasClearedFirstBoss = !!updatedProgress.hasClearedFirstBoss;
     this.playerData.hasClearedDragonRaid = !!updatedProgress.hasClearedDragonRaid;
     this.playerData.hasClearedCerberusRaid = !!updatedProgress.hasClearedCerberusRaid;
+    if (Array.isArray(updatedProgress.inventory)) this.playerData.inventory = updatedProgress.inventory;
+    if (updatedProgress.equipment && typeof updatedProgress.equipment === 'object') this.playerData.equipment = updatedProgress.equipment;
+    if (updatedProgress.quests && typeof updatedProgress.quests === 'object') this.playerData.quests = updatedProgress.quests;
+    if (Array.isArray(updatedProgress.titles)) this.playerData.titles = updatedProgress.titles;
+    if (updatedProgress.equippedTitle !== undefined) this.playerData.equippedTitle = updatedProgress.equippedTitle;
+    if (updatedProgress.job !== undefined) this.playerData.job = updatedProgress.job;
+    if (updatedProgress.isAccessory2Unlocked !== undefined) this.playerData.isAccessory2Unlocked = !!updatedProgress.isAccessory2Unlocked;
 
     const sId = this.playerData.studentId;
     if (sId) {
@@ -11680,6 +11950,7 @@ class MainApp {
   // =========================================================================
   onItemGranted(data) {
     if (!data) return;
+    if (this.playerData && this.playerData.isTeacher) return;
     if (data.itemKey === 'gold') {
       this.addGold(data.count || 1);
     } else {
@@ -12135,7 +12406,7 @@ class MainApp {
       const type = (def.meta && def.meta.type) || (invItem.item.startsWith('equip_') ? 'equipment' : 'material');
 
       // 소비품(물약, 주문서 등) 및 작동권/퀘스트 아이템은 매점 매각 금지
-      if (type === 'consumable' || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item.includes('elixir') || invItem.item === 'equip_elevator_pass' || invItem.item === 'equip_vintage_armband' || def.meta?.isQuestItem || this.getItemSellPrice(invItem.item) <= 0) {
+      if (type === 'consumable' || type === 'quest' || invItem.type === 'quest' || invItem.isQuestItem || invItem.item.includes('potion') || invItem.item.includes('scroll') || invItem.item.includes('elixir') || invItem.item === 'equip_elevator_pass' || invItem.item === 'equip_vintage_armband' || def.meta?.isQuestItem || this.getItemSellPrice(invItem.item) <= 0) {
         return false;
       }
 
@@ -14691,10 +14962,10 @@ class MainApp {
       if (status === 'locked') {
         const pLevel = (this.playerData && this.playerData.level) || 1;
         storyEl.innerText = `반갑다! ${qDef.teacherName}이란다. 😊\n\n하지만 이 과제는 어느 정도 학교 생활과 모험에 익숙해진 학생에게 맡기고 싶단다.\n먼저 학교 곳곳을 모험하며 레벨 Lv.${qDef.minLevel} 이상을 달성한 뒤에 다시 나를 찾아와 주렴!\n\n(현재 나의 레벨: Lv.${pLevel} / 필요 레벨: Lv.${qDef.minLevel})`;
-      } else if (status === 'available') storyEl.innerText = qDef.story;
-      else if (status === 'in_progress') storyEl.innerText = qDef.inProgressStory;
-      else if (status === 'completed') storyEl.innerText = qDef.completeStory;
-      else if (status === 'done') storyEl.innerText = qDef.doneStory;
+      } else if (status === 'available') storyEl.innerText = qDef.story || '';
+      else if (status === 'in_progress') storyEl.innerText = qDef.inProgressStory || qDef.story || '';
+      else if (status === 'completed') storyEl.innerText = qDef.completeStory || qDef.doneStory || qDef.story || '';
+      else if (status === 'done') storyEl.innerText = qDef.doneStory || qDef.completeStory || qDef.story || '';
     }
 
     // Objectives List
@@ -14791,7 +15062,7 @@ class MainApp {
         const btnClose = document.createElement('button');
         btnClose.className = 'btn-primary';
         btnClose.style.cssText = 'padding: 8px 22px; font-size: 13.5px; font-weight: 900; background: linear-gradient(135deg, #0369a1, #0284c7); border: 2px solid #7dd3fc; color: #fff; border-radius: 8px; cursor: pointer;';
-        btnClose.innerText = '🧭 1-1 교실과 탕비실 계속 탐색하기 (닫기)';
+        btnClose.innerText = '🧭 계속 모험하기 (닫기)';
         btnClose.addEventListener('click', () => this.closeQuestDispatchModal());
         actContainer.appendChild(btnClose);
 
@@ -14934,11 +15205,15 @@ class MainApp {
       this.removeItem(qDef.cleanupItem, 1);
     } else if (questId === 'quest_joshua_intro') {
       this.removeItem('item_joshua_memo', 1);
+    } else if (questId === 'quest_pe_errand') {
+      this.removeItem('item_gym_key', 1);
+    } else if (questId === 'quest_jawsdong_cleanup') {
+      this.removeItem('item_lost_pe_ball', 1);
+      this.removeItem('item_wet_team_vests', 1);
     } else if (questId === 'quest_library_missing_books') {
       this.removeItem('item_lib_book_pg', 1);
       this.removeItem('item_lib_book_of', 1);
       this.removeItem('item_lib_book_hi', 1);
-      this.showToast('📚 [도서관 의뢰 완료] 분실도서 3권을 모두 반납하고 보상을 획득했습니다!', 'success');
     }
 
     if (qDef.unlockTitle) {
@@ -15300,12 +15575,15 @@ class MainApp {
     const hintEl = document.getElementById('quest-tracker-hint');
     if (hintEl) {
       if (allDone) {
-        hintEl.innerHTML = `🎁 <b>모든 목표 완수!</b> 6층 교무실 <b>${def.teacherName}</b>께 돌아가 보상을 받으세요!`;
+        const returnLoc = def.returnLocation || def.teacherSeat || '6층 교무실';
+        hintEl.innerHTML = `🎁 <b>모든 목표 완수!</b> ${returnLoc} <b>${def.teacherName}</b>께 돌아가 보상을 받으세요!`;
         hintEl.style.background = 'rgba(22, 101, 52, 0.25)';
         hintEl.style.borderColor = 'rgba(34, 197, 94, 0.4)';
         hintEl.style.color = '#bbf7d0';
       } else {
-        hintEl.innerHTML = `💡 1-1 교실 교탁과 6층 탕비실 안쪽을 조사하세요.`;
+        const nextObj = (def.objectives || []).find(obj => (obj.getCount ? obj.getCount(data) : 0) < obj.targetCount);
+        const hintText = def.progressHint || (nextObj ? nextObj.text : '목표를 진행하세요.');
+        hintEl.innerHTML = `💡 ${hintText}`;
         hintEl.style.background = 'rgba(245, 158, 11, 0.12)';
         hintEl.style.borderColor = 'rgba(245, 158, 11, 0.25)';
         hintEl.style.color = '#fbbf24';
@@ -15416,7 +15694,7 @@ class MainApp {
       }
     });
 
-    const dials = [0, 0, 0, 0];
+    this._capsuleDials = [0, 0, 0, 0];
     const dialEls = [
       document.getElementById('capsule-dial-1'),
       document.getElementById('capsule-dial-2'),
@@ -15425,7 +15703,7 @@ class MainApp {
     ];
 
     dialEls.forEach((el, idx) => {
-      if (el) el.innerText = dials[idx];
+      if (el) el.innerText = this._capsuleDials[idx];
     });
 
     const bindDialBtn = (btnId, dialIdx, delta) => {
@@ -15434,8 +15712,10 @@ class MainApp {
         btn._bound = true;
         btn.addEventListener('click', () => {
           if (window.AudioManager && window.AudioManager.playSelect) window.AudioManager.playSelect();
-          dials[dialIdx] = (dials[dialIdx] + delta + 10) % 10;
-          if (dialEls[dialIdx]) dialEls[dialIdx].innerText = dials[dialIdx];
+          if (!Array.isArray(this._capsuleDials)) this._capsuleDials = [0, 0, 0, 0];
+          this._capsuleDials[dialIdx] = (this._capsuleDials[dialIdx] + delta + 10) % 10;
+          const curEl = document.getElementById(`capsule-dial-${dialIdx + 1}`);
+          if (curEl) curEl.innerText = this._capsuleDials[dialIdx];
         });
       }
     };
@@ -15459,6 +15739,7 @@ class MainApp {
     if (btnUnlock && !btnUnlock._bound) {
       btnUnlock._bound = true;
       btnUnlock.addEventListener('click', () => {
+        const dials = this._capsuleDials || [0, 0, 0, 0];
         // 정답 비밀번호: 3 - 5 - 0 - 4
         if (dials[0] === 3 && dials[1] === 5 && dials[2] === 0 && dials[3] === 4) {
           modal.classList.add('hidden');

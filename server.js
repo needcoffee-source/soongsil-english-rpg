@@ -1117,7 +1117,7 @@ app.post('/api/save-progress', (req, res) => {
     return res.status(401).json({ success: false, error: '🔒 교사 관리자 권한이 필요합니다.' });
   }
   const providedStudentToken = req.headers['x-student-token'] || body.studentAuthToken;
-  if (providedStudentToken && !isAuthorizedTeacherHttp(req)) {
+  if (!isAuthorizedTeacherHttp(req)) {
     const sess = consumeValidToken(activeStudentSessions, providedStudentToken, false);
     if (!sess || sess.studentId !== studentId) {
       return res.status(401).json({ success: false, error: '🔒 학생 세션 토큰이 유효하지 않습니다.' });
@@ -1130,8 +1130,8 @@ app.post('/api/save-progress', (req, res) => {
     : undefined;
 
   const isTeacherRecord = !!(progress.isTeacher || studentId === '교사');
-  const nextLevel = Math.max(1, Number(progress.level) || 1);
-  let sanitizedEquipment = progress.equipment;
+  const nextLevel = Math.max(1, Number(progress.level !== undefined ? progress.level : existingRecord.level) || 1);
+  let sanitizedEquipment = progress.equipment !== undefined ? progress.equipment : existingRecord.equipment;
   if (!isTeacherRecord && sanitizedEquipment && typeof sanitizedEquipment === 'object') {
     sanitizedEquipment = { ...sanitizedEquipment };
     for (const [slotKey, eq] of Object.entries(sanitizedEquipment)) {
@@ -1148,6 +1148,7 @@ app.post('/api/save-progress', (req, res) => {
   }
 
   all[studentId] = {
+    ...existingRecord,
     ...progress,
     ...(sanitizedEquipment ? { equipment: sanitizedEquipment } : {}),
     ...(existingRecord.email ? { email: existingRecord.email } : {}),
@@ -1184,8 +1185,8 @@ app.post('/api/save-progress', (req, res) => {
     if (progress.maxHp !== undefined) activeStudent.maxHp = progress.maxHp;
     if (progress.baseAtk !== undefined) activeStudent.baseAtk = progress.baseAtk;
     if (progress.baseDef !== undefined) activeStudent.baseDef = progress.baseDef;
-    if (progress.equipment && typeof progress.equipment === 'object') {
-      activeStudent.equipment = progress.equipment;
+    if (sanitizedEquipment && typeof sanitizedEquipment === 'object') {
+      activeStudent.equipment = sanitizedEquipment;
     }
     const syncedCombat = computeStudentCombatStats({
       ...activeStudent,
@@ -1197,7 +1198,10 @@ app.post('/api/save-progress', (req, res) => {
     if (progress.isFallen !== undefined) activeStudent.isFallen = progress.isFallen;
     // 관리자(교사)의 직접 수정일 때만 학생에게 알림 동기화 전송 (학생 자신의 저장은 알림 미전송)
     if (body.fromAdmin) {
-      io.to(activeStudent.id).emit('student_progress_sync_from_admin', { ...all[studentId], studentId });
+      io.to(activeStudent.id).emit('student_progress_sync_from_admin', {
+        ...sanitizeStudentProgressForPublic(all[studentId]),
+        studentId
+      });
     }
     broadcastStudentList();
   }
@@ -1321,11 +1325,14 @@ app.post('/api/admin/rename-student-id', requireTeacherHttp, (req, res) => {
   if (activeStudent) {
     activeStudent.studentId = newStudentId;
     if (newName) activeStudent.name = newName;
-    io.to(activeStudent.id).emit('student_progress_sync_from_admin', { ...record, studentId: newStudentId });
+    io.to(activeStudent.id).emit('student_progress_sync_from_admin', {
+      ...sanitizeStudentProgressForPublic(record),
+      studentId: newStudentId
+    });
     broadcastStudentList();
   }
 
-  return res.json({ success: true, studentId: newStudentId, progress: record });
+  return res.json({ success: true, studentId: newStudentId, progress: sanitizeStudentProgressForPublic(record) });
 });
 
 app.post('/api/admin/reset-student-pin', requireTeacherHttp, async (req, res) => {
@@ -1790,8 +1797,47 @@ app.post('/api/admin/delete-student-progress', requireTeacherHttp, (req, res) =>
 
 // Game State
 const players = {}; // socketId -> player data
-const mutedStudents = new Set(); // student names or socket IDs
+const mutedStudents = new Map(); // studentName/id -> { expiresAt, timer }
 const chatLogs = []; // for teacher review
+
+function isStudentMuted(player) {
+  if (!player) return false;
+  const now = Date.now();
+  const keys = [player.name, player.studentId, player.id].filter(Boolean);
+  for (const key of keys) {
+    const entry = mutedStudents.get(key);
+    if (!entry) continue;
+    if (now >= entry.expiresAt) {
+      if (entry.timer) clearTimeout(entry.timer);
+      mutedStudents.delete(key);
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
+function setStudentMute(studentName, durationMinutes = 10) {
+  if (!studentName) return;
+  const prev = mutedStudents.get(studentName);
+  if (prev && prev.timer) clearTimeout(prev.timer);
+  const mins = Math.max(1, Math.min(1440, parseInt(durationMinutes) || 10));
+  const expiresAt = Date.now() + mins * 60 * 1000;
+  const timer = setTimeout(() => {
+    mutedStudents.delete(studentName);
+    io.emit('teacher_action_alert', { message: `[알림] 학생 '${studentName}'의 채팅 금지 기간(${mins}분)이 만료되어 자동 해제되었습니다.` });
+    broadcastStudentList();
+  }, mins * 60 * 1000);
+  if (typeof timer.unref === 'function') timer.unref();
+  mutedStudents.set(studentName, { expiresAt, timer });
+}
+
+function clearStudentMute(studentName) {
+  if (!studentName) return;
+  const prev = mutedStudents.get(studentName);
+  if (prev && prev.timer) clearTimeout(prev.timer);
+  mutedStudents.delete(studentName);
+}
 
 // ========================================================
 // 1학년 3반 컴퓨터실 산성비 4석 동시 플레이 제한 (Active Seats - 전역 공유)
@@ -2071,8 +2117,8 @@ const ALL_GAME_ITEMS = {
   'equip_heritage_boots': { name: '👑 1897 숭실 헤리티지 부츠', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 6, def: 6, hp: 15 }, effect: '4티어 신발' } },
   'equip_bronze_shoes': { name: '🥉 청동 스파이크', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 5, def: 5, hp: 10 }, effect: '3티어 신발 · 숭실 역사관 보물' } },
   'item_bronze_heart': { name: '청동 드래곤의 심장', icon: '❤️‍🔥', meta: { type: 'material', effect: '청동 드래곤 전리품 · 3티어 청동 장비 필수 재료' } },
-  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', meta: { type: 'quest', effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)' } },
-  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', meta: { type: 'quest', effect: '급식실 정문 출입용 황금 열쇠' } },
+  'item_golem_weakness_scroll': { name: '📜 한강우의 골렘 연화 비책', icon: '📜', meta: { type: 'quest', isQuestItem: true, effect: '나무 세트 3종 착용 제자에게 전수된 비책 · 가죽 골렘 1:1 레이드 시 골렘 약화 (HP 2,000 ➔ 200, DEF 14 ➔ 5)' } },
+  'item_cafeteria_key': { name: '급식실 열쇠', icon: '🔑', meta: { type: 'quest', isQuestItem: true, effect: '급식실 정문 출입용 황금 열쇠' } },
   'equip_shoes_samdidas': { name: '👟 삼디다스 실내화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', stats: { atk: 2, def: 2, hp: 10 }, effect: '누구나 한 번쯤 사 신어봤다는 전설의 국민 실내화. 뒤축을 살짝 꺾어 신으면 복도 끝까지 쏜살같이 질주할 수 있을 것만 같다. [특수 효과] Shift 키를 누르면 질주가 가능합니다.' } },
   'item_basketball_leather': { name: '농구공 가죽 조각', icon: '🏀', meta: { type: 'material', effect: '농구장 몬스터 전리품 · 가죽 장비 제작 재료' } },
   'item_futsal_leather': { name: '탄력있는 풋살공 가죽', icon: '⚽', meta: { type: 'material', effect: '풋살장 몬스터 전리품 · 고급 방어구 및 장비 재료' } },
@@ -2114,11 +2160,11 @@ const ALL_GAME_ITEMS = {
   'equip_immortal_shoes': { name: '불멸의 에어 농구화', icon: '👟', meta: { type: 'equipment', slot: 'shoes', requiredLevel: 15, stats: { atk: 8, def: 6, hp: 15 }, effect: '5티어 신발 · 공격력 +8, 방어력 +6, 체력 +15, 4티어 동일 질주 (Lv.15 이상)' } },
   'equip_victory_medal': { name: '승리의 월계관 메달', icon: '🏅', meta: { type: 'equipment', slot: 'accessory', requiredLevel: 15, stats: { atk: 20, def: 5, hp: 30 }, effect: '공격력 +20, 방어력 +5, 체력 +30 (Lv.15 이상)' } },
   'equip_elevator_pass': { name: '엘리베이터 작동권', icon: '🪪', meta: { type: 'quest', isQuestItem: true, effect: '🛗 중앙 엘리베이터 가동 인가증 (소지 시 자동 작동)' } },
-  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', meta: { type: 'quest', effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
-  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', meta: { type: 'quest', effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
-  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', meta: { type: 'quest', effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
-  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', meta: { type: 'quest', effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
-  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', meta: { type: 'quest', effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
+  'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', meta: { type: 'quest', isQuestItem: true, effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
+  'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', meta: { type: 'quest', isQuestItem: true, effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
+  'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', meta: { type: 'quest', isQuestItem: true, effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
+  'item_yosunyu_usb': { name: '요션유의 알고리즘 USB', icon: '💾', meta: { type: 'quest', isQuestItem: true, effect: '정보 요션유 선생님의 파이썬 코딩과 알고리즘 강의 자료가 담긴 고속 USB' } },
+  'item_career_guidebook': { name: '진로 적성 검사 안내서', icon: '📘', meta: { type: 'quest', isQuestItem: true, effect: '진로 귐즨숑 선생님의 진로 적성 검사 안내서' } },
   'equip_vintage_armband': { name: '선배의 낡은 승리 완장', icon: '🎗️', meta: { type: 'equipment', slot: 'accessory', isQuestItem: true, stats: { atk: 3, def: 3 }, effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)' } },
   'item_tiny_exp_potion': { name: '초소형 경험치 물약', icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' } },
   'item_gym_key': { name: '2학년 체육관 열쇠', icon: '🔑', meta: { type: 'quest', isQuestItem: true, effect: '교무실 20번 자리에서 찾은 2학년 체육선생님의 체육관 열쇠' } },
@@ -2274,8 +2320,13 @@ const SERVER_ITEM_SELL_PRICES = {
   'equip_bronze_sword': 100, 'equip_bronze_helmet': 60, 'equip_bronze_armor': 60, 'equip_ginkgo_talisman': 100,
   'item_history_essence': 5, 'item_unyielding_stone': 10,
   'equip_heritage_blade': 160, 'equip_heritage_helmet': 100, 'equip_heritage_armor': 100, 'equip_bronze_shoes': 16, 'equip_heritage_boots': 30,
+  'item_nutrition_essence': 5, 'item_stainless_shard': 10,
+  'equip_immortal_blade': 300, 'equip_immortal_helmet': 200, 'equip_immortal_armor': 240,
   'equip_immortal_shoes': 50, 'equip_victory_medal': 200, 'item_golden_laurel': 5,
-  'equip_omr_wand': 20, 'equip_vintage_armband': 0, 'equip_elevator_pass': 0
+  'equip_omr_wand': 20, 'equip_vintage_armband': 0, 'equip_elevator_pass': 0,
+  'item_golem_weakness_scroll': 0, 'item_cafeteria_key': 0, 'item_joshua_memo': 0,
+  'item_okchohan_textbook': 0, 'item_kimmijin_sketchbook': 0, 'item_yosunyu_usb': 0,
+  'item_career_guidebook': 0, 'item_gym_key': 0, 'item_lost_pe_ball': 0, 'item_wet_team_vests': 0
 };
 
 function getServerItemSellPrice(itemId) {
@@ -2689,7 +2740,7 @@ app.post('/api/store/sell', (req, res) => {
   const def = ALL_GAME_ITEMS[itemId] || {};
   const type = (def.meta && def.meta.type) || '';
   const unitPrice = getServerItemSellPrice(itemId);
-  if (itemId === 'equip_vintage_armband' || itemId === 'equip_elevator_pass' || (def.meta && def.meta.isQuestItem) || unitPrice <= 0) {
+  if (itemId === 'equip_vintage_armband' || itemId === 'equip_elevator_pass' || type === 'quest' || (def.meta && def.meta.isQuestItem) || unitPrice <= 0) {
     return res.status(400).json({ success: false, error: '이 유물/특수 아이템은 매점에서 매각할 수 없습니다!' });
   }
   if (type === 'consumable' || itemId.includes('potion') || itemId.includes('scroll') || itemId.includes('elixir')) {
@@ -2823,6 +2874,11 @@ app.post('/api/item/use-exp-potion', (req, res) => {
     return res.status(400).json({ success: false, error: '유효하지 않은 경험치 물약입니다.' });
   }
 
+  const rawCount = body.count !== undefined ? Number(body.count) : 1;
+  if (!Number.isInteger(rawCount) || rawCount < 1 || rawCount > 100) {
+    return res.status(400).json({ success: false, error: '한 번에 사용할 물약 수량은 1~100개여야 합니다.' });
+  }
+
   const all = getStudentsProgress() || {};
   const record = all[auth.studentId];
   if (!record) {
@@ -2837,12 +2893,22 @@ app.post('/api/item/use-exp-potion', (req, res) => {
   record.inventory = Array.isArray(record.inventory) ? [...record.inventory] : [];
   record.equipment = (record.equipment && typeof record.equipment === 'object') ? { ...record.equipment } : {};
 
-  if (getServerInventoryCount(record.inventory, itemId) < 1) {
+  const owned = getServerInventoryCount(record.inventory, itemId);
+  if (owned < 1) {
     return res.status(400).json({ success: false, error: '인벤토리에 해당 경험치 물약이 없습니다.' });
   }
 
-  record.inventory = removeServerInventoryItem(record.inventory, record.equipment, itemId, 1);
-  const expGained = applyServerExpAndLevelUp(record, expGainBase);
+  const maxUsable = Math.min(rawCount, owned);
+  let usedCount = 0;
+  let totalExpGained = 0;
+  while (usedCount < maxUsable && (Number(record.level) || 1) < SERVER_MAX_LEVEL) {
+    const gained = applyServerExpAndLevelUp(record, expGainBase);
+    if (gained <= 0) break;
+    totalExpGained += gained;
+    usedCount++;
+  }
+
+  record.inventory = removeServerInventoryItem(record.inventory, record.equipment, itemId, usedCount);
   record.updatedAt = Date.now();
   all[auth.studentId] = record;
   saveStudentsProgress(all, true);
@@ -2852,7 +2918,8 @@ app.post('/api/item/use-exp-potion', (req, res) => {
     success: true,
     level: record.level,
     exp: record.exp,
-    expGained,
+    expGained: totalExpGained,
+    usedCount,
     gold: record.gold,
     inventory: record.inventory
   });
@@ -2929,7 +2996,7 @@ function broadcastStudentList() {
       grade: p.grade,
       floor: p.floor,
       room: p.room,
-      isMuted: mutedStudents.has(p.name) || mutedStudents.has(p.studentId) || mutedStudents.has(p.id)
+      isMuted: isStudentMuted(p)
     }));
   io.emit('teacher_student_list', studentList);
 }
@@ -2945,12 +3012,13 @@ function sanitizeGear(g) {
   return out;
 }
 
-// Normalize floor for singleton rooms (playground, career, staff_office, history)
+// Normalize floor for singleton rooms (playground, career, staff_office, history, health/wee)
 function normalizeSingletonRoomFloor(room, floor) {
   if (room === 'playground' || room === 'playground_gym' || room === 'room_cafeteria' || room === 'room_gym') return 1;
+  if (room === 'room_health' || room === 'room_wee') return 3;
   if (room === 'room_career') return 5;
   if (room === 'room_staff_office') return 6;
-  if (room === 'room_history') return 0;
+  if (room === 'room_history' || room === 'room_secret_history') return 0;
   return floor;
 }
 
@@ -3202,7 +3270,7 @@ io.on('connection', (socket) => {
     const player = players[socket.id];
     if (!player) return;
 
-    if (mutedStudents.has(player.name) || mutedStudents.has(player.studentId) || mutedStudents.has(socket.id)) {
+    if (isStudentMuted(player)) {
       socket.emit('chat_muted', { message: '선생님에 의해 채팅이 제한된 상태입니다.' });
       return;
     }
@@ -3269,8 +3337,12 @@ io.on('connection', (socket) => {
     };
 
     if (targetSocketId === 'ALL') {
-      // Grant to all connected students
-      io.emit('item_granted', payload);
+      // Grant to all connected non-teacher students
+      Object.values(players).forEach((p) => {
+        if (!p.isTeacher) {
+          io.to(p.id).emit('item_granted', payload);
+        }
+      });
       io.emit('teacher_announcement_popup', {
         message: `🎁 [선생님 전체 선물] 전교생에게 [${itemInfo.icon} ${itemInfo.name} x${qty}개]가 지급되었습니다!${reason ? ' (' + reason + ')' : ''}`
       });
@@ -3309,15 +3381,16 @@ io.on('connection', (socket) => {
   socket.on('teacher_mute', (payload = {}) => {
     if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
     const { studentName, durationMinutes } = payload;
-    mutedStudents.add(studentName);
-    io.emit('teacher_action_alert', { message: `[알림] 학생 '${studentName}'의 채팅이 ${durationMinutes || 10}분간 금지되었습니다.` });
+    const mins = Math.max(1, Math.min(1440, parseInt(durationMinutes) || 10));
+    setStudentMute(studentName, mins);
+    io.emit('teacher_action_alert', { message: `[알림] 학생 '${studentName}'의 채팅이 ${mins}분간 금지되었습니다.` });
     broadcastStudentList();
   });
 
   socket.on('teacher_unmute', (payload = {}) => {
     if (!isAuthorizedTeacherSocket(socket, payload)) return rejectUnauthorizedTeacherSocket(socket);
     const { studentName } = payload;
-    mutedStudents.delete(studentName);
+    clearStudentMute(studentName);
     io.emit('teacher_action_alert', { message: `[알림] 학생 '${studentName}'의 채팅 금지가 해제되었습니다.` });
     broadcastStudentList();
   });
@@ -3425,65 +3498,6 @@ io.on('connection', (socket) => {
       message: '⏹️ [알림] 교사에 의해 보스레이드 이벤트가 종료되었습니다.'
     });
   });
-
-// ========================================================
-// BOSS RAID SERVER MONITOR (3분 제한시간 및 파티 전멸 Wipe 실시간 감지)
-// ========================================================
-setInterval(() => {
-  const now = Date.now();
-
-  // 0. Field Monsters Expired Respawn Cleanup (농구장 & 풋살장 리스폰 완료 몬스터 제거)
-  for (const mId in defeatedFieldMobs) {
-    if (now >= defeatedFieldMobs[mId]) {
-      delete defeatedFieldMobs[mId];
-    }
-  }
-
-  if (!bossRaidEvent.active || bossRaidEvent.mode !== 'coop') return;
-
-  // 1. 3분(180초) 타임오버 감지
-  if (bossRaidEvent.expiresAt && now >= bossRaidEvent.expiresAt) {
-    if (bossRaidEvent.currentHp > 0) {
-      bossRaidEvent.active = false;
-      bossRaidEvent.stoppedByTeacher = true;
-      bossRaidEvent.currentHp = bossRaidEvent.maxHp;
-      bossRaidEvent.participants = {};
-      io.emit('boss_raid_timeout', {
-        message: '⏰ [레이드 시간 초과] 3분 제한 시간이 초과되었습니다! 보스가 광폭화하여 체력을 완전히 회복하고 모두를 복도로 밀어냈습니다!'
-      });
-      io.emit('boss_raid_state', bossRaidEvent);
-      io.emit('boss_raid_force_warp_hallway');
-      return;
-    }
-  }
-
-  // 2. 보스방 파티 전멸(Wipe) 감지 (전투 중 보스방 안의 생존자가 0명일 때)
-  if (bossRaidEvent.currentHp < bossRaidEvent.maxHp && bossRaidEvent.currentHp > 0) {
-    const isSoccerBoss = isSoccerFieldBoss(bossRaidEvent.name);
-    const targetRoom = isSoccerBoss ? 'playground' : 'room_702';
-
-    const studentsInRoom = Object.values(players).filter(p => !p.isTeacher && p.room === targetRoom);
-    const aliveStudents = studentsInRoom.filter(p => !p.isFallen);
-
-    if (aliveStudents.length === 0) {
-      const reason = studentsInRoom.length === 0 ? '도전자 전원 후퇴/이탈' : '전원 기절로 파티 전멸';
-      bossRaidEvent.currentHp = bossRaidEvent.maxHp;
-      bossRaidEvent.participants = {};
-      // 전멸 시 3분 타이머도 3분으로 리셋
-      bossRaidEvent.startedAt = now;
-      bossRaidEvent.expiresAt = now + (bossRaidEvent.duration || 180) * 1000;
-
-      io.emit('boss_raid_wiped', {
-        message: `💀 [파티 전멸] ${reason}! 보스가 체력을 완전히 회복했습니다 (HP 100%)!`
-      });
-      io.emit('boss_raid_hp_sync', {
-        currentHp: bossRaidEvent.maxHp,
-        maxHp: bossRaidEvent.maxHp
-      });
-      io.emit('boss_raid_state', bossRaidEvent);
-    }
-  }
-}, 1000);
 
   // ========================================================
   // REAL-TIME LEADERBOARD TOP 10 (ONLINE + OFFLINE) & STATS SYNC
@@ -3621,6 +3635,7 @@ setInterval(() => {
     socket.to(oldRoom).emit('player_left', socket.id);
 
     p.isFallen = false;
+    p.floor = 7;
     p.room = 'hallway';
     p.x = 15 * 32;
     p.y = 10 * 32;
@@ -3892,6 +3907,67 @@ setInterval(() => {
     console.log(`[Disconnect] Socket ID: ${socket.id}`);
   });
 });
+
+// ========================================================
+// BOSS RAID SERVER MONITOR (글로벌 단일 타이머 — 3분 제한시간, 파티 전멸 Wipe, 필드 몬스터 리스폰 정리)
+// ========================================================
+const bossRaidMonitorTimer = setInterval(() => {
+  const now = Date.now();
+
+  // 0. Field Monsters Expired Respawn Cleanup (농구장·풋살장·체육관·역사관·급식실 리스폰 완료 몬스터 제거)
+  for (const mId in defeatedFieldMobs) {
+    if (now >= defeatedFieldMobs[mId]) {
+      delete defeatedFieldMobs[mId];
+    }
+  }
+
+  if (!bossRaidEvent.active || bossRaidEvent.mode !== 'coop') return;
+
+  // 1. 3분(180초) 타임오버 감지
+  if (bossRaidEvent.expiresAt && now >= bossRaidEvent.expiresAt) {
+    if (bossRaidEvent.currentHp > 0) {
+      bossRaidEvent.active = false;
+      bossRaidEvent.stoppedByTeacher = true;
+      bossRaidEvent.currentHp = bossRaidEvent.maxHp;
+      bossRaidEvent.participants = {};
+      io.emit('boss_raid_timeout', {
+        message: '⏰ [레이드 시간 초과] 3분 제한 시간이 초과되었습니다! 보스가 광폭화하여 체력을 완전히 회복하고 모두를 복도로 밀어냈습니다!'
+      });
+      io.emit('boss_raid_state', bossRaidEvent);
+      io.emit('boss_raid_force_warp_hallway');
+      return;
+    }
+  }
+
+  // 2. 보스방 파티 전멸(Wipe) 감지 (전투 중 보스방 안의 생존자가 0명일 때)
+  if (bossRaidEvent.currentHp < bossRaidEvent.maxHp && bossRaidEvent.currentHp > 0) {
+    const isSoccerBoss = isSoccerFieldBoss(bossRaidEvent.name);
+    const targetRoom = isSoccerBoss ? 'playground' : 'room_702';
+
+    const studentsInRoom = Object.values(players).filter(p => !p.isTeacher && p.room === targetRoom);
+    const aliveStudents = studentsInRoom.filter(p => !p.isFallen);
+
+    if (aliveStudents.length === 0) {
+      const reason = studentsInRoom.length === 0 ? '도전자 전원 후퇴/이탈' : '전원 기절로 파티 전멸';
+      bossRaidEvent.currentHp = bossRaidEvent.maxHp;
+      bossRaidEvent.participants = {};
+      bossRaidEvent.startedAt = now;
+      bossRaidEvent.expiresAt = now + (bossRaidEvent.duration || 180) * 1000;
+
+      io.emit('boss_raid_wiped', {
+        message: `💀 [파티 전멸] ${reason}! 보스가 체력을 완전히 회복했습니다 (HP 100%)!`
+      });
+      io.emit('boss_raid_hp_sync', {
+        currentHp: bossRaidEvent.maxHp,
+        maxHp: bossRaidEvent.maxHp
+      });
+      io.emit('boss_raid_state', bossRaidEvent);
+    }
+  }
+}, 1000);
+if (typeof bossRaidMonitorTimer.unref === 'function') {
+  bossRaidMonitorTimer.unref();
+}
 
 function checkIdleServerAutoClose() {
   if (Object.keys(players).length > 0) {

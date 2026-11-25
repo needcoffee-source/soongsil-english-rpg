@@ -430,6 +430,7 @@ class AcidRainGame {
 
     // Move falling words
     for (let i = this.fallingWords.length - 1; i >= 0; i--) {
+      if (!this.isRunning) break;
       const w = this.fallingWords[i];
       w.y += w.speed;
 
@@ -438,6 +439,7 @@ class AcidRainGame {
         this.createAcidImpactParticles(w.x, defenseLineY);
         this.fallingWords.splice(i, 1);
         this.onWordHitGround();
+        if (!this.isRunning) break;
       }
     }
 
@@ -580,6 +582,7 @@ class AcidRainGame {
   }
 
   gameOver() {
+    if (!this.isRunning) return;
     this.stop();
 
     // Reward Calculation (골드 상한 1/3 하향: 최대 80G, 경험치 채집 수준 조정: 최대 70 EXP)

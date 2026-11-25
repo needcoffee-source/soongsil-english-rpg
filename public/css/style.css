@@ -217,10 +217,10 @@ body, html {
 /* Floating Semi-Transparent D-Pad in Canvas Viewport */
 #dpad-container {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
-  width: 120px;
-  height: 120px;
+  bottom: 18px;
+  left: 18px;
+  width: 138px;
+  height: 138px;
   z-index: 25;
   user-select: none;
   -webkit-user-select: none;
@@ -232,29 +232,30 @@ body, html {
   background: rgba(45, 48, 54, 0.72);
   color: #f4f4f5;
   border: 2px solid rgba(82, 87, 96, 0.85);
-  border-radius: 10px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
+  font-size: 20px;
   cursor: pointer;
-  touch-action: manipulation;
+  touch-action: none;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  transition: background 0.1s, transform 0.05s;
+  transition: background 0.08s, transform 0.05s;
 }
 
-.dpad-btn:active {
-  background: rgba(59, 130, 246, 0.85);
+.dpad-btn:active,
+.dpad-btn.active {
+  background: rgba(59, 130, 246, 0.88);
   border-color: #60a5fa;
   transform: scale(0.94);
 }
 
-.dpad-up { top: 0; left: 40px; width: 40px; height: 40px; }
-.dpad-down { bottom: 0; left: 40px; width: 40px; height: 40px; }
-.dpad-left { top: 40px; left: 0; width: 40px; height: 40px; }
-.dpad-right { top: 40px; right: 0; width: 40px; height: 40px; }
-.dpad-center { top: 40px; left: 40px; width: 40px; height: 40px; background: rgba(28, 30, 34, 0.65); border-radius: 50%; font-size: 12px; color: #71717a; }
+.dpad-up { top: 0; left: 46px; width: 46px; height: 46px; }
+.dpad-down { bottom: 0; left: 46px; width: 46px; height: 46px; }
+.dpad-left { top: 46px; left: 0; width: 46px; height: 46px; }
+.dpad-right { top: 46px; right: 0; width: 46px; height: 46px; }
+.dpad-center { top: 46px; left: 46px; width: 46px; height: 46px; background: rgba(28, 30, 34, 0.65); border-radius: 50%; font-size: 12px; color: #71717a; }
 
 /* B Button Locked State */
 .btn-b-locked {
@@ -3200,7 +3201,7 @@ body, html {
   #dpad-container {
     bottom: 12px;
     left: 12px;
-    transform: scale(0.86);
+    transform: scale(0.98);
     transform-origin: bottom left;
   }
   #mobile-actions-container {
