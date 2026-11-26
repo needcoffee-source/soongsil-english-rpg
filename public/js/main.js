@@ -473,7 +473,7 @@ window.ITEM_CODEX_DATABASE = [
     category: 'weapon_armor', subCategory: 'weapon_armor',
     tierBadge: '4티어 무기',
     tierColor: '#7e22ce',
-    effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가',
+    effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가 (Lv.10 이상)',
     source: '기말고사 파멸신 레이드 전리품 드랍',
     recipe: '제작 불가'
   },
@@ -751,7 +751,7 @@ const ALL_GAME_ITEMS = {
   'item_wet_team_vests': { name: '땀에 젖은 팀 조끼 다발', icon: '🦺', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '죠스동(3학년 체육) 선생님의 체육관 정돈 의뢰용 팀 조끼 다발' } },
   'item_perfect_exam': { name: '💯 백점만점 시험지', icon: '💯', count: 9999, meta: { type: 'material', effect: '중간고사 대마왕 토벌 전리품 · 📚 시험의 제왕 호칭 교환 재료' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', count: 9999, meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
-  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', count: 9999, meta: { type: 'equipment', slot: 'weapon', requiredLevel: 10, stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5 (Lv.10 이상)' } },
   'item_joshua_memo': { name: 'Joshua의 단어 메모', icon: '📝', count: 1, meta: { type: 'quest', isQuestItem: true, effect: 'Joshua 선생님이 탕비실에 떨어뜨린 3학년 영어 핵심 단어장 메모' } },
   'item_okchohan_textbook': { name: '옥촣한의 사회 탐구 교재', icon: '📘', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '사회 옥촣한 선생님의 핵심 사회 탐구 수업 교재' } },
   'item_kimmijin_sketchbook': { name: '김진믜의 풍경화 스케치북', icon: '🎨', count: 1, meta: { type: 'quest', isQuestItem: true, effect: '미술 김진믜 선생님의 섬세한 풍경화 스케치북' } },
@@ -911,9 +911,9 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '🩺 수호의 메딕',
     icon: '👨‍⚕️',
     skillName: '치유의 손길 (Healing Touch)',
-    effect: '3초당 자동 자연 치유량 3배 (3 HP 회복) & 퀴즈 오답 체력 데미지 10% 감소',
+    effect: '3초당 자동 자연 치유량 3배 (3 HP 회복), 오답 체력 피해 10% 감소 & 회복 물약 효율 +20%',
     desc: '환자를 보살피고 동료의 상처를 치유하는 숭실의 힐러!',
-    stats: { hpRegen: 3, penaltyReduction: 0.10 }
+    stats: { hpRegen: 3, penaltyReduction: 0.10, potionHealBonus: 0.20 }
   },
   {
     id: 'runner',
@@ -922,9 +922,9 @@ const JOB_PASSIVE_DEFINITIONS = [
     title: '⚡ 질주의 러너',
     icon: '🏃‍♂️',
     skillName: '쾌속 질주 (Swift Sprint)',
-    effect: '기본 걷기 속도 +10% 상시 증가',
+    effect: '기본 걷기 속도 +10% 상시 증가 & 질주(Shift) 쿨타임 단축 (5초 → 3.5초)',
     desc: '지치지 않는 체력과 빠른 스피드로 숭실을 누비는 육상 스타!',
-    stats: { speedBonus: 0.10 }
+    stats: { speedBonus: 0.10, dashCooldownMs: 3500 }
   },
   {
     id: 'scholar',
@@ -2259,7 +2259,9 @@ class MainApp {
       this.engine.setDashing(false);
 
       if (!this.engine.player.isTeacher) {
-        this.triggerDashCooldown(this.dashState.cooldownMs);
+        const isRunner = !!(this.playerData && (this.playerData.job === 'runner' || this.playerData.job === 'engineer'));
+        const cdMs = isRunner ? 3500 : this.dashState.cooldownMs;
+        this.triggerDashCooldown(cdMs);
       }
     };
 
@@ -7318,7 +7320,9 @@ class MainApp {
     }
 
     const catalogMeta = (ALL_GAME_ITEMS[itemId] && ALL_GAME_ITEMS[itemId].meta) || {};
-    const healAmount = catalogMeta.heal || pot.heal || (pot.meta && pot.meta.heal) || 10;
+    const baseHeal = catalogMeta.heal || pot.heal || (pot.meta && pot.meta.heal) || 10;
+    const isMedic = !!(this.playerData && (this.playerData.job === 'medic' || this.playerData.job === 'doctor'));
+    const healAmount = isMedic ? Math.round(baseHeal * 1.2) : baseHeal;
     this.removeItem(itemId, 1);
     const beforeHp = this.playerData.hp;
     this.playerData.hp = Math.min(this.playerData.maxHp, this.playerData.hp + healAmount);
@@ -7338,7 +7342,7 @@ class MainApp {
       this.engine.addFloatingText(`+${actualHealed} HP 💚`, px, py, '#4ade80', 18);
     }
 
-    alert(`🧪 [${pot.name}]을(를) 꿀꺽 마셨습니다!\n체력이 +${actualHealed} 회복되었습니다. (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})`);
+    alert(`🧪 [${pot.name}]을(를) 꿀꺽 마셨습니다!\n체력이 +${actualHealed} 회복되었습니다.${isMedic ? ' (🩺 메딕 +20%)' : ''} (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})`);
 
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();
@@ -8326,8 +8330,9 @@ class MainApp {
           this.addItem('equip_omr_wand', '컴싸 마법봉', 1, '🖊️', {
             type: 'equipment',
             slot: 'weapon',
+            requiredLevel: 10,
             stats: { atk: 45, def: 5, hp: 30 },
-            effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5'
+            effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5 (Lv.10 이상)'
           });
           rewardItemsList.push('🖊️ 컴싸 마법봉 (40% 희귀 무기 드랍!)');
         }

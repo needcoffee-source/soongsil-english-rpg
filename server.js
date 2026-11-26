@@ -2153,7 +2153,7 @@ const ALL_GAME_ITEMS = {
   'equip_bronze_helmet': { name: '청동투구', icon: '🪖', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 5, stats: { atk: 0, def: 14, hp: 35 }, effect: '방어력 +14, 체력 +35 (Lv.5 이상)' } },
   'equip_bronze_armor': { name: '청동갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 5, stats: { atk: 0, def: 20, hp: 25 }, effect: '방어력 +20, 체력 +25 (Lv.5 이상)' } },
   'item_eval_paper': { name: 'A+ 만점 수행평가지', icon: '📜', meta: { type: 'material', effect: '케르베로스 전리품 · 수행평가 만점의 증표' } },
-  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5' } },
+  'equip_omr_wand': { name: '컴싸 마법봉', icon: '🖊️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 10, stats: { atk: 45, def: 5, hp: 30 }, effect: '기말고사 파멸신 전리품 · 공격력 +45, 방어력 +5 (Lv.10 이상)' } },
   'equip_immortal_blade': { name: '불멸의 열정 대검', icon: '⚔️', meta: { type: 'equipment', slot: 'weapon', requiredLevel: 12, stats: { atk: 60, def: 0, hp: 35 }, effect: '5티어 무기 · 공격력 +60, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_helmet': { name: '불멸의 열정 투구', icon: '👑', meta: { type: 'equipment', slot: 'helmet', requiredLevel: 12, stats: { atk: 0, def: 25, hp: 35 }, effect: '5티어 투구 · 방어력 +25, 체력 +35 (Lv.12 이상)' } },
   'equip_immortal_armor': { name: '불멸의 열정 갑옷', icon: '🛡️', meta: { type: 'equipment', slot: 'armor', requiredLevel: 12, stats: { atk: 0, def: 30, hp: 35 }, effect: '5티어 갑옷 · 방어력 +30, 체력 +35 (Lv.12 이상)' } },
