@@ -387,7 +387,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#b45309',
     effect: '방어력(DEF) +12, 체력(HP) +28 증가',
     source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 풋살공 가죽 20개 + 50G'
+    recipe: '보스의 가죽 1개 + 풋살공 가죽 15개 + 50G'
   },
   {
     id: 'equip_leather_armor',
@@ -398,7 +398,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#b45309',
     effect: '방어력(DEF) +15, 체력(HP) +20 증가',
     source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 농구공 가죽 30개 + 50G'
+    recipe: '보스의 가죽 1개 + 농구공 가죽 20개 + 50G'
   },
   {
     id: 'equip_bronze_sword',
@@ -8590,15 +8590,19 @@ class MainApp {
     } else {
       btnEl.classList.add('wrong');
       if (window.AudioManager) window.AudioManager.playWrong();
-      // 추천안 A: 오답 시 방어력을 무시하고 무조건 보스의 순수 공격력(bossAtk)만큼 직격 피해!
-      const incomingDmg = this.playerData.isTeacher ? 0 : bossAtk;
+      // 오답 시 방어력을 무시하고 보스의 공격력(bossAtk) 기준 피해 (메딕 직업은 10% 경감)
+      let incomingDmg = this.playerData.isTeacher ? 0 : bossAtk;
+      const isMedic = !!(this.playerData && (this.playerData.job === 'medic' || this.playerData.job === 'doctor'));
+      if (incomingDmg > 0 && isMedic) {
+        incomingDmg = Math.max(1, Math.round(incomingDmg * 0.9));
+      }
       this.playerData.hp = Math.max(0, this.playerData.hp - incomingDmg);
       this.updateBossRaidUI();
       this.saveProgress(true);
 
       if (logEl) {
         if (logEl.style) logEl.style.display = 'block';
-        logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (방어력 무시)`;
+        logEl.innerHTML = `😢 오답 (정답: ${q.answer}) / 🚨 <b>보스 강타 -${incomingDmg} HP</b> (${isMedic ? '방어력 무시 · 🩺 메딕 -10% 경감' : '방어력 무시'})`;
       }
     }
 
@@ -8913,8 +8917,12 @@ class MainApp {
       });
       if (window.AudioManager) window.AudioManager.playWrong();
 
-      // 풀HP의 20% 상당의 피격 피해 (풀피 135 기준 ~27 HP)
-      const counterDmg = mob.counterDmg || Math.round(this.playerData.maxHp * 0.20);
+      // 고정 반격 피해 적용 (메딕 직업은 10% 경감)
+      let counterDmg = mob.counterDmg || Math.round(this.playerData.maxHp * 0.20);
+      const isMedic = !!(this.playerData && (this.playerData.job === 'medic' || this.playerData.job === 'doctor'));
+      if (counterDmg > 0 && isMedic) {
+        counterDmg = Math.max(1, Math.round(counterDmg * 0.9));
+      }
       this.playerData.hp = Math.max(0, this.playerData.hp - counterDmg);
       this.updateFieldBattleUI();
       this.updateHpBar();
@@ -8922,7 +8930,7 @@ class MainApp {
 
       if (logEl) {
         if (logEl.style) logEl.style.display = 'block';
-        logEl.innerHTML = `💥 <b>오답!</b> 정답은 [<b>${q.answer}</b>]입니다.<br>🚨 <b>${mob.name}</b>의 반격으로 <b>-${counterDmg} HP (풀피의 20% 피해)</b>를 입었습니다!`;
+        logEl.innerHTML = `💥 <b>오답!</b> 정답은 [<b>${q.answer}</b>]입니다.<br>🚨 <b>${mob.name}</b>의 반격으로 <b>-${counterDmg} HP${isMedic ? ' (🩺 메딕 -10% 경감)' : ''}</b> 피해를 입었습니다!`;
       }
 
       if (this.playerData.hp <= 0) {
