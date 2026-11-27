@@ -849,18 +849,31 @@ const STORE_BUY_ITEMS = [
     id: 'item_orange_potion',
     name: '주홍 물약',
     icon: '🧪',
-    price: 75,
+    price: 80,
+    requiredLevel: 5,
     desc: '사용 시 체력(HP) +25 대폭 회복',
-    badge: '고급 회복',
+    badge: '중급 회복',
     badgeColor: '#ea580c',
     meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' }
+  },
+  {
+    id: 'item_clear_potion',
+    name: '맑은 물약',
+    icon: '🧪',
+    price: 150,
+    requiredLevel: 10,
+    desc: '사용 시 체력(HP) +40 대량 즉시 회복',
+    badge: '고급 회복',
+    badgeColor: '#06b6d4',
+    meta: { type: 'consumable', slot: 'consumable', heal: 40, effect: '사용 시 체력(HP) +40 대량 즉시 회복' }
   },
   {
     id: 'item_green_potion',
     name: '초록 물약',
     icon: '🧪',
-    price: 75,
-    desc: '사용 시 1분간 질주(대시) 이동속도 +10% 증가',
+    price: 80,
+    requiredLevel: 5,
+    desc: '사용 시 1분간 기본 이동속도 +10% 증가',
     badge: '신속 비약',
     badgeColor: '#16a34a',
     meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' }
@@ -12243,6 +12256,12 @@ class MainApp {
   }
 
   buyStoreItem(itemDef, quantity = 1) {
+    const playerLv = Math.max(1, Number(this.playerData && this.playerData.level) || 1);
+    if (!this.playerData.isTeacher && itemDef.requiredLevel && playerLv < itemDef.requiredLevel) {
+      this.showToast(`🔒 Lv.${itemDef.requiredLevel} 이상부터 구매할 수 있습니다! (현재: Lv.${playerLv})`, 'warning');
+      return;
+    }
+
     const totalCost = itemDef.price * quantity;
     const currentGold = this.playerData.gold || 0;
 
@@ -12341,21 +12360,37 @@ class MainApp {
     // =========================================================
     if (this.storeMode === 'buy') {
       const currentGold = this.playerData.gold || 0;
+      const playerLv = Math.max(1, Number(this.playerData && this.playerData.level) || 1);
       const inv = this.playerData.inventory || [];
 
       STORE_BUY_ITEMS.forEach(item => {
         const ownedItem = inv.find(i => i.item === item.id);
         const ownedCount = ownedItem ? ownedItem.count : 0;
-        const canBuy1 = currentGold >= item.price;
-        const canBuy5 = currentGold >= (item.price * 5);
+        const isLevelLocked = !this.playerData.isTeacher && !!item.requiredLevel && playerLv < item.requiredLevel;
+        const canBuy1 = !isLevelLocked && currentGold >= item.price;
+        const canBuy5 = !isLevelLocked && currentGold >= (item.price * 5);
+
+        const potionCss = item.id === 'item_red_potion'
+          ? 'icon-red-potion'
+          : (item.id === 'item_orange_potion'
+            ? 'icon-orange-potion'
+            : (item.id === 'item_clear_potion'
+              ? 'icon-clear-potion'
+              : (item.id === 'item_green_potion' ? 'icon-green-potion' : '')));
+        const itemIconHtml = (typeof window.renderItemIconHtml === 'function')
+          ? window.renderItemIconHtml(item.id, item.icon, potionCss)
+          : item.icon;
+        const levelBadgeHtml = item.requiredLevel
+          ? `<span style="font-size:10.5px; font-weight:700; padding:2px 6px; border-radius:4px; ${isLevelLocked ? 'background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid rgba(239,68,68,0.45);' : 'background:#334155; color:#cbd5e1;'}">${isLevelLocked ? `🔒 Lv.${item.requiredLevel}+` : `Lv.${item.requiredLevel}+`}</span>`
+          : '';
 
         const card = document.createElement('div');
         card.style.cssText = `
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #1e293b;
-          border: 1.5px solid #334155;
+          background: ${isLevelLocked ? 'rgba(30, 41, 59, 0.55)' : '#1e293b'};
+          border: 1.5px solid ${isLevelLocked ? '#475569' : '#334155'};
           border-radius: 8px;
           padding: 10px 14px;
           transition: border-color 0.15s;
@@ -12363,11 +12398,12 @@ class MainApp {
 
         card.innerHTML = `
           <div style="display:flex; align-items:center; gap: 12px;">
-            <div style="font-size: 28px; line-height: 1;">${item.icon}</div>
+            <div style="font-size: 28px; line-height: 1;">${itemIconHtml}</div>
             <div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-weight: 800; font-size: 14px; color: #f8fafc;">${item.name}</span>
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <span style="font-weight: 800; font-size: 14px; color: ${isLevelLocked ? '#94a3b8' : '#f8fafc'};">${item.name}</span>
                 <span style="font-size:10.5px; font-weight:700; background:${item.badgeColor}; color:#fff; padding:2px 6px; border-radius:4px;">${item.badge}</span>
+                ${levelBadgeHtml}
                 <span style="font-size: 11.5px; color: #94a3b8; font-weight: 600;">(보유: <b style="color:#38bdf8;">${ownedCount}</b>개)</span>
               </div>
               <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">${item.desc}</div>
@@ -12378,7 +12414,7 @@ class MainApp {
           </div>
           <div style="display:flex; align-items:center; gap: 6px;">
             <button class="btn-buy-1 btn-primary" ${!canBuy1 ? 'disabled style="padding: 6px 11px; font-size: 11.5px; font-weight: 700; background: #334155; border-color: #475569; color: #64748b; cursor: not-allowed;"' : 'style="padding: 6px 11px; font-size: 11.5px; font-weight: 800; background: #059669; border-color: #10b981; color: #fff; cursor: pointer;"'}>
-              1개 구매 (${item.price}G)
+              ${isLevelLocked ? `🔒 Lv.${item.requiredLevel} 필요` : `1개 구매 (${item.price}G)`}
             </button>
             <button class="btn-buy-5 btn-secondary" ${!canBuy5 ? 'disabled style="padding: 6px 11px; font-size: 11.5px; font-weight: 700; background: #1e293b; border-color: #334155; color: #475569; cursor: not-allowed;"' : 'style="padding: 6px 11px; font-size: 11.5px; font-weight: 800; border-color: #f59e0b; color: #fbbf24; cursor: pointer;"'}>
               5개 구매 (${item.price * 5}G)

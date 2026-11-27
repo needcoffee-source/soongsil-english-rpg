@@ -2304,8 +2304,9 @@ const SERVER_MAX_LEVEL = 100;
 
 const SERVER_STORE_BUY_ITEMS = {
   'item_red_potion': { id: 'item_red_potion', name: '빨간 물약', icon: '🧪', price: 30, meta: { type: 'consumable', slot: 'consumable', heal: 10, effect: '체력 +10 회복' } },
-  'item_orange_potion': { id: 'item_orange_potion', name: '주홍 물약', icon: '🧪', price: 75, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
-  'item_green_potion': { id: 'item_green_potion', name: '초록 물약', icon: '🧪', price: 75, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
+  'item_orange_potion': { id: 'item_orange_potion', name: '주홍 물약', icon: '🧪', price: 80, requiredLevel: 5, meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' } },
+  'item_clear_potion': { id: 'item_clear_potion', name: '맑은 물약', icon: '🧪', price: 150, requiredLevel: 10, meta: { type: 'consumable', slot: 'consumable', heal: 40, effect: '사용 시 체력(HP) +40 대량 즉시 회복' } },
+  'item_green_potion': { id: 'item_green_potion', name: '초록 물약', icon: '🧪', price: 80, requiredLevel: 5, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 기본 이동속도 +10% 증가' } },
   'item_revive_scroll': { id: 'item_revive_scroll', name: '부활 주문서', icon: '📜', price: 100, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '쓰러진 친구를 50% 체력으로 부활' } },
   'item_return_scroll': { id: 'item_return_scroll', name: '귀환 주문서', icon: '📜', price: 100, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 모든 장소에서 7층 복도로 즉시 공간 이동' } },
   'item_teleport_scroll': { id: 'item_teleport_scroll', name: '순간이동 주문서', icon: '📜', price: 300, meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '사용 시 각 층 복도 및 운동장으로 즉시 공간 이동' } }
@@ -2702,6 +2703,14 @@ app.post('/api/store/buy', (req, res) => {
   const record = all[auth.studentId];
   if (!record) {
     return res.status(404).json({ success: false, error: '학생 진행 데이터를 찾을 수 없습니다.' });
+  }
+
+  const curLv = Math.max(1, Number(record.level) || 1);
+  if (!auth.isTeacher && storeItem.requiredLevel && curLv < storeItem.requiredLevel) {
+    return res.status(403).json({
+      success: false,
+      error: `🔒 Lv.${storeItem.requiredLevel} 이상부터 구매할 수 있습니다! (현재: Lv.${curLv})`
+    });
   }
 
   const totalCost = storeItem.price * quantity;
