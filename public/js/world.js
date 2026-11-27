@@ -329,7 +329,7 @@ const WORLD_DATA = {
         def: 8,
         counterDmg: 30,
         goldReward: 30,
-        expReward: 50,
+        expReward: 60,
         respawnSec: 15
       },
       {
@@ -348,7 +348,7 @@ const WORLD_DATA = {
         def: 8,
         counterDmg: 30,
         goldReward: 30,
-        expReward: 50,
+        expReward: 60,
         respawnSec: 15
       },
       {
@@ -367,7 +367,7 @@ const WORLD_DATA = {
         def: 10,
         counterDmg: 34,
         goldReward: 38,
-        expReward: 55,
+        expReward: 68,
         respawnSec: 15
       },
       {
@@ -386,7 +386,7 @@ const WORLD_DATA = {
         def: 10,
         counterDmg: 34,
         goldReward: 38,
-        expReward: 55,
+        expReward: 68,
         respawnSec: 15
       }
     ]
@@ -611,7 +611,7 @@ const WORLD_DATA = {
         atk: 45,
         def: 13,
         counterDmg: 45,
-        goldReward: 32,
+        goldReward: 42,
         expReward: 70,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -634,7 +634,7 @@ const WORLD_DATA = {
         atk: 45,
         def: 13,
         counterDmg: 45,
-        goldReward: 32,
+        goldReward: 42,
         expReward: 70,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -657,7 +657,7 @@ const WORLD_DATA = {
         atk: 45,
         def: 13,
         counterDmg: 45,
-        goldReward: 32,
+        goldReward: 42,
         expReward: 70,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -680,7 +680,7 @@ const WORLD_DATA = {
         atk: 45,
         def: 13,
         counterDmg: 45,
-        goldReward: 32,
+        goldReward: 42,
         expReward: 70,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -703,7 +703,7 @@ const WORLD_DATA = {
         atk: 48,
         def: 14,
         counterDmg: 50,
-        goldReward: 38,
+        goldReward: 52,
         expReward: 85,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -726,7 +726,7 @@ const WORLD_DATA = {
         atk: 46,
         def: 13,
         counterDmg: 46,
-        goldReward: 34,
+        goldReward: 45,
         expReward: 75,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -749,7 +749,7 @@ const WORLD_DATA = {
         atk: 46,
         def: 13,
         counterDmg: 46,
-        goldReward: 34,
+        goldReward: 45,
         expReward: 75,
         respawnSec: 15,
         itemId: "item_nutrition_essence"
@@ -1496,7 +1496,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 16,
-        expReward: 35,
+        expReward: 42,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1517,7 +1517,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 16,
-        expReward: 35,
+        expReward: 42,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1538,7 +1538,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 16,
-        expReward: 35,
+        expReward: 42,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1559,7 +1559,7 @@ const WORLD_DATA = {
         def: 4,
         counterDmg: 24,
         goldReward: 16,
-        expReward: 35,
+        expReward: 42,
         leatherMin: 1,
         leatherMax: 3,
         respawnSec: 15
@@ -1580,7 +1580,7 @@ const WORLD_DATA = {
         def: 6,
         counterDmg: 32,
         goldReward: 24,
-        expReward: 42,
+        expReward: 50,
         leatherMin: 2,
         leatherMax: 4,
         respawnSec: 20
@@ -1601,7 +1601,7 @@ const WORLD_DATA = {
         def: 6,
         counterDmg: 32,
         goldReward: 24,
-        expReward: 42,
+        expReward: 50,
         leatherMin: 2,
         leatherMax: 4,
         respawnSec: 20
