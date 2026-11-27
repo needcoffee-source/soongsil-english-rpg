@@ -488,7 +488,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#ef4444',
     effect: '공격력 +60, 체력 +35 (Lv.12 이상)',
     source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
-    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 15개 + 향긋한 허브 10개 + 1,500G'
+    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 15개 + 향긋한 허브 10개 + 1,200G'
   },
   {
     id: 'equip_immortal_helmet',
@@ -499,7 +499,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#ef4444',
     effect: '방어력 +25, 체력 +35 (Lv.12 이상)',
     source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
-    recipe: '정제된 영양의 정수 6개 + 특수 강화 스텐 조각 4개 + 단단한 목재 10개 + 향긋한 허브 8개 + 1,000G'
+    recipe: '정제된 영양의 정수 6개 + 특수 강화 스텐 조각 4개 + 단단한 목재 10개 + 향긋한 허브 8개 + 700G'
   },
   {
     id: 'equip_immortal_armor',
@@ -510,7 +510,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#ef4444',
     effect: '방어력 +30, 체력 +35 (Lv.12 이상)',
     source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
-    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 12개 + 향긋한 허브 10개 + 1,200G'
+    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 12개 + 향긋한 허브 10개 + 700G'
   },
 
   // 4. Shoes (신발 1~4티어 순 정렬)
@@ -9049,6 +9049,17 @@ class MainApp {
           });
           dropsList.push('✨ 특수 강화 스텐 조각 1개 (40% 행운 드랍!)');
         }
+
+        // 15% chance for clear potion
+        if (Math.random() * 100 < 15) {
+          this.addItem('item_clear_potion', '맑은 물약', 1, '🧪', {
+            type: 'consumable',
+            slot: 'consumable',
+            heal: 40,
+            effect: '사용 시 체력(HP) +40 대량 즉시 회복'
+          });
+          dropsList.push('🧪 맑은 물약 1개 (15% 드랍!)');
+        }
       } else {
         // Quest students calm down
         if (mob.questId === 'quest_cafeteria_order') {
@@ -9162,6 +9173,17 @@ class MainApp {
           effect: '역사관 몬스터 전리품 · 4티어 헤리티지 무기 핵심 재료'
         });
         dropsList.push('💎 꺾이지 않는 사명석 1개 (35% 행운 드랍!)');
+      }
+
+      // 15% chance to drop orange potion
+      if (Math.random() * 100 < 15) {
+        this.addItem('item_orange_potion', '주홍 물약', 1, '🧪', {
+          type: 'consumable',
+          slot: 'consumable',
+          heal: 25,
+          effect: '체력 +25 회복'
+        });
+        dropsList.push('🧪 주홍 물약 1개 (15% 드랍!)');
       }
     } else if (mob.court === 'futsal') {
       const fLeatherCount = Math.floor(Math.random() * ((mob.leatherMax || 3) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);

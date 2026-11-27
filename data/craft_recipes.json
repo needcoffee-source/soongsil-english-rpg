@@ -430,7 +430,7 @@
     "description": "[5티어 무기] 급식실의 영양·특수 스텐 합금과 기초 목재·허브를 하나로 벼려낸 최강 5티어 대검입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
     "icon": "⚔️",
     "gradeLevel": 1,
-    "requiredGold": 1500,
+    "requiredGold": 1200,
     "requiredItems": [
       {
         "item": "item_nutrition_essence",
@@ -489,7 +489,7 @@
     "description": "[5티어 투구] 급식실의 영양·특수 스텐 합금과 기초 목재·허브의 가호가 깃든 최상급 5티어 투구입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
     "icon": "👑",
     "gradeLevel": 1,
-    "requiredGold": 1000,
+    "requiredGold": 700,
     "requiredItems": [
       {
         "item": "item_nutrition_essence",
@@ -549,7 +549,7 @@
     "description": "[5티어 갑옷] 특수 스테인리스 합금과 정제된 영양, 단단한 목재·허브를 엮어 완성한 5티어 불멸의 갑옷입니다. (목재·허브는 7층 채집 또는 연금술 변환 가능)",
     "icon": "🛡️",
     "gradeLevel": 1,
-    "requiredGold": 1200,
+    "requiredGold": 700,
     "requiredItems": [
       {
         "item": "item_nutrition_essence",
