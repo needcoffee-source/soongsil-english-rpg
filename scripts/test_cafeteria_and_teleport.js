@@ -138,6 +138,8 @@ const files = [
   'public/js/network.js',
   'public/js/acid_rain.js',
   'public/js/brawl_ball.js',
+  'public/js/codex_data.js',
+  'public/js/quests_data.js',
   'public/js/main.js'
 ];
 files.forEach(f => {

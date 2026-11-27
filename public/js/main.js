@@ -39,639 +39,7 @@ const SOONGSIL_HISTORY_VITRINES = [
 ];
 
 
-// =========================================================================
-// 📖 ITEM CODEX MASTER DATABASE (도감 및 획득처 사전)
-// =========================================================================
-window.ITEM_CODEX_DATABASE = [
-  // 1. Materials (재료 14종)
-  {
-    id: 'item_wood',
-    name: '단단한 목재',
-    icon: '🪵',
-    category: 'material',
-    tierBadge: '기본 재료',
-    tierColor: '#78350f',
-    effect: '1티어 나무 장비(나무검·투구·갑옷) 제작 핵심 기본 재료',
-    source: '7층 1학년 1반 책상·사물함·교탁 및 1~4단원 채집 퀴즈 정답 시 드랍',
-    recipe: '1학년 1반 및 교내 채집 파밍'
-  },
-  {
-    id: 'item_herb',
-    name: '향긋한 허브',
-    icon: '🌿',
-    category: 'material',
-    tierBadge: '약초 재료',
-    tierColor: '#166534',
-    effect: '빨간 물약, 주홍 물약, 부활 주문서 조제 필수 재료',
-    source: '7층 1학년 1반 교실 동쪽 화분(실내 식물존) 1단원 퀴즈 정답 시 드랍',
-    recipe: '7층 1-1 교실 화분 채집 파밍'
-  },
-  {
-    id: 'item_forsythia',
-    name: '노란 개나리 꽃잎',
-    icon: '🌼',
-    category: 'material',
-    tierBadge: '교화 재료',
-    tierColor: '#ca8a04',
-    effect: '주홍 물약, 청동 장비, 성실의 개나리 반지 제작 재료',
-    source: '7층 1학년 1반 교실 서쪽 개나리 화분 2단원 퀴즈 정답 시 드랍',
-    recipe: '7층 1-1 교실 개나리 화분 채집 파밍'
-  },
-  {
-    id: 'item_ginkgo',
-    name: '황금 은행잎',
-    icon: '🍂',
-    category: 'material',
-    tierBadge: '교목 재료',
-    tierColor: '#d97706',
-    effect: '부활 주문서 및 합심의 황금 은행잎 부적 제작 재료',
-    source: '7층 1학년 1반 교실 중앙 교목 은행나무 3단원 퀴즈 정답 시 드랍',
-    recipe: '7층 1-1 교실 은행나무 채집 파밍'
-  },
-  {
-    id: 'item_boss_leather',
-    name: '질긴 보스의 가죽',
-    icon: '🥋',
-    category: 'material',
-    tierBadge: '보스 전리품',
-    tierColor: '#b45309',
-    effect: '2티어 고급 가죽 방어구(세이버·투구·갑옷) 제작 핵심 재료',
-    source: '1학년 2반 가죽 골렘 보스 처치 시 획득',
-    recipe: '1-2 보스 처치 전리품'
-  },
-  {
-    id: 'item_basketball_leather',
-    name: '농구공 가죽 조각',
-    icon: '🏀',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#c2410c',
-    effect: '2티어 가죽손잡이 세이버 및 가죽갑옷 제작 재료',
-    source: '야외 농구장 체육 몬스터 퀴즈 사냥 시 드랍',
-    recipe: '농구장 몬스터 사냥'
-  },
-  {
-    id: 'item_futsal_leather',
-    name: '탄력있는 풋살공 가죽',
-    icon: '⚽',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#15803d',
-    effect: '2티어 가죽투구 및 가죽손잡이 세이버 제작 재료',
-    source: '야외 풋살장 체육 몬스터 퀴즈 사냥 시 드랍',
-    recipe: '풋살장 몬스터 사냥'
-  },
-  {
-    id: 'item_bronze_heart',
-    name: '청동 드래곤의 심장',
-    icon: '❤️‍🔥',
-    category: 'material',
-    tierBadge: '보스 전리품',
-    tierColor: '#dc2626',
-    effect: '3티어 청동 장비(청동검·투구·갑옷) 제작 필수 재료',
-    source: '운동장 청동 드래곤 레이드 / 6층 교무실 옥촣한 선생님 퀘스트',
-    recipe: '보스 레이드 및 퀘스트 전리품'
-  },
-  {
-    id: 'item_perfect_exam',
-    name: '백점만점 시험지',
-    icon: '💯',
-    category: 'material',
-    tierBadge: '명예 증표',
-    tierColor: '#4338ca',
-    effect: '숭실 최고의 지성 증표 · [📚 시험의 제왕] 호칭 및 [👟 삼디다스 실내화] 교환권',
-    source: '운동장 축구장 중간고사 대마왕 보스 격파 시 획득',
-    recipe: '중간고사 대마왕 처치 전리품'
-  },
-  {
-    id: 'item_eval_paper',
-    name: 'A+ 만점 수행평가지',
-    icon: '📜',
-    category: 'material',
-    tierBadge: '보스 전리품',
-    tierColor: '#0d9488',
-    effect: '케르베로스 토벌 증표 · [👟 삼디다스 실내화] 특별 교환권',
-    source: '운동장 축구장 수행평가 3두마수 케르베로스 보스 격파 시 획득',
-    recipe: '케르베로스 보스 처치 전리품'
-  },
-  {
-    id: 'item_history_essence',
-    name: '숭실 역사의 정수',
-    icon: '🏛️',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#4f46e5',
-    effect: '4대 역사관 탐구와 시련을 통해 정제된 영광의 숨결 (4티어 헤리티지 무기·방어구 필수 재료)',
-    source: '숭실역사관 몬스터(일제 순사 등) 토벌 시 드랍',
-    recipe: '역사관 몬스터 전투 드랍'
-  },
-  {
-    id: 'item_unyielding_stone',
-    name: '꺾이지 않는 사명석',
-    icon: '💎',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#0284c7',
-    effect: '1938 신사참배 거부와 폐교의 아픔을 견뎌낸 굳은 의지 (4티어 헤리티지 무기·방어구 핵심 재료)',
-    source: '숭실역사관 몬스터 토벌 시 드랍',
-    recipe: '역사관 몬스터 전투 드랍'
-  },
-  {
-    id: 'item_nutrition_essence',
-    name: '정제된 영양의 정수',
-    icon: '🍱',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#059669',
-    effect: '급식실 음식물 몬스터 전리품 · 5티어 최고급 장비 제작 필수 재료',
-    source: '학생 급식실 바닥 음식물 몬스터 처치 시 획득',
-    recipe: '급식실 몬스터 처치 전리품'
-  },
-  {
-    id: 'item_stainless_shard',
-    name: '특수 강화 스텐 조각',
-    icon: '✨',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#0284c7',
-    effect: '급식실 음식물 몬스터 전리품 · 5티어 최고급 장비 제작 핵심 재료',
-    source: '학생 급식실 바닥 음식물 몬스터 처치 시 드랍',
-    recipe: '급식실 몬스터 전투 드랍'
-  },
-  {
-    id: 'item_golden_laurel',
-    name: '황금 월계수 잎',
-    icon: '🏵️',
-    category: 'material',
-    tierBadge: '야외 전리품',
-    tierColor: '#eab308',
-    effect: '체육관 실내 농구장 몬스터 전리품 · [승리의 월계관 메달] 제작 핵심 재료',
-    source: '체육관 실내 농구장 몬스터 처치 시 드랍',
-    recipe: '체육관 실내 농구장 전투 드랍'
-  },
-
-  // 2. Consumables (소비품 10종 - craft_recipes.json 공식 레시피)
-  {
-    id: 'item_red_potion',
-    name: '빨간 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '회복 물약',
-    tierColor: '#e11d48',
-    effect: '사용 시 체력(HP) +10 즉시 회복',
-    source: '소비품 제작대(C) · 매점 구매(30G) · 역사관/급식실 드랍',
-    recipe: '향긋한 허브 1개 + 5G'
-  },
-  {
-    id: 'item_orange_potion',
-    name: '주홍 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '중급 회복 물약',
-    tierColor: '#ea580c',
-    effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '소비품 제작대(C, Lv.5+) · 매점 구매(80G, Lv.5+) · 역사관/급식실 드랍',
-    recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
-  },
-  {
-    id: 'item_clear_potion',
-    name: '맑은 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '고급 회복 물약',
-    tierColor: '#06b6d4',
-    effect: '사용 시 체력(HP) +40 대량 즉시 회복',
-    source: '소비품 제작대(C, Lv.10+) · 매점 구매(150G, Lv.10+) · 급식실/체육관 드랍',
-    recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
-  },
-  {
-    id: 'item_elixir',
-    name: '엘릭서',
-    icon: '⚗️',
-    category: 'consumable',
-    tierBadge: '최고급 회복 물약',
-    tierColor: '#8b5cf6',
-    effect: '사용 시 체력(HP) +80 초대량 즉시 회복',
-    source: '소비품 제작대(C)에서 조제 (15레벨 이상)',
-    recipe: '정제된 영양의 정수 1개 + 향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 50G'
-  },
-  {
-    id: 'item_green_potion',
-    name: '초록 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '특수 물약',
-    tierColor: '#16a34a',
-    effect: '사용 시 1분간 기본 이동속도 +10% 증가',
-    source: '소비품 제작대(C) · 매점 구매(80G, Lv.5+)',
-    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 15G'
-  },
-  {
-    id: 'item_courage_potion',
-    name: '용기의 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '특수 물약',
-    tierColor: '#9333ea',
-    effect: '사용 시 1분간 공격력(ATK) +5 증가',
-    source: '소비품 제작대(C)에서 제작',
-    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
-  },
-  {
-    id: 'item_protection_potion',
-    name: '수호의 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '특수 물약',
-    tierColor: '#0284c7',
-    effect: '사용 시 1분간 방어력(DEF) +3 증가',
-    source: '소비품 제작대(C)에서 제작',
-    recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 20G'
-  },
-  {
-    id: 'item_tiny_exp_potion',
-    name: '초소형 경험치 물약',
-    icon: '🧪',
-    category: 'consumable',
-    tierBadge: '경험치 물약',
-    tierColor: '#f59e0b',
-    effect: '사용 시 경험치(EXP) +50 즉시 상승',
-    source: '퀘스트',
-    recipe: '제작불가'
-  },
-  {
-    id: 'item_revive_scroll',
-    name: '부활 주문서',
-    icon: '📜',
-    category: 'consumable',
-    tierBadge: '주문서',
-    tierColor: '#7c3aed',
-    effect: '사용 시 쓰러진 동료를 50% 체력으로 즉시 부활',
-    source: '소비품 제작대(C)에서 제작',
-    recipe: '향긋한 허브 3개 + 황금 은행잎 1개 + 10G'
-  },
-  {
-    id: 'item_return_scroll',
-    name: '귀환 주문서',
-    icon: '📜',
-    category: 'consumable',
-    tierBadge: '주문서',
-    tierColor: '#0284c7',
-    effect: '사용 시 어디서든 안전한 7층 복도로 즉시 공간 이동',
-    source: '소비품 제작대(C)에서 제작',
-    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 15G'
-  },
-  {
-    id: 'item_teleport_scroll',
-    name: '순간이동 주문서',
-    icon: '📜',
-    category: 'consumable',
-    tierBadge: '주문서',
-    tierColor: '#9333ea',
-    effect: '사용 시 각 층 복도 및 운동장으로 즉시 순간이동',
-    source: '소비품 제작대(C)에서 제작',
-    recipe: '단단한 목재 1개 + 향긋한 허브 2개 + 50G'
-  },
-
-  // 3. Tier 1~4 Weapons & Armor (무기·갑옷 - 티어 및 부위 순 정렬)
-  {
-    id: 'equip_wood_sword',
-    name: '나무검 (Wooden Sword)',
-    icon: '🗡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '1티어 무기',
-    tierColor: '#854d0e',
-    effect: '공격력(ATK) +15 증가',
-    source: '장비 제작대(C)에서 제작',
-    recipe: '단단한 목재 10개 + 20G'
-  },
-  {
-    id: 'equip_wood_helmet',
-    name: '나무투구 (Wooden Helmet)',
-    icon: '🪖',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '1티어 투구',
-    tierColor: '#854d0e',
-    effect: '방어력(DEF) +8, 체력(HP) +25 증가',
-    source: '장비 제작대(C)에서 제작',
-    recipe: '단단한 목재 10개 + 15G'
-  },
-  {
-    id: 'equip_wood_armor',
-    name: '나무갑옷 (Wooden Armor)',
-    icon: '🛡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '1티어 갑옷',
-    tierColor: '#854d0e',
-    effect: '방어력(DEF) +12, 체력(HP) +15 증가',
-    source: '장비 제작대(C)에서 제작',
-    recipe: '단단한 목재 10개 + 15G'
-  },
-  {
-    id: 'equip_leather_sword',
-    name: '가죽손잡이 세이버 (Leather-Grip Saber)',
-    icon: '🗡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '2티어 무기',
-    tierColor: '#b45309',
-    effect: '공격력(ATK) +22 증가',
-    source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 농구공 가죽 10개 + 풋살공 가죽 10개 + 50G'
-  },
-  {
-    id: 'equip_leather_helmet',
-    name: '가죽투구 (Leather Helmet)',
-    icon: '⛑️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '2티어 투구',
-    tierColor: '#b45309',
-    effect: '방어력(DEF) +12, 체력(HP) +28 증가',
-    source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 풋살공 가죽 15개 + 50G'
-  },
-  {
-    id: 'equip_leather_armor',
-    name: '가죽갑옷 (Leather Armor)',
-    icon: '🥋',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '2티어 갑옷',
-    tierColor: '#b45309',
-    effect: '방어력(DEF) +15, 체력(HP) +20 증가',
-    source: '장비 제작대(C)에서 제작 (3레벨 이상)',
-    recipe: '보스의 가죽 1개 + 농구공 가죽 20개 + 50G'
-  },
-  {
-    id: 'equip_bronze_sword',
-    name: '청동검 (Bronze Sword)',
-    icon: '⚔️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '3티어 무기',
-    tierColor: '#047857',
-    effect: '공격력(ATK) +30 증가',
-    source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 300G'
-  },
-  {
-    id: 'equip_bronze_helmet',
-    name: '청동투구 (Bronze Helmet)',
-    icon: '🪖',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '3티어 투구',
-    tierColor: '#047857',
-    effect: '방어력(DEF) +14, 체력(HP) +35 증가',
-    source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 200G'
-  },
-  {
-    id: 'equip_bronze_armor',
-    name: '청동갑옷 (Bronze Armor)',
-    icon: '🛡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '3티어 갑옷',
-    tierColor: '#047857',
-    effect: '방어력(DEF) +20, 체력(HP) +25 증가',
-    source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 200G'
-  },
-  {
-    id: 'equip_heritage_blade',
-    name: '1897 숭실 헤리티지 소드',
-    icon: '⚔️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 무기',
-    tierColor: '#6366f1',
-    effect: '공격력 +45, 체력 +35',
-    source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
-    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 800G'
-  },
-  {
-    id: 'equip_heritage_helmet',
-    name: '1897 숭실 헤리티지 투구',
-    icon: '👑',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 투구',
-    tierColor: '#6366f1',
-    effect: '방어력 +20, 체력 +35',
-    source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
-    recipe: '숭실 역사의 정수 4개 + 꺾이지 않는 사명석 2개 + 500G'
-  },
-  {
-    id: 'equip_heritage_armor',
-    name: '1897 숭실 헤리티지 갑옷',
-    icon: '🛡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 갑옷',
-    tierColor: '#6366f1',
-    effect: '방어력 +25, 체력 +35',
-    source: '숭실역사관 신비한 제단(C)에서 제작 (10레벨 이상)',
-    recipe: '숭실 역사의 정수 5개 + 꺾이지 않는 사명석 3개 + 500G'
-  },
-  {
-    id: 'equip_omr_wand',
-    name: '컴싸 마법봉 (OMR Magic Wand)',
-    icon: '🖊️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '4티어 무기',
-    tierColor: '#7e22ce',
-    effect: '공격력(ATK) +45, 방어력(DEF) +5, 체력(HP) +30 증가 (Lv.10 이상)',
-    source: '기말고사 파멸신 레이드 전리품 드랍',
-    recipe: '제작 불가'
-  },
-
-  // 5티어 불멸세트 (12레벨 락 · 급식실 핵심 재료 + 목재·허브)
-  {
-    id: 'equip_immortal_blade',
-    name: '불멸의 열정 대검',
-    icon: '⚔️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '5티어 무기',
-    tierColor: '#ef4444',
-    effect: '공격력 +60, 체력 +35 (Lv.12 이상)',
-    source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
-    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 15개 + 향긋한 허브 10개 + 1,200G'
-  },
-  {
-    id: 'equip_immortal_helmet',
-    name: '불멸의 열정 투구',
-    icon: '👑',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '5티어 투구',
-    tierColor: '#ef4444',
-    effect: '방어력 +25, 체력 +35 (Lv.12 이상)',
-    source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
-    recipe: '정제된 영양의 정수 6개 + 특수 강화 스텐 조각 4개 + 단단한 목재 10개 + 향긋한 허브 8개 + 700G'
-  },
-  {
-    id: 'equip_immortal_armor',
-    name: '불멸의 열정 갑옷',
-    icon: '🛡️',
-    category: 'weapon_armor', subCategory: 'weapon_armor',
-    tierBadge: '5티어 갑옷',
-    tierColor: '#ef4444',
-    effect: '방어력 +30, 체력 +35 (Lv.12 이상)',
-    source: '숭실역사관 신비한 제단(C)에서 제작 (12레벨 이상)',
-    recipe: '정제된 영양의 정수 8개 + 특수 강화 스텐 조각 5개 + 단단한 목재 12개 + 향긋한 허브 10개 + 700G'
-  },
-
-  // 4. Shoes (신발 1~4티어 순 정렬)
-  {
-    id: 'equip_shoes_samdidas',
-    name: '삼디다스 실내화',
-    icon: '👟',
-    category: 'shoes',
-    subCategory: 'shoes',
-    tierBadge: '1티어 신발',
-    tierColor: '#059669',
-    effect: '공격력 +2, 방어력 +2, 체력 +10',
-    source: '🏅 호칭 교환소 특별 교환'
-  },
-  {
-    id: 'equip_leather_shoes',
-    name: '날렵한 가죽 운동화 (Leather Sneakers)',
-    icon: '👟',
-    category: 'shoes',
-    subCategory: 'shoes',
-    tierBadge: '2티어 신발',
-    tierColor: '#b45309',
-    effect: '공격력 +3, 방어력 +3, 체력 +10',
-    source: '농구장/풋살장 몬스터 토벌 시 드랍'
-  },
-  {
-    id: 'equip_bronze_shoes',
-    name: '청동 스파이크 (Bronze Spikes)',
-    icon: '👟',
-    category: 'shoes',
-    subCategory: 'shoes',
-    tierBadge: '3티어 신발',
-    tierColor: '#047857',
-    effect: '공격력 +5, 방어력 +5, 체력 +10',
-    source: '숭실역사관 고대 비전의 보물함'
-  },
-  {
-    id: 'equip_heritage_boots',
-    name: '1897 숭실 헤리티지 부츠 (1897 Heritage Boots)',
-    icon: '👟',
-    category: 'shoes',
-    subCategory: 'shoes',
-    tierBadge: '4티어 신발',
-    tierColor: '#6366f1',
-    effect: '공격력 +6, 방어력 +6, 체력 +15',
-    source: '기말고사 파멸신 레이드 토벌 시 드랍'
-  },
-  {
-    id: 'equip_immortal_shoes',
-    name: '불멸의 에어 농구화 (Immortal Air Shoes)',
-    icon: '👟',
-    category: 'shoes',
-    subCategory: 'shoes',
-    tierBadge: '5티어 신발',
-    tierColor: '#ef4444',
-    effect: '공격력 +8, 방어력 +6, 체력 +15',
-    source: '체육관 실내 몬스터 토벌 시 드랍'
-  },
-
-  // 5. Special School Accessories (장신구)
-  {
-    id: 'equip_forsythia_ring',
-    name: '성실의 개나리 반지 (Forsythia Ring)',
-    icon: '🌼',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '교화 장신구',
-    tierColor: '#ca8a04',
-    effect: '공격력 +10, 방어력 +5, 체력 +20 증가',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작',
-    recipe: '노란 개나리 꽃잎 20개 + 100G'
-  },
-  {
-    id: 'equip_ginkgo_talisman',
-    name: '합심의 황금 은행잎 부적 (Ginkgo Talisman)',
-    icon: '🍂',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '교목 장신구',
-    tierColor: '#d97706',
-    effect: '공격력 +15, 방어력 +5, 체력 +30 증가',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작 (5레벨 이상)',
-    recipe: '황금 은행잎 10개 + 500G',
-    stats: { atk: 15, def: 5, hp: 30 }
-  },
-  {
-    id: 'equip_victory_medal',
-    name: '승리의 월계관 메달 (Victory Laurel Medal)',
-    icon: '🏅',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '영광 장신구',
-    tierColor: '#eab308',
-    effect: '공격력 +20, 방어력 +5, 체력 +30 증가 (Lv.15 이상)',
-    source: '복도 식물존 옆 악세서리 세공대에서 제작 (15레벨 이상)',
-    recipe: '황금 월계수 잎 12개 + 1,000G',
-    stats: { atk: 20, def: 5, hp: 30 }
-  },
-  {
-    id: 'equip_vintage_armband',
-    name: '선배의 낡은 승리 완장',
-    icon: '🎗️',
-    category: 'accessory', subCategory: 'accessory',
-    tierBadge: '유물 장신구',
-    tierColor: '#f59e0b',
-    effect: '공격력 +3, 방어력 +3, [특수] 모든 획득 경험치(EXP) +10% 증가 (매각 불가)',
-    source: '히든 퀘스트',
-    recipe: '히든 퀘스트 보상',
-    stats: { atk: 3, def: 3 }
-  },
-  {
-    id: 'equip_elevator_pass',
-    name: '엘리베이터 작동권',
-    icon: '🪪',
-    category: 'quest',
-    tierBadge: '퀘스트 인가증',
-    tierColor: '#2563eb',
-    effect: '🛗 중앙 엘리베이터 가동 필수 인가증 (소지 시 자동 작동)',
-    source: '1학년 2반 가죽 골렘 토벌 시 획득',
-    recipe: '가죽 골렘 토벌'
-  },
-
-  // 6. Special Quest Key
-  {
-    id: 'item_cafeteria_key',
-    name: '급식실 열쇠',
-    icon: '🔑',
-    category: 'quest',
-    tierBadge: '입장 열쇠',
-    tierColor: '#f59e0b',
-    effect: '급식실 정문 출입용 황금 열쇠',
-    source: '6층 교무실'
-  },
-  {
-    id: 'item_gym_key',
-    name: '2학년 체육관 열쇠',
-    icon: '🔑',
-    category: 'quest',
-    tierBadge: '입장 열쇠',
-    tierColor: '#f59e0b',
-    effect: '체육관 출입문 개방 및 2학년 체육선생님 전달용 열쇠',
-    source: '6층 교무실 20번 자리 (Lv.12 이상)'
-  }
-];
-
-/**
- * Shared crisp UI icon renderer for items whose OS emoji glyphs render poorly
- * (e.g., washed-out futsal ball on light backgrounds or black-legged elixir alembic).
- */
-window.renderItemIconHtml = function renderItemIconHtml(itemId, fallbackIcon = '📦', extraClass = '') {
-  if (itemId === 'item_futsal_leather') {
-    const svg = `<svg width="1em" height="1em" viewBox="0 0 32 32" aria-hidden="true" style="display:inline-block; vertical-align:-0.15em; filter:drop-shadow(0 1px 1.5px rgba(15,23,42,0.28));"><circle cx="16" cy="16" r="14" fill="#ffffff" stroke="#0f172a" stroke-width="2.2"/><path d="M7.5 25 A14 14 0 0 0 26 9 A13.5 13.5 0 0 1 7.5 25 Z" fill="#cbd5e1"/><polygon points="16,9.5 22,13.8 19.7,20.8 12.3,20.8 10,13.8" fill="#0f172a"/><polygon points="16,2 19.4,4.2 12.6,4.2" fill="#0f172a"/><polygon points="28.8,10.5 29.5,14.5 26.2,13.5" fill="#0f172a"/><polygon points="3.2,10.5 5.8,13.5 2.5,14.5" fill="#0f172a"/><polygon points="24.8,26.2 21.8,28.5 20.5,25.2" fill="#0f172a"/><polygon points="7.2,26.2 11.5,25.2 10.2,28.5" fill="#0f172a"/><path d="M16 4V9.5M22 13.8L26.5 13M19.7 20.8L21.5 25.5M12.3 20.8L10.5 25.5M10 13.8L5.5 13" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/></svg>`;
-    return extraClass ? `<span class="${extraClass}">${svg}</span>` : svg;
-  }
-  if (itemId === 'item_elixir' || itemId === 'recipe_elixir') {
-    const svg = `<svg width="1em" height="1em" viewBox="0 0 32 32" aria-hidden="true" style="display:inline-block; vertical-align:-0.15em; filter:drop-shadow(0 0 5px rgba(192,132,252,0.7));"><path d="M20.5 10.5 L25.8 5.2 L27.8 7.2 L22.5 12.5" fill="#bae6fd" stroke="#0284c7" stroke-width="1.6" stroke-linejoin="round"/><ellipse cx="26.8" cy="6.2" rx="2.1" ry="1.1" transform="rotate(45 26.8 6.2)" fill="#7dd3fc" stroke="#0369a1" stroke-width="1.3"/><circle cx="15" cy="18.5" r="10.2" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.8"/><path d="M6.2 19.5 C10 17.5, 13.5 21, 18 19 C21.2 17.6, 23.6 18.8, 24.4 20 A9.4 9.4 0 0 1 6.2 19.5 Z" fill="#22c55e"/><circle cx="12.5" cy="22" r="1.4" fill="#86efac"/><circle cx="17.5" cy="23.5" r="1.1" fill="#bbf7d0"/><circle cx="15.5" cy="20.8" r="0.9" fill="#dcfce7"/><path d="M9.5 14.5 A6.2 6.2 0 0 1 15 11.2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/></svg>`;
-    return `<span class="icon-elixir ${extraClass}">${svg}</span>`;
-  }
-  if (itemId === 'item_tiny_exp_potion') {
-    const svg = `<svg width="1em" height="1em" viewBox="0 0 32 32" aria-hidden="true" style="display:inline-block; vertical-align:-0.15em; filter:drop-shadow(0 0 4px rgba(245,158,11,0.65));"><rect x="13" y="4" width="6" height="4" rx="1.5" fill="#d97706" stroke="#78350f" stroke-width="1.3"/><path d="M13.5 8 L18.5 8 L19.5 12.5 L23.5 18.5 A7.5 7.5 0 1 1 8.5 18.5 L12.5 12.5 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 19.5 C12.5 18, 16 21, 22.5 19.2 A6.8 6.8 0 0 1 9.5 19.5 Z" fill="#f59e0b"/><circle cx="14" cy="22" r="1.3" fill="#fde047"/><circle cx="18" cy="23" r="1" fill="#fef08a"/><path d="M24.5 7 L25.5 9.5 L28 10.5 L25.5 11.5 L24.5 14 L23.5 11.5 L21 10.5 L23.5 9.5 Z" fill="#facc15"/></svg>`;
-    return extraClass ? `<span class="${extraClass}">${svg}</span>` : svg;
-  }
-  return extraClass ? `<span class="${extraClass}">${fallbackIcon}</span>` : `<span>${fallbackIcon}</span>`;
-};
+// ITEM_CODEX_DATABASE & renderItemIconHtml loaded from js/codex_data.js
 
 /**
  * Main Application Orchestrator for Soongsil English Open World RPG — Season 1
@@ -1167,706 +535,7 @@ window.BOSS_CONFIG = {
   rewardExp: 100
 };
 
-// =========================================================================
-// 🏛️ 6층 교무실 교사 퀘스트 정의 (RPG Quest Dispatch System)
-// =========================================================================
-window.QUEST_DEFINITIONS = QUEST_DEFINITIONS = {
-  'quest_joshua_intro': {
-    id: 'quest_joshua_intro',
-    minLevel: 1,
-    teacherId: 'npc_teacher_joshua',
-    teacherName: 'Joshua 선생님',
-    teacherRole: '3학년 영어',
-    teacherSeat: '교무실',
-    returnLocation: '6층 교무실',
-    progressHint: '1-1 교실 교탁과 6층 탕비실 안쪽을 조사하세요.',
-    teacherAvatar: '👨‍🏫',
-    category: '⭐ 입문 퀘스트 (Introductory Quest)',
-    title: '[3학년 영어] Joshua 선생님의 특별 지령: 흩어진 단어장',
-    story: `Hello, student! 나는 3학년 영어를 가르치고 있는 Joshua 선생님이란다. 👨‍🏫
-
-이번 3학년 단어 평가를 앞두고 핵심 영단어 메모를 검토하던 중, 그만 6층 탕비실에서 커피를 타다가 바닥 구석에 떨어뜨리고 말았지 뭐니!
-
-게다가 자네가 3학년 영어를 배울 기본기가 튼튼한지도 한번 점검해보고 싶군.
-
-1-1 교실 교탁에서 영어 퀴즈 2문제를 멋지게 맞히고, 6층 교무실 탕비실 안쪽 싱크대 근처에 떨어진 내 [Joshua의 단어 메모]를 찾아와 주겠나?
-
-성공하면 든든한 골드와 경험치, 그리고 순간이동 주문서를 보상으로 지급하겠네!`,
-    inProgressStory: `어서 오게나! 아직 임무가 완료되지 않았더군!
-
-1-1 교실 교탁에서 영어 퀴즈 2문제를 풀고, 6층 교무실 탕비실 안쪽 구석에 떨어진 내 단어 메모를 찾아와 주게나!`,
-    completeStory: `Oh, brilliant! Wonderful work! 👏
-
-자네 덕분에 3학년 영어 단어장 메모를 무사히 되찾았고, 1학년 1반 영어 퀴즈도 멋지게 통과했더군!
-
-약속했던 골드와 경험치, 그리고 유용한 순간이동 주문서를 지급하겠네! 앞으로도 숭실을 위해 힘써주게!`,
-    doneStory: `Hello, student! 자네 덕분에 이번 3학년 영어 수업 준비가 아주 순조롭다네.
-
-언제나 성실하게 활약하는 자네가 자랑스럽군! 궁금한 점이 있으면 언제든 교무실로 찾아오게나! 👍`,
-    objectives: [
-      {
-        id: 'quiz',
-        text: '1-1 교실 교탁 영어 퀴즈 2회 정답',
-        targetCount: 2,
-        getCount: (quest) => (quest ? (quest.quizCount || 0) : 0)
-      },
-      {
-        id: 'memo',
-        text: '6층 교무실 탕비실 안쪽에서 [Joshua의 단어 메모] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.memoCollected ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
-      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_teleport_scroll', itemName: '순간이동 주문서', count: 1, icon: '📜', label: '📜 순간이동 주문서 x1' }
-    ]
-  },
-  'quest_okchohan_social': {
-    id: 'quest_okchohan_social',
-    minLevel: 4,
-    teacherId: 'npc_teacher_okchohan',
-    teacherName: '옥촣한 선생님',
-    teacherRole: '사회',
-    teacherSeat: '교무실',
-    returnLocation: '6층 교무실',
-    progressHint: '1-3 컴퓨터실 산성비 1,000점 & 교무실 인쇄실 교재를 찾으세요.',
-    teacherAvatar: '👨‍🏫',
-    category: '🏛️ 사회 탐구 퀘스트 (Social Studies Quest)',
-    title: '[사회] 옥촣한 선생님의 특별 과제: 숭실 사회 탐구',
-    cleanupItem: 'item_okchohan_textbook',
-    story: `반갑다! 숭실중학교에서 사회를 가르치는 옥촣한 선생님이란다. 👨‍🏫
-
-사회를 배운다는 것은 빠른 정보 습득력과 민주시민의 순발력을 기르는 것이기도 하지!
-
-이번 사회 수업 연구 과제를 준비하던 중, 교무실 안쪽 인쇄기 근처에 내 [옥촣한의 사회 탐구 교재]를 두고 왔지 뭐니!
-
-1학년 3반 컴퓨터실에서 [산성비 단어 타자 게임 1,000점 이상 달성]하고, 교무실 인쇄실 근처에 놓인 내 사회 교재를 찾아와 주겠니?
-
-과제를 성실히 마친 학생에게는 전설의 장비 제작 핵심 재료인 [청동 드래곤의 심장]을 선물로 주마!`,
-    inProgressStory: `어서 오렴! 아직 사회 탐구 과제가 완료되지 않았더구나!
-
-1학년 3반 컴퓨터실에서 산성비 타자 게임 1,000점 이상을 달성하고, 교무실 안쪽 인쇄실 근처에 있는 내 사회 교재를 찾아오렴!`,
-    completeStory: `오, 훌륭하구나! 멋지게 과제를 완수했어! 👏
-
-덕분에 사회 탐구 교재도 무사히 되찾았고, 산성비 타자 게임도 1,000점을 넘겨 순발력을 증명했더구나!
-
-약속했던 특별 보상으로 [청동 드래곤의 심장]을 수여하마! 앞으로도 숭실의 모범 시민으로 성장해주길 바란다!`,
-    doneStory: `자네 덕분에 이번 사회 수업 준비가 아주 순조롭단다.
-
-언제나 성실하게 활약하는 자네가 자랑스럽구나! 사회에 대해 궁금한 점이 있다면 언제든 편하게 찾아오렴! 👍`,
-    objectives: [
-      {
-        id: 'acid_rain',
-        text: '1학년 3반 컴퓨터실에서 산성비 타자 게임 1,000점 이상 달성하기',
-        targetCount: 1000,
-        unit: '점',
-        getCount: (quest) => (quest ? (quest.acidRainScore || 0) : 0)
-      },
-      {
-        id: 'textbook',
-        text: '6층 교무실 인쇄실 근처에서 [옥촣한의 사회 탐구 교재] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.textbookCollected ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'item', itemKey: 'item_bronze_heart', itemName: '청동 드래곤의 심장', count: 1, icon: '❤️‍🔥', meta: { type: 'material', effect: '3티어 청동 장비 제작 핵심 재료' }, label: '❤️‍🔥 청동 드래곤의 심장 x1개' },
-      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
-      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
-    ]
-  },
-  'quest_kimmijin_art': {
-    id: 'quest_kimmijin_art',
-    minLevel: 3,
-    teacherId: 'npc_teacher_kimmijin',
-    teacherName: '김진믜 선생님',
-    teacherRole: '미술',
-    teacherSeat: '교무실',
-    returnLocation: '6층 교무실',
-    progressHint: '노란 개나리 꽃잎 3송이 & 운동장 스탠드 파란 벤치의 스케치북을 찾으세요.',
-    teacherAvatar: '🎨',
-    category: '🎨 숭실 예술 프로젝트 (Fine Arts Quest)',
-    title: '[미술] 김진믜 선생님의 예술 프로젝트: 숭실의 색채',
-    cleanupItem: 'item_kimmijin_sketchbook',
-    story: `반갑다! 숭실중학교에서 미술을 가르치는 김진믜 선생님이란다. 🎨
-
-미술은 우리 주변의 아름다운 색채를 관찰하고 표현하는 예술이란다!
-
-이번에 교내 미술전에 출품할 숭실 풍경화를 준비하고 있는데, 두 가지 도움이 필요하단다.
-
-첫째, 풍경화에 화사한 봄빛을 입힐 천연 안료 재료로 [노란 개나리 꽃잎] 3송이가 필요하단다. (1학년 1반 채집장이나 가방에서 마련할 수 있단다!)
-
-둘째, 지난번 운동장 스탠드에서 교내 풍경을 스케치하다가 위쪽 파란색 벤치(좌석)에 내 [김진믜의 풍경화 스케치북]을 깜빡 두고 왔지 뭐니!
-
-운동장 스탠드 파란색 벤치에서 내 스케치북을 찾아와 주면, 고마운 마음을 담아 향긋한 [노란 개나리 꽃잎] 3개와 경험치를 선물로 줄게!`,
-    inProgressStory: `어서 오렴! 아직 미술 프로젝트 준비물이 모두 모이지 않았더구나!
-
-풍경화 채색용 [노란 개나리 꽃잎 3송이]와 운동장 스탠드 파란색 벤치에 놓인 [김진믜의 풍경화 스케치북]을 찾아와 주렴! 🎨`,
-    completeStory: `어머나, 정말 고마워! 완벽하게 구해왔구나! 👏
-
-덕분에 운동장 스탠드 파란색 벤치에 떨어져 있던 소중한 스케치북을 되찾았고, 아름다운 풍경화를 완성할 수 있게 되었단다!
-
-약속했던 보상으로 싱싱한 [노란 개나리 꽃잎 3개]와 경험치를 선물로 줄게! 너의 따뜻한 예술적 감성을 응원한다!`,
-    doneStory: `너 덕분에 이번 숭실 미술전 작품이 멋지게 완성될 것 같구나!
-
-언제든 미술에 대해 이야기를 나누고 싶거나 영감을 얻고 싶다면 언제든 편하게 찾아오렴! 🎨✨`,
-    objectives: [
-      {
-        id: 'forsythia',
-        text: '풍경화 채색용 천연 안료 [노란 개나리 꽃잎] 3송이 수집하기',
-        targetCount: 3,
-        unit: '송이',
-        getCount: (quest) => {
-          const invCount = (window.MainApp && typeof window.MainApp.getItemCount === 'function') ? window.MainApp.getItemCount('item_forsythia') : 0;
-          return Math.max(invCount, quest ? (quest.forsythiaCount || 0) : 0);
-        }
-      },
-      {
-        id: 'sketchbook',
-        text: '운동장 스탠드 파란색 벤치에서 [김진믜의 풍경화 스케치북] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.sketchbookCollected ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'item', itemKey: 'item_forsythia', itemName: '노란 개나리 꽃잎', count: 3, icon: '🌼', meta: { type: 'material', effect: '개나리 반지 및 주홍 물약 재료' }, label: '🌼 노란 개나리 꽃잎 x3개' },
-      { type: 'exp', amount: 100, label: '🌟 100 EXP (경험치)' }
-    ]
-  },
-  quest_yosunyu_info: {
-    id: 'quest_yosunyu_info',
-    minLevel: 5,
-    teacherId: 'npc_teacher_yosunyu',
-    teacherName: '요션유 선생님',
-    teacherRole: '정보',
-    teacherSeat: '교무실',
-    returnLocation: '6층 교무실',
-    progressHint: '1-3 컴퓨터실 메인 서버 점검 & 1-2 교실 구석의 USB를 찾으세요.',
-    teacherAvatar: '💻',
-    category: '💻 숭실 정보·알고리즘 프로젝트 (Informatics Quest)',
-    title: '[정보] 요션유 선생님의 알고리즘 과제: 디지털 숭실',
-    cleanupItem: 'item_yosunyu_usb',
-    story: `반갑다! 숭실중학교에서 정보를 가르치는 요션유 선생님이란다. 💻
-
-정보 수업은 컴퓨터의 원리와 코딩, 논리적인 알고리즘적 사고력을 기르는 미래의 핵심 과목이란다!
-
-이번에 교내 프로그래밍 실습과 알고리즘 과제를 준비하고 있는데, 두 가지 도움이 필요하단다.
-
-첫째, 1학년 3반 컴퓨터실에 있는 [선생님 메인 서버]가 잘 작동하고 있는지 직접 가서 시스템을 1회 점검(확인)해 주렴! (학교 전산망이 정상이어야 코딩 실습을 원활히 진행할 수 있단다!)
-
-둘째, 1-2교실(1학년 2반) 가장 구석에 내 [요션유의 알고리즘 USB]를 깜빡 두고 왔지 뭐니! (전교생 정보 수업 코딩 예제와 실습 슬라이드가 모두 담겨있단다!)
-
-컴퓨터실 메인 서버를 점검하고 1-2교실 구석에서 내 알고리즘 USB를 찾아와 주면, 고마운 마음을 담아 귀중한 [보스의 가죽] 1장과 200 경험치를 선물로 줄게!`,
-    inProgressStory: `어서 오렴! 아직 정보 프로젝트 준비물이 모두 모이지 않았더구나!
-
-1학년 3반 컴퓨터실의 [선생님 메인 서버 점검]과 1-2교실 가장 구석에 놓인 [요션유의 알고리즘 USB]를 찾아와 주렴! 💻`,
-    completeStory: `어머나, 정말 훌륭하구나! 완벽하게 처리해 주었어! 👏
-
-컴퓨터실 메인 서버도 이상 없이 잘 가동 중이고, 중요한 코딩 강의 자료가 담긴 알고리즘 USB도 무사히 되찾았단다!
-
-약속했던 보상으로 [보스의 가죽 1장]과 200 경험치를 선물로 줄게! 너의 뛰어난 디지털 정보 감각과 논리적 사고력을 응원한다!`,
-    doneStory: `너 덕분에 이번 숭실 정보 알고리즘 실습이 완벽하게 진행될 수 있겠구나!
-
-언제든 코딩이나 컴퓨터, 알고리즘에 대해 궁금한 점이 있다면 언제든 편하게 찾아오렴! 💻✨`,
-    objectives: [
-      {
-        id: 'server',
-        text: '1학년 3반 컴퓨터실에서 [선생님 메인 서버] 1회 점검하기',
-        targetCount: 1,
-        unit: '회',
-        getCount: (quest) => (quest && quest.serverInspected ? 1 : 0)
-      },
-      {
-        id: 'usb',
-        text: '1학년 2반(1-2교실) 가장 구석에서 [요션유의 알고리즘 USB] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.usbCollected ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'item', itemKey: 'item_boss_leather', itemName: '보스의 가죽', count: 1, icon: '🥋', meta: { type: 'material', effect: '가죽 골렘 전리품 및 2티어 가죽 장비 필수 재료' }, label: '🥋 보스의 가죽 x1장' },
-      { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' }
-    ]
-  },
-  quest_kwimjinsyong_career: {
-    id: 'quest_kwimjinsyong_career',
-    minLevel: 7,
-    teacherId: 'npc_teacher_kwimjinsyong',
-    teacherName: '귐즨숑 선생님',
-    teacherRole: '진로',
-    teacherSeat: '교무실',
-    returnLocation: '6층 교무실',
-    progressHint: '5층 진로상담실 안내서를 챙겨 6층 복도 동쪽 창가의 고민 학생에게 전달하세요.',
-    teacherAvatar: '🌟',
-    category: '🌟 숭실 진로·적성 멘토링 프로젝트 (Career Quest)',
-    title: '[진로] 귐즨숑 선생님의 진로 격려: 빛나는 재능의 씨앗',
-    cleanupItem: 'item_career_guidebook',
-    story: `안녕! 숭실의 미래를 밝혀줄 친구구나. 여기까지 찾아와 주어 고맙단다.
-
-최근 6층 복도 창가에서 한 학생이 자신이 무엇을 잘하는지 몰라 깊은 한숨을 쉬며 낙담해 있더구나.
-
-모든 사람은 저마다 빛나는 재능의 씨앗을 품고 있는데 스스로를 믿지 못하는 모습이 참 안타까웠어.
-
-내가 정성껏 쓴 [귐즨숑의 진로 격려 편지]와 함께, 5층 진로상담실 책상에 놓인 [진로 적성 검사 안내서]를 챙겨서 전해주겠니?`,
-    inProgressStory: `어서 오렴! 5층 진로상담실 책상 위의 [진로 적성 검사 안내서]를 챙겨서 6층 복도 동쪽 창가의 [진로를 고민하는 학생]에게 나의 격려 편지와 함께 전해주렴! 🌟`,
-    completeStory: `친구의 표정이 한결 밝아졌다고 하니 정말 다행이구나. 타인의 꿈을 응원해주는 너의 따뜻한 마음씨야말로 가장 훌륭한 재능이란다!
-
-약속했던 경험치와 앞으로의 여정에 큰 힘이 되어줄 용기 포션을 선물로 줄게! 너의 빛나는 앞날을 언제나 축복한단다!`,
-    doneStory: `그 친구가 진로상담실을 찾아와서 함께 즐겁게 상담을 나누었단다. 너의 따뜻한 관심이 한 친구의 미래를 활짝 열어주었어!
-
-언제든 꿈과 진로가 고민된다면 언제든 편하게 찾아오렴! 🌟✨`,
-    objectives: [
-      {
-        id: 'guidebook',
-        text: '5층 진로상담실에 들러 책상 위의 [진로 적성 검사 안내서] 1부 회수',
-        targetCount: 1,
-        unit: '부',
-        getCount: (quest) => (quest && quest.guidebookCollected ? 1 : 0)
-      },
-      {
-        id: 'deliver',
-        text: '6층 복도 동쪽 창가에 서 있는 [진로를 고민하는 학생]에게 편지와 안내서 전달',
-        targetCount: 1,
-        unit: '명',
-        getCount: (quest) => (quest && quest.studentComforted ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기 포션', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' }, label: '🧪 용기 포션 x2 (새로운 길을 나아갈 용기! 1분간 공격력 +5)' }
-    ]
-  },
-  'quest_library_missing_books': {
-    id: 'quest_library_missing_books',
-    minLevel: 8,
-    teacherId: 'npc_librarian',
-    teacherName: '사서 선생님',
-    teacherRole: '2층 도서관',
-    teacherSeat: '도서관 안내석',
-    returnLocation: '2층 도서관',
-    progressHint: '운동장 스탠드·6층 교무실·숭실역사관에서 분실도서 3권을 회수하세요.',
-    teacherAvatar: '👩‍🏫',
-    category: '📚 도서관 특별 의뢰 (Library Quest)',
-    title: '[도서관] 사서 선생님의 긴급 의뢰: 흩어진 3권의 도서 회수',
-    story: `안녕, 학생! 2층 도서관에 온 것을 환영한단다. 📚
-
-하지만 지금 정말 큰일이란다... 며칠 전 대출되었던 소중한 학교 도서 3권이 제때 반납되지 않고 학교 곳곳에 흩어져 버렸어!
-
-1. 📘 [세계문학 전집]: 운동장 관람석 스탠드 벤치에 누군가 두고 갔다는 제보가 있어.
-2. 📗 [최신 과학 잡지]: 6층 교무실 연구석 책상 위에 놓여 있단다.
-3. 📕 [숭실 역사 고문서 도록]: 1897 숭실역사관 안쪽 전시실에 놓여 있어.
-
-학교 곳곳을 탐험하며 이 3권의 도서를 모두 찾아 도서관으로 회수해 줄 수 있겠니?
-모두 회수해 오면 풍성한 경험치와 골드를 보상으로 줄게!`,
-    inProgressStory: `어서 오렴! 아직 분실된 도서 3권을 모두 찾지 못했더구나!
-
-1. 📘 운동장 관람석 스탠드 (소설책)
-2. 📗 6층 교무실 연구석 (과학 잡지)
-3. 📕 숭실역사관 전시실 (역사 고문서 도록)
-
-모두 찾아오면 풍성한 보상을 지급하마!`,
-    completeStory: `어머나, 3권의 도서를 모두 안전하게 찾아왔구나! 정말 고마워! 👏✨
-
-덕분에 숭실 도서관의 소중한 지식들이 모두 제자리를 찾게 되었단다.
-약속했던 골드와 경험치 보상을 수여하마! 앞으로도 도서관을 자주 찾아주렴!`,
-    doneStory: `안녕! 자네 덕분에 도서관 서가가 다시 풍성해졌단다.
-오늘의 지혜 명언 독서대에서 책도 읽고, 스마트 디벗도 편하게 이용하렴! 👍`,
-    objectives: [
-      {
-        id: 'book_pg',
-        text: '운동장 관람석 스탠드에서 [소설책] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.bookPgCollected ? 1 : 0)
-      },
-      {
-        id: 'book_of',
-        text: '6층 교무실 연구석에서 [과학 잡지] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.bookOfCollected ? 1 : 0)
-      },
-      {
-        id: 'book_hi',
-        text: '숭실역사관 전시실에서 [고문서 도록] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.bookHiCollected ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
-      { type: 'exp', amount: 150, label: '🌟 150 EXP (경험치)' }
-    ]
-  },
-  'quest_cafeteria_order': {
-    id: 'quest_cafeteria_order',
-    minLevel: 10,
-    teacherId: 'npc_cafeteria_teacher',
-    teacherName: '급식지도 선생님',
-    teacherRole: '영양 및 급식지도',
-    teacherSeat: '급식지도석',
-    returnLocation: '학생 급식실',
-    progressHint: '배부대 앞 [반찬 더 달라는 학생]과 1:1 퀴즈 대결을 진행하세요.',
-    teacherAvatar: '👨‍🏫',
-    category: '🍱 급식실 질서 퀘스트 (1단계)',
-    title: '[급식실] 반찬 더 달라고 조르는 학생 진정시키기',
-    story: `반가워요, 학생! 마침 도움이 절실하던 참이었어요. 🍱
-
-배식대 쪽을 좀 보세요. 정량 배식이 급식실 규칙인데, 몇몇 학생들이 맛있는 소시지와 고기반찬만 잔뜩 더 달라고 떼를 쓰며 배식 줄을 멈춰 세우고 있어요!
-
-배식대 앞에 서 있는 [🍖 반찬 더 달라는 학생]에게 가서, 1:1 영어 퀴즈 대결로 정량 배식과 양보의 미덕을 일깨워주고 진정시켜 줄 수 있나요?`,
-    inProgressStory: `아직 [🍖 반찬 더 달라는 학생]이 배식대 앞에서 떼를 쓰고 있어요!
-배부대 앞으로 가서 1:1 영어 퀴즈 대결을 펼쳐 학생을 진정시켜 주세요!`,
-    completeStory: `오! 학생 덕분에 배식대 앞이 다시 질서정연해졌어요! 👏
-규칙을 지키며 사이좋게 식판을 들고 가는 모습을 보니 정말 안심이네요.
-수고비로 골드와 경험치를 지급할게요!`,
-    doneStory: `배식대 앞이 아주 평화로워졌어요. 규칙을 지켜준 학생이 자랑스럽네요! 👍`,
-    objectives: [
-      {
-        id: 'calm_demanding',
-        text: '급식배부대의 [반찬 더 달라는 학생] 1:1 퀴즈로 진정시키기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.targetCalmed ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'gold', amount: 150, label: '🪙 150 G (골드)' },
-      { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' }
-    ]
-  },
-  'quest_cafeteria_manners': {
-    id: 'quest_cafeteria_manners',
-    minLevel: 10,
-    teacherId: 'npc_cafeteria_teacher',
-    teacherName: '급식지도 선생님',
-    teacherRole: '영양 및 급식지도',
-    teacherSeat: '급식지도석',
-    returnLocation: '학생 급식실',
-    progressHint: '우측 식탁 좌석 [식탁에서 떠드는 학생]을 1:1 퀴즈로 진정시키세요.',
-    teacherAvatar: '👨‍🏫',
-    category: '🍽️ 급식실 예절 퀘스트 (2단계)',
-    title: '[급식실] 식탁에서 떠들며 먹는 학생들 진정시키기',
-    story: `배식대는 정돈되었는데 이번엔 학생 식당 좌석 쪽이 문제예요!
-
-밥을 입에 물고 큰 소리로 떠들며 장난치는 학생들이 있어요. 음식물이 튀거나 기도로 넘어가면 큰 사고로 이어질 수 있거든요.
-
-우측 구석 식탁 좌석에 있는 [🗣️ 식탁에서 떠드는 학생]에게 가서, 1:1 영어 퀴즈 대결로 올바른 식사 예절을 일깨워주고 진정시켜 주세요!`,
-    inProgressStory: `우측 구석 식탁 좌석에서 [🗣️ 식탁에서 떠드는 학생]이 아직도 시끄럽게 장난치고 있어요!
-어서 가서 1:1 영어 퀴즈 대결로 조용히 식사하도록 지도해 주세요!`,
-    completeStory: `와! 정말 대단해요, 학생! 🎉
-
-학생들이 자리에 조용히 앉아 친구들과 배려하며 맛있게 식사하고 있어요!
-우리 숭실 급식실의 평화와 질서를 되찾아 준 훌륭한 학생에게, 영양교사가 특별히 준비한 최고급 5티어 제작 재료와 보상을 선물할게요!`,
-    doneStory: `학생 덕분에 우리 숭실 급식실이 전교에서 가장 질서 있고 모범적인 식당이 되었답니다! 👍`,
-    objectives: [
-      {
-        id: 'calm_noisy',
-        text: '학생 식탁 좌석의 [식탁에서 떠드는 학생] 1:1 퀴즈로 진정시키기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.targetCalmed ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
-      { type: 'exp', amount: 200, label: '🌟 200 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 2, icon: '🍱', label: '🍱 정제된 영양의 정수 x2' },
-      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 1, icon: '✨', label: '✨ 특수 강화 스텐 조각 x1' }
-    ]
-  },
-  'quest_health_emergency': {
-    id: 'quest_health_emergency',
-    minLevel: 11,
-    teacherId: 'npc_nurse',
-    teacherName: '보건 선생님',
-    teacherRole: '3층 보건실',
-    teacherSeat: '보건실 진료석',
-    returnLocation: '3층 보건실',
-    progressHint: '보건실 캐비닛·2층 도서관 자연과학 서가·향긋한 허브 5개를 모으세요.',
-    teacherAvatar: '🩺',
-    category: '🩺 장편 모험 제1막 (Lv.11)',
-    title: '[장편 1막] 보건실 긴급 처방: 사라진 활력의 비약',
-    story: `어서 오렴, Lv.11 이상의 든든한 숭실 탐험가여! 🩺✨
-
-사실 최근 수행평가와 시험 시즌이 겹치며 교내 학생들 사이에 원인 모를 '무기력 졸음 바이러스' 징후가 번지고 있단다.
-임시 처방이 아니라 몸과 마음의 활력을 되살릴 특제 비약을 만들어야 하는데, 3가지 핵심 준비물이 학교 곳곳에 흩어져 있어!
-
-1. 💊 보건실 [응급 구급약 & 약초 캐비닛]에서 오래된 약초 처방 암호 해독하기
-2. 🔬 2층 도서관 [자연과학·연금 서가]에서 '고대 활력 비약 조제법' 찾아내기
-3. 🌿 가방에 [향긋한 허브] 5개 모아오기 (1학년 1반 채집 가능)
-
-준비되면 바로 수락하고 학교를 탐험해 다오! (이 모험은 맞은편 Wee클래스로 이어지는 대장정의 시작이란다!)`,
-    inProgressStory: `아직 활력의 비약 재료와 단서가 다 모이지 않았구나!
-
-1. 💊 보건실 [응급 구급약 & 약초 캐비닛] 조사 & 처방전 해독
-2. 🔬 2층 도서관 [자연과학·연금 서가] 조사 & 조제법 해독
-3. 🌿 [향긋한 허브] 5개 이상 소지
-
-모두 준비되면 나에게 다시 보고하렴! 🩺`,
-    completeStory: `대단하구나! 오래된 처방전과 도서관의 비전 조제법, 신선한 허브까지 모두 완벽하게 모았어! 👏✨
-
-덕분에 신체 활력 비약의 기본 토대가 완성되었단다!
-하지만... 진짜 원인은 단순한 피로가 아니라 시험 압박에 지친 학생들의 '마음' 속에 있는 것 같아.
-
-복도 맞은편 🕊️ [3층 Wee클래스 전문상담 선생님]께 가서 이 진단서를 전하고 [장편 2막] 모험을 이어가 주렴!`,
-    doneStory: `네가 찾아낸 조제법 덕분에 학생들의 건강 수치가 쑥쑥 올라가고 있단다! 🩺
-언제든 체력이 떨어지면 보건실 회복 침대에서 100% 쉬어가렴!`,
-    objectives: [
-      {
-        id: 'cabinet_check',
-        text: '3층 보건실 [응급 구급약 & 약초 캐비닛] 조사 & 처방 해독',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.cabinetChecked ? 1 : 0)
-      },
-      {
-        id: 'lib_recipe',
-        text: '2층 도서관 [자연과학·연금 서가]에서 고대 조제법 찾기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.libRecipeFound ? 1 : 0)
-      },
-      {
-        id: 'collect_herbs',
-        text: '가방에 [🌿 향긋한 허브] 5개 이상 모으기 (1-1반 채집)',
-        targetCount: 5,
-        unit: '개',
-        getCount: (quest) => {
-          const invCount = (window.MainApp && typeof window.MainApp.getItemCount === 'function')
-            ? window.MainApp.getItemCount('item_herb')
-            : 0;
-          return Math.min(5, Math.max(invCount, (quest && quest.herbCount) || 0));
-        }
-      }
-    ],
-    rewards: [
-      { type: 'item', itemKey: 'item_orange_potion', itemName: '주홍 물약', count: 2, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 25, effect: '체력 +25 회복' }, label: '🧪 주홍 물약 x2개' }
-    ]
-  },
-  'quest_wee_heart_signal': {
-    id: 'quest_wee_heart_signal',
-    minLevel: 12,
-    requiresDone: 'quest_health_emergency',
-    teacherId: 'npc_counselor_wee',
-    teacherName: 'Wee클래스 전문상담 선생님',
-    teacherRole: '3층 Wee클래스',
-    teacherSeat: '상담실',
-    returnLocation: '3층 Wee클래스',
-    progressHint: 'Wee클래스 우체통·체육관 창고·체육관 방송실 콘솔을 차례로 확인하세요.',
-    teacherAvatar: '🕊️',
-    category: '🕊️ 장편 모험 제2막 (Lv.12)',
-    title: '[장편 2막] Wee클래스의 비밀 쪽지와 체육관의 신호',
-    story: `보건 선생님 소개로 왔구나! 정말 반갑단다. 🕊️💖
-
-보건실에서 물리적 피로를 막아주었지만, 오늘 아침 Wee클래스 익명 우체통에서 마음이 꺾여버린 친구의 찢어진 비밀 편지 조각을 발견했어.
-편지에는 "체육관 창고 구석에 포기한 꿈을 두고 왔다... 방송실 소리마저 끊겼네"라는 슬픈 단서가 적혀 있더구나!
-
-함께 체육관 안쪽으로 모험을 떠나 친구들의 용기를 되살릴 단서를 찾아줄 수 있겠니?
-
-1. 📬 3층 Wee클래스 [우체통]을 열어 비밀 편지 단서 확인하기
-2. 📦 야외 체육관 [창고]을 조사해 잃어버린 꿈의 메모 찾기
-3. 🎛️ 야외 체육관 [체육관 방송실] 콘솔을 수리해 희망 주파수 복구하기`,
-    inProgressStory: `아직 체육관과 상담실의 마음 단서가 모두 모이지 않았어! 🕊️
-
-1. 📬 3층 Wee클래스 [익명 응원 우체통] 단서 읽기
-2. 📦 체육관 [창고] 조사 & 용기 암호 풀기
-3. 🎛️ 체육관 [체육관 방송실] 콘솔 주파수 복구하기
-
-세 곳의 탐험을 모두 마치면 나에게 돌아와 보고해 주렴!`,
-    completeStory: `해냈구나! 체육관 창고 깊숙한 곳의 잃어버린 꿈과, 방송실의 희망 주파수까지 모두 복구했어! 🎉🕊️
-
-이제 마지막 피날레 단계만 남았단다.
-보건 선생님의 신체 활력 비약과 우리 Wee클래스의 희망 스피치를 전교생에게 울려 퍼지게 할 [장편 완결 3막] 준비가 되었니?`,
-    doneStory: `자네가 되살려 놓은 체육관 방송실의 주파수에서 지금도 잔잔한 희망의 음률이 흐르고 있단다! 🎛️✨`,
-    objectives: [
-      {
-        id: 'wee_mailbox',
-        text: '3층 Wee클래스 [📬 우체통]에서 찢어진 비밀 편지 확인',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.mailboxChecked ? 1 : 0)
-      },
-      {
-        id: 'gym_storage',
-        text: '체육관 내부 [📦 창고]에서 잃어버린 꿈의 메모 해독',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.storageClueFound ? 1 : 0)
-      },
-      {
-        id: 'gym_broadcast',
-        text: '체육관 내부 [🎛️ 체육관 방송실] 콘솔 주파수 수리하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.broadcastFixed ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_courage_potion', itemName: '용기의 물약', count: 1, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 공격력(ATK) +5 증가' }, label: '🧪 용기의 물약 x1' },
-      { type: 'item', itemKey: 'item_protection_potion', itemName: '수호의 물약', count: 1, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', heal: 0, effect: '1분간 방어력(DEF) +3 증가' }, label: '🧪 수호의 물약 x1' }
-    ]
-  },
-  'quest_wee_hope_broadcast': {
-    id: 'quest_wee_hope_broadcast',
-    minLevel: 12,
-    requiresDone: 'quest_wee_heart_signal',
-    teacherId: 'npc_counselor_wee',
-    teacherName: 'Wee클래스 전문상담 선생님',
-    teacherRole: '3층 Wee클래스 · 연합 완결',
-    teacherSeat: '상담실',
-    returnLocation: '3층 Wee클래스',
-    progressHint: '3층 보건 선생님 인증 → 체육관 강연 무대 스피치 → Wee클래스 허브차 다과 순으로 진행하세요.',
-    teacherAvatar: '💖',
-    category: '💖 장편 모험 완결 3막 (Lv.12)',
-    title: '[장편 완결 3막] 희망의 종소리: 몸과 마음의 공명',
-    story: `드디어 장편 모험의 대단원, 제3막 피날레(Lv.12 이상)란다! 💖🌟
-
-보건 선생님의 활력 비약과 우리가 복구한 체육관 방송 시스템을 하나로 연결해, 학교 전체에 희망의 종소리를 울려 퍼지게 할 시간이야!
-
-1. 🩺 3층 보건실 [보건 선생님]께 1·2막 결과를 보고하고 [합동 치유 비약 결정] 인증받기
-2. 🎤 체육관 [강연 무대] 단상에 올라 전교생에게 희망의 영어 스피치 선포하기
-3. 🫖 3층 Wee클래스 [따뜻한 캐모마일 허브차 테이블]에서 평온의 다과 의식 마치기
-
-모두 마치고 돌아오면 5티어 최고급 장비 제작에 쓰이는 [✨ 특수 강화 스텐 조각 x2]와 [🍱 정제된 영양의 정수 x4], 그리고 경험치·골드 보상을 수여하마!`,
-    inProgressStory: `희망의 종소리 대작전이 한창 진행 중이란다! 💖
-
-1. 🩺 3층 보건실 [보건 선생님]과 대화해 합동 치유 인증받기
-2. 🎤 체육관 [강연 무대]에서 희망의 영어 스피치 성공하기
-3. 🫖 Wee클래스 [캐모마일 허브차 테이블]에서 다과 의식 마무리하기
-
-마지막 관문을 모두 완수해 보렴!`,
-    completeStory: `와... 정말 경이롭구나!! 🎉💖🌟
-
-체육관 강연 무대에서 울려 퍼진 너의 희망 스피치가 숭실중학교 온 교정과 학생들의 마음에 따뜻하게 스며들었단다!
-몸의 건강(보건실)과 마음의 평온(Wee클래스)이 완벽하게 공명하는 순간이야!
-
-약속대로 5티어 제작 핵심 재료 [✨ 특수 강화 스텐 조각 x2], [🍱 정제된 영양의 정수 x4], 그리고 골드·경험치를 선물하마!`,
-    doneStory: `너 덕분에 숭실중학교 온 교정에 따뜻한 희망의 울림이 이어지고 있단다!
-언제든 지치거나 따뜻한 차가 생각날 때면 보건실과 Wee클래스에 편히 놀러 오렴! 💖`,
-    objectives: [
-      {
-        id: 'nurse_coop',
-        text: '3층 보건실 [🩺 보건 선생님]에게 합동 치유 인증받기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.nurseCoopConfirmed ? 1 : 0)
-      },
-      {
-        id: 'gym_stage',
-        text: '체육관 [🎤 강연 무대]에서 희망의 영어 스피치 선포하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.stageSpeechDone ? 1 : 0)
-      },
-      {
-        id: 'wee_tea',
-        text: '3층 Wee클래스 [🫖 허브차 테이블]에서 마음 마무리 다과 갖기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.teaCeremonyDone ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'exp', amount: 300, label: '🌟 300 EXP (경험치)' },
-      { type: 'gold', amount: 200, label: '🪙 200 G (골드)' },
-      { type: 'item', itemKey: 'item_stainless_shard', itemName: '특수 강화 스텐 조각', count: 2, icon: '✨', meta: { type: 'material', effect: '5티어 불멸의 열정 장비 제작 핵심 재료' }, label: '✨ 특수 강화 스텐 조각 x2 (5티어 재료)' },
-      { type: 'item', itemKey: 'item_nutrition_essence', itemName: '정제된 영양의 정수', count: 4, icon: '🍱', meta: { type: 'material', effect: '5티어 최고급 장비 제작 필수 재료' }, label: '🍱 정제된 영양의 정수 x4 (5티어 재료)' }
-    ]
-  },
-  'quest_pe_errand': {
-    id: 'quest_pe_errand',
-    teacherId: 'npc_teacher_pe_grade2',
-    teacherName: '리졍놤(2학년 체육)',
-    teacherRole: '2학년 체육',
-    teacherAvatar: '👨‍🏫',
-    teacherSeat: '체육관 무대',
-    returnLocation: '체육관 실내 무대',
-    progressHint: '6층 교무실 20번 자리에서 🔑 [2학년 체육관 열쇠]를 찾아 체육관 무대로 전해드리세요.',
-    minLevel: 12,
-    cleanupItem: 'item_gym_key',
-    title: '🔑 체육선생님의 심부름 (Gym Key Delivery)',
-    story: '교무실 20번 자리(2학년 체육선생님 자리)에 선생님이 깜빡하고 두고 가신 체육관 열쇠를 발견했다!\n이 열쇠로 체육관 문을 열고 들어가, 체육관 안쪽 강연 무대 위에 계신 리졍놤(2학년 체육) 선생님께 직접 열쇠를 전해드리자!',
-    inProgressStory: '아직 [🔑 2학년 체육관 열쇠]를 찾지 못했더구나! 6층 교무실 20번 자리에서 열쇠를 챙겨 체육관 안쪽 강연 무대로 가져오렴!',
-    completeStory: '오오! 교무실 20번 자리에 두고 온 열쇠를 챙겨와 주었구나! 정말 고맙다!\n약속한 심부름 보상으로 [🪙 100 G]와 [🧪 초소형 경험치 물약 3개]를 주마!',
-    doneStory: '네가 열쇠를 전해준 덕분에 체육관 문을 열 수 있었단다. 고맙다!',
-    objectives: [
-      {
-        id: 'pe_key_collect',
-        text: '교무실 20번 자리에서 🔑 [2학년 체육관 열쇠] 챙기기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.keyCollected ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'gold', amount: 100, label: '🪙 100 G (골드)' },
-      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 3, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x3 (개당 EXP +50)' }
-    ]
-  },
-  'quest_pe_court_clear': {
-    id: 'quest_pe_court_clear',
-    teacherId: 'npc_teacher_pe_grade2',
-    teacherName: '리졍놤(2학년 체육)',
-    teacherRole: '2학년 체육',
-    teacherAvatar: '👨‍🏫',
-    teacherSeat: '체육관 무대',
-    returnLocation: '체육관 실내 무대',
-    progressHint: '체육관 실내 농구장에서 8단원 배틀로 몬스터 3마리를 토벌하세요.',
-    minLevel: 13,
-    requiresDone: 'quest_pe_errand',
-    title: '🏀 실내 농구장을 점거한 폭주 농구 몬스터 토벌 & 8단원 테스트',
-    story: '덕분에 체육관 문을 열고 무사히 들어왔는데 큰일이란다!\n실내 농구 코트를 폭주 농구 몬스터들이 점거해버려서 2학년 체육 수업을 시작할 수가 없구나.\n\n실내 농구장에서 8단원 영어 퀴즈 배틀로 폭주 농구 몬스터 3마리를 토벌하고 실력을 증명해 주렴!',
-    inProgressStory: '실내 농구 코트를 배회하는 폭주 농구 몬스터(불멸의 덩크 머신, 백보드 분쇄기, 심판 골렘, 실내 코트 제왕) 중 3마리를 8단원 퀴즈 대결로 토벌하고 돌아오렴!',
-    completeStory: '오오! 그 강력한 실내 농구장 몬스터들을 8단원 실력으로 단숨에 제압하다니 정말 놀랍구나!\n덕분에 코트 질서가 완전히 회복되었단다. 약속한 특급 보상으로 [🧪 초소형 경험치 물약 30개]와 [🌟 300 EXP]를 수여하마!',
-    doneStory: '덕분에 실내 농구 코트 질서가 완벽히 회복되었단다. 언제든 8단원 실력을 갈고닦아 보렴! 🏀',
-    objectives: [
-      {
-        id: 'gym_mob_hunt',
-        text: '체육관 실내 농구장 몬스터 3마리 토벌 & 8단원 테스트 통과',
-        targetCount: 3,
-        getCount: (quest) => Math.min(3, Number(quest && quest.gymKillCount) || 0)
-      }
-    ],
-    rewards: [
-      { type: 'exp', amount: 300, label: '🌟 300 EXP (경험치)' },
-      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 30, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x30 (개당 EXP +50)' }
-    ]
-  },
-  'quest_jawsdong_cleanup': {
-    id: 'quest_jawsdong_cleanup',
-    teacherId: 'npc_teacher_pe_grade3',
-    teacherName: '죠스동(3학년 체육)',
-    teacherRole: '3학년 체육',
-    teacherAvatar: '👨‍🏫',
-    teacherSeat: '체육관 창고',
-    returnLocation: '체육관 창고',
-    progressHint: '버스 옆 농구공·관람석 팀 조끼 회수 후 창고 선반 8단원 퀴즈를 완료하세요.',
-    minLevel: 14,
-    title: '🏀 흩어진 체육 용구 회수 & 창고 재정비',
-    story: '폭주 농구 몬스터들이 날뛰는 바람에 수업용 공과 팀 조끼, 라바콘이 체육관 안팎에 엉망으로 흩어졌단다!\n\n1. 체육관 야외 광장(축구부 버스 오른쪽)에 굴러간 🏀 [분실된 수업용 농구공] 주워오기\n2. 체육관 실내 코트 관람석(상단 스탠드 앞)에 흩어진 🦺 [땀에 젖은 팀 조끼 다발] 회수하기\n3. 공·체육복 창고 내부 [📦 창고 선반]과 상호작용해 8단원 퀴즈 1문제를 풀고 깔끔하게 분류·정돈하기\n\n모두 마치고 돌아오면 특급 경험치 물약과 월계수 잎, 골드·경험치를 선물하마!',
-    inProgressStory: '아직 정돈이 끝나지 않았구나! 🏀🏐\n\n1. 야외 체육관 광장 축구부 버스 오른쪽에 굴러간 🏀 [분실된 수업용 농구공] 회수\n2. 실내 농구 코트 상단 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수\n3. 이 창고 안쪽의 [📦 창고 선반]을 조사해 8단원 문제를 풀고 용구 분류·정돈하기\n\n세 가지를 모두 마친 뒤 나에게 보고해 주렴!',
-    completeStory: '오오! 야외 광장 축구부 버스 옆까지 굴러간 농구공과 관람석의 팀 조끼까지 모두 찾아와 창고 선반에 완벽히 정돈했구나! 👏\n덕분에 3학년 체육 수업을 바로 시작할 수 있겠어. 고맙다! 약속한 정돈 보상을 수여하마!',
-    doneStory: '체육관 용구 정돈 덕분에 3학년 체육 수업 준비가 완벽해졌다! 훌륭해! 👏',
-    objectives: [
-      {
-        id: 'jawsdong_ball',
-        text: '체육관 야외 광장(축구부 버스 오른쪽) 🏀 [분실된 수업용 농구공] 주워오기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.ballRecovered ? 1 : 0)
-      },
-      {
-        id: 'jawsdong_vests',
-        text: '체육관 실내 관람석 앞 🦺 [땀에 젖은 팀 조끼 다발] 회수하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.vestsRecovered ? 1 : 0)
-      },
-      {
-        id: 'jawsdong_sort',
-        text: '공·체육복 창고 [📦 창고 선반]에서 8단원 퀴즈 풀고 분류·정돈하기',
-        targetCount: 1,
-        getCount: (quest) => (quest && quest.storageSorted ? 1 : 0)
-      }
-    ],
-    rewards: [
-      { type: 'exp', amount: 350, label: '🌟 350 EXP (경험치)' },
-      { type: 'gold', amount: 200, label: '🪙 200 G (골드)' },
-      { type: 'item', itemKey: 'item_tiny_exp_potion', itemName: '초소형 경험치 물약', count: 20, icon: '🧪', meta: { type: 'consumable', slot: 'consumable', expGain: 50, effect: '사용 시 경험치(EXP) +50 상승' }, label: '🧪 초소형 경험치 물약 x20 (개당 EXP +50)' },
-      { type: 'item', itemKey: 'item_golden_laurel', itemName: '황금 월계수 잎', count: 1, icon: '🏵️', meta: { type: 'material', effect: 'Lv.15 승리의 월계관 메달 제작 핵심 재료' }, label: '🏵️ 황금 월계수 잎 x1 (Lv.15 장신구 재료)' }
-    ]
-  }
-};
-window.QUEST_DEFINITIONS = QUEST_DEFINITIONS;
+// QUEST_DEFINITIONS loaded from js/quests_data.js
 
 class MainApp {
   constructor() {
@@ -2012,6 +681,24 @@ class MainApp {
     }
     alert(title ? `[${title}]\n\n${message}` : message);
     if (typeof onClose === 'function') onClose();
+  }
+
+  confirmGameDialog(title, message, icon = '❓', confirmText = '확인', cancelText = '취소') {
+    return new Promise((resolve) => {
+      if (window.RPGDialog && typeof window.RPGDialog.confirm === 'function') {
+        window.RPGDialog.confirm(
+          title,
+          message,
+          icon,
+          () => resolve(true),
+          () => resolve(false),
+          confirmText,
+          cancelText
+        );
+      } else {
+        resolve(confirm(title ? `[${title}]\n\n${message}` : message));
+      }
+    });
   }
 
   async verifyTeacherPasswordOffline(pwd) {
@@ -5423,7 +4110,8 @@ class MainApp {
     // 엘리베이터 이용료 (무조건 1회 이용 시 10G 지출, 교사는 무료)
     if (!this.playerData.isTeacher) {
       if (this.playerData.gold < 10) {
-        alert(`❌ [엘리베이터 이용료 부족]\n\n엘리베이터를 이용하려면 10G(골드)가 필요합니다!\n(현재 보유 골드: ${this.playerData.gold}G)`);
+        if (window.AudioManager && window.AudioManager.playDeny) window.AudioManager.playDeny();
+        this.showToast(`🪙 엘리베이터 이용료 10G가 부족합니다! (보유: ${this.playerData.gold}G)`, 'error');
         return;
       }
       this.addGold(-10);
@@ -6197,7 +4885,13 @@ class MainApp {
       }
 
       if (!this.isServerOnline && !isTeacher) {
-        const proceed = confirm('⚠️ 현재 서버 응답이 지연되거나 오프라인 상태입니다.\n\n계속 입장하시겠습니까?');
+        const proceed = await this.confirmGameDialog(
+          '서버 연결 지연',
+          '현재 서버 응답이 지연되거나 오프라인 상태입니다.\n\n계속 입장하시겠습니까?',
+          '⚠️',
+          '계속 입장',
+          '취소'
+        );
         if (!proceed) return;
       }
 
@@ -6865,9 +5559,15 @@ class MainApp {
     }
 
     // 1:1 Field Monster Battle Modal buttons
-    const requestBattleFlee = () => {
+    const requestBattleFlee = async () => {
       if (this.currentFieldMob && this.currentFieldMob.hp > 0 && this.playerData && this.playerData.hp > 0) {
-        const flee = confirm('🏃 [도망치기]\n\n몬스터와의 대결을 중단하고 전투에서 물러나시겠습니까?');
+        const flee = await this.confirmGameDialog(
+          '도망치기',
+          '몬스터와의 대결을 중단하고 전투에서 물러나시겠습니까?',
+          '🏃',
+          '도망치기',
+          '계속 싸우기'
+        );
         if (!flee) return;
       }
       this.closeFieldBattleModal();
@@ -7238,7 +5938,7 @@ class MainApp {
     const reqLevel = invItem.requiredLevel || invItem.meta?.requiredLevel || (ALL_GAME_ITEMS[itemId] && ALL_GAME_ITEMS[itemId].meta && ALL_GAME_ITEMS[itemId].meta.requiredLevel);
     if (reqLevel && this.playerData.level < reqLevel && !this.playerData.isTeacher) {
       if (window.AudioManager && window.AudioManager.playWrong) window.AudioManager.playWrong();
-      alert(`🔒 착용 불가 (레벨 부족)\n\n이 장비는 [Lv.${reqLevel}] 이상부터 착용할 수 있습니다!\n(현재 나의 레벨: Lv.${this.playerData.level})\n\n교실 퀴즈와 몬스터 사냥으로 레벨을 올려보세요!`);
+      this.showToast(`🔒 Lv.${reqLevel} 이상부터 착용할 수 있습니다! (현재: Lv.${this.playerData.level})`, 'error');
       return;
     }
 
@@ -7317,18 +6017,18 @@ class MainApp {
 
   usePotion(itemId = 'item_hp_potion') {
     if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
-      alert('💀 기절한 상태에서는 스스로 물약을 마실 수 없습니다!\n동료의 [부활 주문서]를 받거나 복도에서 부활하세요.');
+      this.showToast('💀 기절한 상태에서는 스스로 물약을 마실 수 없습니다!', 'error');
       return false;
     }
 
     const pot = this.playerData.inventory.find(i => i.item === itemId);
     if (!pot || pot.count <= 0) {
-      alert('보유한 포션이 없습니다.');
+      this.showToast('🧪 보유한 물약이 없습니다.', 'error');
       return false;
     }
 
     if (this.playerData.hp >= this.playerData.maxHp) {
-      alert(`이미 체력이 최대치입니다! (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})\n보스전에서 체력이 깎였을 때 아껴두었다가 마셔보세요!`);
+      this.showToast(`💚 이미 체력이 최대치입니다! (${this.playerData.hp} / ${this.playerData.maxHp})`, 'info');
       return false;
     }
 
@@ -7349,13 +6049,16 @@ class MainApp {
     this.updateHpBar();
     this.saveProgress();
 
+    if (window.AudioManager && typeof window.AudioManager.playPotion === 'function') {
+      window.AudioManager.playPotion();
+    }
     if (this.engine && typeof this.engine.addFloatingText === 'function') {
       const px = this.engine.player ? this.engine.player.x + 16 : undefined;
       const py = this.engine.player ? this.engine.player.y - 14 : undefined;
       this.engine.addFloatingText(`+${actualHealed} HP 💚`, px, py, '#4ade80', 18);
     }
 
-    alert(`🧪 [${pot.name}]을(를) 꿀꺽 마셨습니다!\n체력이 +${actualHealed} 회복되었습니다.${isMedic ? ' (🩺 메딕 +20%)' : ''} (현재 HP: ${this.playerData.hp} / ${this.playerData.maxHp})`);
+    this.showToast(`🧪 [${pot.name}] 체력 +${actualHealed} 회복!${isMedic ? ' (🩺 메딕 +20%)' : ''} (${this.playerData.hp} / ${this.playerData.maxHp})`, 'success');
 
     if (!this.modalInventory.classList.contains('hidden')) {
       this.openInventory();
@@ -7794,7 +6497,7 @@ class MainApp {
   // =========================================================================
   // SEASON 1 BOSS RAID SYSTEM (1학년 2반 보스 레이드 & 교사 이벤트 연동)
   // =========================================================================
-  openBossRaid(bossData) {
+  async openBossRaid(bossData) {
     this.recalcCombatStats();
 
     const isLeatherGolemRaid = (
@@ -7903,15 +6606,19 @@ class MainApp {
 
     if (!window.BOSS_CONFIG.active && !isSoloRaid) {
       if (this.playerData.isTeacher) {
-        const goSetup = confirm(
-          '⏳ 현재 보스레이드 이벤트가 [대기 중]입니다.\n\n[확인]: 보스레이드 이벤트 시작/옵션 설정창 열기\n[취소]: 교사 계정으로 즉시 테스트 전투 입장'
+        const goSetup = await this.confirmGameDialog(
+          '보스레이드 대기 중',
+          '현재 보스레이드 이벤트가 [대기 중]입니다.\n\n[설정창 열기]: 보스레이드 이벤트 시작/옵션 설정창 열기\n[테스트 입장]: 교사 계정으로 즉시 테스트 전투 입장',
+          '⏳',
+          '설정창 열기',
+          '테스트 입장'
         );
         if (goSetup) {
           this.openTeacherTab('tab-boss-raid');
           return;
         }
       } else {
-        alert('⏳ 현재 진행 중인 보스레이드 이벤트가 없습니다.\n선생님이 보스레이드를 시작하면 입장할 수 있습니다!');
+        this.showToast('⏳ 현재 진행 중인 보스레이드 이벤트가 없습니다. 선생님이 시작하면 입장할 수 있습니다!', 'info');
         return;
       }
     }
@@ -9478,13 +8185,13 @@ class MainApp {
 
   useReturnScroll() {
     if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
-      alert('💀 기절한 상태에서는 귀환 주문서를 사용할 수 없습니다!\n동료의 [부활 주문서]를 받거나 [복도 부활]을 이용해주세요.');
+      this.showToast('💀 기절 상태에서는 귀환 주문서를 사용할 수 없습니다!', 'error');
       return;
     }
 
     const scroll = this.playerData.inventory.find(i => i.item === 'item_return_scroll');
     if (!scroll || scroll.count <= 0) {
-      alert('📜 보유 중인 귀환 주문서가 없습니다.\n소비품 제작대에서 제작할 수 있습니다.');
+      this.showToast('📜 보유 중인 귀환 주문서가 없습니다. (소비품 제작대에서 제작 가능)', 'error');
       return;
     }
 
@@ -9557,13 +8264,13 @@ class MainApp {
   // 🌀 순간이동 주문서 사용 (목적지 선택 모달 오픈)
   useTeleportScroll() {
     if (this.playerData && (this.playerData.isFallen || this.playerData.hp <= 0)) {
-      alert('💀 기절한 상태에서는 순간이동 주문서를 사용할 수 없습니다!\n동료의 [부활 주문서]를 받거나 [복도 부활]을 이용해주세요.');
+      this.showToast('💀 기절 상태에서는 순간이동 주문서를 사용할 수 없습니다!', 'error');
       return;
     }
 
     const scroll = this.playerData.inventory.find(i => i.item === 'item_teleport_scroll');
     if (!scroll || scroll.count <= 0) {
-      alert('📜 보유 중인 순간이동 주문서가 없습니다.\n소비품 제작대에서 제작할 수 있습니다.');
+      this.showToast('📜 보유 중인 순간이동 주문서가 없습니다. (소비품 제작대에서 제작 가능)', 'error');
       return;
     }
 
@@ -10204,7 +8911,7 @@ class MainApp {
 
     const btnSummonNow = document.getElementById('btn-summon-all-now');
     if (btnSummonNow) {
-      btnSummonNow.addEventListener('click', () => {
+      btnSummonNow.addEventListener('click', async () => {
         const roomName = this.engine.player.roomName || '현재 위치';
         const floor = this.engine.player.floor || 7;
         const input = document.getElementById('input-broadcast');
@@ -10214,7 +8921,7 @@ class MainApp {
           ? `🌀 현재 교사 위치 (${floor}층 ${roomName})로 접속 중인 모든 학생을 소환하시겠습니까?\n\n📢 함께 전달할 공지:\n"${customMsg}"`
           : `🌀 현재 교사 위치 (${floor}층 ${roomName})로 접속 중인 모든 학생을 즉시 소환하시겠습니까?`;
 
-        if (!confirm(confirmMsg)) {
+        if (!(await this.confirmGameDialog('전원 소환', confirmMsg, '🌀', '소환하기', '취소'))) {
           return;
         }
 
@@ -10291,7 +8998,7 @@ class MainApp {
       inputRestore.addEventListener('change', async (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
-        if (!confirm(`선택한 백업 파일("${file.name}")로 서버의 모든 학생 데이터를 복원하시겠습니까?`)) {
+        if (!(await this.confirmGameDialog('백업 데이터 복원', `선택한 백업 파일("${file.name}")로 서버의 모든 학생 데이터를 복원하시겠습니까?`, '📥', '복원하기', '취소'))) {
           inputRestore.value = '';
           return;
         }
@@ -10521,8 +9228,8 @@ class MainApp {
     // 관제탑: 이 기기 로컬 데이터 초기화
     const btnAdminClearDevice = document.getElementById('btn-admin-clear-device-storage');
     if (btnAdminClearDevice) {
-      btnAdminClearDevice.addEventListener('click', () => {
-        if (confirm('🧹 [이 기기 로컬 데이터 초기화]\n\n현재 이 PC/브라우저에 저장된 모든 학생 플레이 기록과 로컬 데이터를 초기화(삭제)하시겠습니까?\n\n초기화 후 브라우저가 새로고침되며 초기 상태로 시작합니다.')) {
+      btnAdminClearDevice.addEventListener('click', async () => {
+        if (await this.confirmGameDialog('로컬 데이터 초기화', '현재 이 PC/브라우저에 저장된 모든 학생 플레이 기록과 로컬 데이터를 초기화(삭제)하시겠습니까?\n\n초기화 후 브라우저가 새로고침되며 초기 상태로 시작합니다.', '🧹', '초기화', '취소')) {
           try {
             const keysToRemove = Object.keys(localStorage).filter(k => k.startsWith('soongsil_'));
             keysToRemove.forEach(k => localStorage.removeItem(k));
@@ -10537,7 +9244,7 @@ class MainApp {
     const btnAdminWipeAll = document.getElementById('btn-admin-wipe-all-students');
     if (btnAdminWipeAll) {
       btnAdminWipeAll.addEventListener('click', async () => {
-        if (!confirm('⚠️ [전교생 데이터 전체 일괄 초기화 - 위험]\n\n정말로 서버에 누적 저장된 모든 학생의 플레이 데이터(레벨, 골드, 인벤토리 등)를 완전히 삭제하시겠습니까?\n\n이 작업은 절대 되돌릴 수 없습니다!')) {
+        if (!(await this.confirmGameDialog('전교생 데이터 일괄 초기화', '정말로 서버에 누적 저장된 모든 학생의 플레이 데이터(레벨, 골드, 인벤토리 등)를 완전히 삭제하시겠습니까?\n\n이 작업은 절대 되돌릴 수 없습니다!', '⚠️', '계속 진행', '취소'))) {
           return;
         }
         const confirmText = prompt('정말 전교생 데이터를 초기화하려면 확인란에 "초기화"를 정확히 입력해 주세요:');
@@ -10569,7 +9276,7 @@ class MainApp {
       btnDeleteStudent.addEventListener('click', async () => {
         const sId = document.getElementById('admin-edit-student-id').value;
         if (!sId) return;
-        if (!confirm(`⚠️ 정말로 [${sId}] 학생의 영구 세이브 기록을 서버에서 완전히 삭제(초기화)하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
+        if (!(await this.confirmGameDialog('학생 데이터 삭제', `정말로 [${sId}] 학생의 영구 세이브 기록을 서버에서 완전히 삭제(초기화)하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`, '⚠️', '삭제하기', '취소'))) {
           return;
         }
         try {
@@ -10604,7 +9311,7 @@ class MainApp {
       const confirmMsg = isAssign
         ? `🔑 [${sId}] 학생의 PIN을 [${newPin}]으로 직접 변경하시겠습니까?`
         : `🔓 [${sId}] 학생의 PIN을 초기화하시겠습니까?\n초기화 후 학생이 로그인할 때 새 4자리 PIN을 직접 설정하게 됩니다.`;
-      if (!confirm(confirmMsg)) return;
+      if (!(await this.confirmGameDialog('학생 PIN 변경', confirmMsg, '🔑', '변경하기', '취소'))) return;
       try {
         const res = await fetch('/api/admin/reset-student-pin', {
           method: 'POST',
@@ -10764,7 +9471,7 @@ class MainApp {
     const btnSheetsPushAll = document.getElementById('btn-admin-sheets-push');
     if (btnSheetsPushAll) {
       btnSheetsPushAll.addEventListener('click', async () => {
-        if (!confirm('⬆️ 현재 게임 서버의 모든 학생 계정(학번·이름·이메일·평문 PIN·레벨·골드)을 구글 시트로 내보내시겠습니까?')) return;
+        if (!(await this.confirmGameDialog('구글 시트 내보내기', '현재 게임 서버의 모든 학생 계정(학번·이름·이메일·평문 PIN·레벨·골드)을 구글 시트로 내보내시겠습니까?', '⬆️', '내보내기', '취소'))) return;
         try {
           const data = await callAdminSheetsPost('/api/admin/sheets/push-all');
           await this.loadGoogleSheetsConfigAdmin();
@@ -10798,7 +9505,7 @@ class MainApp {
         const msg = nextAllow
           ? '🆘 [임시 비상 로그인 켜기]\n\n이메일/PIN 입력 없이도 학번+이름만으로 임시 접속을 허용하시겠습니까?\n(로그인 장애/수업 시작 직전 비상용)'
           : '🔐 [@senedu.kr 이메일 + PIN 모드로 전환]\n\n임시 학번+이름 로그인을 끄고 @senedu.kr 이메일과 4자리 PIN을 필수로 요구하시겠습니까?';
-        if (!confirm(msg)) return;
+        if (!(await this.confirmGameDialog('로그인 모드 전환', msg, '🔐', '전환하기', '취소'))) return;
         try {
           const res = await fetch('/api/admin/auth-settings', {
             method: 'POST',
@@ -10825,7 +9532,7 @@ class MainApp {
         const msg = nextRoster
           ? '📋 [명단(Whitelist) 제한 켜기]\n\n교사 명단에 등록된 학생(학번/이름/이메일 일치)만 가입·접속할 수 있도록 제한하시겠습니까?\n(명단이 비어 있으면 아무도 신규 접속할 수 없으므로 먼저 명단을 등록해 주세요!)'
           : '📋 [명단 제한 끄기]\n\n명단에 없어도 @senedu.kr 이메일 + 학번 + 이름 + PIN으로 자유롭게 가입할 수 있게 허용하시겠습니까?';
-        if (!confirm(msg)) return;
+        if (!(await this.confirmGameDialog('명단 제한 설정', msg, '📋', '적용하기', '취소'))) return;
         try {
           const res = await fetch('/api/admin/auth-settings', {
             method: 'POST',
@@ -10981,24 +9688,24 @@ class MainApp {
     chatLogContainer.scrollTop = chatLogContainer.scrollHeight;
   }
 
-  muteStudent(studentName) {
-    if (confirm(`'${studentName}' 학생의 채팅을 10분간 금지하시겠습니까?`)) {
+  async muteStudent(studentName) {
+    if (await this.confirmGameDialog('채팅 금지', `'${studentName}' 학생의 채팅을 10분간 금지하시겠습니까?`, '🔇', '채팅 금지', '취소')) {
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('teacher_mute', { studentName, durationMinutes: 10 });
       }
     }
   }
 
-  unmuteStudent(studentName) {
-    if (confirm(`'${studentName}' 학생의 채팅 금지를 해제하시겠습니까?`)) {
+  async unmuteStudent(studentName) {
+    if (await this.confirmGameDialog('채팅 금지 해제', `'${studentName}' 학생의 채팅 금지를 해제하시겠습니까?`, '🔊', '해제하기', '취소')) {
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('teacher_unmute', { studentName });
       }
     }
   }
 
-  kickStudent(socketId, studentName) {
-    if (confirm(`⚠️ 정말로 '${studentName}' 학생을 서버에서 강제 퇴장(강퇴)시키겠습니까?`)) {
+  async kickStudent(socketId, studentName) {
+    if (await this.confirmGameDialog('강제 퇴장', `정말로 '${studentName}' 학생을 서버에서 강제 퇴장(강퇴)시키겠습니까?`, '⚠️', '강퇴하기', '취소')) {
       if (this.networkManager.socket) {
         this.networkManager.socket.emit('teacher_kick_player', { targetSocketId: socketId, studentName });
       }
@@ -11018,8 +9725,8 @@ class MainApp {
     }
   }
 
-  quickDeleteStudent(studentId, name) {
-    if (confirm(`⚠️ 정말로 학번 [${studentId}] '${name}' 학생의 저장 데이터를 영구 삭제(초기화)하시겠습니까?`)) {
+  async quickDeleteStudent(studentId, name) {
+    if (await this.confirmGameDialog('학생 데이터 영구 삭제', `정말로 학번 [${studentId}] '${name}' 학생의 저장 데이터를 영구 삭제(초기화)하시겠습니까?`, '⚠️', '영구 삭제', '취소')) {
       fetch('/api/admin/delete-student-progress', {
         method: 'POST',
         headers: this.getAdminHeaders({ 'Content-Type': 'application/json' }),
@@ -14412,7 +13119,7 @@ class MainApp {
     const promptMsg = nextOpen
       ? "🟢 서버를 개방하고 수업을 시작하시겠습니까?\n\n• 대기 중인 모든 학생이 즉시 입장할 수 있게 됩니다."
       : "🔴 정말로 서버를 닫고 수업을 종료하시겠습니까?\n\n• 현재 접속 중인 모든 학생의 경험치/아이템/진행도가 안전하게 저장됩니다.\n• 학생들은 대기 화면으로 이동되며 추가 입장이 차단됩니다.\n• 교사는 계속 서버에 남아 맵 점검 및 수업 준비를 진행할 수 있습니다.";
-    if (!confirm(promptMsg)) return;
+    if (!(await this.confirmGameDialog('서버 개방/차단', promptMsg, nextOpen ? '🟢' : '🔴', nextOpen ? '서버 개방' : '서버 닫기', '취소'))) return;
 
     try {
       const res = await fetch('/api/admin/server-gate', {

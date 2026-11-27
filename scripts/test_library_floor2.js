@@ -191,6 +191,8 @@ console.log('\n3. Checking MainApp Buff, Quests, and Interaction Handlers:');
 require('../public/js/quiz.js');
 require('../public/js/crafting.js');
 require('../public/js/network.js');
+require('../public/js/codex_data.js');
+require('../public/js/quests_data.js');
 require('../public/js/main.js');
 
 const MainAppClass = window.MainAppClass || globalThis.MainApp;

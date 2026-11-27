@@ -33,7 +33,7 @@ assert.strictEqual(f3.interactive[0].y, 12, 'water purifier y should be 12');
 console.log('✅ Test 2: world.js Floor 3 width (30 tiles) & height (15 tiles) verified.');
 
 // 3. Test main.js
-const mainJs = fs.readFileSync('public/js/main.js', 'utf8');
+const mainJs = fs.readFileSync('public/js/codex_data.js', 'utf8') + '\n' + fs.readFileSync('public/js/main.js', 'utf8');
 assert(mainJs.includes("id: 'item_nutrition_essence'"), 'item_nutrition_essence exists');
 assert(mainJs.includes("id: 'item_stainless_shard'"), 'item_stainless_shard exists');
 

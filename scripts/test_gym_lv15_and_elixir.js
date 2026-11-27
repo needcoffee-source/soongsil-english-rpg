@@ -8,7 +8,9 @@ const recipes = JSON.parse(fs.readFileSync(path.join(cwd, 'data/craft_recipes.js
 const g1Questions = JSON.parse(fs.readFileSync(path.join(cwd, 'data/questions_grade1.json'), 'utf8'));
 const worldJs = fs.readFileSync(path.join(cwd, 'public/js/world.js'), 'utf8');
 const engineJs = fs.readFileSync(path.join(cwd, 'public/js/engine.js'), 'utf8');
-const mainJs = fs.readFileSync(path.join(cwd, 'public/js/main.js'), 'utf8');
+const mainJs = fs.readFileSync(path.join(cwd, 'public/js/codex_data.js'), 'utf8') + '\n' +
+  fs.readFileSync(path.join(cwd, 'public/js/quests_data.js'), 'utf8') + '\n' +
+  fs.readFileSync(path.join(cwd, 'public/js/main.js'), 'utf8');
 const serverJs = fs.readFileSync(path.join(cwd, 'server.js'), 'utf8');
 const indexHtml = fs.readFileSync(path.join(cwd, 'public/index.html'), 'utf8');
 

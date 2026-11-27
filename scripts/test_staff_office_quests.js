@@ -113,7 +113,7 @@ assert.strictEqual(worriedStudent.y, 10, 'Worried student must be at east window
 console.log('✔ 10. Worried student on 6F hallway east window (x: 58, y: 10) verified');
 
 // 2. Check main.js and server.js item catalog sync
-const mainCode = fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
+const mainCode = fs.readFileSync(path.join(__dirname, '../public/js/quests_data.js'), 'utf8') + '\n' + fs.readFileSync(path.join(__dirname, '../public/js/main.js'), 'utf8');
 const serverCode = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
 
 assert(mainCode.includes('item_kimmijin_sketchbook'), 'main.js must define item_kimmijin_sketchbook');

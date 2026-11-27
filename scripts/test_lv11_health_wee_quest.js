@@ -34,7 +34,7 @@ function reqJson(port, method, urlPath, data, headers = {}) {
 async function runTests() {
   const cwd = path.join(__dirname, '..');
   const serverJs = fs.readFileSync(path.join(cwd, 'server.js'), 'utf8');
-  const mainJs = fs.readFileSync(path.join(cwd, 'public/js/main.js'), 'utf8');
+  const mainJs = fs.readFileSync(path.join(cwd, 'public/js/quests_data.js'), 'utf8') + '\n' + fs.readFileSync(path.join(cwd, 'public/js/main.js'), 'utf8');
   const worldJs = fs.readFileSync(path.join(cwd, 'public/js/world.js'), 'utf8');
   const engineJs = fs.readFileSync(path.join(cwd, 'public/js/engine.js'), 'utf8');
 
