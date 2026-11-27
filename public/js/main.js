@@ -409,7 +409,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#047857',
     effect: '공격력(ATK) +30 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 500G'
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 20개 + 300G'
   },
   {
     id: 'equip_bronze_helmet',
@@ -420,7 +420,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#047857',
     effect: '방어력(DEF) +14, 체력(HP) +35 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 300G'
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 10개 + 200G'
   },
   {
     id: 'equip_bronze_armor',
@@ -431,7 +431,7 @@ window.ITEM_CODEX_DATABASE = [
     tierColor: '#047857',
     effect: '방어력(DEF) +20, 체력(HP) +25 증가',
     source: '장비 제작대(C)에서 제작 (5레벨 이상)',
-    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 300G'
+    recipe: '청동 드래곤 심장 1개 + 개나리 꽃잎 15개 + 200G'
   },
   {
     id: 'equip_heritage_blade',

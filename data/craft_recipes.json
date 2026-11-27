@@ -285,7 +285,7 @@
     "description": "[무기] 청동 드래곤의 심장과 노란 개나리 꽃잎으로 벼려낸 최상급 청동검입니다.",
     "icon": "⚔️",
     "gradeLevel": 1,
-    "requiredGold": 500,
+    "requiredGold": 300,
     "requiredItems": [
       {
         "item": "item_bronze_heart",
@@ -334,7 +334,7 @@
     "description": "[3티어 투구] 청동 드래곤의 심장과 노란 개나리 꽃잎의 생명력을 담아 벼려낸 단단한 3티어 청동 투구입니다.",
     "icon": "🪖",
     "gradeLevel": 1,
-    "requiredGold": 300,
+    "requiredGold": 200,
     "requiredItems": [
       {
         "item": "item_bronze_heart",
@@ -382,7 +382,7 @@
     "description": "[3티어 갑옷] 청동 드래곤의 심장과 노란 개나리 꽃잎을 엮어 만든 무적의 3티어 청동 갑옷입니다.",
     "icon": "🛡️",
     "gradeLevel": 1,
-    "requiredGold": 300,
+    "requiredGold": 200,
     "requiredItems": [
       {
         "item": "item_bronze_heart",
