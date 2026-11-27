@@ -219,7 +219,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '회복 물약',
     tierColor: '#e11d48',
     effect: '사용 시 체력(HP) +10 즉시 회복',
-    source: '소비품 제작대(C)에서 조제',
+    source: '소비품 제작대(C) · 매점 구매(30G) · 역사관/급식실 드랍',
     recipe: '향긋한 허브 1개 + 5G'
   },
   {
@@ -230,7 +230,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '중급 회복 물약',
     tierColor: '#ea580c',
     effect: '사용 시 체력(HP) +25 대폭 회복',
-    source: '소비품 제작대(C)에서 조제 (5레벨 이상)',
+    source: '소비품 제작대(C, Lv.5+) · 매점 구매(80G, Lv.5+) · 역사관/급식실 드랍',
     recipe: '향긋한 허브 2개 + 노란 개나리 꽃잎 1개 + 10G'
   },
   {
@@ -241,7 +241,7 @@ window.ITEM_CODEX_DATABASE = [
     tierBadge: '고급 회복 물약',
     tierColor: '#06b6d4',
     effect: '사용 시 체력(HP) +40 대량 즉시 회복',
-    source: '소비품 제작대(C)에서 조제 (10레벨 이상)',
+    source: '소비품 제작대(C, Lv.10+) · 매점 구매(150G, Lv.10+) · 급식실/체육관 드랍',
     recipe: '향긋한 허브 4개 + 노란 개나리 꽃잎 2개 + 30G'
   },
   {
@@ -262,8 +262,8 @@ window.ITEM_CODEX_DATABASE = [
     category: 'consumable',
     tierBadge: '특수 물약',
     tierColor: '#16a34a',
-    effect: '사용 시 1분간 질주(대시) 속도 +10% 증가',
-    source: '소비품 제작대(C)에서 제작',
+    effect: '사용 시 1분간 기본 이동속도 +10% 증가',
+    source: '소비품 제작대(C) · 매점 구매(80G, Lv.5+)',
     recipe: '향긋한 허브 2개 + 단단한 목재 1개 + 15G'
   },
   {
@@ -8355,8 +8355,9 @@ class MainApp {
           this.addItem('equip_ginkgo_talisman', '합심의 황금 은행잎 부적', 1, '🍂', {
             type: 'equipment',
             slot: 'accessory',
+            requiredLevel: 5,
             stats: { atk: 15, def: 5, hp: 30 },
-            effect: '공격력 +15, 방어력 +5, 체력 +30'
+            effect: '공격력 +15, 방어력 +5, 체력 +30 (Lv.5 이상)'
           });
           rewardItemsList.push('🍂 합심의 황금 은행잎 부적 (1% 초특급 대박 장신구 득템!)');
         }
@@ -9237,8 +9238,9 @@ class MainApp {
         this.addItem('equip_leather_helmet', '가죽투구', 1, '⛑️', {
           type: 'equipment',
           slot: 'helmet',
+          requiredLevel: 3,
           stats: { atk: 0, def: 12, hp: 28 },
-          effect: '방어력 +12, 체력 +28'
+          effect: '방어력 +12, 체력 +28 (Lv.3 이상)'
         });
         dropsList.push('⛑️ 가죽투구 (8% 대박 완제품 드랍!)');
       }
@@ -9248,8 +9250,9 @@ class MainApp {
         this.addItem('equip_leather_sword', '가죽손잡이 세이버', 1, '🗡️', {
           type: 'equipment',
           slot: 'weapon',
+          requiredLevel: 3,
           stats: { atk: 22, def: 0, hp: 0 },
-          effect: '공격력 +22'
+          effect: '공격력 +22 (Lv.3 이상)'
         });
         dropsList.push('🗡️ 가죽손잡이 세이버 (5% 대박 완제품 드랍!)');
       }
@@ -9297,8 +9300,9 @@ class MainApp {
         this.addItem('equip_leather_armor', '가죽갑옷', 1, '🥋', {
           type: 'equipment',
           slot: 'armor',
+          requiredLevel: 3,
           stats: { atk: 0, def: 15, hp: 20 },
-          effect: '방어력 +15, 체력 +20'
+          effect: '방어력 +15, 체력 +20 (Lv.3 이상)'
         });
         dropsList.push('🥋 가죽갑옷 (8% 대박 완제품 드랍!)');
       }
@@ -10253,6 +10257,31 @@ class MainApp {
         }
       });
     }
+
+    // 엑셀 드랍테이블 다운로드 (교사 토큰 헤더 인증 적용)
+    document.querySelectorAll('a[href="/api/admin/download-item-drops-excel"]').forEach((linkEl) => {
+      linkEl.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const res = await fetch('/api/admin/download-item-drops-excel', { headers: this.getAdminHeaders() });
+          if (!res.ok) {
+            alert('🔒 교사 인증이 필요하거나 엑셀 다운로드에 실패했습니다.');
+            return;
+          }
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = linkEl.getAttribute('download') || '숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert('엑셀 다운로드 오류: ' + err.message);
+        }
+      });
+    });
 
     // 학생 누적 백업 JSON 파일 복원 (업로드)
     const btnRestore = document.getElementById('btn-trigger-restore-progress');
@@ -16217,12 +16246,15 @@ class MainApp {
     allNotes.forEach(n => {
       const card = document.createElement('div');
       card.style.cssText = 'background: rgba(15, 23, 42, 0.7); border: 1px solid #3b82f6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; text-align: left;';
+      const safeAuthor = this.escapeHtml(String(n.author || ''));
+      const safeDate = this.escapeHtml(String(n.date || ''));
+      const safeText = this.escapeHtml(String(n.text || ''));
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <span style="font-weight: 800; font-size: 13px; color: #93c5fd;">✉️ ${n.author}</span>
-          <span style="font-size: 11px; color: #94a3b8;">${n.date}</span>
+          <span style="font-weight: 800; font-size: 13px; color: #93c5fd;">✉️ ${safeAuthor}</span>
+          <span style="font-size: 11px; color: #94a3b8;">${safeDate}</span>
         </div>
-        <div style="font-size: 13px; color: #f8fafc; line-height: 1.45;">${n.text}</div>
+        <div style="font-size: 13px; color: #f8fafc; line-height: 1.45;">${safeText}</div>
       `;
       listEl.appendChild(card);
     });

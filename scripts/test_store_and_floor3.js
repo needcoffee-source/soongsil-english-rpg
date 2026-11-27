@@ -50,8 +50,9 @@ assert(!storeBuyBlock.includes("'item_courage_potion'"), 'item_courage_potion mu
 
 const expectedPrices = {
   item_red_potion: 30,
-  item_orange_potion: 75,
-  item_green_potion: 75,
+  item_orange_potion: 80,
+  item_clear_potion: 150,
+  item_green_potion: 80,
   item_revive_scroll: 100,
   item_return_scroll: 100,
   item_teleport_scroll: 300
@@ -88,10 +89,10 @@ assert.strictEqual(elixir.requiredGold, 50, 'recipe_elixir requiredGold === 50')
 assert.strictEqual(elixir.result.heal, 80, 'recipe_elixir heal === 80');
 assert.strictEqual(elixir.icon, '⚗️', 'recipe_elixir icon === ⚗️');
 
-// Verify neither is sold in canteen store
-assert(!storeBuyBlock.includes('item_clear_potion'), 'item_clear_potion must NOT be sold in store');
+// Verify item_clear_potion is sold in canteen store (Lv.10+, 150G) and item_elixir is NOT sold
+assert(storeBuyBlock.includes('item_clear_potion'), 'item_clear_potion must be sold in store');
 assert(!storeBuyBlock.includes('item_elixir'), 'item_elixir must NOT be sold in store');
 
-console.log('✅ Test 5: Potion Level locks (Orange Lv.5, Clear Lv.10, Elixir Lv.15) & No-store-sale verified.');
+console.log('✅ Test 5: Potion Level locks (Orange Lv.5, Clear Lv.10, Elixir Lv.15) & Store sale verified.');
 
 console.log('\n🎉 ALL STORE, FLOOR 3 & POTION TESTS PASSED PERFECTLY!\n');

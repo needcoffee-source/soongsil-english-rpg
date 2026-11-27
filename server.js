@@ -1216,7 +1216,7 @@ app.get('/api/admin/export-progress', requireTeacherHttp, (req, res) => {
 });
 
 // Download Complete Item Drop Table & Acquisition Routes Excel (.xlsx)
-app.get('/api/admin/download-item-drops-excel', (req, res) => {
+app.get('/api/admin/download-item-drops-excel', requireTeacherHttp, (req, res) => {
   const excelPath = path.join(__dirname, 'public', 'downloads', 'soongsil_rpg_item_drops_catalog.xlsx');
   const filename = encodeURIComponent('숭실중_영어RPG_아이템획득경로_드랍테이블.xlsx');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"; filename*=UTF-8''${filename}`);
