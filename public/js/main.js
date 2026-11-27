@@ -9050,15 +9050,34 @@ class MainApp {
           dropsList.push('✨ 특수 강화 스텐 조각 1개 (40% 행운 드랍!)');
         }
 
-        // 15% chance for clear potion
+        // 15% chance for random potion (빨간 / 주홍 / 맑은 물약)
         if (Math.random() * 100 < 15) {
-          this.addItem('item_clear_potion', '맑은 물약', 1, '🧪', {
-            type: 'consumable',
-            slot: 'consumable',
-            heal: 40,
-            effect: '사용 시 체력(HP) +40 대량 즉시 회복'
-          });
-          dropsList.push('🧪 맑은 물약 1개 (15% 드랍!)');
+          const potRoll = Math.floor(Math.random() * 3);
+          if (potRoll === 0) {
+            this.addItem('item_red_potion', '빨간 물약', 1, '🧪', {
+              type: 'consumable',
+              slot: 'consumable',
+              heal: 10,
+              effect: '체력 +10 회복'
+            });
+            dropsList.push('🧪 빨간 물약 1개 (15% 랜덤 드랍!)');
+          } else if (potRoll === 1) {
+            this.addItem('item_orange_potion', '주홍 물약', 1, '🧪', {
+              type: 'consumable',
+              slot: 'consumable',
+              heal: 25,
+              effect: '체력 +25 회복'
+            });
+            dropsList.push('🧪 주홍 물약 1개 (15% 랜덤 드랍!)');
+          } else {
+            this.addItem('item_clear_potion', '맑은 물약', 1, '🧪', {
+              type: 'consumable',
+              slot: 'consumable',
+              heal: 40,
+              effect: '사용 시 체력(HP) +40 대량 즉시 회복'
+            });
+            dropsList.push('🧪 맑은 물약 1개 (15% 랜덤 드랍!)');
+          }
         }
       } else {
         // Quest students calm down
@@ -9175,15 +9194,26 @@ class MainApp {
         dropsList.push('💎 꺾이지 않는 사명석 1개 (35% 행운 드랍!)');
       }
 
-      // 15% chance to drop orange potion
+      // 15% chance for random potion (빨간 / 주홍 물약)
       if (Math.random() * 100 < 15) {
-        this.addItem('item_orange_potion', '주홍 물약', 1, '🧪', {
-          type: 'consumable',
-          slot: 'consumable',
-          heal: 25,
-          effect: '체력 +25 회복'
-        });
-        dropsList.push('🧪 주홍 물약 1개 (15% 드랍!)');
+        const potRoll = Math.floor(Math.random() * 2);
+        if (potRoll === 0) {
+          this.addItem('item_red_potion', '빨간 물약', 1, '🧪', {
+            type: 'consumable',
+            slot: 'consumable',
+            heal: 10,
+            effect: '체력 +10 회복'
+          });
+          dropsList.push('🧪 빨간 물약 1개 (15% 랜덤 드랍!)');
+        } else {
+          this.addItem('item_orange_potion', '주홍 물약', 1, '🧪', {
+            type: 'consumable',
+            slot: 'consumable',
+            heal: 25,
+            effect: '체력 +25 회복'
+          });
+          dropsList.push('🧪 주홍 물약 1개 (15% 랜덤 드랍!)');
+        }
       }
     } else if (mob.court === 'futsal') {
       const fLeatherCount = Math.floor(Math.random() * ((mob.leatherMax || 3) - (mob.leatherMin || 1) + 1)) + (mob.leatherMin || 1);
